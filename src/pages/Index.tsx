@@ -28,32 +28,35 @@ const Index = () => {
           src="/lovable-uploads/e202e323-277e-437a-b379-3b52b950a11d.png"
           alt="ANIME Token banner with anime characters and logo"
           loading="eager"
-          className="h-[320px] w-full object-cover md:h-[420px]"
+          className="h-[360px] w-full object-cover md:h-[520px]"
         />
-        <div className="absolute inset-0 grid place-items-center px-6">
-          <div className="max-w-3xl rounded-xl border border-white/10 bg-black/40 p-6 md:p-10 backdrop-blur-md" style={{ backgroundImage: 'var(--gradient-hero)' }}>
-            <div className="flex items-center gap-4">
-              <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-12 w-12" loading="eager" />
-              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                Beyond a Token. A New Era for Anime.
-              </h1>
-            </div>
-            <p className="mt-4 text-muted-foreground md:text-lg">
-              Welcome to the official home of $ANIME, a truly community-driven project on Solana dedicated to building the #1 global hub for anime culture.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild variant="hero">
-                <a href="https://raydium.io/swap/" target="_blank" rel="noreferrer noopener">Buy $ANIME on Raydium</a>
-              </Button>
-              <Button asChild variant="glass">
-                <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
-              </Button>
+        <div className="absolute inset-0">
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+          <div className="px-6 absolute inset-x-0 bottom-6 md:bottom-10">
+            <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
+              <div className="flex items-center gap-3">
+                <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
+                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                  Beyond a Token. A New Era for Anime.
+                </h1>
+              </div>
+              <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg">
+                Welcome to the official home of $ANIME, a truly community-driven project on Solana dedicated to building the #1 global hub for anime culture.
+              </p>
+              <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button asChild variant="hero">
+                  <a href="https://raydium.io/swap/" target="_blank" rel="noreferrer noopener">Buy $ANIME on Raydium</a>
+                </Button>
+                <Button asChild variant="glass">
+                  <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <section className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-2">
+      <section className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-2 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <Card className="shadow-elevated">
           <CardHeader>
             <CardTitle>From a Powerful Idea to a Community Movement</CardTitle>
@@ -85,7 +88,7 @@ const Index = () => {
         </Card>
       </section>
 
-      <section className="mx-auto mt-16 max-w-5xl">
+      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
         <p className="mt-3 text-center text-muted-foreground">Becoming a part of the $ANIME community is easy. Follow these simple steps:</p>
         <ol className="mt-6 space-y-3 list-decimal pl-6">
@@ -100,7 +103,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-5xl text-center">
+      <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
         <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
