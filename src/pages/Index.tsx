@@ -35,7 +35,7 @@ const Index = () => {
               alt="ANIME Token hero banner 3:2 with anime characters and logo"
               loading="eager"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
           </AspectRatio>
         </div>
