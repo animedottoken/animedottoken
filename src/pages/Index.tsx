@@ -88,8 +88,8 @@ const Index = () => {
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
         <p className="mt-3 text-center text-muted-foreground">Becoming a part of the $ANIME community is easy. Follow these simple steps:</p>
         <ol className="mt-6 space-y-3 list-decimal pl-6">
-          <li><span className="font-semibold">Get a Wallet:</span> Download and set up a Solana wallet (we recommend Phantom).</li>
-          <li><span className="font-semibold">Fund Your Wallet:</span> Buy SOL on a major exchange and send it to your Phantom wallet.</li>
+          <li><span className="font-semibold">Get a Wallet:</span> Download and set up a Solana wallet — we recommend <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom</a>.</li>
+          <li><span className="font-semibold">Fund Your Wallet:</span> Buy Solana (SOL) on a major exchange (we recommend <a href="https://www.binance.com/referral/earn-together/refer-in-hotsummer/claim?hl=en&ref=GRO_20338_IALEN&utm_source=Lite_web_account" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Binance</a>) and send it to your Phantom wallet.</li>
           <li><span className="font-semibold">Go to a DEX:</span> Use Raydium or find us on DEX Screener.</li>
           <li><span className="font-semibold">Swap for $ANIME:</span> Connect your wallet, select SOL → $ANIME, and confirm the swap. Use our official contract address:</li>
         </ol>
