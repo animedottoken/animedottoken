@@ -145,9 +145,21 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             variant="outline"
             size="sm"
             onClick={() => {
-              toast.message("Thanks for helping keep the community safe.");
+              toast.message("Opening Telegram...");
               if (typeof window !== "undefined") {
-                window.open("https://t.me/AnimeDotTokenCommunity", "_blank", "noopener,noreferrer");
+                const webUrl = "https://t.me/AnimeDotTokenCommunity";
+                const deepLink = "tg://resolve?domain=AnimeDotTokenCommunity";
+                const fallback = window.setTimeout(() => {
+                  window.location.href = webUrl; // same-tab fallback
+                }, 1200);
+                const onVisibilityChange = () => {
+                  if (document.hidden) {
+                    clearTimeout(fallback);
+                    document.removeEventListener("visibilitychange", onVisibilityChange);
+                  }
+                };
+                document.addEventListener("visibilitychange", onVisibilityChange);
+                window.location.href = deepLink; // try to open app
               }
             }}
             aria-label="Report a risk"
