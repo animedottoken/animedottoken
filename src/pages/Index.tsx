@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { VerificationSection } from "@/components/VerificationSection";
+import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 
@@ -13,20 +13,6 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
-  const handleReportRisk = () => {
-    const user = 'AnimeDotToken';
-    const domain = 'gmail.com';
-    const to = `${user}@${domain}`;
-    const subject = 'Risk self-reported';
-    const body = 'Please describe what you found and include links or screenshots.';
-    const mailto = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    try {
-      window.location.href = mailto;
-    } finally {
-      navigator.clipboard?.writeText(to).catch(() => {});
-      toast.message("If your email app didn't open, we copied the address.");
-    }
-  };
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -82,7 +68,7 @@ const Index = () => {
         </Card>
       </section>
 
-      <VerificationSection onReportRisk={handleReportRisk} />
+      <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
