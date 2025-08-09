@@ -13,6 +13,21 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
+  const handleReportRisk = () => {
+    const user = 'AnimeDotToken';
+    const domain = 'gmail.com';
+    const to = `${user}@${domain}`;
+    const subject = 'Risk self-reported';
+    const body = 'Please describe what you found and include links or screenshots.';
+    const mailto = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+      window.location.href = mailto;
+    } finally {
+      navigator.clipboard?.writeText(to).catch(() => {});
+      toast.message("If your email app didn't open, we copied the address.");
+    }
+  };
+
   return (
     <main className="min-h-screen py-12 md:py-20 container">
       <Helmet>
@@ -245,10 +260,10 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    asChild
-                    aria-label="Report a risk via email"
+                    onClick={handleReportRisk}
+                    aria-label="Report a risk"
                   >
-                    <a href="mailto:AnimeDotToken@gmail.com?subject=Risk%20self-reported&body=Please%20describe%20what%20you%20found%20and%20include%20links%20or%20screenshots.">Report a risk</a>
+                    Report a risk
                   </Button>
                 </div>
               </div>
