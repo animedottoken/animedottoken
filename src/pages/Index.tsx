@@ -44,7 +44,7 @@ const Index = () => {
           </p>
           <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild variant="hero">
-              <a href="https://raydium.io/swap/" target="_blank" rel="noreferrer noopener">Buy $ANIME on Raydium</a>
+              <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">Buy $ANIME on DEX Screener</a>
             </Button>
             <Button asChild variant="glass">
               <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
