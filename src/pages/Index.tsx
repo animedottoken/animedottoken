@@ -69,7 +69,7 @@ const Index = () => {
         </div>
       </div>
 
-      <section className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-2 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <Card className="shadow-elevated">
           <CardHeader>
             <CardTitle>From a Powerful Idea to a Community Movement</CardTitle>
@@ -80,197 +80,202 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Card className="shadow-elevated">
-          <CardHeader>
-            <CardTitle>A Project You Can Trust. Verifiably.</CardTitle>
-            <CardDescription>Transparency and security are the foundations of our community. Below is a quick, human-readable audit summary.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            {/* Independently audited: move key scanners to the top */}
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm">
-                <a href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">RugCheck: Good (1/100)</a>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <a href="https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">QuickIntel: Low Risk</a>
-              </Button>
-            </div>
+      </section>
 
-            <div className="space-y-5 text-left">
-              {/* Liquidity & Burn */}
-              <div>
-                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">Liquidity &amp; Burn</h3>
-                <ul className="mt-2 space-y-2">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Total Locked Liquidity:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">100%</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Burned:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">100%</span>
-                    </span>
-                  </li>
-                </ul>
+      {/* Trust & Verification - Dedicated horizontal section */}
+      <section className="mt-12 w-full border-y bg-muted/10">
+        <div className="container mx-auto max-w-5xl py-8 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+          <Card className="shadow-elevated">
+            <CardHeader>
+              <CardTitle>A Project You Can Trust. Verifiably.</CardTitle>
+              <CardDescription>Transparency and security are the foundations of our community. Below is a quick, human-readable audit summary.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              {/* Independently audited: move key scanners to the top */}
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <a href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">RugCheck: Good (1/100)</a>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <a href="https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">QuickIntel: Low Risk</a>
+                </Button>
               </div>
 
-              {/* DexScreener Audit */}
-              <div>
-                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">DexScreener Audit (Mintable &amp; Freezable)</h3>
-                <p className="mt-2 text-sm flex flex-wrap items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-success" />
-                  <span className="inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No issues</span>
-                  <span className="mx-1">•</span>
-                  <span>
-                    Mintable:
-                    <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
-                  </span>
-                  <span className="mx-1">•</span>
-                  <span>
-                    Freezable:
-                    <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
-                  </span>
-                  <a className="ml-2 underline underline-offset-4" href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener">View</a>
-                </p>
-              </div>
+              <div className="space-y-5 text-left">
+                {/* Liquidity & Burn */}
+                <div>
+                  <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">Liquidity &amp; Burn</h3>
+                  <ul className="mt-2 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Total Locked Liquidity:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">100%</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Burned:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">100%</span>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
 
-              {/* Honeypot & QuickIntel Verification */}
-              <div>
-                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">QuickIntel Verification</h3>
-                <ul className="mt-2 space-y-2">
-                  <li className="flex items-center gap-2">
+                {/* DexScreener Audit */}
+                <div>
+                  <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">DexScreener Audit (Mintable &amp; Freezable)</h3>
+                  <p className="mt-2 text-sm flex flex-wrap items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No issues</span>
+                    <span className="mx-1">•</span>
                     <span>
-                      Honeypot Test:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Passed</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Has LP Locked or Burned:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Yes</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Verified:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Yes</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Has Delegated Token Ownership:
+                      Mintable:
                       <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
                     </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="mx-1">•</span>
                     <span>
-                      Can Mint:
+                      Freezable:
                       <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
                     </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Can Freeze Trading:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Can Update Fees/Taxes:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Is Data Changeable:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
-                    </span>
-                  </li>
-                </ul>
-                
-              </div>
+                    <a className="ml-2 underline underline-offset-4" href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener">View</a>
+                  </p>
+                </div>
 
-              {/* RugCheck Overview */}
-              <div>
-                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">RugCheck Overview</h3>
-                <ul className="mt-2 space-y-2">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Risk Analysis:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">1/100 Good</span>
-                    </span>
-                  </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-success" />
-                  <span>
-                    <span className="font-semibold">Supply:</span>
-                    <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">974 M</span>
-                  </span>
-                </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Creator Balance:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">SOLD</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Holders:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">{"> 100,000 holders"}</span>
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span>
-                      Insider Networks:
-                      <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">None detected</span>
-                    </span>
-                  </li>
-                </ul>
-                
-              </div>
+                {/* QuickIntel Verification */}
+                <div>
+                  <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">QuickIntel Verification</h3>
+                  <ul className="mt-2 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Honeypot Test:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Passed</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Has LP Locked or Burned:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Yes</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Verified:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">Yes</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Has Delegated Token Ownership:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Can Mint:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Can Freeze Trading:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Can Update Fees/Taxes:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Is Data Changeable:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No</span>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
 
-              {/* Community Treasury */}
-              <div className="pt-2">
-                <p>
-                  <span className="font-semibold">Community Treasury (Largest Holder):</span>
-                  {" "}Address <code className="rounded-md bg-secondary px-1.5 py-0.5 text-xs">HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ</code>.
-                  {" "}View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>.
-                  {" "}We are here to HOLD and provide as much stability as possible.
-                </p>
-              {/* Report Risk Note */}
-              <div className="mt-6 rounded-lg border bg-secondary/10 p-4">
-                <p className="text-sm text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
-                <div className="mt-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleReportRisk}
-                    aria-label="Report a risk"
-                  >
-                    Report a risk
-                  </Button>
+                {/* RugCheck Overview */}
+                <div>
+                  <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">RugCheck Overview</h3>
+                  <ul className="mt-2 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Risk Analysis:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">1/100 Good</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        <span className="font-semibold">Supply:</span>
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">974 M</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Creator Balance:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">SOLD</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Holders:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">{"> 100,000 holders"}</span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>
+                        Insider Networks:
+                        <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">None detected</span>
+                      </span>
+                    </li>
+                  </ul>
+
+                  {/* Community Treasury */}
+                  <div className="pt-2">
+                    <p>
+                      <span className="font-semibold">Community Treasury (Largest Holder):</span>
+                      {" "}Address <code className="rounded-md bg-secondary px-1.5 py-0.5 text-xs">HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ</code>.
+                      {" "}View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>.
+                      {" "}We are here to HOLD and provide as much stability as possible.
+                    </p>
+
+                    {/* Report Risk Note */}
+                    <div className="mt-6 rounded-lg border bg-secondary/10 p-4">
+                      <p className="text-sm text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
+                      <div className="mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleReportRisk}
+                          aria-label="Report a risk"
+                        >
+                          Report a risk
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
