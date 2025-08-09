@@ -74,7 +74,7 @@ const Index = () => {
               <li><span className="font-semibold">Creator Wallet Emptied:</span> The original creator holds 0 tokens and has sold their entire supply.</li>
               <li><span className="font-semibold">99.99% Liquidity Locked:</span> The primary liquidity pool is locked.</li>
               <li><span className="font-semibold">Independently Audited:</span> Confirmed secure by community safety tools.</li>
-              <li><span className="font-semibold">Community Treasury (Largest Holder):</span> Address <code className="rounded-md bg-secondary px-1.5 py-0.5 text-xs">HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ</code>. View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>. We are here to HODL.</li>
+              <li><span className="font-semibold">Community Treasury (Largest Holder):</span> Address <code className="rounded-md bg-secondary px-1.5 py-0.5 text-xs">HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ</code>. View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>. We are here to HOLD and provide as much stability as possible.</li>
             </ul>
             <div className="space-y-2">
               <a className="underline underline-offset-4" href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">View RugCheck Report (Good Score)</a>
