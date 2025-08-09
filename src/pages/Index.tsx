@@ -30,31 +30,28 @@ const Index = () => {
           loading="eager"
           className="h-[360px] w-full object-cover md:h-[520px]"
         />
-        <div className="absolute inset-0">
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-          <div className="px-6 absolute inset-x-0 bottom-6 md:bottom-10">
-            <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
-              <div className="flex items-center gap-3">
-                <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
-                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                  Beyond a Token. A New Era for Anime.
-                </h1>
-              </div>
-              <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg">
-                Welcome to the official home of $ANIME, a truly community-driven project on Solana dedicated to building the #1 global hub for anime culture.
-              </p>
-              <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
-                <Button asChild variant="hero">
-                  <a href="https://raydium.io/swap/" target="_blank" rel="noreferrer noopener">Buy $ANIME on Raydium</a>
-                </Button>
-                <Button asChild variant="glass">
-                  <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
-                </Button>
-              </div>
-            </div>
+      </header>
+      <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
+        <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
+          <div className="flex items-center gap-3">
+            <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
+            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+              Beyond a Token. A New Era for Anime.
+            </h1>
+          </div>
+          <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg">
+            Welcome to the official home of $ANIME, a truly community-driven project on Solana dedicated to building the #1 global hub for anime culture.
+          </p>
+          <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button asChild variant="hero">
+              <a href="https://raydium.io/swap/" target="_blank" rel="noreferrer noopener">Buy $ANIME on Raydium</a>
+            </Button>
+            <Button asChild variant="glass">
+              <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
+            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <section className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-2 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <Card className="shadow-elevated">
