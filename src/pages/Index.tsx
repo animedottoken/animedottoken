@@ -47,7 +47,7 @@ const Index = () => {
               <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">Buy $ANIME on DEX Screener</a>
             </Button>
             <Button asChild variant="glass">
-              <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Join our Telegram</a>
+              <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener">Follow us on X (Twitter)</a>
             </Button>
           </div>
         </div>
