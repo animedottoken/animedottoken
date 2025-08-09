@@ -68,7 +68,7 @@ const Index = () => {
         <Card className="shadow-elevated">
           <CardHeader>
             <CardTitle>A Project You Can Trust. Verifiably.</CardTitle>
-            <CardDescription>Transparency and security are the foundations of our community.</CardDescription>
+            <CardDescription>Transparency and security are the foundations of our community. Below is a quick, human-readable audit summary.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             {/* Independently audited: move key scanners to the top */}
@@ -84,7 +84,7 @@ const Index = () => {
             <div className="space-y-5 text-left">
               {/* Liquidity & Burn */}
               <div>
-                <h4 className="font-semibold">Liquidity & Burn</h4>
+                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">Liquidity &amp; Burn</h3>
                 <ul className="mt-2 space-y-2">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-success" />
@@ -105,7 +105,7 @@ const Index = () => {
 
               {/* DexScreener Audit */}
               <div>
-                <h4 className="font-semibold">DexScreener Audit</h4>
+                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">DexScreener Audit (Mintable &amp; Freezable)</h3>
                 <p className="mt-2 text-sm flex flex-wrap items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-success" />
                   <span className="inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">No issues</span>
@@ -125,7 +125,7 @@ const Index = () => {
 
               {/* Honeypot & QuickIntel Verification */}
               <div>
-                <h4 className="font-semibold">Honeypot & QuickIntel Verification</h4>
+                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">QuickIntel Verification</h3>
                 <ul className="mt-2 space-y-2">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-success" />
@@ -184,12 +184,12 @@ const Index = () => {
                     </span>
                   </li>
                 </ul>
-                <a className="mt-2 inline-block underline underline-offset-4" href="https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">Proof on QuickIntel</a>
+                
               </div>
 
               {/* RugCheck Overview */}
               <div>
-                <h4 className="font-semibold">RugCheck Overview</h4>
+                <h3 className="text-base md:text-lg font-semibold tracking-tight border-l-2 border-primary/40 pl-3">RugCheck Overview</h3>
                 <ul className="mt-2 space-y-2">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-success" />
@@ -198,9 +198,13 @@ const Index = () => {
                       <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">1/100 Good</span>
                     </span>
                   </li>
-                  <li>
-                    <span className="font-semibold">Supply:</span> 974 M
-                  </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-success" />
+                  <span>
+                    <span className="font-semibold">Supply:</span>
+                    <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-success">974 M</span>
+                  </span>
+                </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-success" />
                     <span>
@@ -223,7 +227,7 @@ const Index = () => {
                     </span>
                   </li>
                 </ul>
-                <a className="mt-2 inline-block underline underline-offset-4" href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">View RugCheck Report</a>
+                
               </div>
 
               {/* Community Treasury */}
@@ -234,7 +238,21 @@ const Index = () => {
                   {" "}View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>.
                   {" "}We are here to HOLD and provide as much stability as possible.
                 </p>
+              {/* Report Risk Note */}
+              <div className="mt-6 rounded-lg border bg-secondary/10 p-4">
+                <p className="text-sm text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
+                <div className="mt-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    aria-label="Report a risk via email"
+                  >
+                    <a href="mailto:AnimeDotToken@gmail.com?subject=Risk%20self-reported&body=Please%20describe%20what%20you%20found%20and%20include%20links%20or%20screenshots.">Report a risk</a>
+                  </Button>
+                </div>
               </div>
+            </div>
             </div>
           </CardContent>
         </Card>
