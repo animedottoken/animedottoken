@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ExternalLink, Flame, ShieldCheck, Wallet } from "lucide-react";
-
+import { ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 interface TrustSecuritySectionProps {
   tokenAddress: string;
   creatorWalletUrl: string;
@@ -21,95 +21,114 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* 100% Liquidity Burned */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Block 1: Liquidity Status */}
         <Card className="h-full">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-success" aria-hidden />
-              100% Liquidity Burned
+            <CardTitle className="flex items-center gap-3">
+              <span aria-hidden className="text-2xl">🔥</span>
+              100% LP Burned
             </CardTitle>
-            <CardDescription>Provider tokens sent to a dead address — liquidity is permanently locked.</CardDescription>
+            <CardDescription>
+              The provider tokens for the liquidity pool were sent to a dead address. This makes liquidity withdrawal impossible.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <span>Pooled liquidity cannot be withdrawn by anyone.</span>
-            </div>
             <Button asChild variant="link" className="px-0">
               <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="View LP burn proof on QuickIntel">
-                View proof on QuickIntel <ExternalLink className="h-3.5 w-3.5" />
+                View proof <ExternalLink className="h-3.5 w-3.5" />
               </a>
             </Button>
           </CardContent>
         </Card>
 
-        {/* Creator Wallet Emptied */}
+        {/* Block 2: Creator's Stake */}
         <Card className="h-full">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-success" aria-hidden />
-              Creator Wallet Emptied
+            <CardTitle className="flex items-center gap-3">
+              <span aria-hidden className="text-2xl">🛡️</span>
+              Creator Holds 0 Tokens
             </CardTitle>
-            <CardDescription>The original creator holds 0 tokens — fully community owned.</CardDescription>
+            <CardDescription>
+              The original creator's wallet holds a functional zero balance of $ANIME tokens — fully community owned.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <span>Ownership is verifiably decentralized.</span>
-            </div>
             <Button asChild variant="link" className="px-0">
               <a href={creatorWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open creator wallet on Solscan">
-                View creator wallet on Solscan <ExternalLink className="h-3.5 w-3.5" />
+                View creator wallet <ExternalLink className="h-3.5 w-3.5" />
               </a>
             </Button>
           </CardContent>
         </Card>
 
-        {/* Secure & Audited Contract */}
+        {/* Block 3: Third-Party Audits (logos clickable) */}
         <Card className="h-full">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-success" aria-hidden />
-              Secure & Audited Contract
-            </CardTitle>
-            <CardDescription>No malicious functions. Honeypot tests passed.</CardDescription>
+            <CardTitle>Audited & Verified</CardTitle>
+            <CardDescription>Independently audited by top community safety tools.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <span>Verified by top community safety tools:</span>
+            <div className="flex flex-wrap items-center gap-4">
+              <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report" className="inline-flex items-center">
+                <img src="/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png" alt="QuickIntel security audit for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
+              </a>
+              <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report" className="inline-flex items-center">
+                <img src="/lovable-uploads/ea27ee81-21f8-4604-823c-5c7cf1789d5b.png" alt="RugCheck risk report for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
+              </a>
+              <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report" className="inline-flex items-center">
+                <img src="/lovable-uploads/a00a3967-7e07-4a74-860b-d830d228a334.png" alt="GoPlus Labs token security report for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
+              </a>
             </div>
-            <ul className="ml-0 list-none space-y-1">
-              <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-success" /> QuickIntel (Honeypot: Passed)
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-success" /> RugCheck (Risk Score: Good, Creator balance: Sold)
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-success" /> GoPlus Labs (Risky 0, Attention 0)
-              </li>
-            </ul>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div>
               <Button asChild variant="link" className="px-0">
                 <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report">
-                  QuickIntel report <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
-              <Button asChild variant="link" className="px-0">
-                <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report">
-                  RugCheck report <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
-              <Button asChild variant="link" className="px-0">
-                <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report">
-                  GoPlus Labs report <ExternalLink className="h-3.5 w-3.5" />
+                  View all reports <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Block 4: Contract Security */}
+        <Card className="h-full">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <span aria-hidden className="text-2xl">✅</span>
+              Safe Contract Functions
+            </CardTitle>
+            <CardDescription>
+              No dangerous functions: cannot mint new tokens, freeze trading, or introduce new transaction taxes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <Button asChild variant="link" className="px-0">
+              <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open contract function analysis on QuickIntel">
+                View analysis <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Community risk reporting CTA */}
+      <div className="mx-auto mt-6 max-w-5xl rounded-lg border bg-secondary/10 p-4">
+        <p className="text-sm text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
+        <div className="mt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              toast.message("Thanks for helping keep the community safe.");
+              if (typeof window !== "undefined") {
+                window.open("https://t.me/AnimeDotTokenCommunity", "_blank", "noopener,noreferrer");
+              }
+            }}
+            aria-label="Report a risk"
+          >
+            Report a risk
+          </Button>
+        </div>
       </div>
     </section>
   );
