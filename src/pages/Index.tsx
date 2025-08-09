@@ -28,8 +28,8 @@ const Index = () => {
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <img
-          src="/lovable-uploads/e202e323-277e-437a-b379-3b52b950a11d.png"
-          alt="ANIME Token hero banner with anime characters and logo"
+          src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
+          alt="ANIME.TOKEN 3:2 hero banner with anime characters and logo"
           loading="eager"
           decoding="async"
           className="w-full h-auto block"
