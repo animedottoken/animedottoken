@@ -100,7 +100,7 @@ const Index = () => {
         </div>
         <h2 id="ambassador-heading" className="mt-6 text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
         <p className="mt-3 text-muted-foreground md:max-w-3xl mx-auto">
-          Our project is growing, and we are looking for passionate anime fans to join our core team. Help us manage our community platforms and shape the future of $ANIME. This is a valued role with real rewards.
+          Our project is growing, and we are looking for passionate anime fans to join our core team. Help us manage our community platforms and shape the future of $ANIME.
         </p>
         <div className="mt-6">
           <Button asChild variant="hero">
