@@ -97,7 +97,7 @@ const Index = () => {
       </section>
 
       <footer className="mx-auto mt-16 max-w-5xl border-t pt-6 text-center text-sm text-muted-foreground">
-        <p>© 2025 AnimeDotToken | All Rights Reserved</p>
+        <p>© 2025 ANIME.TOKEN | All Rights Reserved</p>
         <p className="mt-1">Official Contract: <code className="rounded-md bg-secondary px-2 py-0.5 text-xs">{CONTRACT}</code></p>
         <p className="mt-2">Disclaimer: Investing in cryptocurrency involves risk. This is not financial advice.</p>
       </footer>
