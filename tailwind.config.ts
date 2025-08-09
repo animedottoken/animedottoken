@@ -89,6 +89,13 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			fontFamily: {
+				sans: ['var(--font-sans)']
+			},
+			boxShadow: {
+				elevated: '0 10px 30px -10px hsl(var(--primary) / 0.35)',
+				glow: '0 0 0 1px hsl(var(--primary) / 0.3), 0 8px 30px hsl(var(--primary) / 0.25)'
 			}
 		}
 	},
