@@ -90,7 +90,7 @@ const Index = () => {
         <ol className="mt-6 space-y-3 list-decimal pl-6">
           <li><span className="font-semibold">Get a Wallet:</span> Download and set up a Solana wallet — we recommend <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom</a>.</li>
           <li><span className="font-semibold">Fund Your Wallet:</span> Buy Solana (SOL) on a major exchange (we recommend <a href="https://www.binance.com/referral/earn-together/refer-in-hotsummer/claim?hl=en&ref=GRO_20338_IALEN&utm_source=Lite_web_account" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Binance</a>) and send it to your Phantom wallet.</li>
-          <li><span className="font-semibold">Go to a DEX:</span> Use Raydium or find us on <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">DEX Screener</a>.</li>
+          <li><span className="font-semibold">Go to a DEX:</span> Use Raydium or find us on <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">DEX Screener</a> (recommended).</li>
           <li><span className="font-semibold">Swap for $ANIME:</span> Connect your wallet, select SOL → $ANIME, and confirm the swap. Use our official contract address:</li>
         </ol>
         <div className="mt-4 flex flex-wrap items-center gap-2">
