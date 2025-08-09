@@ -27,17 +27,13 @@ const Index = () => {
       </Helmet>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
-        <picture className="block">
-          <source media="(min-width: 1024px)" srcSet="/lovable-uploads/e202e323-277e-437a-b379-3b52b950a11d.png" />
-          <img
-            src="/lovable-uploads/6d545a96-fa07-41fb-8c72-fed7cbde07c5.png"
-            alt="ANIME Token hero banner with anime characters and logo"
-            loading="eager"
-            decoding="async"
-            sizes="(min-width: 1024px) 1024px, 100vw"
-            className="w-full h-auto block"
-          />
-        </picture>
+        <img
+          src="/lovable-uploads/e202e323-277e-437a-b379-3b52b950a11d.png"
+          alt="ANIME Token hero banner with anime characters and logo"
+          loading="eager"
+          decoding="async"
+          className="w-full h-auto block"
+        />
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
         <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
