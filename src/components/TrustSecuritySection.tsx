@@ -62,30 +62,54 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           </CardContent>
         </Card>
 
-        {/* Block 3: Third-Party Audits (logos clickable) */}
+        {/* Block 3: Third-Party Audits (logos clickable + text + per-site links) */}
         <Card className="h-full">
           <CardHeader>
             <CardTitle>Audited & Verified</CardTitle>
             <CardDescription>Independently audited by top community safety tools.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex flex-wrap items-center gap-4">
-              <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report" className="inline-flex items-center">
+          <CardContent className="space-y-5 text-sm">
+            {/* QuickIntel */}
+            <div className="flex items-start gap-3">
+              <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report" className="inline-flex items-center shrink-0">
                 <img src="/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png" alt="QuickIntel security audit for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
               </a>
-              <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report" className="inline-flex items-center">
+              <div className="flex-1">
+                <p className="text-muted-foreground">QuickIntel: Honeypot tests passed; LP lock/burn verified; no malicious transfer traps detected.</p>
+                <Button asChild variant="link" className="px-0">
+                  <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report">
+                    View report <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+            {/* RugCheck */}
+            <div className="flex items-start gap-3">
+              <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report" className="inline-flex items-center shrink-0">
                 <img src="/lovable-uploads/ea27ee81-21f8-4604-823c-5c7cf1789d5b.png" alt="RugCheck risk report for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
               </a>
-              <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report" className="inline-flex items-center">
+              <div className="flex-1">
+                <p className="text-muted-foreground">RugCheck: Good risk score; creator balance sold; no insider networks detected.</p>
+                <Button asChild variant="link" className="px-0">
+                  <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report">
+                    View report <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+            {/* GoPlus Labs */}
+            <div className="flex items-start gap-3">
+              <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report" className="inline-flex items-center shrink-0">
                 <img src="/lovable-uploads/a00a3967-7e07-4a74-860b-d830d228a334.png" alt="GoPlus Labs token security report for ANIME token" loading="lazy" className="h-8 w-auto object-contain" />
               </a>
-            </div>
-            <div>
-              <Button asChild variant="link" className="px-0">
-                <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report">
-                  View all reports <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
+              <div className="flex-1">
+                <p className="text-muted-foreground">GoPlus: 0 risky items; 0 attention items; non-upgradable fees; no mint/freeze functions.</p>
+                <Button asChild variant="link" className="px-0">
+                  <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report">
+                    View report <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
