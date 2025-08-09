@@ -64,7 +64,10 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
 
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>Audited & Verified</CardTitle>
+            <CardTitle className="flex items-center gap-3">
+              <span aria-hidden className="text-2xl">🔎</span>
+              Audited & Verified
+            </CardTitle>
             <CardDescription>Independently audited by three top community safety tools.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 text-sm">
