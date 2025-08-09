@@ -70,17 +70,34 @@ const Index = () => {
             <CardDescription>Transparency and security are the foundations of our community.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
+            {/* Independently audited: move key scanners to the top */}
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" size="sm">
+                <a href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">RugCheck: Good (1/100)</a>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <a href="https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">QuickIntel: Low Risk</a>
+              </Button>
+            </div>
+
             <ul className="list-disc pl-5 space-y-2 text-left">
-              <li><span className="font-semibold">Creator Wallet Emptied:</span> The original creator holds 0 tokens and has sold their entire supply.</li>
-              <li><span className="font-semibold">99.99% Liquidity Locked:</span> The primary liquidity pool is locked.</li>
-              <li><span className="font-semibold">Independently Audited:</span> Confirmed secure by community safety tools.</li>
+              <li><span className="font-semibold">Total Locked Liquidity:</span> 100%.</li>
+              <li><span className="font-semibold">Burned:</span> 100%.</li>
+              <li>
+                <span className="font-semibold">DexScreener Audit:</span> No issues.{' '}
+                <a className="underline underline-offset-4" href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener">View</a>
+              </li>
+              <li>
+                <span className="font-semibold">Honeypot Test:</span> Passed{' '}
+                <span className="ml-1 inline-flex items-center rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-success">Passed</span>
+              </li>
+              <li><span className="font-semibold">Mintable:</span> No</li>
+              <li><span className="font-semibold">Freezable:</span> No</li>
+              <li><span className="font-semibold">RugCheck Risk analysis:</span> 1/100 Good</li>
+              <li><span className="font-semibold">Creator balance:</span> Sold</li>
+              <li><span className="font-semibold">Holders:</span> {"> 100,000"}</li>
               <li><span className="font-semibold">Community Treasury (Largest Holder):</span> Address <code className="rounded-md bg-secondary px-1.5 py-0.5 text-xs">HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ</code>. View on <a href="https://solscan.io/account/HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Solscan</a>. We are here to HOLD and provide as much stability as possible.</li>
             </ul>
-            <div className="space-y-2">
-              <a className="underline underline-offset-4" href="https://rugcheck.xyz/tokens/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">View RugCheck Report (Good Score)</a>
-              <br />
-              <a className="underline underline-offset-4" href="https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump" target="_blank" rel="noreferrer noopener">View QuickIntel Report (Low Risk)</a>
-            </div>
           </CardContent>
         </Card>
       </section>
