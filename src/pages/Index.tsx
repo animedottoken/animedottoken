@@ -87,8 +87,8 @@ const Index = () => {
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these simple steps:</p>
         <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
-            <span className="font-semibold">Step 1: Get the Phantom Wallet</span>
-            <p className="mt-1 text-muted-foreground">Phantom is a secure, user-friendly cryptocurrency wallet that makes it easy to access the blockchain ecosystem. <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>.</p>
+            <span className="font-semibold">Step 1: Get a Digital Wallet</span>
+            <p className="mt-1 text-muted-foreground">You'll need a Solana-compatible wallet to hold and swap tokens. From our own experience, we recommend Phantom for its simplicity and security. <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>.</p>
           </li>
           <li>
             <span className="font-semibold">Step 2: Create Your Wallet</span>
