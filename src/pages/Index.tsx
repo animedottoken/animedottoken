@@ -136,24 +136,22 @@ const Index = () => {
           </li>
           <li>
             <span className="font-semibold">Step 4: Swap for $ANIME</span>
-            <p className="mt-1 text-muted-foreground">Phantom's in-app swapper makes it easy to swap tokens within the same blockchain (like Solana) or cross-chain (for example, from Solana to Ethereum). It routes your trade through one or more decentralized exchanges (DEXs), called swap providers, to find competitive pricing and liquidity.</p>
-            <p className="mt-2 text-muted-foreground font-medium">How:</p>
-            <ul className="mt-1 list-disc pl-5 text-muted-foreground">
-              <li>Go to the Swap tab — your starting point for both swaps and transfers.</li>
-              <li>Choose the network and token you're swapping from. For low-liquidity or newly launched tokens (e.g., memecoins), consider increasing your slippage in Swap Settings.</li>
-              <li>Choose the network and token you want to swap to. Ensure the token is trusted; unverified or suspicious tokens may be spam and can block your transaction.</li>
-              <li>Enter the amount to swap. You'll see a quote with the estimated amount you'll receive after fees.</li>
+            <p className="mt-1 text-muted-foreground">Swap to $ANIME directly in Phantom on Solana.</p>
+            <ol className="mt-2 list-decimal pl-5 text-muted-foreground">
+              <li>Open Phantom and go to the Swap tab.</li>
+              <li>Under Network, select Solana. In From, choose the token you funded with ($SOL or $USDC).</li>
               <li>
-                Check gas fees:
-                <ul className="mt-1 list-disc pl-5">
-                  <li>Same-network swaps: you'll need gas on that network (e.g., ETH on Ethereum).</li>
-                  <li>Cross-chain swaps: you'll need gas on both the origin and destination networks (e.g., ETH on Ethereum and SOL on Solana).</li>
-                </ul>
+                In To, paste the official $ANIME contract address:
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+                  <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+                </div>
               </li>
-              <li>Review and confirm your order, then select Swap now to submit the transaction.</li>
-              <li>View the transaction status in the Activity tab.</li>
-            </ul>
-            <p className="mt-2 text-muted-foreground text-sm">Help: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
+              <li>Enter the amount, review the quote (including fees), and adjust slippage in Swap Settings if needed.</li>
+              <li>Select Swap now and approve the transaction.</li>
+              <li>Track the status in Activity; $ANIME will appear in your Tokens list.</li>
+            </ol>
+            <p className="mt-2 text-muted-foreground text-sm">Need more details? See Phantom's guide: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
           </li>
         </ol>
 
