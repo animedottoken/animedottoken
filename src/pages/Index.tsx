@@ -276,6 +276,15 @@ const Index = () => {
               Open Tweet Composer
             </a>
           </Button>
+          <Button asChild variant="glass">
+            <a
+              href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Open Telegram
+            </a>
+          </Button>
         </div>
       </section>
 
