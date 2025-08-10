@@ -98,15 +98,6 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <picture>
-            <source
-              type="image/webp"
-              srcSet="
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=640&output=webp&q=80 640w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1024&output=webp&q=80 1024w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1536&output=webp&q=80 1536w
-              "
-              sizes="(min-width: 1024px) 1024px, 100vw"
-            />
             <img
               src="https://animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
@@ -235,15 +226,6 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
-            <source
-              type="image/webp"
-              srcSet="
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=480&output=webp&q=80 480w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=768&output=webp&q=80 768w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=1024&output=webp&q=80 1024w
-              "
-              sizes="(min-width: 768px) 768px, 100vw"
-            />
             <img
               src="https://animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
               alt="Congratulations — Proud Anime Society Member poster"
@@ -381,15 +363,6 @@ const Index = () => {
         <div className="mx-auto mt-4 max-w-md overflow-hidden rounded-lg border bg-card shadow-glow">
           <AspectRatio ratio={3 / 2}>
             <picture>
-              <source
-                type="image/webp"
-                srcSet="
-                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=400&output=webp&q=80 400w,
-                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=640&output=webp&q=80 640w,
-                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=768&output=webp&q=80 768w
-                "
-                sizes="(min-width: 768px) 384px, 90vw"
-              />
               <img
                 src="https://animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
                 alt="Become an Ambassador – ANIME.TOKEN recruitment poster calling for the Anime Army"
