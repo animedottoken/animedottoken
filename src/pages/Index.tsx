@@ -155,88 +155,110 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
-        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these simple steps:</p>
+        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these 4 simple steps:</p>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 text-sm text-muted-foreground">
           <div className="rounded-md border bg-secondary/10 px-3 py-2">1. Wallet</div>
           <div className="rounded-md border bg-secondary/10 px-3 py-2">2. Create</div>
           <div className="rounded-md border bg-secondary/10 px-3 py-2">3. Fund</div>
           <div className="rounded-md border bg-secondary/10 px-3 py-2">4. Swap</div>
         </div>
-        <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
-          <CollapsibleTrigger asChild>
-            <Button variant="link" className="mt-2 px-0">{buyOpen ? "Hide steps" : "Show steps"}</Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <ol className="mt-6 space-y-5 list-decimal pl-6">
+        <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
-            <span className="font-semibold">Step 1: Get a Digital Wallet</span>
-            <div className="mt-2 flex items-center gap-3">
-              <img
-                src="/lovable-uploads/504c8ec2-905a-47f0-8aba-359f7b9907c6.png"
-                alt="Phantom wallet logo"
-                loading="lazy"
-                decoding="async"
-                className="h-6 w-auto"
-              />
-              <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>
-            </div>
-            <p className="mt-1 text-muted-foreground">Install Phantom — our recommended Solana wallet for $ANIME.</p>
-            <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
             <Collapsible>
-              <CollapsibleTrigger asChild>
-                <Button variant="link" size="sm" className="px-0">Read more</Button>
-              </CollapsibleTrigger>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                </CollapsibleTrigger>
+              </div>
               <CollapsibleContent>
+                <div className="mt-2 flex items-center gap-3">
+                  <img
+                    src="/lovable-uploads/504c8ec2-905a-47f0-8aba-359f7b9907c6.png"
+                    alt="Phantom wallet logo"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-6 w-auto"
+                  />
+                  <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>
+                </div>
+                <p className="mt-1 text-muted-foreground">Install Phantom — our recommended Solana wallet for $ANIME.</p>
+                <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
                 <p className="mt-2 text-muted-foreground">Phantom is an app that serves as a secure and user-friendly cryptocurrency wallet. It allows you to create and manage digital wallets across multiple blockchains like Solana, Ethereum, and Polygon, all in one place. Designed to be intuitive for beginners and powerful for experienced users, Phantom makes it easy to explore and engage with the decentralized ecosystem while keeping your assets safe.</p>
               </CollapsibleContent>
             </Collapsible>
           </li>
           <li>
-            <span className="font-semibold">Step 2: Create Your Wallet</span>
-            <p className="mt-1 text-muted-foreground">
-              When creating your wallet, you have two options: a quick and convenient seedless login, or the traditional secret recovery phrase for full self-custody.
-            </p>
-            <ul className="mt-2 list-disc pl-5 text-muted-foreground">
-              <li><span className="font-medium">Recommended (Seedless Login):</span> Use your Google or Apple account and a PIN code for the quickest and easiest setup.</li>
-              <li><span className="font-medium">Alternative (Secret Recovery Phrase):</span> Use the traditional 12-word recovery phrase method.</li>
-            </ul>
-            <p className="mt-1 text-muted-foreground text-sm">Need step-by-step instructions? See Phantom’s guide: <a href="https://help.phantom.com/hc/en-us/articles/8071074929043-How-to-create-a-new-Phantom-wallet" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to create a new Phantom wallet</a>.</p>
+            <Collapsible>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">Step 2: Create Your Wallet</span>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                </CollapsibleTrigger>
+              </div>
+              <CollapsibleContent>
+                <p className="mt-1 text-muted-foreground">
+                  When creating your wallet, you have two options: a quick and convenient seedless login, or the traditional secret recovery phrase for full self-custody.
+                </p>
+                <ul className="mt-2 list-disc pl-5 text-muted-foreground">
+                  <li><span className="font-medium">Recommended (Seedless Login):</span> Use your Google or Apple account and a PIN code for the quickest and easiest setup.</li>
+                  <li><span className="font-medium">Alternative (Secret Recovery Phrase):</span> Use the traditional 12-word recovery phrase method.</li>
+                </ul>
+                <p className="mt-1 text-muted-foreground text-sm">Need step-by-step instructions? See Phantom’s guide: <a href="https://help.phantom.com/hc/en-us/articles/8071074929043-How-to-create-a-new-Phantom-wallet" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to create a new Phantom wallet</a>.</p>
+              </CollapsibleContent>
+            </Collapsible>
           </li>
           <li>
-            <span className="font-semibold">Step 3: Fund Your Wallet</span>
-            <p className="mt-1 text-muted-foreground">To start using Phantom, add cryptocurrency to your wallet.</p>
-            <p className="mt-1 text-muted-foreground">We recommend using $SOL (Solana — the blockchain $ANIME runs on) or $USDC (USD-pegged stablecoin).</p>
-            <ul className="mt-2 list-disc pl-5 text-muted-foreground">
-              <li>
-                <span className="font-medium">Transfer from another wallet or exchange</span>. <a href="https://help.phantom.com/hc/en-us/articles/4406393831187-How-to-deposit-crypto-into-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Deposit guide</a>.
-              </li>
-              <li>
-                <span className="font-medium">Buy directly in Phantom</span>. <a href="https://help.phantom.com/hc/en-us/articles/4406543783571-How-to-buy-crypto-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Buy guide</a>.
-              </li>
-            </ul>
+            <Collapsible>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">Step 3: Fund Your Wallet</span>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                </CollapsibleTrigger>
+              </div>
+              <CollapsibleContent>
+                <p className="mt-1 text-muted-foreground">To start using Phantom, add cryptocurrency to your wallet.</p>
+                <p className="mt-1 text-muted-foreground">We recommend using $SOL (Solana — the blockchain $ANIME runs on) or $USDC (USD-pegged stablecoin).</p>
+                <ul className="mt-2 list-disc pl-5 text-muted-foreground">
+                  <li>
+                    <span className="font-medium">Transfer from another wallet or exchange</span>. <a href="https://help.phantom.com/hc/en-us/articles/4406393831187-How-to-deposit-crypto-into-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Deposit guide</a>.
+                  </li>
+                  <li>
+                    <span className="font-medium">Buy directly in Phantom</span>. <a href="https://help.phantom.com/hc/en-us/articles/4406543783571-How-to-buy-crypto-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Buy guide</a>.
+                  </li>
+                </ul>
+              </CollapsibleContent>
+            </Collapsible>
           </li>
           <li>
-            <span className="font-semibold">Step 4: Swap for $ANIME</span>
-            <p className="mt-1 text-muted-foreground">Swap to $ANIME directly in Phantom on Solana.</p>
-            <ol className="mt-2 list-decimal pl-5 text-muted-foreground">
-              <li>Open Phantom and go to the Swap tab.</li>
-              <li>Under Network, select Solana. In From, choose the token you funded with ($SOL or $USDC).</li>
-              <li>
-                In To, paste the official $ANIME contract address:
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
-                  <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
-                </div>
-              </li>
-              <li>Enter the amount, review the quote (including fees), and adjust slippage in Swap Settings if needed.</li>
-              <li>Select Swap now and approve the transaction.</li>
-              <li>Track the status in Activity; $ANIME will appear in your Tokens list.</li>
-            </ol>
-            <p className="mt-2 text-muted-foreground text-sm">Need more details? See Phantom's guide: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
+            <Collapsible>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">Step 4: Swap for $ANIME</span>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                </CollapsibleTrigger>
+              </div>
+              <CollapsibleContent>
+                <p className="mt-1 text-muted-foreground">Swap to $ANIME directly in Phantom on Solana.</p>
+                <ol className="mt-2 list-decimal pl-5 text-muted-foreground">
+                  <li>Open Phantom and go to the Swap tab.</li>
+                  <li>Under Network, select Solana. In From, choose the token you funded with ($SOL or $USDC).</li>
+                  <li>
+                    In To, paste the official $ANIME contract address:
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+                      <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+                    </div>
+                  </li>
+                  <li>Enter the amount, review the quote (including fees), and adjust slippage in Swap Settings if needed.</li>
+                  <li>Select Swap now and approve the transaction.</li>
+                  <li>Track the status in Activity; $ANIME will appear in your Tokens list.</li>
+                </ol>
+                <p className="mt-2 text-muted-foreground text-sm">Need more details? See Phantom's guide: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
+              </CollapsibleContent>
+            </Collapsible>
           </li>
         </ol>
-        </CollapsibleContent>
-        </Collapsible>
 
         <div className="mt-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
