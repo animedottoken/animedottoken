@@ -47,7 +47,13 @@ const Index = () => {
 
   const copyForTikTok = async () => {
     await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
-    toast.success("Copied for TikTok — open the TikTok app and paste.");
+    toast("Copied for TikTok", {
+      description: "Paste the text into your post.",
+      action: {
+        label: "Open TikTok",
+        onClick: () => window.open("https://www.tiktok.com/upload", "_blank"),
+      },
+    });
   };
 
 
