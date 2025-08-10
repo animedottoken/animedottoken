@@ -63,7 +63,11 @@ const Index = () => {
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
-
+  const [step1Open, setStep1Open] = useState(false);
+  const [step2Open, setStep2Open] = useState(false);
+  const [step3Open, setStep3Open] = useState(false);
+  const [step4Open, setStep4Open] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
   // Promo images for social sharing (downloads use SEO-friendly filenames)
   const promoImages = [
     { src: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png", filename: "anime-token-characters-logo-banner.png", alt: "ANIME Token characters banner with logo" },
@@ -210,11 +214,11 @@ const Index = () => {
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these 4 simple steps:</p>
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
-            <Collapsible>
+            <Collapsible open={step1Open} onOpenChange={setStep1Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step1Open ? "Hide details" : "Show details"}</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -235,11 +239,11 @@ const Index = () => {
             </Collapsible>
           </li>
           <li>
-            <Collapsible>
+            <Collapsible open={step2Open} onOpenChange={setStep2Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step2Open ? "Hide details" : "Show details"}</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -255,11 +259,11 @@ const Index = () => {
             </Collapsible>
           </li>
           <li>
-            <Collapsible>
+            <Collapsible open={step3Open} onOpenChange={setStep3Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 3: Fund Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step3Open ? "Hide details" : "Show details"}</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -277,11 +281,11 @@ const Index = () => {
             </Collapsible>
           </li>
           <li>
-            <Collapsible>
+            <Collapsible open={step4Open} onOpenChange={setStep4Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 4: Swap for $ANIME</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step4Open ? "Hide details" : "Show details"}</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -415,9 +419,9 @@ const Index = () => {
             </li>
           </ul>
 
-          <Collapsible className="mt-2">
+          <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary text-xs">More questions? See all answers</Button>
+              <Button variant="link" size="sm" className="px-0 text-primary text-xs">{faqOpen ? "Hide all answers" : "See all answers"}</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">
