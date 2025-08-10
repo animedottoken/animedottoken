@@ -203,6 +203,42 @@ const Index = () => {
           </li>
         </ol>
 
+        <div className="mt-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
+          <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
+            <img
+              src="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png"
+              alt="Proud Member of ANIME ARMY poster"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+          <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
+          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild variant="glass">
+              <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiX className="h-4 w-4" aria-hidden="true" />
+                Share on X/Twitter
+              </a>
+            </Button>
+            <Button asChild variant="glass">
+              <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiTelegram className="h-4 w-4" aria-hidden="true" />
+                Share on Telegram
+              </a>
+            </Button>
+            <Button variant="glass" onClick={copyForTikTok}>
+              <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for TikTok
+            </Button>
+            <Button variant="glass" onClick={copyForDiscord}>
+              <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for Discord
+            </Button>
+          </div>
+        </div>
+
         <section className="mt-8">
           <h3 className="text-lg font-semibold">FAQ</h3>
           <ul className="mt-3 space-y-4">
@@ -239,41 +275,6 @@ const Index = () => {
           ]
         })}</script>
 
-        <div className="mt-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
-          <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
-            <img
-              src="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png"
-              alt="Proud Member of ANIME ARMY poster"
-              loading="lazy"
-              decoding="async"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
-          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild variant="glass">
-              <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                <SiX className="h-4 w-4" aria-hidden="true" />
-                Share on X/Twitter
-              </a>
-            </Button>
-            <Button asChild variant="glass">
-              <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                <SiTelegram className="h-4 w-4" aria-hidden="true" />
-                Share on Telegram
-              </a>
-            </Button>
-            <Button variant="glass" onClick={copyForTikTok}>
-              <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
-              Copy for TikTok
-            </Button>
-            <Button variant="glass" onClick={copyForDiscord}>
-              <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
-              Copy for Discord
-            </Button>
-          </div>
-        </div>
       </section>
 
       <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
