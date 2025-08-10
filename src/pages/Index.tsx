@@ -45,6 +45,11 @@ const Index = () => {
     });
   };
 
+  const copyForTikTok = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    toast.success("Copied for TikTok — open the TikTok app and paste.");
+  };
+
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -229,7 +234,7 @@ const Index = () => {
             <Button asChild variant="glass">
               <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener">Share on Telegram</a>
             </Button>
-            <Button variant="glass" onClick={copyShare}>Copy for TikTok</Button>
+            <Button variant="glass" onClick={copyForTikTok}>Copy for TikTok</Button>
             <Button variant="glass" onClick={copyForDiscord}>Copy for Discord</Button>
           </div>
         </div>
