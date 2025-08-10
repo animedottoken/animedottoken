@@ -91,7 +91,7 @@ const Index = () => {
             <span className="font-semibold">Step 1: Get a Digital Wallet</span>
             <div className="mt-2 flex items-center gap-3">
               <img
-                src="/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png"
+                src="/lovable-uploads/504c8ec2-905a-47f0-8aba-359f7b9907c6.png"
                 alt="Phantom wallet logo"
                 loading="lazy"
                 decoding="async"
