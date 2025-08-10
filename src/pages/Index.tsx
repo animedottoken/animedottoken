@@ -264,7 +264,7 @@ const Index = () => {
         {/* minimal link only */}
         <Collapsible>
           <CollapsibleTrigger asChild>
-            <Button variant="link" size="sm" className="px-0">Sharing content</Button>
+            <Button variant="link" size="sm" className="px-0">Manual sharing</Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
             <p className="mt-2 text-xs text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
