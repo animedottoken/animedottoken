@@ -260,11 +260,11 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="mx-auto mt-10 max-w-5xl text-center border-t pt-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h3 className="text-xl md:text-2xl font-semibold">Share Kit</h3>
+      <section className="mx-auto mt-8 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <h4 className="text-lg md:text-xl font-medium text-foreground/90">Share kit (optional)</h4>
         <Collapsible>
           <CollapsibleTrigger asChild>
-            <Button variant="link" size="sm" className="px-0">Read more</Button>
+            <Button variant="link" size="sm" className="px-0">Sharing content</Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
             <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
