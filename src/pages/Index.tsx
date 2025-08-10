@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,6 +59,8 @@ const Index = () => {
     });
   };
 
+
+  const [buyOpen, setBuyOpen] = useState(false);
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -153,7 +156,18 @@ const Index = () => {
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these simple steps:</p>
-        <ol className="mt-6 space-y-5 list-decimal pl-6">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 text-sm text-muted-foreground">
+          <div className="rounded-md border bg-secondary/10 px-3 py-2">1. Wallet</div>
+          <div className="rounded-md border bg-secondary/10 px-3 py-2">2. Create</div>
+          <div className="rounded-md border bg-secondary/10 px-3 py-2">3. Fund</div>
+          <div className="rounded-md border bg-secondary/10 px-3 py-2">4. Swap</div>
+        </div>
+        <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="link" className="mt-2 px-0">{buyOpen ? "Hide steps" : "Show steps"}</Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
             <span className="font-semibold">Step 1: Get a Digital Wallet</span>
             <div className="mt-2 flex items-center gap-3">
@@ -221,6 +235,8 @@ const Index = () => {
             <p className="mt-2 text-muted-foreground text-sm">Need more details? See Phantom's guide: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
           </li>
         </ol>
+        </CollapsibleContent>
+        </Collapsible>
 
         <div className="mt-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
