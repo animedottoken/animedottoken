@@ -156,16 +156,10 @@ const Index = () => {
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these 4 simple steps:</p>
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 text-sm text-muted-foreground">
-          <div className="rounded-md border bg-secondary/10 px-3 py-2">1. Wallet</div>
-          <div className="rounded-md border bg-secondary/10 px-3 py-2">2. Create</div>
-          <div className="rounded-md border bg-secondary/10 px-3 py-2">3. Fund</div>
-          <div className="rounded-md border bg-secondary/10 px-3 py-2">4. Swap</div>
-        </div>
         <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
             <Collapsible>
-              <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
                 <CollapsibleTrigger asChild>
                   <Button variant="link" size="sm" className="px-0">Show details</Button>
