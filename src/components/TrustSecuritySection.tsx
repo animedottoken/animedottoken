@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { ExternalLink } from "lucide-react";
+import { useState } from "react";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
@@ -15,7 +16,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const goPlusUrl = `https://gopluslabs.io/token-security/solana/${tokenAddress}`;
   const revivalWalletAddress = "7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8";
   const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
-
+  const [detailsOpen, setDetailsOpen] = useState(false);
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <header className="mb-6 text-center">
@@ -83,9 +84,9 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               <li>LP lock/burn is verified.</li>
               <li>No malicious functions: The contract cannot mint new tokens, freeze trading, or change taxes.</li>
             </ul>
-            <Collapsible>
+            <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
               <CollapsibleTrigger asChild>
-                <Button variant="link" className="px-0">View details</Button>
+                <Button variant="link" className="px-0">{detailsOpen ? "Show less" : "View details"}</Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="mt-4">
