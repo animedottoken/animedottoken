@@ -89,7 +89,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             </ul>
             <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
               <CollapsibleTrigger asChild>
-                <Button variant="link" className="px-0">{detailsOpen ? "Show less" : "View details"}</Button>
+                <Button variant="link" className="px-0">{detailsOpen ? "Hide details" : "Show details"}</Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="mt-4">
