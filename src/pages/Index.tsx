@@ -51,7 +51,7 @@ const Index = () => {
       description: "Paste the text into your post.",
       action: {
         label: "Open TikTok",
-        onClick: () => window.open("https://www.tiktok.com/upload", "_blank"),
+        onClick: () => window.open("https://www.tiktok.com/tiktokstudio/upload", "_blank"),
       },
     });
   };
