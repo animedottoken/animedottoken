@@ -261,40 +261,47 @@ const Index = () => {
       </section>
 
       <section className="mx-auto mt-10 max-w-5xl text-center border-t pt-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h3 className="text-xl md:text-2xl font-semibold">Share Kit (use with the buttons above)</h3>
-        <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
-        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button asChild variant="hero">
-            <a href="/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
-          </Button>
-          <Button 
-            variant="glass" 
-            onClick={async () => { 
-              await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
-              toast.success("Text copied for X/Twitter"); 
-            }}
-          >
-            Copy Text
-          </Button>
-          <Button asChild variant="glass">
-            <a 
-              href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-              target="_blank" 
-              rel="noreferrer noopener"
-            >
-              Open Tweet Composer
-            </a>
-          </Button>
-          <Button asChild variant="glass">
-            <a
-              href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Open Telegram
-            </a>
-          </Button>
-        </div>
+        <h3 className="text-xl md:text-2xl font-semibold">Share Kit</h3>
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="link" size="sm" className="px-0">Read more</Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+            <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button asChild variant="hero">
+                <a href="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
+              </Button>
+              <Button 
+                variant="glass" 
+                onClick={async () => { 
+                  await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
+                  toast.success("Text copied"); 
+                }}
+              >
+                Copy Text
+              </Button>
+              <Button asChild variant="glass">
+                <a 
+                  href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                  target="_blank" 
+                  rel="noreferrer noopener"
+                >
+                  Open Tweet Composer
+                </a>
+              </Button>
+              <Button asChild variant="glass">
+                <a
+                  href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Open Telegram
+                </a>
+              </Button>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700" aria-labelledby="ambassador-heading">
