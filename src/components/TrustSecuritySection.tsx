@@ -4,6 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { useTokenHolders } from "@/hooks/useTokenHolders";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
@@ -18,6 +19,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
   const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const holders = useTokenHolders(tokenAddress);
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <header className="mb-6 text-center">
@@ -108,7 +110,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <p className="text-muted-foreground">
-              The ANIME project has been revived by its strong and growing community of over 1,300 holders. To honor this trust and commit to long-term growth, we have established the official Revival Wallet, which is publicly viewable by everyone. These funds are dedicated to building the ecosystem and supporting our community, not for selling.
+              The ANIME project has been revived by its strong and growing community of over <span className="font-semibold text-foreground">{holders ? holders.toLocaleString() : "1,300+"}</span> holders. To honor this trust and commit to long-term growth, we have established the official Revival Wallet, which is publicly viewable by everyone. These funds are dedicated to building the ecosystem and supporting our community, not for selling.
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild variant="hero">
