@@ -108,11 +108,12 @@ const Index = () => {
               sizes="(min-width: 1024px) 1024px, 100vw"
             />
             <img
-              src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
+              src="https://animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
               loading="eager"
               decoding="async"
               fetchPriority="high"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
               className="w-full h-full object-cover block"
             />
           </picture>
@@ -244,10 +245,11 @@ const Index = () => {
               sizes="(min-width: 768px) 768px, 100vw"
             />
             <img
-              src="/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
+              src="https://animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
               alt="Congratulations — Proud Anime Society Member poster"
               loading="lazy"
               decoding="async"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
               className="w-full h-auto object-cover"
             />
           </picture>
@@ -389,10 +391,11 @@ const Index = () => {
                 sizes="(min-width: 768px) 384px, 90vw"
               />
               <img
-                src="/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
+                src="https://animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
                 alt="Become an Ambassador – ANIME.TOKEN recruitment poster calling for the Anime Army"
                 loading="lazy"
                 decoding="async"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
                 className="h-full w-full object-cover"
               />
             </picture>
