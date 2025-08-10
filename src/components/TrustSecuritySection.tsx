@@ -16,6 +16,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const goPlusUrl = `https://gopluslabs.io/token-security/solana/${tokenAddress}`;
   const revivalWalletAddress = "7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8";
   const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
+  const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -102,21 +103,28 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <span aria-hidden className="text-2xl">🌱</span>
-              Community-Led Revival
+              A Strong, Community-Led Revival
             </CardTitle>
             <CardDescription>
-              The ANIME project has been revived by its community. As a public commitment to long-term growth, we’ve established a transparent treasury wallet.
+              Transparent treasury via the official Revival Wallet.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <p className="text-muted-foreground">
-              These funds are dedicated to building the ecosystem and supporting community initiatives — not for selling.
+              The ANIME project has been revived by its strong and growing community of over 1,300 holders. To honor this trust and commit to long-term growth, we have established the official Revival Wallet, which is publicly viewable by everyone. These funds are dedicated to building the ecosystem and supporting our community, not for selling.
             </p>
-            <Button asChild variant="link" className="px-0">
-              <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
-                View the Revival Wallet <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button asChild variant="hero">
+                <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
+                  View the Revival Wallet
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="View all holders on Solscan">
+                  See All Holders on Solscan
+                </a>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
