@@ -1,5 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { ExternalLink } from "lucide-react";
 
 interface TrustSecuritySectionProps {
@@ -81,13 +83,16 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               <li>LP lock/burn is verified.</li>
               <li>No malicious functions: The contract cannot mint new tokens, freeze trading, or change taxes.</li>
             </ul>
-            <div>
-              <Button asChild variant="link" className="px-0">
-                <a href="/reports" aria-label="View all audit and security reports">
-                  View All Reports <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
-            </div>
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button variant="link" className="px-0">View details</Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-4">
+                  <SecurityReportsDetails tokenAddress={tokenAddress} />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CardContent>
         </Card>
 
