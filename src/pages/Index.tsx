@@ -260,8 +260,8 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h2 className="text-2xl md:text-3xl font-bold">Share Kit (No Link — Best Reach)</h2>
+      <section className="mx-auto mt-10 max-w-5xl text-center border-t pt-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <h3 className="text-xl md:text-2xl font-semibold">Share Kit (use with the buttons above)</h3>
         <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button asChild variant="hero">
