@@ -253,7 +253,7 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-2xl md:text-3xl font-bold">Share Kit (No Link — Best Reach)</h2>
-        <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Paste both into X.</p>
+        <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button asChild variant="hero">
             <a href="/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
