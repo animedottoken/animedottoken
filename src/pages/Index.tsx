@@ -236,8 +236,17 @@ const Index = () => {
         })}</script>
 
         <div className="mt-8 text-center">
-          <h3 className="text-xl font-semibold">Congratulations!</h3>
-          <p className="mt-2 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
+          <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
+          <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
+            <img
+              src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
+              alt="Proud member of the $ANIME Army banner"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+          <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild variant="glass">
               <a href={shareUrlX} target="_blank" rel="noreferrer noopener">Share on X/Twitter</a>
@@ -289,7 +298,8 @@ const Index = () => {
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700" aria-labelledby="ambassador-heading">
-        <div className="mx-auto max-w-3xl overflow-hidden rounded-lg border bg-card shadow-glow">
+        <h2 id="ambassador-heading" className="text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
+        <div className="mx-auto mt-4 max-w-md overflow-hidden rounded-lg border bg-card shadow-glow">
           <AspectRatio ratio={3 / 2}>
             <img
               src="/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
@@ -300,7 +310,6 @@ const Index = () => {
             />
           </AspectRatio>
         </div>
-        <h2 id="ambassador-heading" className="mt-6 text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
         <p className="mt-3 text-muted-foreground md:max-w-3xl mx-auto">
           Our project is growing, and we are looking for passionate anime fans to join our core team. Help us manage our community platforms and shape the future of $ANIME.
         </p>
