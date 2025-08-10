@@ -80,19 +80,42 @@ const Index = () => {
         <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
-        <link rel="preload" as="image" href="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png" imageSizes="(min-width: 1024px) 1024px, 100vw" fetchPriority="high" />
+        <link rel="preconnect" href="https://images.weserv.nl" crossOrigin="" />
+        <link
+          rel="preload"
+          as="image"
+          href="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1024&output=webp&q=80"
+          imageSrcSet="
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=640&output=webp&q=80 640w,
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1024&output=webp&q=80 1024w,
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1536&output=webp&q=80 1536w
+          "
+          imageSizes="(min-width: 1024px) 1024px, 100vw"
+          fetchPriority="high"
+        />
       </Helmet>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
-          <img
-            src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
-            alt="ANIME Token 3:2 hero banner with anime characters and logo"
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            className="w-full h-full object-cover block"
-          />
+          <picture>
+            <source
+              type="image/webp"
+              srcSet="
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=640&output=webp&q=80 640w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1024&output=webp&q=80 1024w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png&w=1536&output=webp&q=80 1536w
+              "
+              sizes="(min-width: 1024px) 1024px, 100vw"
+            />
+            <img
+              src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
+              alt="ANIME Token 3:2 hero banner with anime characters and logo"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="w-full h-full object-cover block"
+            />
+          </picture>
         </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
@@ -210,6 +233,16 @@ const Index = () => {
         <div className="mt-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
+          <picture>
+            <source
+              type="image/webp"
+              srcSet="
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=480&output=webp&q=80 480w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=768&output=webp&q=80 768w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png&w=1024&output=webp&q=80 1024w
+              "
+              sizes="(min-width: 768px) 768px, 100vw"
+            />
             <img
               src="/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
               alt="Congratulations — Proud Anime Society Member poster"
@@ -217,6 +250,7 @@ const Index = () => {
               decoding="async"
               className="w-full h-auto object-cover"
             />
+          </picture>
           </div>
           <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -344,13 +378,24 @@ const Index = () => {
         <h2 id="ambassador-heading" className="text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
         <div className="mx-auto mt-4 max-w-md overflow-hidden rounded-lg border bg-card shadow-glow">
           <AspectRatio ratio={3 / 2}>
-            <img
-              src="/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
-              alt="Become an Ambassador – ANIME.TOKEN recruitment poster calling for the Anime Army"
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover"
-            />
+            <picture>
+              <source
+                type="image/webp"
+                srcSet="
+                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=400&output=webp&q=80 400w,
+                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=640&output=webp&q=80 640w,
+                  https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png&w=768&output=webp&q=80 768w
+                "
+                sizes="(min-width: 768px) 384px, 90vw"
+              />
+              <img
+                src="/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
+                alt="Become an Ambassador – ANIME.TOKEN recruitment poster calling for the Anime Army"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </picture>
           </AspectRatio>
         </div>
         <p className="mt-3 text-muted-foreground md:max-w-3xl mx-auto">
