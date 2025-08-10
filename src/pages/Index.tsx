@@ -35,6 +35,16 @@ const Index = () => {
     toast.success("Share text copied to clipboard");
   };
 
+  const copyForDiscord = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    toast("Copied for Discord", {
+      action: {
+        label: "Open Discord",
+        onClick: () => window.open("https://discord.com/channels/@me", "_blank"),
+      },
+    });
+  };
+
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -219,8 +229,8 @@ const Index = () => {
             <Button asChild variant="glass">
               <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener">Share on Telegram</a>
             </Button>
-            <Button variant="glass" onClick={copyShare}>Share on TikTok</Button>
-            <Button variant="glass" onClick={copyShare}>Share on Discord</Button>
+            <Button variant="glass" onClick={copyShare}>Copy for TikTok</Button>
+            <Button variant="glass" onClick={copyForDiscord}>Copy for Discord</Button>
           </div>
         </div>
       </section>
