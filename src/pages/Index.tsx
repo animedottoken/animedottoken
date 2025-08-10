@@ -17,7 +17,7 @@ const Index = () => {
 
   const shareBase = "https://animedottoken.lovable.app";
   const pageUrl = shareBase;
-  const sharePageUrl = `${shareBase}/share/army-card`;
+  const sharePageUrl = `${shareBase}/share/army-card?v=2`;
   const shareImage = `${shareBase}/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png`;
   const shareText = "Proud member of the $ANIME Army on Solana.";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(sharePageUrl)}`;
