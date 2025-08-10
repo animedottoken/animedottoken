@@ -124,7 +124,7 @@ const Index = () => {
           <li>
             <span className="font-semibold">Step 3: Fund Your Wallet</span>
             <p className="mt-1 text-muted-foreground">To start using Phantom, add cryptocurrency to your wallet.</p>
-            <p className="mt-1 text-muted-foreground">We recommend using $SOL (Solana – the blockchain ANIME.TOKEN runs on) or $USDC (USD-pegged stablecoin).</p>
+            <p className="mt-1 text-muted-foreground">We recommend using $SOL (Solana — the blockchain $ANIME runs on) or $USDC (USD-pegged stablecoin).</p>
             <ul className="mt-2 list-disc pl-5 text-muted-foreground">
               <li>
                 <span className="font-medium">Transfer from another wallet or exchange</span>. <a href="https://help.phantom.com/hc/en-us/articles/4406393831187-How-to-deposit-crypto-into-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Deposit guide</a>.
