@@ -123,7 +123,16 @@ const Index = () => {
           </li>
           <li>
             <span className="font-semibold">Step 3: Fund Your Wallet</span>
-            <p className="mt-1 text-muted-foreground">Deposit funds into your wallet. We recommend using $SOL or $USDC. You can buy them directly in the Phantom app with a card or send them from another exchange.</p>
+            <p className="mt-1 text-muted-foreground">To start using Phantom, add cryptocurrency to your wallet.</p>
+            <p className="mt-1 text-muted-foreground">We recommend using $SOL or $USDC. You can buy them directly in the Phantom app with a card or send them from another exchange.</p>
+            <ul className="mt-2 list-disc pl-5 text-muted-foreground">
+              <li>
+                <span className="font-medium">Transfer crypto from elsewhere:</span> Send from another wallet or exchange to your Phantom address. <a href="https://help.phantom.com/hc/en-us/articles/4406393831187-How-to-deposit-crypto-into-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to deposit crypto into Phantom</a>.
+              </li>
+              <li>
+                <span className="font-medium">Buy crypto directly within Phantom:</span> Purchase using card or other available methods inside the app. <a href="https://help.phantom.com/hc/en-us/articles/4406543783571-How-to-buy-crypto-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to buy crypto in Phantom</a>.
+              </li>
+            </ul>
           </li>
           <li>
             <span className="font-semibold">Step 4: Swap for $ANIME</span>
