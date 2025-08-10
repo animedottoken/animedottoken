@@ -159,10 +159,10 @@ const Index = () => {
         <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
             <Collapsible>
-              <div className="flex items-baseline gap-3 flex-wrap">
+              <div>
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -184,10 +184,10 @@ const Index = () => {
           </li>
           <li>
             <Collapsible>
-              <div className="flex items-center justify-between">
+              <div>
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -204,10 +204,10 @@ const Index = () => {
           </li>
           <li>
             <Collapsible>
-              <div className="flex items-center justify-between">
+              <div>
                 <span className="font-semibold">Step 3: Fund Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -226,10 +226,10 @@ const Index = () => {
           </li>
           <li>
             <Collapsible>
-              <div className="flex items-center justify-between">
+              <div>
                 <span className="font-semibold">Step 4: Swap for $ANIME</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0">Show details</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">Show details</Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
