@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 
@@ -88,9 +89,26 @@ const Index = () => {
         <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
             <span className="font-semibold">Step 1: Get a Digital Wallet</span>
-            <p className="mt-1 text-muted-foreground">You'll need a Solana-compatible wallet to hold and swap tokens. From our own experience, we recommend Phantom for its simplicity and security. <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>.</p>
+            <div className="mt-2 flex items-center gap-3">
+              <img
+                src="/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png"
+                alt="Phantom wallet logo"
+                loading="lazy"
+                decoding="async"
+                className="h-6 w-auto"
+              />
+              <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>
+            </div>
+            <p className="mt-1 text-muted-foreground">You'll need a Solana-compatible wallet to hold and swap tokens. From our own experience, we recommend Phantom for its simplicity and security.</p>
             <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
-            <p className="mt-2 text-muted-foreground">Phantom is a secure and user-friendly cryptocurrency wallet available as a browser extension and mobile app. It allows you to create and manage digital wallets across multiple blockchains like Solana, Ethereum, and Polygon, all in one place. Designed to be intuitive for beginners and powerful for experienced users, Phantom makes it easy to explore and engage with the decentralized ecosystem while keeping your assets safe.</p>
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button variant="link" size="sm" className="px-0">Read more</Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <p className="mt-2 text-muted-foreground">Phantom is an app that serves as a secure and user-friendly cryptocurrency wallet. It allows you to create and manage digital wallets across multiple blockchains like Solana, Ethereum, and Polygon, all in one place. Designed to be intuitive for beginners and powerful for experienced users, Phantom makes it easy to explore and engage with the decentralized ecosystem while keeping your assets safe.</p>
+              </CollapsibleContent>
+            </Collapsible>
           </li>
           <li>
             <span className="font-semibold">Step 2: Create Your Wallet</span>
