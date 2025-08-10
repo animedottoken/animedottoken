@@ -99,7 +99,7 @@ const Index = () => {
               />
               <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>
             </div>
-            <p className="mt-1 text-muted-foreground">You'll need a Solana-compatible wallet to hold and swap tokens. From our own experience, we recommend Phantom for its simplicity and security.</p>
+            <p className="mt-1 text-muted-foreground">Install Phantom — our recommended Solana wallet for $ANIME.</p>
             <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
             <Collapsible>
               <CollapsibleTrigger asChild>
@@ -154,6 +154,37 @@ const Index = () => {
             <p className="mt-2 text-muted-foreground text-sm">Need more details? See Phantom's guide: <a href="https://help.phantom.com/hc/en-us/articles/6048249796243-How-to-swap-tokens-in-Phantom" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">How to swap tokens in Phantom</a>.</p>
           </li>
         </ol>
+
+        <section className="mt-8">
+          <h3 className="text-lg font-semibold">FAQ</h3>
+          <ul className="mt-3 space-y-3 text-muted-foreground">
+            <li>
+              <span className="font-medium">What is the official $ANIME contract?</span>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+                <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+              </div>
+            </li>
+            <li>
+              <span className="font-medium">I cannot find $ANIME in Phantom search.</span>
+              <p>Paste the contract address above into the token field to ensure you select the correct token.</p>
+            </li>
+            <li>
+              <span className="font-medium">What slippage should I use?</span>
+              <p>Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
+            </li>
+          </ul>
+        </section>
+
+        <script type="application/ld+json">{JSON.stringify({
+          "@context":"https://schema.org",
+          "@type":"FAQPage",
+          "mainEntity":[
+            { "@type":"Question", "name":"What is the official $ANIME contract?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
+            { "@type":"Question", "name":"I cannot find $ANIME in Phantom search.", "acceptedAnswer":{ "@type":"Answer", "text":"Paste the official contract address into the token field to select the correct token." } },
+            { "@type":"Question", "name":"What slippage should I use?", "acceptedAnswer":{ "@type":"Answer", "text":"Start at 1–3%. If a swap fails due to price impact, increase slightly and try again." } }
+          ]
+        })}</script>
 
         <div className="mt-8 text-center">
           <h3 className="text-xl font-semibold">Congratulations!</h3>
