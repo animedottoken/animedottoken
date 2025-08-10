@@ -260,14 +260,14 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="mx-auto mt-8 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h4 className="text-lg md:text-xl font-medium text-foreground/90">Share kit (optional)</h4>
+      <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        {/* minimal link only */}
         <Collapsible>
           <CollapsibleTrigger asChild>
             <Button variant="link" size="sm" className="px-0">Sharing content</Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <p className="mt-3 text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+            <p className="mt-2 text-xs text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
             <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="hero">
                 <a href="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
