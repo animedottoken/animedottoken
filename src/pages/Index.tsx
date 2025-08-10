@@ -14,6 +14,16 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "https://animedottoken.lovable.app";
+  const shareText = "I just joined the ANIME Era on Solana! $ANIME";
+  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+  const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+
+  const copyShare = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    toast.success("Share text copied to clipboard");
+  };
+
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -74,16 +84,51 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
-        <p className="mt-3 text-center text-muted-foreground">Becoming a part of the $ANIME community is easy. Follow these simple steps:</p>
-        <ol className="mt-6 space-y-3 list-decimal pl-6">
-          <li><span className="font-semibold">Get a Wallet:</span> Download and set up a Solana wallet — we recommend <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom</a>.</li>
-          <li><span className="font-semibold">Fund Your Wallet:</span> Buy Solana (SOL) on a major exchange (we recommend <a href="https://www.binance.com/referral/earn-together/refer-in-hotsummer/claim?hl=en&ref=GRO_20338_IALEN&utm_source=Lite_web_account" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Binance</a>) and send it to your Phantom wallet.</li>
-          <li><span className="font-semibold">Go to a DEX:</span> Use Raydium or find us on <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">DEX Screener</a> (recommended).</li>
-          <li><span className="font-semibold">Swap for $ANIME:</span> Connect your wallet, select SOL → $ANIME, and confirm the swap. Use our official contract address:</li>
+        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME is easier than ever, and you can do it all right inside your Phantom wallet. Follow these simple steps:</p>
+        <ol className="mt-6 space-y-5 list-decimal pl-6">
+          <li>
+            <span className="font-semibold">Step 1: Get the Phantom Wallet</span>
+            <p className="mt-1 text-muted-foreground">Phantom is a secure, user-friendly cryptocurrency wallet that makes it easy to access the blockchain ecosystem. <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>.</p>
+          </li>
+          <li>
+            <span className="font-semibold">Step 2: Create Your Wallet</span>
+            <ul className="mt-1 list-disc pl-5 text-muted-foreground">
+              <li><span className="font-medium">Recommended (Seedless Login):</span> Use your Google or Apple account and a PIN code for the quickest and easiest setup.</li>
+              <li><span className="font-medium">Alternative (Secret Recovery Phrase):</span> Use the traditional 12-word recovery phrase method.</li>
+            </ul>
+          </li>
+          <li>
+            <span className="font-semibold">Step 3: Fund Your Wallet</span>
+            <p className="mt-1 text-muted-foreground">Deposit funds into your wallet. We recommend using $SOL or $USDC. You can buy them directly in the Phantom app with a card or send them from another exchange.</p>
+          </li>
+          <li>
+            <span className="font-semibold">Step 4: Swap for $ANIME</span>
+            <ul className="mt-1 list-disc pl-5 text-muted-foreground">
+              <li>In the Phantom app, tap the swap icon (the two arrows at the bottom).</li>
+              <li>In the "You Pay" field, select the currency you funded your wallet with ($SOL or $USDC).</li>
+              <li>In the "You Receive" field, search for the ANIME token by pasting the official contract address:</li>
+            </ul>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+              <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+            </div>
+            <p className="mt-3 text-muted-foreground">Enter the amount you wish to buy, review the details, and confirm the swap.</p>
+          </li>
         </ol>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
-          <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+
+        <div className="mt-8 text-center">
+          <h3 className="text-xl font-semibold">Congratulations!</h3>
+          <p className="mt-2 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
+          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild variant="glass">
+              <a href={shareUrlX} target="_blank" rel="noreferrer noopener">Share on X/Twitter</a>
+            </Button>
+            <Button asChild variant="glass">
+              <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener">Share on Telegram</a>
+            </Button>
+            <Button variant="glass" onClick={copyShare}>Share on TikTok</Button>
+            <Button variant="glass" onClick={copyShare}>Share on Discord</Button>
+          </div>
         </div>
       </section>
 
