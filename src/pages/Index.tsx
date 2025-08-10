@@ -15,12 +15,22 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
-  const pageUrl = typeof window !== "undefined" ? window.location.href : "https://animedottoken.lovable.app";
-  const shareText = "I just joined the ANIME Era on Solana! $ANIME";
-  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://animedottoken.lovable.app";
+  const pageUrl = origin;
+  const shareImage = `${origin}/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png`;
+  const shareText = "I just joined the $ANIME Era on Solana. Join us!";
+  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(pageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
 
   const copyShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "ANIME Token", text: shareText, url: pageUrl });
+        return;
+      }
+    } catch (e) {
+      // Fallback to clipboard if user cancels or share fails
+    }
     await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
     toast.success("Share text copied to clipboard");
   };
@@ -31,10 +41,18 @@ const Index = () => {
       <Helmet>
         <title>ANIME Token | Official Community on Solana</title>
         <meta name="description" content="Official home of $ANIME on Solana. Community-driven vision, trust & verification, how to buy, and links to Telegram, X, Discord, and TikTok." />
-        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : '/'} />
+        <link rel="canonical" href={pageUrl} />
         <meta property="og:title" content="ANIME Token | Official Community" />
         <meta property="og:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={shareImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@AnimeDotToken" />
+        <meta name="twitter:creator" content="@AnimeDotToken" />
+        <meta name="twitter:title" content="ANIME Token | Official Community on Solana" />
+        <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
+        <meta name="twitter:image" content={shareImage} />
       </Helmet>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
