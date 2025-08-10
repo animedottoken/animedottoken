@@ -15,9 +15,9 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://animedottoken.lovable.app";
-  const pageUrl = origin;
-  const shareImage = `${origin}/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png`;
+  const shareBase = "https://animedottoken.lovable.app";
+  const pageUrl = shareBase;
+  const shareImage = `${shareBase}/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png`;
   const shareText = "Proud member of the $ANIME Army on Solana.";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(pageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
