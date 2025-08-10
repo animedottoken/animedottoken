@@ -173,6 +173,10 @@ const Index = () => {
               <span className="font-medium">What slippage should I use?</span>
               <p>Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
             </li>
+            <li>
+              <span className="font-medium">More questions?</span>
+              <p>Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
+            </li>
           </ul>
         </section>
 
@@ -182,7 +186,8 @@ const Index = () => {
           "mainEntity":[
             { "@type":"Question", "name":"What is the official $ANIME contract?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
             { "@type":"Question", "name":"I cannot find $ANIME in Phantom search.", "acceptedAnswer":{ "@type":"Answer", "text":"Paste the official contract address into the token field to select the correct token." } },
-            { "@type":"Question", "name":"What slippage should I use?", "acceptedAnswer":{ "@type":"Answer", "text":"Start at 1–3%. If a swap fails due to price impact, increase slightly and try again." } }
+            { "@type":"Question", "name":"What slippage should I use?", "acceptedAnswer":{ "@type":"Answer", "text":"Start at 1–3%. If a swap fails due to price impact, increase slightly and try again." } },
+            { "@type":"Question", "name":"How can I contact you for more questions?", "acceptedAnswer":{ "@type":"Answer", "text":"Contact us on Telegram: https://t.me/AnimeDotTokenCommunity, Discord: https://discord.gg/EZ9wRhjr, or X (Twitter): https://x.com/AnimeDotToken." } }
           ]
         })}</script>
 
