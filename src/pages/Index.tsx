@@ -89,6 +89,7 @@ const Index = () => {
           <li>
             <span className="font-semibold">Step 1: Get a Digital Wallet</span>
             <p className="mt-1 text-muted-foreground">You'll need a Solana-compatible wallet to hold and swap tokens. From our own experience, we recommend Phantom for its simplicity and security. <a href="https://phantom.com/download" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Download Phantom</a>.</p>
+            <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
           </li>
           <li>
             <span className="font-semibold">Step 2: Create Your Wallet</span>
