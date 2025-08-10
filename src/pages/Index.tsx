@@ -17,8 +17,8 @@ const Index = () => {
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://animedottoken.lovable.app";
   const pageUrl = origin;
-  const shareImage = `${origin}/images/og-anime.jpg`;
-  const shareText = "I just joined the $ANIME Era on Solana. Join us!";
+  const shareImage = `${origin}/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png`;
+  const shareText = "Proud member of the $ANIME Army on Solana.";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(pageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
 
