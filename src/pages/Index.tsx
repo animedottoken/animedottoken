@@ -157,25 +157,25 @@ const Index = () => {
 
         <section className="mt-8">
           <h3 className="text-lg font-semibold">FAQ</h3>
-          <ul className="mt-3 space-y-3 text-muted-foreground">
-            <li>
-              <span className="font-medium">What is the official $ANIME contract?</span>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
+          <ul className="mt-3 space-y-4">
+            <li className="rounded-md border bg-card/50 p-4">
+              <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract?</span>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
                 <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
               </div>
             </li>
-            <li>
-              <span className="font-medium">I cannot find $ANIME in Phantom search.</span>
-              <p>Paste the contract address above into the token field to ensure you select the correct token.</p>
+            <li className="rounded-md border bg-card/50 p-4">
+              <span className="text-base md:text-lg font-semibold">I cannot find $ANIME in Phantom search.</span>
+              <p className="mt-2 text-muted-foreground">Paste the contract address above into the token field to ensure you select the correct token.</p>
             </li>
-            <li>
-              <span className="font-medium">What slippage should I use?</span>
-              <p>Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
+            <li className="rounded-md border bg-card/50 p-4">
+              <span className="text-base md:text-lg font-semibold">What slippage should I use?</span>
+              <p className="mt-2 text-muted-foreground">Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
             </li>
-            <li>
-              <span className="font-medium">More questions?</span>
-              <p>Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
+            <li className="rounded-md border bg-card/50 p-4">
+              <span className="text-base md:text-lg font-semibold">More questions?</span>
+              <p className="mt-2 text-muted-foreground">Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
             </li>
           </ul>
         </section>
