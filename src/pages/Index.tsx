@@ -239,6 +239,54 @@ const Index = () => {
           </div>
         </div>
 
+        <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+          {/* minimal link only */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="link" size="sm" className="px-0">Promo package</Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <p className="mt-2 text-xs text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+              <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button asChild variant="hero">
+                  <a href="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
+                </Button>
+                <Button 
+                  variant="glass" 
+                  onClick={async () => { 
+                    await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
+                    toast.success("Text copied"); 
+                  }}
+                >
+                  Copy Text
+                </Button>
+                <Button asChild variant="glass">
+                  <a 
+                    href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                    target="_blank" 
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2"
+                  >
+                    <SiX className="h-4 w-4" aria-hidden="true" />
+                    Open Tweet Composer
+                  </a>
+                </Button>
+                <Button asChild variant="glass">
+                  <a
+                    href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2"
+                  >
+                    <SiTelegram className="h-4 w-4" aria-hidden="true" />
+                    Open Telegram
+                  </a>
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </section>
+
         <section className="mt-8">
           <h3 className="text-lg font-semibold">FAQ</h3>
           <ul className="mt-3 space-y-4">
@@ -277,53 +325,6 @@ const Index = () => {
 
       </section>
 
-      <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        {/* minimal link only */}
-        <Collapsible>
-          <CollapsibleTrigger asChild>
-            <Button variant="link" size="sm" className="px-0">Manual sharing</Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <p className="mt-2 text-xs text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
-            <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="hero">
-                <a href="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
-              </Button>
-              <Button 
-                variant="glass" 
-                onClick={async () => { 
-                  await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
-                  toast.success("Text copied"); 
-                }}
-              >
-                Copy Text
-              </Button>
-              <Button asChild variant="glass">
-                <a 
-                  href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                  target="_blank" 
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-2"
-                >
-                  <SiX className="h-4 w-4" aria-hidden="true" />
-                  Open Tweet Composer
-                </a>
-              </Button>
-              <Button asChild variant="glass">
-                <a
-                  href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-2"
-                >
-                  <SiTelegram className="h-4 w-4" aria-hidden="true" />
-                  Open Telegram
-                </a>
-              </Button>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      </section>
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700" aria-labelledby="ambassador-heading">
         <h2 id="ambassador-heading" className="text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
