@@ -84,7 +84,7 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
-        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME is easier than ever, and you can do it all right inside your Phantom wallet. Follow these simple steps:</p>
+        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these simple steps:</p>
         <ol className="mt-6 space-y-5 list-decimal pl-6">
           <li>
             <span className="font-semibold">Step 1: Get the Phantom Wallet</span>
