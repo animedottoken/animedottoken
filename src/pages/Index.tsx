@@ -239,8 +239,8 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
           <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
             <img
-              src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
-              alt="Proud member of the $ANIME Army banner"
+              src="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png"
+              alt="Proud Member of ANIME ARMY poster"
               loading="lazy"
               decoding="async"
               className="w-full h-auto object-cover"
