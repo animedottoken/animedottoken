@@ -127,47 +127,46 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               No dangerous functions: cannot mint new tokens, freeze trading, or introduce new transaction taxes.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+          <CardContent className="space-y-4 text-sm">
             <Button asChild variant="link" className="px-0">
               <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open contract function analysis on QuickIntel">
                 View analysis <ExternalLink className="h-3.5 w-3.5" />
               </a>
             </Button>
+            <div className="mt-2 rounded-md border bg-secondary/10 p-3">
+              <p className="text-xs text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
+              <div className="mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    toast.message("Opening Telegram...");
+                    if (typeof window !== "undefined") {
+                      const webUrl = "https://t.me/AnimeDotTokenCommunity";
+                      const deepLink = "tg://resolve?domain=AnimeDotTokenCommunity";
+                      const fallback = window.setTimeout(() => {
+                        window.location.href = webUrl; // same-tab fallback
+                      }, 1200);
+                      const onVisibilityChange = () => {
+                        if (document.hidden) {
+                          clearTimeout(fallback);
+                          document.removeEventListener("visibilitychange", onVisibilityChange);
+                        }
+                      };
+                      document.addEventListener("visibilitychange", onVisibilityChange);
+                      window.location.href = deepLink; // try to open app
+                    }
+                  }}
+                  aria-label="Report a risk"
+                >
+                  Report a risk
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Community risk reporting CTA */}
-      <div className="mx-auto mt-6 max-w-5xl rounded-lg border bg-secondary/10 p-4">
-        <p className="text-sm text-muted-foreground">See any risk or suspicious activity? Please let us know.</p>
-        <div className="mt-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              toast.message("Opening Telegram...");
-              if (typeof window !== "undefined") {
-                const webUrl = "https://t.me/AnimeDotTokenCommunity";
-                const deepLink = "tg://resolve?domain=AnimeDotTokenCommunity";
-                const fallback = window.setTimeout(() => {
-                  window.location.href = webUrl; // same-tab fallback
-                }, 1200);
-                const onVisibilityChange = () => {
-                  if (document.hidden) {
-                    clearTimeout(fallback);
-                    document.removeEventListener("visibilitychange", onVisibilityChange);
-                  }
-                };
-                document.addEventListener("visibilitychange", onVisibilityChange);
-                window.location.href = deepLink; // try to open app
-              }
-            }}
-            aria-label="Report a risk"
-          >
-            Report a risk
-          </Button>
-        </div>
-      </div>
     </section>
   );
 }
