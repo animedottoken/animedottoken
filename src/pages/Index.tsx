@@ -62,6 +62,7 @@ const Index = () => {
 
 
   const [buyOpen, setBuyOpen] = useState(false);
+  const [promoOpen, setPromoOpen] = useState(false);
 
   // Promo images for social sharing (downloads use SEO-friendly filenames)
   const promoImages = [
@@ -346,12 +347,15 @@ const Index = () => {
 
         <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
           {/* minimal link only */}
-          <Collapsible>
+          <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0">Promo package</Button>
+              <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"}</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <p className="mt-2 text-xs text-muted-foreground">1) Download an image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+              <div className="mt-3 flex items-center justify-center">
+                <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
+              </div>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                 {promoImages.map((img) => (
                   <article key={img.src} className="rounded-md border bg-card/50 p-3">
@@ -365,7 +369,6 @@ const Index = () => {
                 ))}
               </div>
               <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
                 <Button 
                   variant="glass" 
                   onClick={async () => { 
