@@ -297,19 +297,29 @@ const Index = () => {
                 <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
               </div>
             </li>
-            <li className="rounded-md border bg-card/50 p-4">
-              <span className="text-base md:text-lg font-semibold">I cannot find $ANIME in Phantom search.</span>
-              <p className="mt-2 text-muted-foreground">Paste the contract address above into the token field to ensure you select the correct token.</p>
-            </li>
-            <li className="rounded-md border bg-card/50 p-4">
-              <span className="text-base md:text-lg font-semibold">What slippage should I use?</span>
-              <p className="mt-2 text-muted-foreground">Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
-            </li>
-            <li className="rounded-md border bg-card/50 p-4">
-              <span className="text-base md:text-lg font-semibold">More questions?</span>
-              <p className="mt-2 text-muted-foreground">Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
-            </li>
           </ul>
+
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger asChild>
+              <Button variant="link" size="sm" className="px-0 text-primary text-xs">More questions? See all answers</Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <ul className="mt-3 space-y-4">
+                <li className="rounded-md border bg-card/50 p-4">
+                  <span className="text-base md:text-lg font-semibold">I cannot find $ANIME in Phantom search.</span>
+                  <p className="mt-2 text-muted-foreground">Paste the contract address above into the token field to ensure you select the correct token.</p>
+                </li>
+                <li className="rounded-md border bg-card/50 p-4">
+                  <span className="text-base md:text-lg font-semibold">What slippage should I use?</span>
+                  <p className="mt-2 text-muted-foreground">Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
+                </li>
+                <li className="rounded-md border bg-card/50 p-4">
+                  <span className="text-base md:text-lg font-semibold">More questions?</span>
+                  <p className="mt-2 text-muted-foreground">Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
+                </li>
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         </section>
 
         <script type="application/ld+json">{JSON.stringify({
