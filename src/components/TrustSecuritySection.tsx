@@ -103,11 +103,8 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <span aria-hidden className="text-2xl">🌱</span>
-              A Strong, Community-Led Revival
+              Community-Led Revival
             </CardTitle>
-            <CardDescription>
-              Transparent treasury via the official Revival Wallet.
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <p className="text-muted-foreground">
