@@ -17,7 +17,7 @@ const Index = () => {
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://animedottoken.lovable.app";
   const pageUrl = origin;
-  const shareImage = `${origin}/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png`;
+  const shareImage = `${origin}/images/og-anime.jpg`;
   const shareText = "I just joined the $ANIME Era on Solana. Join us!";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(pageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
@@ -68,18 +68,22 @@ const Index = () => {
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:image" content={shareImage} />
+        <meta property="og:image:alt" content="ANIME Token on Solana — community-driven project" />
+        <meta property="og:image:width" content="1216" />
+        <meta property="og:image:height" content="640" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@AnimeDotToken" />
         <meta name="twitter:creator" content="@AnimeDotToken" />
         <meta name="twitter:title" content="ANIME Token | Official Community on Solana" />
         <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta name="twitter:image" content={shareImage} />
+        <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
       </Helmet>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <img
           src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
-          alt="ANIME.TOKEN 3:2 hero banner with anime characters and logo"
+          alt="ANIME Token 3:2 hero banner with anime characters and logo"
           loading="eager"
           decoding="async"
           className="w-full h-auto block"
