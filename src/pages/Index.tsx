@@ -17,26 +17,27 @@ const Index = () => {
 
   const shareBase = "https://animedottoken.lovable.app";
   const pageUrl = shareBase;
+  const sharePageUrl = `${shareBase}/?v=2`;
   const shareImage = `${shareBase}/lovable-uploads/a653795b-115c-4c4c-b301-38d0c80cdbbb.png`;
   const shareText = "Proud member of the $ANIME Army on Solana.";
-  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(pageUrl)}`;
-  const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(sharePageUrl)}`;
+  const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(sharePageUrl)}&text=${encodeURIComponent(shareText)}`;
 
   const copyShare = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({ title: "ANIME Token", text: shareText, url: pageUrl });
+        await navigator.share({ title: "ANIME Token", text: shareText, url: sharePageUrl });
         return;
       }
     } catch (e) {
       // Fallback to clipboard if user cancels or share fails
     }
-    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
     toast.success("Share text copied to clipboard");
   };
 
   const copyForDiscord = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
     toast("Copied for Discord", {
       action: {
         label: "Open Discord",
@@ -46,7 +47,7 @@ const Index = () => {
   };
 
   const copyForTikTok = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${pageUrl}`);
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
     toast("Copied for TikTok", {
       description: "Paste the text into your post.",
       action: {
