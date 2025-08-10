@@ -80,16 +80,20 @@ const Index = () => {
         <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
+        <link rel="preload" as="image" href="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png" imageSizes="(min-width: 1024px) 1024px, 100vw" fetchPriority="high" />
       </Helmet>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
-        <img
-          src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
-          alt="ANIME Token 3:2 hero banner with anime characters and logo"
-          loading="eager"
-          decoding="async"
-          className="w-full h-auto block"
-        />
+        <AspectRatio ratio={3 / 2}>
+          <img
+            src="/lovable-uploads/f67ec55c-c64b-4112-8014-1b48438672eb.png"
+            alt="ANIME Token 3:2 hero banner with anime characters and logo"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="w-full h-full object-cover block"
+          />
+        </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
         <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
@@ -205,7 +209,7 @@ const Index = () => {
 
         <div className="mt-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
-          <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
+          <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
             <img
               src="/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
               alt="Congratulations — Proud Anime Society Member poster"
