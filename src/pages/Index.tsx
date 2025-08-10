@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SiX, SiTelegram, SiDiscord, SiTiktok } from "react-icons/si";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 
@@ -106,7 +107,10 @@ const Index = () => {
               <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">Buy $ANIME on DEX Screener</a>
             </Button>
             <Button asChild variant="glass">
-              <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener">Follow us on X (Twitter)</a>
+              <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiX className="h-4 w-4" aria-hidden="true" />
+                Follow us on X (Twitter)
+              </a>
             </Button>
           </div>
         </div>
@@ -249,13 +253,25 @@ const Index = () => {
           <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild variant="glass">
-              <a href={shareUrlX} target="_blank" rel="noreferrer noopener">Share on X/Twitter</a>
+              <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiX className="h-4 w-4" aria-hidden="true" />
+                Share on X/Twitter
+              </a>
             </Button>
             <Button asChild variant="glass">
-              <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener">Share on Telegram</a>
+              <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiTelegram className="h-4 w-4" aria-hidden="true" />
+                Share on Telegram
+              </a>
             </Button>
-            <Button variant="glass" onClick={copyForTikTok}>Copy for TikTok</Button>
-            <Button variant="glass" onClick={copyForDiscord}>Copy for Discord</Button>
+            <Button variant="glass" onClick={copyForTikTok}>
+              <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for TikTok
+            </Button>
+            <Button variant="glass" onClick={copyForDiscord}>
+              <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for Discord
+            </Button>
           </div>
         </div>
       </section>
@@ -286,7 +302,9 @@ const Index = () => {
                   href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
                   target="_blank" 
                   rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2"
                 >
+                  <SiX className="h-4 w-4" aria-hidden="true" />
                   Open Tweet Composer
                 </a>
               </Button>
@@ -295,7 +313,9 @@ const Index = () => {
                   href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
                   target="_blank"
                   rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2"
                 >
+                  <SiTelegram className="h-4 w-4" aria-hidden="true" />
                   Open Telegram
                 </a>
               </Button>
@@ -331,10 +351,10 @@ const Index = () => {
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
         <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
         <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener">Twitter (X)</a></Button>
-          <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">Telegram</a></Button>
-          <Button asChild variant="glass"><a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener">Discord</a></Button>
-          <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener">TikTok</a></Button>
+          <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />Twitter (X)</a></Button>
+          <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
+          <Button asChild variant="glass"><a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+          <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
         </div>
       </section>
 
