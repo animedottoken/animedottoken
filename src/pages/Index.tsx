@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useState } from "react";
+import JSZip from "jszip";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,6 +85,33 @@ const Index = () => {
     { src: "/lovable-uploads/b27ad849-b843-4ef7-b5af-3a941e9f0789.png", filename: "anime-token-banner-black.png", alt: "Black ANIME Token banner" },
     { src: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png", filename: "anime-token-hooded-heroes-banner-2.png", alt: "ANIME.TOKEN banner with hooded figure and heroes variant" },
   ];
+  
+  const downloadAllPromo = async () => {
+    try {
+      toast.message("Preparing download...", { description: "Packing images..." });
+      const zip = new JSZip();
+      const folder = zip.folder("anime-token-promo")!;
+      await Promise.all(promoImages.map(async (img) => {
+        const res = await fetch(img.src);
+        if (!res.ok) throw new Error(`Failed to fetch ${img.src}`);
+        const blob = await res.blob();
+        folder.file(img.filename, blob);
+      }));
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "anime-token-promo-pack.zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      toast.success("Promo pack downloaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to download all images");
+    }
+  };
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -337,6 +365,7 @@ const Index = () => {
                 ))}
               </div>
               <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
                 <Button 
                   variant="glass" 
                   onClick={async () => { 
