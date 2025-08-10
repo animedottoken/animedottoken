@@ -207,8 +207,8 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
           <div className="mx-auto mt-4 max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
             <img
-              src="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png"
-              alt="Proud Member of ANIME ARMY poster"
+              src="/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
+              alt="Congratulations — Proud Anime Society Member poster"
               loading="lazy"
               decoding="async"
               className="w-full h-auto object-cover"
@@ -249,7 +249,7 @@ const Index = () => {
               <p className="mt-2 text-xs text-muted-foreground">1) Download image 2) Copy text 3) Post on X or Telegram (attach the image).</p>
               <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Button asChild variant="hero">
-                  <a href="/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png" download="anime-army-share.png" aria-label="Download the ANIME Army share image">Download Image</a>
+                  <a href="/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png" download="anime-society-share.png" aria-label="Download the Congratulations poster">Download Image</a>
                 </Button>
                 <Button 
                   variant="glass" 
