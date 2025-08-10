@@ -112,7 +112,10 @@ const Index = () => {
           </li>
           <li>
             <span className="font-semibold">Step 2: Create Your Wallet</span>
-            <ul className="mt-1 list-disc pl-5 text-muted-foreground">
+            <p className="mt-1 text-muted-foreground">
+              When creating your wallet, you have two options: a quick and convenient seedless login, or the traditional secret recovery phrase for full self-custody.
+            </p>
+            <ul className="mt-2 list-disc pl-5 text-muted-foreground">
               <li><span className="font-medium">Recommended (Seedless Login):</span> Use your Google or Apple account and a PIN code for the quickest and easiest setup.</li>
               <li><span className="font-medium">Alternative (Secret Recovery Phrase):</span> Use the traditional 12-word recovery phrase method.</li>
             </ul>
