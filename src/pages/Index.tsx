@@ -224,20 +224,20 @@ const Index = () => {
             <span className="font-semibold">
               {holders ? `${holders.toLocaleString()}+` : "1300+"}
             </span>{" "}
-            holders and the current low market cap, an investment of just $100 could secure you over{" "}
+            holders and the current low market cap, an investment of just $1000 could secure you over{" "}
             {tokenData?.price ? (
               <>
                 <span className="font-semibold">
-                  {(100 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  {(1000 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </span>{" "}
                 $ANIME tokens, representing{" "}
                 <span className="font-semibold">
-                  {((100 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
+                  {((1000 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
                 </span>{" "}
                 of the total supply.
               </>
             ) : (
-              "2.6 million $ANIME tokens, representing 0.27% of the total supply."
+              "26 million $ANIME tokens, representing 2.7% of the total supply."
             )}{" "}
             The next chapter is in our hands.
           </p>
