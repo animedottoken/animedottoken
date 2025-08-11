@@ -73,19 +73,25 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
 
         setTokenInfo(tokenData);
 
-        // Generate sample historical data (in real implementation, you'd fetch this from API)
+        // Generate sample historical data for 3 months (in real implementation, you'd fetch this from API)
         // DexScreener doesn't provide historical data in free tier, so we simulate it
         const now = Date.now();
         const historicalData: MarketData[] = [];
+        const daysInPeriod = 90; // 3 months
         
-        for (let i = 23; i >= 0; i--) {
-          const timestamp = now - (i * 60 * 60 * 1000); // Every hour for 24 hours
-          const variance = 0.8 + Math.random() * 0.4; // ±20% variance
+        for (let i = daysInPeriod - 1; i >= 0; i--) {
+          const timestamp = now - (i * 24 * 60 * 60 * 1000); // Daily data points
+          // Create more realistic market cap progression over 3 months
+          const dayProgress = (daysInPeriod - i) / daysInPeriod;
+          const baseVariance = 0.5 + (dayProgress * 1.5); // Growth trend over time
+          const randomVariance = 0.8 + Math.random() * 0.4; // ±20% daily variance
+          const finalVariance = baseVariance * randomVariance;
+          
           historicalData.push({
             timestamp,
-            marketCap: tokenData.marketCap * variance,
-            price: tokenData.price * variance,
-            volume24h: tokenData.volume24h * variance,
+            marketCap: tokenData.marketCap * finalVariance,
+            price: tokenData.price * finalVariance,
+            volume24h: tokenData.volume24h * randomVariance,
           });
         }
 
@@ -170,7 +176,7 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
           </Badge>
         </CardTitle>
         <CardDescription>
-          {tokenInfo.name} ({tokenInfo.symbol}) • Market Capitalization over 24 hours
+          {tokenInfo.name} ({tokenInfo.symbol}) • Market Capitalization over last 3 months
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -199,8 +205,12 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="timestamp"
-                tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()}
+                tickFormatter={(timestamp) => {
+                  const date = new Date(timestamp);
+                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }}
                 domain={['dataMin', 'dataMax']}
+                interval="preserveStartEnd"
               />
               <YAxis 
                 tickFormatter={formatMarketCap}
@@ -213,9 +223,15 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
                       formatMarketCap(value as number),
                       "Market Cap"
                     ]}
-                    labelFormatter={(timestamp) => 
-                      new Date(timestamp).toLocaleString()
-                    }
+                    labelFormatter={(timestamp) => {
+                      const date = new Date(timestamp);
+                      return date.toLocaleDateString('en-US', { 
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      });
+                    }}
                   />
                 }
               />
