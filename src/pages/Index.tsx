@@ -359,7 +359,7 @@ const Index = () => {
             />
           </picture>
           </div>
-          <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. Congratulations! You are now a key part of this great project. By sharing it in your social circle, you help grow our community and build the #1 global hub for anime culture.</p>
+          <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild variant="glass">
               <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
