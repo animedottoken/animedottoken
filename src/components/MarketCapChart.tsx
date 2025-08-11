@@ -28,7 +28,7 @@ interface MarketCapChartProps {
 
 const chartConfig = {
   marketCap: {
-    label: "Market Cap",
+    label: "Market Cap ($)",
     color: "hsl(var(--primary))",
   },
 };
@@ -164,13 +164,13 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
     <Card className="shadow-elevated">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Market Overview
+          Market Cap Chart
           <Badge variant={tokenInfo.priceChange24h >= 0 ? "default" : "destructive"}>
             {tokenInfo.priceChange24h >= 0 ? "+" : ""}{tokenInfo.priceChange24h.toFixed(2)}%
           </Badge>
         </CardTitle>
         <CardDescription>
-          {tokenInfo.name} ({tokenInfo.symbol}) • Last 24 hours
+          {tokenInfo.name} ({tokenInfo.symbol}) • Market Capitalization over 24 hours
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -202,13 +202,16 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
                 tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()}
                 domain={['dataMin', 'dataMax']}
               />
-              <YAxis tickFormatter={formatMarketCap} />
+              <YAxis 
+                tickFormatter={formatMarketCap}
+                label={{ value: 'Market Cap ($)', angle: -90, position: 'insideLeft' }}
+              />
               <ChartTooltip
                 content={
                   <ChartTooltipContent
                     formatter={(value, name) => [
                       formatMarketCap(value as number),
-                      name === "marketCap" ? "Market Cap" : name
+                      "Market Cap"
                     ]}
                     labelFormatter={(timestamp) => 
                       new Date(timestamp).toLocaleString()
