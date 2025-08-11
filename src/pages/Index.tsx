@@ -221,16 +221,16 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: By the Numbers</h2>
           <p className="mt-3 text-muted-foreground">
             Join our foundation of{" "}
-            <span className="font-semibold">
+            <span className="font-bold text-foreground">
               {holders ? `${holders.toLocaleString()}+` : "1300+"}
             </span>{" "}
             holders. For just $100, you can control over{" "}
             {tokenData?.price ? (
               <>
-                <span className="font-semibold">
+                <span className="font-bold text-foreground">
                   {(100 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </span>{" "}
-                $ANIME tokens—<span className="font-semibold">
+                $ANIME tokens—<span className="font-bold text-foreground">
                   {((100 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
                 </span>{" "}
                 of the total supply—and help write the next chapter with us.
