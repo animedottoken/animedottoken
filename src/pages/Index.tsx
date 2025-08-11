@@ -246,7 +246,7 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
-        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a co-owner of this great project is easier than ever. Follow these 4 simple steps:</p>
+        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a part of this great movement is easier than ever. Follow these 4 simple steps:</p>
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
@@ -359,7 +359,7 @@ const Index = () => {
             />
           </picture>
           </div>
-          <p className="mt-3 text-muted-foreground">You are now not just part of this great project, but also its co-owner. By promoting it in your social circle, you can help it become more valuable, increasing your share in the project too.</p>
+          <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. Congratulations! You are now a key part of this great project. By sharing it in your social circle, you help grow our community and build the #1 global hub for anime culture.</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild variant="glass">
               <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
