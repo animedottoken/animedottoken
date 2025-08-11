@@ -224,7 +224,8 @@ const Index = () => {
             <span className="font-bold text-foreground">
               {holders ? `${holders.toLocaleString()}+` : "1300+"}
             </span>{" "}
-            holders. For just $100, you can control over{" "}
+            holders. For just{" "}
+            <span className="font-bold text-foreground">$100</span>, you can control{" "}
             {tokenData?.price ? (
               <>
                 <span className="font-bold text-foreground">
