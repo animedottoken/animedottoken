@@ -11,6 +11,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok } from "react-icons/si";
 import { useLivePrice } from "@/hooks/useLivePrice";
+import { useTokenHolders } from "@/hooks/useTokenHolders";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
@@ -18,6 +19,7 @@ const TOTAL_SUPPLY = 974338302;
 
 const Index = () => {
   const { tokenData } = useLivePrice(PAIR_ADDRESS);
+  const holders = useTokenHolders(CONTRACT);
   const copyContract = async () => {
     await navigator.clipboard.writeText(CONTRACT);
     toast.success("Contract address copied");
@@ -218,9 +220,13 @@ const Index = () => {
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: By the Numbers</h2>
           <p className="mt-3 text-muted-foreground">
+            With a solid base of{" "}
+            <span className="font-semibold">
+              {holders ? `${holders.toLocaleString()}+` : "1300+"}
+            </span>{" "}
+            holders and the current low market cap, an investment of just $100 could secure you over{" "}
             {tokenData?.price ? (
               <>
-                With the current low market cap, an investment of just $100 could secure you over{" "}
                 <span className="font-semibold">
                   {(100 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </span>{" "}
@@ -228,11 +234,12 @@ const Index = () => {
                 <span className="font-semibold">
                   {((100 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
                 </span>{" "}
-                of the total supply. The next chapter is in our hands.
+                of the total supply.
               </>
             ) : (
-              "With the current low market cap, an investment of just $100 could secure you over 2.6 million $ANIME tokens, representing 0.27% of the total supply. The next chapter is in our hands."
-            )}
+              "2.6 million $ANIME tokens, representing 0.27% of the total supply."
+            )}{" "}
+            The next chapter is in our hands.
           </p>
         </div>
         <MarketCapChart />
