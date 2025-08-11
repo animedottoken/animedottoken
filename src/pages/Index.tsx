@@ -211,6 +211,10 @@ const Index = () => {
       <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: By the Numbers</h2>
+          <p className="mt-3 text-muted-foreground">With a solid base of 1300+ holders, the next chapter is in our hands.</p>
+        </div>
         <MarketCapChart tokenAddress={CONTRACT} />
       </section>
 
