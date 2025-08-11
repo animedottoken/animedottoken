@@ -220,26 +220,24 @@ const Index = () => {
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: By the Numbers</h2>
           <p className="mt-3 text-muted-foreground">
-            With a solid base of{" "}
+            Join our foundation of{" "}
             <span className="font-semibold">
               {holders ? `${holders.toLocaleString()}+` : "1300+"}
             </span>{" "}
-            holders and the current low market cap, an investment of just $100 could secure you over{" "}
+            holders. For just $100, you can control over{" "}
             {tokenData?.price ? (
               <>
                 <span className="font-semibold">
                   {(100 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </span>{" "}
-                $ANIME tokens, representing{" "}
-                <span className="font-semibold">
+                $ANIME tokens—<span className="font-semibold">
                   {((100 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
                 </span>{" "}
-                of the total supply.
+                of the total supply—and help write the next chapter with us.
               </>
             ) : (
-              "2.6 million $ANIME tokens, representing 0.27% of the total supply."
-            )}{" "}
-            The next chapter is in our hands.
+              "2.6 million $ANIME tokens—0.28% of the total supply—and help write the next chapter with us."
+            )}
           </p>
         </div>
         <MarketCapChart />
