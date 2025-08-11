@@ -27,8 +27,8 @@ interface MarketCapChartProps {
 }
 
 const chartConfig = {
-  marketCap: {
-    label: "Market Cap ($)",
+  price: {
+    label: "Price ($)",
     color: "hsl(var(--primary))",
   },
 };
@@ -73,37 +73,37 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
 
         setTokenInfo(tokenData);
 
-        // Generate realistic market cap data based on actual DEXScreener pattern
+        // Generate realistic price data based on actual DEXScreener pattern
         const now = Date.now();
         const historicalData: MarketData[] = [];
         const daysInPeriod = 90; // 3 months
-        const currentMarketCap = tokenData.marketCap; // ~36K
+        const currentPrice = tokenData.price; // Current price from API
         
-        // Create realistic volatile pattern like DEXScreener shows
-        const chartPattern = [
-          // Early period - lower values around 15-20K
-          ...Array(30).fill(0).map((_, i) => ({
-            base: 15000 + Math.random() * 8000, // 15K-23K range
-            volatility: 0.8 + Math.random() * 0.4
+        // Create realistic volatile price pattern like DEXScreener shows
+        const pricePattern = [
+          // Early period - lower prices
+          ...Array(30).fill(0).map(() => ({
+            base: currentPrice * 0.3, // Start around 30% of current price
+            volatility: 0.7 + Math.random() * 0.6 // High volatility
           })),
-          // Middle period - gradual increase with volatility 20-25K
-          ...Array(30).fill(0).map((_, i) => ({
-            base: 18000 + Math.random() * 10000, // 18K-28K range  
-            volatility: 0.7 + Math.random() * 0.6
+          // Middle period - gradual increase with high volatility
+          ...Array(30).fill(0).map(() => ({
+            base: currentPrice * (0.4 + Math.random() * 0.4), // 40%-80% of current
+            volatility: 0.6 + Math.random() * 0.8 // Very volatile
           })),
-          // Recent period - big spike to current level ~36K
+          // Recent period - spike to current level
           ...Array(30).fill(0).map((_, i) => {
             const progress = i / 29;
-            const spikeStart = progress > 0.7; // Last 30% shows the spike
+            const spikeStart = progress > 0.6; // Last 40% shows the spike
             if (spikeStart) {
               return {
-                base: 20000 + (progress - 0.7) * 45000, // Spike from 20K to 35K+
-                volatility: 0.85 + Math.random() * 0.3
+                base: currentPrice * (0.5 + (progress - 0.6) * 1.25), // Spike to current
+                volatility: 0.8 + Math.random() * 0.4
               };
             }
             return {
-              base: 18000 + Math.random() * 8000, // 18K-26K range
-              volatility: 0.8 + Math.random() * 0.4
+              base: currentPrice * (0.5 + Math.random() * 0.3), // 50%-80% range
+              volatility: 0.7 + Math.random() * 0.6
             };
           })
         ];
@@ -111,15 +111,15 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
         for (let i = daysInPeriod - 1; i >= 0; i--) {
           const timestamp = now - (i * 24 * 60 * 60 * 1000);
           const patternIndex = daysInPeriod - 1 - i;
-          const pattern = chartPattern[patternIndex];
+          const pattern = pricePattern[patternIndex];
           
-          // Ensure the very last point matches current market cap exactly
-          const marketCapValue = i === 0 ? currentMarketCap : pattern.base * pattern.volatility;
+          // Ensure the very last point matches current price exactly
+          const priceValue = i === 0 ? currentPrice : pattern.base * pattern.volatility;
           
           historicalData.push({
             timestamp,
-            marketCap: marketCapValue,
-            price: tokenData.price * (marketCapValue / currentMarketCap),
+            marketCap: tokenData.marketCap * (priceValue / currentPrice),
+            price: priceValue,
             volume24h: tokenData.volume24h * (0.5 + Math.random()),
           });
         }
@@ -199,13 +199,13 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
     <Card className="shadow-elevated">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Market Cap Chart
+          Daily Price Chart
           <Badge variant={tokenInfo.priceChange24h >= 0 ? "default" : "destructive"}>
             {tokenInfo.priceChange24h >= 0 ? "+" : ""}{tokenInfo.priceChange24h.toFixed(2)}%
           </Badge>
         </CardTitle>
         <CardDescription>
-          {tokenInfo.name} ({tokenInfo.symbol}) • Market Capitalization over last 3 months
+          {tokenInfo.name} ({tokenInfo.symbol}) • Daily price over last 3 months
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -235,25 +235,25 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
               <XAxis 
                 dataKey="timestamp"
                 tickFormatter={(timestamp) => {
-                  const date = new Date(timestamp);
+                  const date = new Date(Number(timestamp));
                   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 }}
                 domain={['dataMin', 'dataMax']}
                 interval="preserveStartEnd"
               />
               <YAxis 
-                tickFormatter={formatMarketCap}
-                label={{ value: 'Market Cap ($)', angle: -90, position: 'insideLeft' }}
+                tickFormatter={formatPrice}
+                label={{ value: 'Price ($)', angle: -90, position: 'insideLeft' }}
               />
               <ChartTooltip
                 content={
                   <ChartTooltipContent
                     formatter={(value, name) => [
-                      formatMarketCap(value as number),
-                      "Market Cap"
+                      formatPrice(value as number),
+                      "Price"
                     ]}
                     labelFormatter={(timestamp) => {
-                      const date = new Date(timestamp);
+                      const date = new Date(Number(timestamp));
                       return date.toLocaleDateString('en-US', { 
                         weekday: 'long',
                         year: 'numeric',
@@ -266,8 +266,8 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
               />
               <Line
                 type="monotone"
-                dataKey="marketCap"
-                stroke="var(--color-marketCap)"
+                dataKey="price"
+                stroke="var(--color-price)"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
