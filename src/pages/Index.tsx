@@ -496,6 +496,7 @@ const Index = () => {
       <footer className="mx-auto mt-16 max-w-5xl border-t pt-6 text-center text-sm text-muted-foreground">
         <p>© 2025 ANIME.TOKEN | All Rights Reserved</p>
         <p className="mt-1 flex items-center justify-center gap-2"><span>Official Contract:</span> <code className="rounded-md bg-secondary px-2 py-0.5 text-xs">{CONTRACT}</code> <Button variant="outline" size="sm" onClick={copyContract} aria-label="Copy contract address">Copy</Button></p>
+        <p className="mt-2">Website created with <a href="https://lovable.dev/invite/f59fc72f-7a4c-44ba-9735-226d9f24e4b0" target="_blank" rel="noopener noreferrer sponsored" className="underline underline-offset-4">Lovable</a>. Build yours in minutes.</p>
         <p className="mt-2">Disclaimer: Investing in cryptocurrency involves risk. This is not financial advice.</p>
       </footer>
 
