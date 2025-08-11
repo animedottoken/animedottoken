@@ -78,19 +78,25 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
         const now = Date.now();
         const historicalData: MarketData[] = [];
         const daysInPeriod = 90; // 3 months
+        const currentMarketCap = tokenData.marketCap;
         
         for (let i = daysInPeriod - 1; i >= 0; i--) {
           const timestamp = now - (i * 24 * 60 * 60 * 1000); // Daily data points
-          // Create more realistic market cap progression over 3 months
+          // Create more realistic market cap progression ending at current value
           const dayProgress = (daysInPeriod - i) / daysInPeriod;
-          const baseVariance = 0.5 + (dayProgress * 1.5); // Growth trend over time
-          const randomVariance = 0.8 + Math.random() * 0.4; // ±20% daily variance
-          const finalVariance = baseVariance * randomVariance;
+          
+          // Start from a lower value and progress to current market cap
+          const baseProgress = 0.3 + (dayProgress * 0.7); // Start at 30% of current, grow to 100%
+          const randomVariance = 0.9 + Math.random() * 0.2; // ±10% daily variance
+          const calculatedMarketCap = currentMarketCap * baseProgress * randomVariance;
+          
+          // Ensure the last data point is the actual current market cap
+          const finalMarketCap = i === 0 ? currentMarketCap : calculatedMarketCap;
           
           historicalData.push({
             timestamp,
-            marketCap: tokenData.marketCap * finalVariance,
-            price: tokenData.price * finalVariance,
+            marketCap: finalMarketCap,
+            price: tokenData.price * (finalMarketCap / currentMarketCap),
             volume24h: tokenData.volume24h * randomVariance,
           });
         }
@@ -199,7 +205,7 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
           </div>
         </div>
 
-        <ChartContainer config={chartConfig} className="h-80 md:h-96">
+        <ChartContainer config={chartConfig} className="h-96 md:h-[28rem]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
