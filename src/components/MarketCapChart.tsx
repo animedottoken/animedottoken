@@ -6,8 +6,8 @@ interface DexScreenerChartProps {
 }
 
 export function MarketCapChart({ pairAddress = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc" }: DexScreenerChartProps) {
-  // DEXScreener embed URL with proper parameters
-  const dexScreenerEmbedUrl = `https://dexscreener.com/solana/${pairAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=2&chartType=usd&interval=60`;
+  // DEXScreener embed URL with proper parameters and purple chart line
+  const dexScreenerEmbedUrl = `https://dexscreener.com/solana/${pairAddress}?embed=1&loadChartSettings=0&trades=0&tabs=0&chartLeftToolbar=0&chartDefaultOnMobile=1&chartTheme=dark&theme=dark&chartStyle=2&chartType=usd&interval=60&chartColor=8b5cf6`;
 
   return (
     <Card className="shadow-elevated">
