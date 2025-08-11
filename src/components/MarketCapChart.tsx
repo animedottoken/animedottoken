@@ -199,7 +199,7 @@ export function MarketCapChart({ tokenAddress }: MarketCapChartProps) {
           </div>
         </div>
 
-        <ChartContainer config={chartConfig} className="h-64">
+        <ChartContainer config={chartConfig} className="h-80 md:h-96">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
