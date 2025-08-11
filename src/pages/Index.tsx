@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
+import { MarketCapChart } from "@/components/MarketCapChart";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok } from "react-icons/si";
@@ -205,6 +206,10 @@ const Index = () => {
             </CardDescription>
           </CardHeader>
         </Card>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <MarketCapChart tokenAddress={CONTRACT} />
       </section>
 
       <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
