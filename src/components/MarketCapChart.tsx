@@ -26,11 +26,21 @@ export function MarketCapChart({ pairAddress = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7
             #dexscreener-embed {
               position: relative;
               width: 100%;
-              padding-bottom: 125%;
+              padding-bottom: 100%;
             }
-            @media(min-width: 1400px) {
+            @media (min-width: 768px) {
+              #dexscreener-embed {
+                padding-bottom: 75%;
+              }
+            }
+            @media (min-width: 1024px) {
               #dexscreener-embed {
                 padding-bottom: 65%;
+              }
+            }
+            @media (min-width: 1400px) {
+              #dexscreener-embed {
+                padding-bottom: 55%;
               }
             }
             #dexscreener-embed iframe {
