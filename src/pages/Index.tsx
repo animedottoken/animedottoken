@@ -209,11 +209,10 @@ const Index = () => {
         <AspectRatio ratio={3 / 2}>
           <picture>
             <img
-              src="https://animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+              src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
               loading="eager"
               decoding="async"
-              fetchPriority="high"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
               className="w-full h-full object-cover block"
             />
