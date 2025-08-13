@@ -145,7 +145,7 @@ export function NFTSupporterSection() {
               💬 Ready to Claim Your Role?
             </h3>
             <p className="text-muted-foreground mb-6">
-              We don't sell these NFTs — we award them. If you've been promoting ANIME.TOKEN, inviting others, or holding strong, you may already be eligible.
+              These NFTs are earned, not sold. If you meet the criteria for a Founder, Ambassador, or Hodler, it's time to make it official. Contact the team on X (Twitter) or Discord with proof of your contributions or holding history to begin the verification process.
             </p>
             <Button 
               size="lg" 
