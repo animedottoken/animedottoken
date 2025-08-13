@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { MarketCapChart } from "@/components/MarketCapChart";
 import { NFTSupporterSection } from "@/components/NFTSupporterSection";
+import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
@@ -261,30 +262,29 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: By the Numbers</h2>
-          <p className="mt-3 text-muted-foreground">
-            Join our foundation of{" "}
-            <span className="font-bold text-foreground">
-              {holders ? `${holders.toLocaleString()}+` : "1300+"}
-            </span>{" "}
-            holders. For just{" "}
-            <span className="font-bold text-foreground">$100</span>, you can control{" "}
-            {tokenData?.price ? (
-              <>
-                <span className="font-bold text-foreground">
-                  {(100 / tokenData.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                </span>{" "}
-                $ANIME tokens—<span className="font-bold text-foreground">
-                  {((100 / tokenData.price) / TOTAL_SUPPLY * 100).toFixed(2)}%
-                </span>{" "}
-                of the total supply—and help write the next chapter with us.
-              </>
-            ) : (
-              "2.6 million $ANIME tokens—0.28% of the total supply—and help write the next chapter with us."
-            )}
+          <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: A Decentralized Future</h2>
+          <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
+            Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how support translates into a real share of the network.
           </p>
         </div>
-        <MarketCapChart />
+        
+        <div className="mb-8">
+          <OwnershipCalculator />
+        </div>
+
+        <div className="text-center">
+          <p className="text-muted-foreground max-w-3xl mx-auto">
+            Join over{" "}
+            <span className="font-bold text-foreground">
+              {holders ? `${holders.toLocaleString()}` : "1,300"}
+            </span>{" "}
+            holders and become a key member of our movement. Your contribution, no matter the size, helps us build the #1 global hub for anime culture.
+          </p>
+        </div>
+        
+        <div className="mt-8">
+          <MarketCapChart />
+        </div>
       </section>
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
