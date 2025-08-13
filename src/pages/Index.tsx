@@ -31,8 +31,8 @@ const Index = () => {
   const pageUrl = shareBase;
   const sharePageUrl = `${shareBase}/share-army.html?v=12`;
   const shareImage = `${shareBase}/lovable-uploads/a2811316-aae4-4c0b-90dc-224e1322724f.png`;
-  const shareText = "Proud member of the $ANIME Army on Solana.";
-  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}&url=${encodeURIComponent(sharePageUrl)}`;
+  const shareText = "I just joined the @AnimeDotToken movement on #Solana. A community-revived project building the #1 global hub for #anime culture. Check out the vision and get involved! #ANIMEtoken $ANIME";
+  const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(sharePageUrl)}&text=${encodeURIComponent(shareText)}`;
 
   const copyShare = async () => {
@@ -413,9 +413,9 @@ const Index = () => {
                     Share on X/Twitter
                   </a>
                 </Button>
-                <Button variant="glass" onClick={copyForInstagram}>
+                <Button variant="glass" onClick={() => window.open("https://www.instagram.com/create/select/", "_blank")}>
                   <SiInstagram className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for Instagram
+                  Open Instagram
                 </Button>
               </div>
             </div>
@@ -428,22 +428,22 @@ const Index = () => {
                     Share on Telegram
                   </a>
                 </Button>
-                <Button variant="glass" onClick={copyForDiscord}>
+                <Button variant="glass" onClick={() => window.open("https://discord.com/channels/@me", "_blank")}>
                   <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for Discord
+                  Open Discord
                 </Button>
               </div>
             </div>
             <div aria-labelledby="share-video">
               <h3 id="share-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
               <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button variant="glass" onClick={copyForTikTok}>
+                <Button variant="glass" onClick={() => window.open("https://www.tiktok.com/tiktokstudio/upload", "_blank")}>
                   <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for TikTok
+                  Open TikTok
                 </Button>
-                <Button variant="glass" onClick={copyForYouTube}>
+                <Button variant="glass" onClick={() => window.open("https://www.youtube.com/upload", "_blank")}>
                   <SiYoutube className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for YouTube
+                  Open YouTube
                 </Button>
               </div>
             </div>
