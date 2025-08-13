@@ -93,9 +93,7 @@ export function NFTSupporterSection() {
                 {/* Icon and Title */}
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-2">{nft.icon}</div>
-                  {nft.id === "founders" && (
-                    <p className="text-xs text-muted-foreground mb-1">Role</p>
-                  )}
+                  <p className="text-xs text-muted-foreground mb-1">Role</p>
                   <h3 className="text-xl font-bold">{nft.title}</h3>
                 </div>
                 
