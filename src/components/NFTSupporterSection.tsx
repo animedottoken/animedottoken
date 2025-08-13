@@ -147,15 +147,21 @@ export function NFTSupporterSection() {
             <p className="text-muted-foreground mb-6">
               These NFTs are earned, not sold. If you meet the criteria for a Founder, Ambassador, or Hodler, it's time to make it official. Contact the team on X (Twitter) or Discord with proof of your contributions or holding history to begin the verification process.
             </p>
-            <Button 
-              size="lg" 
-              onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
-            >
-              📩 Let's Connect
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">
-              Send us a message on Twitter or Discord so we can check your activity and mint your NFT.
-            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+              <Button 
+                size="lg" 
+                onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
+              >
+                Contact us on X (Twitter)
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg" 
+                onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
+              >
+                Contact us on Discord
+              </Button>
+            </div>
           </div>
         </div>
 
