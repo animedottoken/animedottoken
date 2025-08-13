@@ -9,22 +9,22 @@ const nftTypes = [
     id: "founders",
     title: "Founders NFT",
     image: foundersNFT,
-    description: "Early visionaries who supported ANIME.TOKEN from the beginning",
-    subtitle: "Invitation-only recognition for original supporters"
+    description: "Held 100,000+ $ANIME before Aug 1, 2025",
+    subtitle: "Early believers who established the foundation"
   },
   {
     id: "ambassadors", 
     title: "Ambassadors NFT",
     image: ambassadorsNFT,
-    description: "Active community builders sharing and growing ANIME.TOKEN",
-    subtitle: "For content creators and community advocates"
+    description: "Active on Twitter, TikTok, YouTube, Discord, or Blog writing",
+    subtitle: "Choose your channel and start promoting ANIME.TOKEN"
   },
   {
     id: "hodlers",
     title: "Hodlers NFT",
     image: hodlersNFT,
-    description: "Loyal supporters holding $ANIME for 3+ months",
-    subtitle: "Diamond hands recognition program"
+    description: "Gold (90 days), Diamond (365 days), or Eternal holders",
+    subtitle: "Long-term supporters with verified wallet holding"
   }
 ];
 
@@ -38,10 +38,10 @@ export function NFTSupporterSection() {
             🎖 ANIME.TOKEN Supporter NFT Program
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Recognizing the people building the #1 Anime Hub on Solana. Each NFT is unique, verified on blockchain, and represents your impact in our journey.
+            Earn exclusive NFTs by supporting ANIME.TOKEN across different channels. Choose your preferred platform and start contributing to our community.
           </p>
           <div className="mt-4 text-sm text-muted-foreground font-medium">
-            Limited Edition • Verified on Solana • Community Recognition
+            Free Rewards • Choose Your Channel • Verified Recognition
           </div>
         </div>
 
