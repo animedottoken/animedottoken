@@ -10,16 +10,16 @@ const nftTypes = [
   {
     id: "founders",
     icon: "🥇",
-    title: "Founder",
+    title: "Role: Founder (Member of the ANIME ARMY)",
     image: foundersNFT,
     role: "",
-    description: "The most prestigious recognition, reserved for the core contributors who provide exceptional, high-impact value. Founders are the strategists, builders, and key advisors who are helping to shape the future of the entire project.",
+    description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
     howToEarn: [
-      "This NFT cannot be earned by simply posting. It is awarded directly by the project lead for foundational contributions such as:",
-      "• Providing strategic direction and market analysis.",
-      "• Securing key partnerships or contacts.",
-      "• Developing tools or managing core project communications.",
-      "• Leading major community initiatives."
+      "This role is the highest honor and is awarded directly for exceptional contributions that fundamentally advance the project. To be considered, a candidate must proactively contact the team and provide evidence of meeting one of the following measurable targets:",
+      "**Partnerships:** Secure a formal, announced partnership with another established project, influencer, or platform.",
+      "**Project Management:** Successfully manage an official project initiative from proposal to completion (e.g., a marketing campaign, community competition, or content sprint).",
+      "**Treasury Growth:** Introduce a strategic opportunity that results in a verifiable increase of over 10 ETH (or equivalent) to the project treasury.",
+      "**Ecosystem Development:** Deliver a functional tool (e.g., Discord bot, analytics dashboard) that is officially adopted for community use."
     ],
     reward: "Unique, verifiable NFT on the Solana blockchain.",
     details: "Founder NFTs are limited and given only once — holders will be recognized as the original visionaries of the ANIME revival. This is the highest tier of recognition for those who shape the project's direction."
@@ -76,9 +76,81 @@ export function NFTSupporterSection() {
           </p>
         </div>
 
+        {/* Section 1: The ANIME ARMY */}
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold text-center mb-6">Section 1: The ANIME ARMY</h3>
+        </div>
+
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {nftTypes.map((nft) => (
+          {nftTypes.slice(0, 1).map((nft) => (
+            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+              <CardContent className="p-6">
+                {/* NFT Image */}
+                <div className="mb-6 overflow-hidden rounded-lg">
+                  <img 
+                    src={nft.image} 
+                    alt={nft.title}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                
+                {/* Icon and Title */}
+                <div className="text-center mb-4">
+                  <div className="text-4xl mb-2">{nft.icon}</div>
+                  <h3 className="text-xl font-bold">{nft.title}</h3>
+                </div>
+                
+                
+                {/* Description */}
+                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
+                
+                {/* How to Earn */}
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    {nft.howToEarn.slice(0, 2).map((item, index) => (
+                      <li key={index} className="leading-relaxed">• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Expandable Details */}
+                <div className="mb-4">
+                  <Collapsible 
+                    open={openDetails === nft.id} 
+                    onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="link" className="px-0 text-xs mb-2">
+                        {openDetails === nft.id ? "Hide details" : "Show details"}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-3">
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        {nft.howToEarn.slice(2).map((item, index) => (
+                          <li key={index} className="leading-relaxed">• {item}</li>
+                        ))}
+                      </ul>
+                      <div className="text-xs">
+                        <p className="font-medium text-foreground mb-1">Reward:</p>
+                        <p className="text-muted-foreground">{nft.reward}</p>
+                      </div>
+                      <div className="text-xs bg-muted/50 p-2 rounded">
+                        <p className="text-muted-foreground leading-relaxed">{nft.details}</p>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Other NFT Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {nftTypes.slice(1).map((nft) => (
             <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
               <CardContent className="p-6">
                 {/* NFT Image */}
