@@ -83,74 +83,7 @@ export function NFTSupporterSection() {
 
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {nftTypes.slice(0, 1).map((nft) => (
-            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-              <CardContent className="p-6">
-                {/* NFT Image */}
-                <div className="mb-6 overflow-hidden rounded-lg">
-                  <img 
-                    src={nft.image} 
-                    alt={nft.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                {/* Icon and Title */}
-                <div className="text-center mb-4">
-                  <div className="text-4xl mb-2">{nft.icon}</div>
-                  <h3 className="text-xl font-bold">{nft.title}</h3>
-                </div>
-                
-                
-                {/* Description */}
-                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
-                
-                {/* How to Earn */}
-                <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    {nft.howToEarn.slice(0, 2).map((item, index) => (
-                      <li key={index} className="leading-relaxed">• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Expandable Details */}
-                <div className="mb-4">
-                  <Collapsible 
-                    open={openDetails === nft.id} 
-                    onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
-                  >
-                    <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-xs mb-2">
-                        {openDetails === nft.id ? "Hide details" : "Show details"}
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-3">
-                      <ul className="text-xs text-muted-foreground space-y-1">
-                        {nft.howToEarn.slice(2).map((item, index) => (
-                          <li key={index} className="leading-relaxed">• {item}</li>
-                        ))}
-                      </ul>
-                      <div className="text-xs">
-                        <p className="font-medium text-foreground mb-1">Reward:</p>
-                        <p className="text-muted-foreground">{nft.reward}</p>
-                      </div>
-                      <div className="text-xs bg-muted/50 p-2 rounded">
-                        <p className="text-muted-foreground leading-relaxed">{nft.details}</p>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Other NFT Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {nftTypes.slice(1).map((nft) => (
+          {nftTypes.map((nft) => (
             <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
               <CardContent className="p-6">
                 {/* NFT Image */}
