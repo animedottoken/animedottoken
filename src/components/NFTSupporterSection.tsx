@@ -10,7 +10,7 @@ const nftTypes = [
   {
     id: "founders",
     icon: "🥇",
-    title: "Role: Founder (Member of the ANIME ARMY)",
+    title: "Founder",
     image: foundersNFT,
     role: "",
     description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
@@ -98,6 +98,9 @@ export function NFTSupporterSection() {
                 {/* Icon and Title */}
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-2">{nft.icon}</div>
+                  {nft.id === "founders" && (
+                    <p className="text-xs text-muted-foreground mb-1">Role</p>
+                  )}
                   <h3 className="text-xl font-bold">{nft.title}</h3>
                 </div>
                 
