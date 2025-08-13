@@ -60,7 +60,7 @@ const nftTypes = [
 ];
 
 export function NFTSupporterSection() {
-  const [openDetails, setOpenDetails] = useState<string | null>(null);
+  const [openDetails, setOpenDetails] = useState<Set<string>>(new Set());
 
   return (
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -106,12 +106,20 @@ export function NFTSupporterSection() {
                   
                   {/* Expandable Details */}
                   <Collapsible 
-                    open={openDetails === nft.id} 
-                    onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
+                    open={openDetails.has(nft.id)} 
+                    onOpenChange={(open) => {
+                      const newOpenDetails = new Set(openDetails);
+                      if (open) {
+                        newOpenDetails.add(nft.id);
+                      } else {
+                        newOpenDetails.delete(nft.id);
+                      }
+                      setOpenDetails(newOpenDetails);
+                    }}
                   >
                     <CollapsibleTrigger asChild>
                       <Button variant="link" className="px-0 text-xs text-primary mb-2">
-                        {openDetails === nft.id ? "Show less" : "See more"}
+                        {openDetails.has(nft.id) ? "Show less" : "See more"}
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-2">
