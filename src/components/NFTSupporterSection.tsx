@@ -199,24 +199,6 @@ export function NFTSupporterSection() {
             <p>2. Follow the "How to Earn" steps for that NFT.</p>
             <p>3. Stay active, use the hashtags, and let us know when you're ready.</p>
           </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              className="min-w-[160px]"
-              onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
-            >
-              Join Discord
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="min-w-[160px]"
-              onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
-            >
-              Follow on X
-            </Button>
-          </div>
         </div>
       </div>
     </section>
