@@ -143,14 +143,6 @@ export function NFTSupporterSection() {
                   </Collapsible>
                 </div>
 
-                {/* CTA Button */}
-                <Button 
-                  className="w-full" 
-                  size="sm"
-                  onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
-                >
-                  Let's Connect to Claim
-                </Button>
               </CardContent>
             </Card>
           ))}
