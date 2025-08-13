@@ -47,14 +47,12 @@ const nftTypes = [
     title: "Hodler",
     image: hodlersNFT,
     role: "Role: Loyal Supporter",
-    description: "A program to recognize our most dedicated supporters. The blockchain verifies your loyalty, and each rank unlocks unique recognition and status within the ANIME ARMY.",
+    description: "The silent financial backbone of our project. Hodlers are not part of the active ARMY; they do not fight, but they finance the entire operation. Their long-term conviction provides the foundational stability for our ecosystem.",
     howToEarn: [
-      "Hold $ANIME for a qualifying period:",
-      "• Gold: 3 months holding period",
-      "• Diamond: 12 months holding period", 
-      "• Legend: Never sold since acquisition",
-      "Activity is optional but encouraged — engaging with the community increases recognition.",
-      "Use hashtags: #ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEhodlers"
+      "This NFT is not an automated reward. To claim your rank, you must proactively contact the team and provide your wallet address. We will use a blockchain explorer to verify your holding history.",
+      "Gold Hodler|Verifiably held $ANIME for 3+ months without selling.",
+      "Diamond Hodler|Verifiably held $ANIME for 12+ months without selling.",
+      "Legend Hodler|Verifiably has never sold since their initial acquisition."
     ],
     reward: "NFT showing your level — Gold, Diamond, or Legend Hodler.",
     details: "Hodler NFTs are a way to celebrate loyalty. The blockchain verifies your holding history, and each tier unlocks unique recognition in the community."
