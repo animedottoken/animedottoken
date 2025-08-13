@@ -12,25 +12,25 @@ const nftTypes = [
     icon: "🥇",
     title: "Founder",
     image: foundersNFT,
-    value: "Value: $100",
-    description: "Exclusive recognition for early builders and visionaries who help establish the foundation of ANIME.TOKEN.",
+    role: "Role: Core Contributor",
+    description: "The most prestigious recognition, reserved for the core contributors who provide exceptional, high-impact value. Founders are the strategists, builders, and key advisors who are helping to shape the future of the entire project.",
     howToEarn: [
-      "Promote ANIME.TOKEN on Twitter (X), Discord, or other social platforms using our hashtags:",
-      "#ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEfounders",
-      "Share at least 3 posts per week mentioning ANIME.TOKEN or linking to our content.",
-      "Actively invite at least 5 new people to join our Discord or follow our Twitter.",
-      "Participate in at least 1 community discussion/event per month."
+      "This NFT cannot be earned by simply posting. It is awarded directly by the project lead for foundational contributions such as:",
+      "• Providing strategic direction and market analysis.",
+      "• Securing key partnerships or contacts.",
+      "• Developing tools or managing core project communications.",
+      "• Leading major community initiatives."
     ],
     reward: "Unique, verifiable NFT on the Solana blockchain.",
-    details: "Proof of activity can be screenshots, link history, or public posts we can verify. Founder NFTs are limited and given only once — holders will be recognized as the original visionaries of the ANIME revival."
+    details: "Founder NFTs are limited and given only once — holders will be recognized as the original visionaries of the ANIME revival. This is the highest tier of recognition for those who shape the project's direction."
   },
   {
     id: "ambassadors", 
     icon: "🤝",
     title: "Ambassador",
     image: ambassadorsNFT,
-    value: "Value: $100",
-    description: "Recognition for active community builders driving engagement, conversation, and influence across target communities.",
+    role: "Role: Content Creator",
+    description: "Recognition for the dedicated content creators and social media leaders who amplify our message and grow our community's reach.",
     howToEarn: [
       "Consistently promote ANIME.TOKEN in target communities (crypto, anime, NFT spaces).",
       "Use hashtags: #ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEAmbassadors",
@@ -43,10 +43,10 @@ const nftTypes = [
   {
     id: "hodlers",
     icon: "🏆",
-    title: "Hodler",
+    title: "ANIME ARMY Loyalty Ranks",
     image: hodlersNFT,
-    value: "Value: $100",
-    description: "Loyalty recognition for dedicated supporters who believe in ANIME.TOKEN's long-term vision and hold through market cycles.",
+    role: "Role: Loyal Supporter",
+    description: "A program to recognize our most dedicated supporters. The blockchain verifies your loyalty, and each rank unlocks unique recognition and status within the ANIME ARMY.",
     howToEarn: [
       "Hold $ANIME for a qualifying period:",
       "• Gold: 3 months holding period",
@@ -99,8 +99,8 @@ export function NFTSupporterSection() {
                   <h3 className="text-xl font-bold">{nft.title}</h3>
                 </div>
                 
-                {/* Value */}
-                <p className="text-primary font-semibold text-sm mb-1 text-center">{nft.value}</p>
+                {/* Role */}
+                <p className="text-primary font-semibold text-sm mb-1 text-center">{nft.role}</p>
                 
                 {/* Limitation */}
                 <div className="mb-3 flex justify-center">
