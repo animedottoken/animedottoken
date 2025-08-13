@@ -10,7 +10,7 @@ import hodlersNFT from "@/assets/nft-hodlers.jpg";
 const nftTypes = [
   {
     id: "founders",
-    title: "🥇 Founder NFT",
+    title: "🥇 Founder",
     image: foundersNFT,
     description: "Exclusive NFT for early builders and visionaries.",
     subtitle: "Value: $100",
@@ -26,7 +26,7 @@ const nftTypes = [
   },
   {
     id: "ambassadors", 
-    title: "🤝 Ambassador NFT",
+    title: "🤝 Ambassador",
     image: ambassadorsNFT,
     description: "For those driving engagement, conversation, and influence in our community.",
     subtitle: "Value: $100",
@@ -41,7 +41,7 @@ const nftTypes = [
   },
   {
     id: "hodlers",
-    title: "🛡 Hodler NFT",
+    title: "🛡 Hodler",
     image: hodlersNFT,
     description: "For those who believe and hold.",
     subtitle: "Value: $100",
