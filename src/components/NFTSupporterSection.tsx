@@ -104,21 +104,11 @@ export function NFTSupporterSection() {
                 
                 {/* Limitation */}
                 <div className="mb-3 text-center">
-                  {nft.id === "founders" && (
-                    <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">
-                      Limited: 100 NFTs
-                    </span>
-                  )}
-                  {nft.id === "ambassadors" && (
-                    <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                      Limited: 1,000 NFTs
-                    </span>
-                  )}
-                  {nft.id === "hodlers" && (
-                    <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-                      Unlimited
-                    </span>
-                  )}
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {nft.id === "founders" && "Limited: 100 NFTs"}
+                    {nft.id === "ambassadors" && "Limited: 1,000 NFTs"}
+                    {nft.id === "hodlers" && "Unlimited"}
+                  </span>
                 </div>
                 
                 {/* Description */}
