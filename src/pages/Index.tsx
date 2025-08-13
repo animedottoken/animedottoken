@@ -382,19 +382,6 @@ const Index = () => {
           </div>
           <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
           <div className="mt-5 space-y-4">
-            <div aria-labelledby="share-video">
-              <h3 id="share-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
-              <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button variant="glass" onClick={copyForTikTok}>
-                  <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for TikTok
-                </Button>
-                <Button variant="glass" onClick={copyForYouTube}>
-                  <SiYoutube className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Copy for YouTube
-                </Button>
-              </div>
-            </div>
             <div aria-labelledby="share-social">
               <h3 id="share-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
               <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -422,6 +409,19 @@ const Index = () => {
                 <Button variant="glass" onClick={copyForDiscord}>
                   <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
                   Copy for Discord
+                </Button>
+              </div>
+            </div>
+            <div aria-labelledby="share-video">
+              <h3 id="share-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
+              <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button variant="glass" onClick={copyForTikTok}>
+                  <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
+                  Copy for TikTok
+                </Button>
+                <Button variant="glass" onClick={copyForYouTube}>
+                  <SiYoutube className="h-4 w-4 mr-2" aria-hidden="true" />
+                  Copy for YouTube
                 </Button>
               </div>
             </div>
@@ -565,13 +565,6 @@ const Index = () => {
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
         <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
         <div className="mt-6 space-y-4">
-          <div aria-labelledby="join-video">
-            <h3 id="join-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
-            <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
-              <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
-            </div>
-          </div>
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -584,6 +577,13 @@ const Index = () => {
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
               <Button asChild variant="glass"><a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+            </div>
+          </div>
+          <div aria-labelledby="join-video">
+            <h3 id="join-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
+            <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
+              <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
             </div>
           </div>
         </div>
