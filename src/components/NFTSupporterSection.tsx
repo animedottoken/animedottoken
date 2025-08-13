@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import foundersNFT from "@/assets/nft-founders.jpg";
 import ambassadorsNFT from "@/assets/nft-ambassadors.jpg";
@@ -122,12 +121,11 @@ export function NFTSupporterSection() {
                   onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
                 >
                   <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full mb-4 text-xs">
-                      <span>See More Details</span>
-                      <ChevronDown className={`h-3 w-3 ml-1 transition-transform duration-200 ${openDetails === nft.id ? 'rotate-180' : ''}`} />
+                    <Button variant="link" className="px-0 text-xs">
+                      {openDetails === nft.id ? "Hide details" : "Show details"}
                     </Button>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-3">
+                  <CollapsibleContent className="space-y-3 mt-3">
                     <ul className="text-xs text-muted-foreground space-y-1">
                       {nft.howToEarn.slice(2).map((item, index) => (
                         <li key={index} className="leading-relaxed">• {item}</li>
