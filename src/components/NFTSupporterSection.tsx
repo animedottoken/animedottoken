@@ -103,8 +103,8 @@ export function NFTSupporterSection() {
                 <p className="text-primary font-semibold text-sm mb-1 text-center">{nft.value}</p>
                 
                 {/* Limitation */}
-                <div className="mb-3 text-center">
-                  <span className="text-xs text-muted-foreground font-medium">
+                <div className="mb-3 flex justify-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
                     {nft.id === "founders" && "Limited: 100 NFTs"}
                     {nft.id === "ambassadors" && "Limited: 1,000 NFTs"}
                     {nft.id === "hodlers" && "Unlimited"}
