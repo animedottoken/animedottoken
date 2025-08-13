@@ -352,7 +352,7 @@ const Index = () => {
                   <li>
                     In To, paste the official $ANIME contract address:
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+                      <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block">{CONTRACT}</code>
                       <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
                     </div>
                   </li>
@@ -492,7 +492,7 @@ const Index = () => {
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-secondary px-2 py-1 text-sm">{CONTRACT}</code>
+                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block">{CONTRACT}</code>
                 <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
               </div>
             </li>
