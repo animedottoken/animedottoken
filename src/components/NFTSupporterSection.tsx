@@ -72,7 +72,7 @@ export function NFTSupporterSection() {
             🎖 ANIME.TOKEN Supporter NFT Program
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Three exclusive NFTs to recognize and reward our most valued community supporters. Earn yours by helping grow ANIME.TOKEN — no purchase required.
+            Our ecosystem is powered by three distinct and vital groups. This program outlines the three exclusive NFTs created to recognize and reward each of our most valued community supporters. Find your role, contribute to the mission, and earn your on-chain recognition.
           </p>
           <div className="mt-4 text-sm text-muted-foreground font-medium">
             Free Rewards • Choose Your Channel • Verified Recognition
