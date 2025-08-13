@@ -102,7 +102,7 @@ const Index = () => {
   const promoImages = [
     { src: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png", filename: "anime-token-characters-logo-banner.png", alt: "ANIME Token characters banner with logo" },
     { src: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png", filename: "anime-token-hooded-heroes-banner.png", alt: "ANIME.TOKEN banner with hooded figure and heroes" },
-    { src: "/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png", filename: "congratulations-anime-token-celebration.png", alt: "Congratulations ANIME Token celebration with anime characters" },
+    { src: "/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png?v=13", filename: "congratulations-anime-token-celebration.png", alt: "Congratulations ANIME Token celebration with anime characters" },
     { src: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png", filename: "congratulations-anime-society-crowd-bw.png", alt: "Congratulations black and white anime crowd poster" },
     { src: "/lovable-uploads/b964ec40-31a7-483d-9cf3-f2fbd588edb8.png", filename: "congratulations-anime-society-bright.png", alt: "Congratulations bright colorful anime crowd poster" },
     { src: "/lovable-uploads/d23194df-c1d3-4302-ab13-67508624ecbc.png", filename: "congratulations-anime-society-dark.png", alt: "Congratulations dark themed anime crowd poster" },
@@ -392,7 +392,7 @@ const Index = () => {
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
-              src="https://animedottoken.lovable.app/lovable-uploads/fb44cdff-1dd5-4a30-80bd-01164ee49259.png"
+              src="/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png"
               alt="Congratulations — Proud Anime Society Member poster"
               loading="lazy"
               decoding="async"
