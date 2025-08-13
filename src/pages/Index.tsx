@@ -567,31 +567,6 @@ const Index = () => {
       </section>
 
 
-      <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700" aria-labelledby="ambassador-heading">
-        <h2 id="ambassador-heading" className="text-2xl md:text-3xl font-bold">Become an Ambassador</h2>
-        <div className="mx-auto mt-4 max-w-md overflow-hidden rounded-lg border bg-card shadow-glow">
-          <AspectRatio ratio={3 / 2}>
-            <picture>
-              <img
-                src="https://animedottoken.lovable.app/lovable-uploads/84a73bd8-9888-4628-be42-18212456e718.png"
-                alt="Become an Ambassador – ANIME.TOKEN recruitment poster calling for the Anime Army"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-                className="h-full w-full object-cover"
-              />
-            </picture>
-          </AspectRatio>
-        </div>
-        <p className="mt-3 text-muted-foreground md:max-w-3xl mx-auto">
-          Our project is growing, and we are looking for passionate anime fans to join our core team. Help us manage our community platforms and shape the future of $ANIME.
-        </p>
-        <div className="mt-6">
-          <Button asChild variant="hero">
-            <a href="https://forms.gle/1pQZH89qi3x5AGUk6" target="_blank" rel="noreferrer noopener" aria-label="Apply to become an ANIME.TOKEN ambassador via Google Form">Apply Now</a>
-          </Button>
-        </div>
-      </section>
 
       {/* NFT Supporter Program Section */}
       <NFTSupporterSection />

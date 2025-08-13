@@ -18,7 +18,7 @@ const nftTypes = [
       "This role is the highest honor and is awarded directly for exceptional contributions that fundamentally advance the project. To be considered, a candidate must proactively contact the team and provide evidence of meeting one of the following measurable targets:",
       "Partnership|Secure a formal, announced partnership with another established project, influencer, or platform.",
       "Project Management|Successfully manage an official project initiative from proposal to completion (e.g., a marketing campaign, community competition, or content sprint).",
-      "Treasury Growth|Introduce a strategic opportunity that results in a verifiable increase of over 10 ETH (or equivalent) to the project treasury.",
+      "Treasury Growth|Introduce a strategic opportunity that results in a verifiable increase of over 2 ETH (or equivalent) to the project treasury.",
       "Ecosystem Development|Deliver a functional tool (e.g., Discord bot, analytics dashboard) that is officially adopted for community use."
     ],
     reward: "Unique, verifiable NFT on the Solana blockchain.",
