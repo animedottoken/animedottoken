@@ -32,11 +32,7 @@ export default function SupporterProgram() {
               <CardContent className="p-8">
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-4">🥇</div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Role:</p>
-                    <h3 className="text-xl font-bold">Founder</h3>
-                    <p className="text-violet-400 font-medium">(Member of the ANIME ARMY)</p>
-                  </div>
+                  <h3 className="text-xl font-bold">Founder</h3>
                 </div>
                 
                 <p className="text-muted-foreground mb-6 leading-relaxed">
