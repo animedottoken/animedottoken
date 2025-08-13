@@ -30,7 +30,7 @@ const Index = () => {
   const shareBase = "https://animedottoken.lovable.app";
   const pageUrl = shareBase;
   const sharePageUrl = `${shareBase}/share-army.html?v=12`;
-  const shareImage = `${shareBase}/lovable-uploads/a2811316-aae4-4c0b-90dc-224e1322724f.png`;
+  const shareImage = `${shareBase}/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png`;
   const shareText = "I just joined the @AnimeDotToken movement on #Solana. A community-revived project building the #1 global hub for #anime culture. Check out the vision and get involved! #ANIMEtoken $ANIME";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(sharePageUrl)}&text=${encodeURIComponent(shareText)}`;
