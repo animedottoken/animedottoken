@@ -82,8 +82,8 @@ export function NFTSupporterSection() {
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {nftTypes.map((nft) => (
-            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 flex flex-col">
-              <CardContent className="p-6 flex flex-col h-full">
+            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+              <CardContent className="p-6">
                 {/* NFT Image */}
                 <div className="mb-6 overflow-hidden rounded-lg">
                   <img 
@@ -106,7 +106,7 @@ export function NFTSupporterSection() {
                 <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
                 
                 {/* How to Earn */}
-                <div className="mb-4 flex-grow">
+                <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
                   <ul className="text-xs text-muted-foreground space-y-1">
                     {nft.howToEarn.slice(0, 2).map((item, index) => (
@@ -116,34 +116,36 @@ export function NFTSupporterSection() {
                 </div>
 
                 {/* Expandable Details */}
-                <Collapsible 
-                  open={openDetails === nft.id} 
-                  onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
-                >
-                  <CollapsibleTrigger asChild>
-                    <Button variant="link" className="px-0 text-xs">
-                      {openDetails === nft.id ? "Hide details" : "Show details"}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-3 mt-3">
-                    <ul className="text-xs text-muted-foreground space-y-1">
-                      {nft.howToEarn.slice(2).map((item, index) => (
-                        <li key={index} className="leading-relaxed">• {item}</li>
-                      ))}
-                    </ul>
-                    <div className="text-xs">
-                      <p className="font-medium text-foreground mb-1">Reward:</p>
-                      <p className="text-muted-foreground">{nft.reward}</p>
-                    </div>
-                    <div className="text-xs bg-muted/50 p-2 rounded">
-                      <p className="text-muted-foreground leading-relaxed">{nft.details}</p>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                <div className="mb-4">
+                  <Collapsible 
+                    open={openDetails === nft.id} 
+                    onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="link" className="px-0 text-xs mb-2">
+                        {openDetails === nft.id ? "Hide details" : "Show details"}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-3">
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        {nft.howToEarn.slice(2).map((item, index) => (
+                          <li key={index} className="leading-relaxed">• {item}</li>
+                        ))}
+                      </ul>
+                      <div className="text-xs">
+                        <p className="font-medium text-foreground mb-1">Reward:</p>
+                        <p className="text-muted-foreground">{nft.reward}</p>
+                      </div>
+                      <div className="text-xs bg-muted/50 p-2 rounded">
+                        <p className="text-muted-foreground leading-relaxed">{nft.details}</p>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
 
                 {/* CTA Button */}
                 <Button 
-                  className="w-full mt-auto" 
+                  className="w-full" 
                   size="sm"
                   onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
                 >
