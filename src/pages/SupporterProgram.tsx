@@ -33,8 +33,8 @@ export default function SupporterProgram() {
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-4">🥇</div>
                   <div className="space-y-1">
-                    <p className="text-violet-600 font-semibold">Role:</p>
-                    <h3 className="text-xl font-bold text-violet-600">Founder (Member of the ANIME ARMY)</h3>
+                    <p className="text-sm text-muted-foreground">Role:</p>
+                    <h3 className="text-xl font-bold">Founder (Member of the ANIME ARMY)</h3>
                   </div>
                 </div>
                 
