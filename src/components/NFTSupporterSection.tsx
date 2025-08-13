@@ -30,7 +30,7 @@ const nftTypes = [
 
 export function NFTSupporterSection() {
   return (
-    <section className="py-16 px-4 bg-gradient-to-br from-background via-background/80 to-muted/20">
+    <section id="nft-supporter-section" className="py-16 px-4 bg-gradient-to-br from-background via-background/80 to-muted/20">
       <div className="container mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

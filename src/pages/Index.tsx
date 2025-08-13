@@ -183,6 +183,27 @@ const Index = () => {
         />
       </Helmet>
 
+      {/* NFT Program Banner */}
+      <div className="mx-auto max-w-5xl mb-6 px-6">
+        <div 
+          className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
+          onClick={() => document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🎖</span>
+              <div>
+                <h3 className="font-semibold text-foreground">ANIME.TOKEN NFT Program</h3>
+                <p className="text-sm text-muted-foreground">Free NFTs for supporters • Choose your platform</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm">
+              Learn More
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <picture>
