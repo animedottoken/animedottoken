@@ -43,7 +43,7 @@ const nftTypes = [
   {
     id: "hodlers",
     icon: "🏆",
-    title: "ANIME ARMY Loyalty Ranks",
+    title: "Hodler",
     image: hodlersNFT,
     role: "Role: Loyal Supporter",
     description: "A program to recognize our most dedicated supporters. The blockchain verifies your loyalty, and each rank unlocks unique recognition and status within the ANIME ARMY.",
