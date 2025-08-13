@@ -82,8 +82,8 @@ export function NFTSupporterSection() {
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {nftTypes.map((nft) => (
-            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-              <CardContent className="p-6">
+            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 flex flex-col">
+              <CardContent className="p-6 flex flex-col h-full">
                 {/* NFT Image */}
                 <div className="mb-6 overflow-hidden rounded-lg">
                   <img 
@@ -106,7 +106,7 @@ export function NFTSupporterSection() {
                 <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
                 
                 {/* How to Earn */}
-                <div className="mb-4">
+                <div className="mb-4 flex-grow">
                   <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
                   <ul className="text-xs text-muted-foreground space-y-1">
                     {nft.howToEarn.slice(0, 2).map((item, index) => (
@@ -142,15 +142,13 @@ export function NFTSupporterSection() {
                 </Collapsible>
 
                 {/* CTA Button */}
-                <div className="mt-4">
-                  <Button 
-                    className="w-full" 
-                    size="sm"
-                    onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
-                  >
-                    Let's Connect to Claim
-                  </Button>
-                </div>
+                <Button 
+                  className="w-full mt-auto" 
+                  size="sm"
+                  onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
+                >
+                  Let's Connect to Claim
+                </Button>
               </CardContent>
             </Card>
           ))}
