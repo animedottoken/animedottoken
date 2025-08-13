@@ -74,9 +74,6 @@ export function NFTSupporterSection() {
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Our ecosystem is powered by three distinct and vital groups. This program outlines the three exclusive NFTs created to recognize and reward each of our most valued community supporters. Find your role, contribute to the mission, and earn your on-chain recognition.
           </p>
-          <div className="mt-4 text-sm text-muted-foreground font-medium">
-            Free Rewards • Choose Your Channel • Verified Recognition
-          </div>
         </div>
 
         {/* NFT Cards Grid */}
