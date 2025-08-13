@@ -142,7 +142,7 @@ export function NFTSupporterSection() {
         <div className="text-center mb-12">
           <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-6 max-w-3xl mx-auto">
             <h3 className="text-xl md:text-2xl font-semibold mb-4">
-              💬 Already Supporting? Think You Qualify?
+              💬 Ready to Claim Your Role?
             </h3>
             <p className="text-muted-foreground mb-6">
               We don't sell these NFTs — we award them. If you've been promoting ANIME.TOKEN, inviting others, or holding strong, you may already be eligible.
