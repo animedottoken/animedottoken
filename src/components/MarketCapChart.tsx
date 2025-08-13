@@ -13,11 +13,11 @@ export function MarketCapChart({ pairAddress = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7
     <Card className="shadow-elevated">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Live Market Cap Chart
+          Live Daily Price Chart
           <Badge variant="outline">Real-time</Badge>
         </CardTitle>
         <CardDescription>
-          Live market capitalization data from DEXScreener
+          Live daily price data from DEXScreener
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
