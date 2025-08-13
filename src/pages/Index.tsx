@@ -512,7 +512,7 @@ const Index = () => {
           <h3 className="text-lg font-semibold">FAQ</h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
-              <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract?</span>
+              <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block">{CONTRACT}</code>
                 <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
@@ -527,16 +527,24 @@ const Index = () => {
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">
                 <li className="rounded-md border bg-card/50 p-4">
-                  <span className="text-base md:text-lg font-semibold">I cannot find $ANIME in Phantom search.</span>
-                  <p className="mt-2 text-muted-foreground">Paste the contract address above into the token field to ensure you select the correct token.</p>
+                  <span className="text-base md:text-lg font-semibold">I can't find $ANIME in my wallet's swap search. What do I do?</span>
+                  <p className="mt-2 text-muted-foreground">Some wallet apps may not list new tokens immediately. To find it, simply copy the official contract address above and paste it directly into the token selection field in your wallet's swap interface.</p>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
-                  <span className="text-base md:text-lg font-semibold">What slippage should I use?</span>
-                  <p className="mt-2 text-muted-foreground">Start at 1–3%. If a swap fails due to price impact, increase slightly and try again.</p>
+                  <span className="text-base md:text-lg font-semibold">What is the utility of the $ANIME token?</span>
+                  <p className="mt-2 text-muted-foreground">Currently, the $ANIME token is the core of our community-owned ecosystem. Our roadmap includes developing further utility such as a dedicated marketplace for anime-related goods and services, and staking rewards for NFT holders. This will establish $ANIME as the central currency of our platform.</p>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
-                  <span className="text-base md:text-lg font-semibold">More questions?</span>
-                  <p className="mt-2 text-muted-foreground">Contact us on <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a>, <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a>, or <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">X (Twitter)</a>.</p>
+                  <span className="text-base md:text-lg font-semibold">Who is leading The ANIME Project?</span>
+                  <p className="mt-2 text-muted-foreground">The ANIME Project is a decentralized movement led by a dedicated, global community of core contributors. Our reputation is built on public, on-chain actions like the burned LP and the transparent Revival Wallet. As the project hits significant milestones, the core contributors are prepared to attach their public profiles to the project to further strengthen trust.</p>
+                </li>
+                <li className="rounded-md border bg-card/50 p-4">
+                  <span className="text-base md:text-lg font-semibold">What slippage should I use when buying?</span>
+                  <p className="mt-2 text-muted-foreground">Start with a slippage setting of 1-3%. If a transaction fails due to price movement, you may need to increase it slightly and try again.</p>
+                </li>
+                <li className="rounded-md border bg-card/50 p-4">
+                  <span className="text-base md:text-lg font-semibold">I have more questions. Where can I ask?</span>
+                  <p className="mt-2 text-muted-foreground">Our community is always active and ready to help. The best place to ask questions is in our official <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a> or <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a> channels.</p>
                 </li>
               </ul>
             </CollapsibleContent>
@@ -547,10 +555,12 @@ const Index = () => {
           "@context":"https://schema.org",
           "@type":"FAQPage",
           "mainEntity":[
-            { "@type":"Question", "name":"What is the official $ANIME contract?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
-            { "@type":"Question", "name":"I cannot find $ANIME in Phantom search.", "acceptedAnswer":{ "@type":"Answer", "text":"Paste the official contract address into the token field to select the correct token." } },
-            { "@type":"Question", "name":"What slippage should I use?", "acceptedAnswer":{ "@type":"Answer", "text":"Start at 1–3%. If a swap fails due to price impact, increase slightly and try again." } },
-            { "@type":"Question", "name":"How can I contact you for more questions?", "acceptedAnswer":{ "@type":"Answer", "text":"Contact us on Telegram: https://t.me/AnimeDotTokenCommunity, Discord: https://discord.gg/EZ9wRhjr, or X (Twitter): https://x.com/AnimeDotToken." } }
+            { "@type":"Question", "name":"What is the official $ANIME contract address?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
+            { "@type":"Question", "name":"I can't find $ANIME in my wallet's swap search. What do I do?", "acceptedAnswer":{ "@type":"Answer", "text":"Some wallet apps may not list new tokens immediately. To find it, simply copy the official contract address above and paste it directly into the token selection field in your wallet's swap interface." } },
+            { "@type":"Question", "name":"What is the utility of the $ANIME token?", "acceptedAnswer":{ "@type":"Answer", "text":"Currently, the $ANIME token is the core of our community-owned ecosystem. Our roadmap includes developing further utility such as a dedicated marketplace for anime-related goods and services, and staking rewards for NFT holders. This will establish $ANIME as the central currency of our platform." } },
+            { "@type":"Question", "name":"Who is leading The ANIME Project?", "acceptedAnswer":{ "@type":"Answer", "text":"The ANIME Project is a decentralized movement led by a dedicated, global community of core contributors. Our reputation is built on public, on-chain actions like the burned LP and the transparent Revival Wallet. As the project hits significant milestones, the core contributors are prepared to attach their public profiles to the project to further strengthen trust." } },
+            { "@type":"Question", "name":"What slippage should I use when buying?", "acceptedAnswer":{ "@type":"Answer", "text":"Start with a slippage setting of 1-3%. If a transaction fails due to price movement, you may need to increase it slightly and try again." } },
+            { "@type":"Question", "name":"I have more questions. Where can I ask?", "acceptedAnswer":{ "@type":"Answer", "text":"Our community is always active and ready to help. The best place to ask questions is in our official Telegram or Discord channels." } }
           ]
         })}</script>
 
