@@ -64,8 +64,8 @@ export function NFTSupporterSection() {
   const [openDetails, setOpenDetails] = useState<string | null>(null);
 
   return (
-    <section id="nft-supporter-section" className="py-16 px-4 bg-gradient-to-br from-background via-background/80 to-muted/20">
-      <div className="mx-auto max-w-5xl">
+    <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <div className="py-16 px-4 bg-gradient-to-br from-background via-background/80 to-muted/20 rounded-lg">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
