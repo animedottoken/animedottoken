@@ -30,12 +30,13 @@ const nftTypes = [
     title: "Ambassador",
     image: ambassadorsNFT,
     role: "Role: Content Creator",
-    description: "Recognition for the dedicated content creators and social media leaders who amplify our message and grow our community's reach.",
+    description: "The external special forces who support the ARMY's mission. Ambassadors are the dedicated content creators and community builders who amplify our message and grow our community's reach across the digital world.",
     howToEarn: [
-      "Consistently promote ANIME.TOKEN in target communities (crypto, anime, NFT spaces).",
-      "Use hashtags: #ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEAmbassadors",
-      "Post or share at least 2 original pieces of content (images, memes, videos, threads) per month about ANIME.TOKEN.",
-      "Mention ANIME.TOKEN in collaborations or influencer shoutouts where possible."
+      "This NFT is awarded to creators who proactively contact us with proof of meeting the following measurable content targets:",
+      "On X (Twitter)|Achieve 250,000+ impressions on ANIME-related content within a 3-month period OR create a single thread that receives over 1,000 likes.",
+      "On YouTube / TikTok|Create a single video that achieves 100,000+ views OR grow a dedicated channel to 5,000+ followers.",
+      "On Discord / Telegram|Serve as an official, active community moderator for 3+ consecutive months OR successfully organize 3+ official community events.",
+      "On the Web|Write and publish a detailed article or guide that receives 10,000+ reads."
     ],
     reward: "Limited edition NFT proving your role and influence.",
     details: "Ambassadors serve as the bridge between ANIME.TOKEN and new audiences, representing our vision. The NFT is a badge of trust, signaling your active role in shaping the project's public presence."
