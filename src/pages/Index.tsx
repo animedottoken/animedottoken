@@ -9,7 +9,7 @@ import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { MarketCapChart } from "@/components/MarketCapChart";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram } from "react-icons/si";
+import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -78,6 +78,16 @@ const Index = () => {
     });
   };
 
+  const copyForYouTube = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
+    toast("Copied for YouTube", {
+      description: "Paste the text into your video description.",
+      action: {
+        label: "Open YouTube",
+        onClick: () => window.open("https://www.youtube.com/upload", "_blank"),
+      },
+    });
+  };
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
@@ -392,6 +402,10 @@ const Index = () => {
               <SiInstagram className="h-4 w-4 mr-2" aria-hidden="true" />
               Copy for Instagram
             </Button>
+            <Button variant="glass" onClick={copyForYouTube}>
+              <SiYoutube className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for YouTube
+            </Button>
             <Button variant="glass" onClick={copyForDiscord}>
               <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
               Copy for Discord
@@ -541,6 +555,7 @@ const Index = () => {
           <Button asChild variant="glass"><a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
           <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
           <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/?hl=en" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
+          <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
         </div>
       </section>
 
@@ -567,7 +582,8 @@ const Index = () => {
           'https://t.me/AnimeDotTokenCommunity',
           'https://discord.gg/EZ9wRhjr',
           'https://www.tiktok.com/@animedottoken',
-          'https://www.instagram.com/animedottoken/'
+          'https://www.instagram.com/animedottoken/',
+          'https://www.youtube.com/@AnimeDotToken'
         ]
       })}</script>
     </main>
