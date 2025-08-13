@@ -104,7 +104,7 @@ export function NFTSupporterSection() {
                 
                 {/* Limitation */}
                 <div className="mb-3 flex justify-center">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
                     {nft.id === "founders" && "Max: 100 NFTs"}
                     {nft.id === "ambassadors" && "Max: 1,000 NFTs"}
                     {nft.id === "hodlers" && "Unlimited"}
