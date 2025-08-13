@@ -173,11 +173,11 @@ const Index = () => {
         <link
           rel="preload"
           as="image"
-          href="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png&w=1024&output=webp&q=80"
+          href="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80"
           imageSrcSet="
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png&w=640&output=webp&q=80 640w,
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png&w=1024&output=webp&q=80 1024w,
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png&w=1536&output=webp&q=80 1536w
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=80 640w,
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80 1024w,
+            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=80 1536w
           "
           imageSizes="(min-width: 1024px) 1024px, 100vw"
           fetchPriority="high"
@@ -209,7 +209,7 @@ const Index = () => {
         <AspectRatio ratio={3 / 2}>
           <picture>
             <img
-              src="https://animedottoken.lovable.app/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png"
+              src="https://animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
               loading="eager"
               decoding="async"
