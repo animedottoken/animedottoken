@@ -76,11 +76,6 @@ export function NFTSupporterSection() {
           </p>
         </div>
 
-        {/* Section 1: The ANIME ARMY */}
-        <div className="mb-8">
-          <h3 className="text-2xl font-bold text-center mb-6">Section 1: The ANIME ARMY</h3>
-        </div>
-
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {nftTypes.map((nft) => (
