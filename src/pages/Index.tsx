@@ -184,7 +184,7 @@ const Index = () => {
       </Helmet>
 
       {/* NFT Program Banner */}
-      <div className="mb-6">
+      <div className="mb-6 mx-auto max-w-5xl">
         <div
           className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
           onClick={() => document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' })}
