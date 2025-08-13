@@ -9,7 +9,7 @@ import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { MarketCapChart } from "@/components/MarketCapChart";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { SiX, SiTelegram, SiDiscord, SiTiktok } from "react-icons/si";
+import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram } from "react-icons/si";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -525,6 +525,7 @@ const Index = () => {
           <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
           <Button asChild variant="glass"><a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
           <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
+          <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/?hl=en" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
         </div>
       </section>
 
@@ -550,7 +551,8 @@ const Index = () => {
           'https://x.com/AnimeDotToken',
           'https://t.me/AnimeDotTokenCommunity',
           'https://discord.gg/EZ9wRhjr',
-          'https://www.tiktok.com/@animedottoken'
+          'https://www.tiktok.com/@animedottoken',
+          'https://www.instagram.com/animedottoken/'
         ]
       })}</script>
     </main>
