@@ -532,7 +532,7 @@ const Index = () => {
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What is the utility of the $ANIME token?</span>
-                  <p className="mt-2 text-muted-foreground">Currently, the $ANIME token is the core of our community-owned ecosystem. Our roadmap includes developing further utility such as a dedicated marketplace for anime-related goods and services, and staking rewards for NFT holders. This will establish $ANIME as the central currency of our platform.</p>
+                  <p className="mt-2 text-muted-foreground">The $ANIME token is the core of our community-owned ecosystem. As the project grows, we are actively exploring future utility cases to bring more value to our holders. Ideas we are considering include a dedicated marketplace for anime-related goods and the development of a staking system to reward our long-term supporters.</p>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">Who is leading The ANIME Project?</span>
