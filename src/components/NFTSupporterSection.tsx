@@ -229,14 +229,6 @@ export function NFTSupporterSection() {
             >
               Follow on X
             </Button>
-            <Button 
-              variant="ghost" 
-              size="lg" 
-              className="min-w-[160px]"
-              onClick={() => document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              Buy $ANIME
-            </Button>
           </div>
         </div>
       </div>
