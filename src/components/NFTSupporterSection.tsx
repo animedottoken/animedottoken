@@ -10,10 +10,11 @@ import hodlersNFT from "@/assets/nft-hodlers.jpg";
 const nftTypes = [
   {
     id: "founders",
-    title: "🥇 Founder",
+    icon: "🥇",
+    title: "Founder",
     image: foundersNFT,
-    description: "Exclusive NFT for early builders and visionaries.",
-    subtitle: "Value: $100",
+    value: "Value: $100",
+    description: "Exclusive recognition for early builders and visionaries who help establish the foundation of ANIME.TOKEN.",
     howToEarn: [
       "Promote ANIME.TOKEN on Twitter (X), Discord, or other social platforms using our hashtags:",
       "#ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEfounders",
@@ -26,10 +27,11 @@ const nftTypes = [
   },
   {
     id: "ambassadors", 
-    title: "🤝 Ambassador",
+    icon: "🤝",
+    title: "Ambassador",
     image: ambassadorsNFT,
-    description: "For those driving engagement, conversation, and influence in our community.",
-    subtitle: "Value: $100",
+    value: "Value: $100",
+    description: "Recognition for active community builders driving engagement, conversation, and influence across target communities.",
     howToEarn: [
       "Consistently promote ANIME.TOKEN in target communities (crypto, anime, NFT spaces).",
       "Use hashtags: #ANIME #ANIME.TOKEN #AnimeDotToken $ANIME #ANIMEAmbassadors",
@@ -41,10 +43,11 @@ const nftTypes = [
   },
   {
     id: "hodlers",
-    title: "🛡 Hodler",
+    icon: "🏆",
+    title: "Hodler",
     image: hodlersNFT,
-    description: "For those who believe and hold.",
-    subtitle: "Value: $100",
+    value: "Value: $100",
+    description: "Loyalty recognition for dedicated supporters who believe in ANIME.TOKEN's long-term vision and hold through market cycles.",
     howToEarn: [
       "Hold $ANIME for a qualifying period:",
       "• Gold: 3 months holding period",
@@ -91,10 +94,17 @@ export function NFTSupporterSection() {
                   />
                 </div>
                 
-                {/* Content */}
-                <h3 className="text-xl font-bold mb-2">{nft.title}</h3>
-                <p className="text-muted-foreground text-sm mb-2">{nft.description}</p>
-                <p className="text-primary font-semibold text-sm mb-4">{nft.subtitle}</p>
+                {/* Icon and Title */}
+                <div className="text-center mb-4">
+                  <div className="text-4xl mb-2">{nft.icon}</div>
+                  <h3 className="text-xl font-bold">{nft.title}</h3>
+                </div>
+                
+                {/* Value */}
+                <p className="text-primary font-semibold text-sm mb-3 text-center">{nft.value}</p>
+                
+                {/* Description */}
+                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
                 
                 {/* How to Earn */}
                 <div className="mb-4">
