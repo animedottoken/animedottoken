@@ -615,7 +615,7 @@ const Index = () => {
       </section>
 
       <footer className="mx-auto mt-16 max-w-5xl border-t pt-6 text-center text-sm text-muted-foreground">
-        <p>© 2025 ANIME.TOKEN | All Rights Reserved</p>
+        <p>© 2024 ANIME.TOKEN | All Rights Reserved</p>
         <p className="mt-1 flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
           <span>Official Contract:</span>
           <code className="rounded-md bg-secondary px-2 py-0.5 text-xs sm:text-sm break-all max-w-full">
