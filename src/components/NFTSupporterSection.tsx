@@ -16,10 +16,10 @@ const nftTypes = [
     description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
     howToEarn: [
       "This role is the highest honor and is awarded directly for exceptional contributions that fundamentally advance the project. To be considered, a candidate must proactively contact the team and provide evidence of meeting one of the following measurable targets:",
-      "Partnerships: Secure a formal, announced partnership with another established project, influencer, or platform.",
-      "Project Management: Successfully manage an official project initiative from proposal to completion (e.g., a marketing campaign, community competition, or content sprint).",
-      "Treasury Growth: Introduce a strategic opportunity that results in a verifiable increase of over 10 ETH (or equivalent) to the project treasury.",
-      "Ecosystem Development: Deliver a functional tool (e.g., Discord bot, analytics dashboard) that is officially adopted for community use."
+      "Partnership|Secure a formal, announced partnership with another established project, influencer, or platform.",
+      "Project Management|Successfully manage an official project initiative from proposal to completion (e.g., a marketing campaign, community competition, or content sprint).",
+      "Treasury Growth|Introduce a strategic opportunity that results in a verifiable increase of over 10 ETH (or equivalent) to the project treasury.",
+      "Ecosystem Development|Deliver a functional tool (e.g., Discord bot, analytics dashboard) that is officially adopted for community use."
     ],
     reward: "Unique, verifiable NFT on the Solana blockchain.",
     details: "Founder NFTs are limited and given only once — holders will be recognized as the original visionaries of the ANIME revival. This is the highest tier of recognition for those who shape the project's direction."
@@ -114,11 +114,15 @@ export function NFTSupporterSection() {
                   <div className="text-xs text-muted-foreground space-y-2">
                     <p className="leading-relaxed">{nft.howToEarn[0]}</p>
                     <div className="space-y-2 mt-3">
-                      {nft.howToEarn.slice(1).map((item, index) => (
-                        <div key={index} className="bg-muted/30 p-2 rounded">
-                          <p className="leading-relaxed font-medium">{item}</p>
-                        </div>
-                      ))}
+                      {nft.howToEarn.slice(1).map((item, index) => {
+                        const [title, description] = item.split('|');
+                        return (
+                          <div key={index} className="bg-muted/30 p-3 rounded">
+                            <h5 className="font-semibold text-xs mb-1">{title}</h5>
+                            <p className="leading-relaxed text-xs">{description}</p>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
