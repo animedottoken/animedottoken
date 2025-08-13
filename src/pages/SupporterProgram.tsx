@@ -74,7 +74,7 @@ export default function SupporterProgram() {
               The Allies & The Foundation
             </h2>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {/* Ambassador Card */}
               <Card className="border-2 hover:border-primary/20 transition-all duration-300">
                 <CardContent className="p-8">
