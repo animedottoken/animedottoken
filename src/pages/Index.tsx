@@ -194,7 +194,7 @@ const Index = () => {
               <span className="text-2xl">🎖</span>
               <div>
                 <h3 className="font-semibold text-foreground">ANIME.TOKEN NFT Program</h3>
-                <p className="text-sm text-muted-foreground">Free NFTs for supporters • Choose your platform</p>
+                <p className="text-sm text-muted-foreground">Free NFTs for supporters</p>
               </div>
             </div>
             <Button variant="outline" size="sm">
