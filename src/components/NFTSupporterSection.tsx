@@ -103,33 +103,22 @@ export function NFTSupporterSection() {
                 {/* How to Earn */}
                 <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
-                  <div className="text-xs text-muted-foreground space-y-2">
-                    <p className="leading-relaxed">{nft.howToEarn[0]}</p>
-                    <div className="space-y-2 mt-3">
-                      {nft.howToEarn.slice(1, 2).map((item, index) => {
-                        const [title, description] = item.split('|');
-                        return (
-                          <div key={index} className="bg-muted/30 p-3 rounded">
-                            <h5 className="font-semibold text-xs mb-1">{title}</h5>
-                            <p className="leading-relaxed text-xs">{description}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Expandable Details */}
-                    {nft.howToEarn.length > 2 && (
-                      <Collapsible 
-                        open={openDetails === nft.id} 
-                        onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
-                      >
-                        <CollapsibleTrigger asChild>
-                          <Button variant="link" className="px-0 text-xs text-primary mt-2">
-                            {openDetails === nft.id ? "Show less" : "See more"}
-                          </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="space-y-2 mt-2">
-                          {nft.howToEarn.slice(2).map((item, index) => {
+                  
+                  {/* Expandable Details */}
+                  <Collapsible 
+                    open={openDetails === nft.id} 
+                    onOpenChange={(open) => setOpenDetails(open ? nft.id : null)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="link" className="px-0 text-xs text-primary mb-2">
+                        {openDetails === nft.id ? "Show less" : "See more"}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-2">
+                      <div className="text-xs text-muted-foreground space-y-2">
+                        <p className="leading-relaxed">{nft.howToEarn[0]}</p>
+                        <div className="space-y-2 mt-3">
+                          {nft.howToEarn.slice(1).map((item, index) => {
                             const [title, description] = item.split('|');
                             return (
                               <div key={index} className="bg-muted/30 p-3 rounded">
@@ -138,10 +127,10 @@ export function NFTSupporterSection() {
                               </div>
                             );
                           })}
-                        </CollapsibleContent>
-                      </Collapsible>
-                    )}
-                  </div>
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
 
               </CardContent>
