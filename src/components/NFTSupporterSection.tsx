@@ -65,7 +65,7 @@ export function NFTSupporterSection() {
 
   return (
     <section id="nft-supporter-section" className="py-16 bg-gradient-to-br from-background via-background/80 to-muted/20">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto max-w-5xl px-4">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
