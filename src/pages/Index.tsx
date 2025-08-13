@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { MarketCapChart } from "@/components/MarketCapChart";
+import { NFTSupporterSection } from "@/components/NFTSupporterSection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
@@ -560,6 +561,9 @@ const Index = () => {
           </Button>
         </div>
       </section>
+
+      {/* NFT Supporter Program Section */}
+      <NFTSupporterSection />
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
