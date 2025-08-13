@@ -67,6 +67,17 @@ const Index = () => {
     });
   };
 
+  const copyForInstagram = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
+    toast("Copied for Instagram", {
+      description: "Paste the text into your caption.",
+      action: {
+        label: "Open Instagram",
+        onClick: () => window.open("https://www.instagram.com/create/select/", "_blank"),
+      },
+    });
+  };
+
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
@@ -376,6 +387,10 @@ const Index = () => {
             <Button variant="glass" onClick={copyForTikTok}>
               <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
               Copy for TikTok
+            </Button>
+            <Button variant="glass" onClick={copyForInstagram}>
+              <SiInstagram className="h-4 w-4 mr-2" aria-hidden="true" />
+              Copy for Instagram
             </Button>
             <Button variant="glass" onClick={copyForDiscord}>
               <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
