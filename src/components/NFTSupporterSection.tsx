@@ -12,7 +12,7 @@ const nftTypes = [
     icon: "🥇",
     title: "Founder",
     image: foundersNFT,
-    role: "Role: Core Contributor",
+    role: "",
     description: "The most prestigious recognition, reserved for the core contributors who provide exceptional, high-impact value. Founders are the strategists, builders, and key advisors who are helping to shape the future of the entire project.",
     howToEarn: [
       "This NFT cannot be earned by simply posting. It is awarded directly by the project lead for foundational contributions such as:",
@@ -99,17 +99,6 @@ export function NFTSupporterSection() {
                   <h3 className="text-xl font-bold">{nft.title}</h3>
                 </div>
                 
-                {/* Role */}
-                <p className="text-primary font-semibold text-sm mb-1 text-center">{nft.role}</p>
-                
-                {/* Limitation */}
-                <div className="mb-3 flex justify-center">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
-                    {nft.id === "founders" && "Max: 100 NFTs"}
-                    {nft.id === "ambassadors" && "Max: 1,000 NFTs"}
-                    {nft.id === "hodlers" && "Unlimited"}
-                  </span>
-                </div>
                 
                 {/* Description */}
                 <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
