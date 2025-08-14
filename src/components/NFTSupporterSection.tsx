@@ -97,7 +97,7 @@ export function NFTSupporterSection() {
                   <div className="text-4xl mb-2">{nft.icon}</div>
                   <p className="text-xs text-muted-foreground mb-1">Role</p>
                   <h3 className="text-xl font-bold">{nft.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Supply: {nft.supply}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Max Members: {nft.supply}</p>
                 </div>
                 
                 
