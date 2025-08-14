@@ -207,25 +207,14 @@ const Index = () => {
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
-          <picture>
-            <source 
-              srcSet="
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=75 640w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=75 1024w,
-                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=75 1536w
-              "
-              sizes="(min-width: 1024px) 1024px, 100vw"
-              type="image/webp"
-            />
-            <img
-              src="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=75"
-              alt="ANIME Token 3:2 hero banner with anime characters and logo"
-              loading="eager"
-              decoding="async"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-              className="w-full h-full object-cover block"
-            />
-          </picture>
+          <img
+            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+            alt="ANIME Token 3:2 hero banner with anime characters and logo"
+            loading="eager"
+            decoding="async"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
+            className="w-full h-full object-cover block"
+          />
         </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
@@ -504,7 +493,7 @@ const Index = () => {
                 {promoImages.map((img) => (
                   <article key={img.src} className="rounded-md border bg-card/50 p-3">
                     <img 
-                      src={`https://images.weserv.nl/?url=animedottoken.lovable.app${img.src}&w=400&output=webp&q=75`} 
+                      src={img.src} 
                       alt={img.alt} 
                       loading="lazy" 
                       decoding="async" 
