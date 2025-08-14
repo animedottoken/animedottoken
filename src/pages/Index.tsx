@@ -208,10 +208,17 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <img
-            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+            src="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80"
+            srcSet="
+              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=80 640w,
+              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80 1024w,
+              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=80 1536w
+            "
+            sizes="(min-width: 1024px) 1024px, 100vw"
             alt="ANIME Token 3:2 hero banner with anime characters and logo"
             loading="eager"
             decoding="async"
+            fetchPriority="high"
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
             className="w-full h-full object-cover block"
           />
