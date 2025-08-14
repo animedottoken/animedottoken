@@ -169,18 +169,11 @@ const Index = () => {
         <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
-        <link rel="preconnect" href="https://images.weserv.nl" crossOrigin="" />
+        <link rel="preconnect" href="https://073d74a6-99d5-42cc-8d2e-4144164f2d85.lovableproject.com" crossOrigin="" />
         <link
           rel="preload"
           as="image"
-          href="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80"
-          imageSrcSet="
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=80 640w,
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80 1024w,
-            https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=80 1536w
-          "
-          imageSizes="(min-width: 1024px) 1024px, 100vw"
-          fetchPriority="high"
+          href="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
         />
       </Helmet>
 
@@ -208,19 +201,13 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <img
-            src="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80"
-            srcSet="
-              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=80 640w,
-              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=80 1024w,
-              https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=80 1536w
-            "
-            sizes="(min-width: 1024px) 1024px, 100vw"
+            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
             alt="ANIME Token 3:2 hero banner with anime characters and logo"
             loading="eager"
             decoding="async"
-            fetchPriority="high"
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
             className="w-full h-full object-cover block"
+            style={{ maxWidth: '100%', height: 'auto' }}
           />
         </AspectRatio>
       </header>
