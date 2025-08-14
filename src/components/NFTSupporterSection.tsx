@@ -11,6 +11,7 @@ const nftTypes = [
     id: "founders",
     icon: "🥇",
     title: "Founder",
+    supply: "100 (Maximum)",
     image: foundersNFT,
     role: "",
     description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
@@ -28,6 +29,7 @@ const nftTypes = [
     id: "ambassadors", 
     icon: "🤝",
     title: "Ambassador",
+    supply: "1,000 (Maximum)",
     image: ambassadorsNFT,
     role: "Role: Content Creator",
     description: "The external special forces who support the ARMY's mission. Ambassadors are the dedicated content creators and community builders who amplify our message and grow our community's reach across the digital world.",
@@ -45,6 +47,7 @@ const nftTypes = [
     id: "hodlers",
     icon: "🏆",
     title: "Hodler",
+    supply: "Unlimited",
     image: hodlersNFT,
     role: "Role: Loyal Supporter",
     description: "The silent financial backbone of our project. Hodlers are not part of the active ARMY; they do not fight, but they finance the entire operation. Their long-term conviction provides the foundational stability for our ecosystem.",
@@ -94,6 +97,7 @@ export function NFTSupporterSection() {
                   <div className="text-4xl mb-2">{nft.icon}</div>
                   <p className="text-xs text-muted-foreground mb-1">Role</p>
                   <h3 className="text-xl font-bold">{nft.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Supply: {nft.supply}</p>
                 </div>
                 
                 
