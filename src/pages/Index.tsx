@@ -206,14 +206,14 @@ const Index = () => {
       </div>
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
-        <AspectRatio ratio={16 / 9}>
-          <iframe
-            src="https://www.youtube.com/embed/h0vxJ-aRWpg?autoplay=1&mute=1&loop=1&playlist=h0vxJ-aRWpg&controls=0&showinfo=0&rel=0&modestbranding=1"
-            title="ANIME.TOKEN - A New Internet Money Era (Hero Video)"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            className="w-full h-full rounded-xl"
+        <AspectRatio ratio={3 / 2}>
+          <img
+            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+            alt="ANIME Token 3:2 hero banner with anime characters and logo"
             loading="eager"
+            decoding="async"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
+            className="w-full h-full object-cover block"
           />
         </AspectRatio>
       </header>
