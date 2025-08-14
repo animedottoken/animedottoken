@@ -86,8 +86,10 @@ export function NFTSupporterSection() {
                 {/* NFT Image */}
                 <div className="mb-6 overflow-hidden rounded-lg">
                   <img 
-                    src={nft.image} 
+                    src={`https://images.weserv.nl/?url=animedottoken.lovable.app${nft.image}&w=400&output=webp&q=75`}
                     alt={nft.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

@@ -208,8 +208,17 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <picture>
+            <source 
+              srcSet="
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=640&output=webp&q=75 640w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=75 1024w,
+                https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1536&output=webp&q=75 1536w
+              "
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              type="image/webp"
+            />
             <img
-              src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+              src="https://images.weserv.nl/?url=animedottoken.lovable.app/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png&w=1024&output=webp&q=75"
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
               loading="eager"
               decoding="async"
