@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import JSZip from "jszip";
+import heroOptimized from "@/assets/hero-optimized.webp";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -200,15 +201,20 @@ const Index = () => {
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
-          <img
-            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
-            alt="ANIME Token 3:2 hero banner with anime characters and logo"
-            loading="eager"
-            decoding="async"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-            className="w-full h-full object-cover block"
-            style={{ maxWidth: '100%', height: 'auto' }}
-          />
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/5 to-background animate-pulse">
+            <img
+              src={heroOptimized}
+              alt="ANIME Token 3:2 hero banner with anime characters and logo"
+              loading="eager"
+              decoding="async"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
+              className="w-full h-full object-cover block"
+              onLoad={(e) => {
+                const container = e.currentTarget.parentElement;
+                if (container) container.classList.remove('animate-pulse');
+              }}
+            />
+          </div>
         </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
