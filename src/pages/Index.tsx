@@ -207,14 +207,37 @@ const Index = () => {
 
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
-          <img
-            src="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
-            alt="ANIME Token 3:2 hero banner with anime characters and logo"
-            loading="eager"
-            decoding="async"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-            className="w-full h-full object-cover block"
-          />
+          <div className="relative w-full h-full bg-gradient-to-br from-primary/20 via-purple-500/20 to-blue-500/20">
+            {/* Animated background with floating particles */}
+            <div className="absolute inset-0 opacity-30">
+              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <div className="absolute top-3/4 left-1/3 w-1 h-1 bg-blue-400 rounded-full animate-bounce delay-300"></div>
+              <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping delay-700"></div>
+              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-pink-400 rounded-full animate-pulse delay-1000"></div>
+              <div className="absolute bottom-1/4 left-1/2 w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-500"></div>
+            </div>
+            
+            {/* Main content */}
+            <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-8">
+              <div className="animate-in fade-in-50 slide-in-from-bottom-4 duration-1000">
+                <img
+                  src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png"
+                  alt="ANIME Token hexagon logo"
+                  className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 animate-pulse"
+                  loading="eager"
+                />
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground mb-4 animate-in slide-in-from-bottom-2 duration-700 delay-300">
+                  Welcome to the Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 animate-pulse">Anime</span>
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl animate-in fade-in-50 duration-700 delay-500">
+                  Join the $ANIME movement on Solana
+                </p>
+              </div>
+            </div>
+            
+            {/* Animated gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none"></div>
+          </div>
         </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
