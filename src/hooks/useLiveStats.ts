@@ -14,16 +14,19 @@ export function useLiveStats(): LiveStats {
       try {
         // Discord widget API for server stats - using real server ID
         const response = await fetch('https://discord.com/api/guilds/1403646153253195877/widget.json');
+        console.log('Discord API response status:', response.status);
         if (response.ok) {
           const data = await response.json();
-          setDiscordMembers(data.presence_count || 1);
+          console.log('Discord API data:', data);
+          const count = data.presence_count || 1;
+          console.log('Setting Discord members to:', count);
+          setDiscordMembers(count);
         } else {
-          // Fallback to actual count
+          console.log('Discord API failed with status:', response.status);
           setDiscordMembers(1);
         }
       } catch (error) {
-        console.debug('Discord member count fetch failed', error);
-        // Fallback to actual count
+        console.log('Discord API error:', error);
         setDiscordMembers(1);
       }
     };
