@@ -5,6 +5,7 @@ import { useState } from "react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
+import earlySupporterBadge from "@/assets/early-supporter-badge.png";
 
 const nftTypes = [
   {
@@ -64,6 +65,9 @@ const nftTypes = [
 
 export function NFTSupporterSection() {
   const [openDetails, setOpenDetails] = useState<string[]>([]);
+  // Simulated counter - in real implementation, this would come from an API
+  const earlySupportersClaimed = 27;
+  const earlySupportersTotal = 100;
 
   return (
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -80,7 +84,7 @@ export function NFTSupporterSection() {
 
         {/* NFT Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {nftTypes.map((nft) => (
+          {nftTypes.map((nft, index) => (
             <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
               <CardContent className="p-6">
                 {/* NFT Image */}
@@ -144,6 +148,73 @@ export function NFTSupporterSection() {
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
+
+                {/* Early Supporter Campaign for Ambassadors */}
+                {nft.id === "ambassadors" && (
+                  <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-yellow-500/10 border-2 border-gradient-to-r border-yellow-500/30">
+                    <div className="flex items-center gap-4 mb-4">
+                      <img 
+                        src={earlySupporterBadge}
+                        alt="Early Supporter Badge"
+                        className="w-16 h-16 object-cover rounded-lg shadow-lg"
+                      />
+                      <div>
+                        <h4 className="text-lg font-bold text-yellow-400 mb-1">
+                          First 100 Early Supporter
+                        </h4>
+                        <p className="text-xs text-purple-300 font-semibold">Special Edition NFT</p>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                      Awarded exclusively to the first 100 active supporters who join and engage in our X (Twitter) and Discord communities. This NFT marks your legacy as a pioneer of the $ANIME community.
+                    </p>
+                    
+                    {/* Real-time Counter */}
+                    <div className="text-center mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-purple-500/20 rounded-lg border border-yellow-500/30">
+                      <div className="text-2xl font-bold text-yellow-400">
+                        {earlySupportersClaimed}/{earlySupportersTotal}
+                      </div>
+                      <p className="text-xs text-purple-300">NFTs Claimed</p>
+                    </div>
+                    
+                    {/* Campaign Criteria */}
+                    <div className="mb-4">
+                      <h5 className="font-semibold text-sm mb-2 text-yellow-400">Campaign Criteria:</h5>
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        <li>• Be among the first 100 to follow and join both X (Twitter) and Discord</li>
+                        <li>• Actively post or share anime content</li>
+                        <li>• Remain a member and engaged until September 30, 2025</li>
+                        <li>• Only the most engaged early supporters will receive the NFT</li>
+                      </ul>
+                    </div>
+                    
+                    {/* Timeline */}
+                    <div className="mb-4">
+                      <h5 className="font-semibold text-sm mb-2 text-purple-400">Timeline:</h5>
+                      <div className="text-xs text-muted-foreground space-y-1">
+                        <p>• Campaign runs until September 30, 2025</p>
+                        <p>• Winners announced October 1, 2025</p>
+                      </div>
+                    </div>
+                    
+                    {/* Note */}
+                    <div className="mb-4 p-2 bg-purple-500/10 rounded border border-purple-500/20">
+                      <p className="text-xs text-purple-300 italic">
+                        Note: Ambassadors may be selected from the most active early supporters after this event.
+                      </p>
+                    </div>
+                    
+                    {/* How to Qualify Button */}
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-gradient-to-r from-yellow-500 to-purple-500 hover:from-yellow-600 hover:to-purple-600 text-black font-semibold"
+                      onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
+                    >
+                      How to Qualify
+                    </Button>
+                  </div>
+                )}
 
               </CardContent>
             </Card>
