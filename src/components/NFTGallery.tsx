@@ -507,10 +507,9 @@ export function NFTGallery() {
           </p>
           <div className="flex justify-center">
             <Button 
-              size="lg" 
-              variant="outline"
+              size="lg"
               onClick={() => window.open('mailto:nft@anime.com?subject=NFT Gallery Submission', '_blank')}
-              className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
+              className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold"
             >
               Submit Your Art
             </Button>
