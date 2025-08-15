@@ -8,25 +8,10 @@ export function useTokenHolders(tokenAddress: string) {
     if (!tokenAddress) return;
 
     const cacheKey = `holders:${tokenAddress}`;
-    const cached = localStorage.getItem(cacheKey);
-    console.log('Cached token holders data:', cached);
     
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached) as { v: number; t: number };
-        console.log('Parsed cache:', parsed, 'Age:', Date.now() - parsed.t, 'ms');
-        // 10 minutes cache
-        if (Date.now() - parsed.t < 10 * 60 * 1000) {
-          console.log('Using cached token holders:', parsed.v);
-          setHolders(parsed.v);
-          return;
-        } else {
-          console.log('Cache expired, fetching fresh data');
-        }
-      } catch (e) {
-        console.error('Cache parse error:', e);
-      }
-    }
+    // Clear old cache to force fresh fetch
+    localStorage.removeItem(cacheKey);
+    console.log('Cleared token holders cache, forcing fresh fetch');
 
     const fetchHolders = async () => {
       try {
