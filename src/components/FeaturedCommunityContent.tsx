@@ -15,13 +15,13 @@ export function FeaturedCommunityContent() {
       </div>
 
       <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-8 hover:bg-white/10 transition-all duration-300">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Placeholder Image */}
           <div className="relative overflow-hidden rounded-lg">
             <img 
               src={communityPlaceholder} 
               alt="Community content placeholder showing anime characters creating art"
-              className="w-full h-64 lg:h-80 object-cover"
+              className="w-full h-40 lg:h-48 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
@@ -61,12 +61,35 @@ export function FeaturedCommunityContent() {
                 </a>
               </Button>
             </div>
+          </div>
+        </div>
 
-            {/* Future Content Placeholder */}
-            <div className="mt-8 p-4 border-2 border-dashed border-white/20 rounded-lg">
-              <p className="text-white/50 text-sm italic">
-                Space reserved for community submissions
+        {/* Enhanced Community Submissions Area */}
+        <div className="mt-8 bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-8 min-h-[200px] lg:min-h-[240px]">
+          <div className="text-center h-full flex flex-col justify-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                <span className="text-3xl">🎨</span>
+              </div>
+              <h4 className="text-xl font-semibold text-white mb-2">
+                Community Showcase
+              </h4>
+              <p className="text-white/60 text-sm max-w-md mx-auto">
+                This space is reserved for amazing community submissions. Your creativity will be featured here for everyone to see!
               </p>
+            </div>
+            
+            {/* Expandable content area for future submissions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+              {/* Placeholder slots for future content */}
+              {[1, 2, 3].map((slot) => (
+                <div 
+                  key={slot}
+                  className="aspect-square bg-white/5 rounded-lg border border-white/10 flex items-center justify-center opacity-50"
+                >
+                  <span className="text-white/40 text-sm">Slot {slot}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
