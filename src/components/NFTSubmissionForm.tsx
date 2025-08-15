@@ -31,7 +31,11 @@ const availableTags = [
   'Digital Art', 'AI Art', 'Meme', 'Pixel Art', 'Others'
 ];
 
-export const NFTSubmissionForm = () => {
+interface NFTSubmissionFormProps {
+  onSuccess?: () => void;
+}
+
+export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -131,6 +135,9 @@ export const NFTSubmissionForm = () => {
       setSelectedTags([]);
       setImageFile(null);
       setImagePreview('');
+      
+      // Close dialog if callback provided
+      onSuccess?.();
 
     } catch (error) {
       console.error('Submission error:', error);

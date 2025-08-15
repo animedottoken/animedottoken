@@ -624,7 +624,13 @@ export function NFTGallery() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <NFTSubmissionForm />
+                <NFTSubmissionForm onSuccess={() => {
+                  const dialog = document.querySelector('[data-state="open"]');
+                  if (dialog) {
+                    const closeButton = dialog.querySelector('[data-radix-collection-item]');
+                    if (closeButton) (closeButton as HTMLElement).click();
+                  }
+                }} />
               </DialogContent>
             </Dialog>
           </div>
