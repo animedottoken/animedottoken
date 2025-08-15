@@ -14,7 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      community_submissions: {
+        Row: {
+          author: string
+          caption: string
+          created_at: string
+          external_id: string | null
+          id: string
+          image_url: string
+          status: Database["public"]["Enums"]["submission_status"]
+          submission_source: Database["public"]["Enums"]["submission_source"]
+          type: Database["public"]["Enums"]["submission_type"]
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          caption: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          image_url: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          submission_source?: Database["public"]["Enums"]["submission_source"]
+          type?: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          caption?: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          image_url?: string
+          status?: Database["public"]["Enums"]["submission_status"]
+          submission_source?: Database["public"]["Enums"]["submission_source"]
+          type?: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      featured_content: {
+        Row: {
+          created_at: string
+          featured_at: string
+          id: string
+          position: number
+          submission_id: string
+        }
+        Insert: {
+          created_at?: string
+          featured_at?: string
+          id?: string
+          position: number
+          submission_id: string
+        }
+        Update: {
+          created_at?: string
+          featured_at?: string
+          id?: string
+          position?: number
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_content_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "community_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +93,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      submission_source: "discord" | "twitter" | "form"
+      submission_status: "pending" | "approved" | "rejected"
+      submission_type: "art" | "meme" | "story"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +222,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      submission_source: ["discord", "twitter", "form"],
+      submission_status: ["pending", "approved", "rejected"],
+      submission_type: ["art", "meme", "story"],
+    },
   },
 } as const
