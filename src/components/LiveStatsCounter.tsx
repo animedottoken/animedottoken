@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SiDiscord, SiX } from "react-icons/si";
 
 export function LiveStatsCounter() {
-  const holders = useTokenHolders("H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc");
+  const holders = useTokenHolders("GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump");
   const { discordMembers, twitterFollowers } = useLiveStats();
 
   const stats = [

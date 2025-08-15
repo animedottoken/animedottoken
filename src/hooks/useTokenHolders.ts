@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-// Fetch holder count from DexScreener API with 10-minute cache
-export function useTokenHolders(pairAddress: string) {
+// Fetch holder count from Solscan API with 10-minute cache
+export function useTokenHolders(tokenAddress: string) {
   const [holders, setHolders] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!pairAddress) return;
+    if (!tokenAddress) return;
 
-    const cacheKey = `holders:${pairAddress}`;
+    const cacheKey = `holders:${tokenAddress}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       try {
@@ -22,14 +22,12 @@ export function useTokenHolders(pairAddress: string) {
 
     const fetchHolders = async () => {
       try {
-        const res = await fetch(`https://api.dexscreener.com/latest/dex/pairs/solana/${pairAddress}`);
-        if (!res.ok) throw new Error(`DexScreener ${res.status}`);
+        const res = await fetch(`https://api.solscan.io/token/holders?address=${tokenAddress}&offset=0&size=1`);
+        if (!res.ok) throw new Error(`Solscan ${res.status}`);
         const data = await res.json();
         
-        // Extract holder count from DexScreener response
-        // DexScreener doesn't directly provide holder count in the API response
-        // So we'll use a reasonable estimate based on liquidity data or fall back to 1318
-        const holderCount = 1318; // Using the current DexScreener value as fallback
+        // Extract holder count from Solscan response
+        const holderCount = data.total || 1318;
         
         setHolders(holderCount);
         localStorage.setItem(cacheKey, JSON.stringify({ v: holderCount, t: Date.now() }));
@@ -41,7 +39,7 @@ export function useTokenHolders(pairAddress: string) {
     };
 
     fetchHolders();
-  }, [pairAddress]);
+  }, [tokenAddress]);
 
   return holders;
 }
