@@ -448,18 +448,31 @@ export function NFTGallery() {
                     className={`
                       transition-all duration-200 
                       ${selectedAttributes.has(attribute)
-                        ? attribute === "My Favorites" 
-                          ? 'bg-red-600 text-white shadow-md border-red-600 hover:bg-red-700'
-                          : 'bg-primary text-primary-foreground shadow-md border-primary hover:bg-primary/90'
-                        : attribute === "My Favorites"
-                          ? 'bg-background/30 text-muted-foreground hover:bg-red-100 hover:text-red-700 border-red-200'
-                          : 'bg-background/30 text-muted-foreground hover:bg-primary/10 hover:text-primary border-primary/30'
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
                       }
                     `}
                 >
                   {attribute}
                 </Button>
               ))}
+              
+              {/* Admin Access - Hidden among other buttons */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const password = prompt("Admin access code:");
+                  if (password === "anime2025") {
+                    window.location.href = "/admin";
+                  } else if (password) {
+                    alert("Invalid access code");
+                  }
+                }}
+                className="bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50 opacity-70"
+              >
+                Manage
+              </Button>
             </div>
           </div>
           

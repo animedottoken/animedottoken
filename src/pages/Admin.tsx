@@ -1,7 +1,7 @@
-import { AdminPanel } from "@/components/AdminPanel";
+import { ProtectedAdminPanel } from "@/components/ProtectedAdminPanel";
 
 const Admin = () => {
-  return <AdminPanel />;
+  return <ProtectedAdminPanel />;
 };
 
 export default Admin;
