@@ -23,9 +23,9 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <header className="mb-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold">The Highest Standard of Trust & Security</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Fully Audited, Secure, and Transparent</h2>
         <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
-          Our commitment to safety is permanent and verifiable on-chain. This isn't just a promise; it's a fact.
+          $ANIME smart contract is audited, verified, and has no hidden functions. 100% LP burned. Revival Wallet supports only ecosystem growth. View everything on-chain for full transparency.
         </p>
       </header>
 
