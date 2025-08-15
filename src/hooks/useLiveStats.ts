@@ -57,11 +57,11 @@ export function useLiveStats(): LiveStats {
     fetchDiscordMembers();
     fetchTwitterFollowers();
 
-    // Refresh every 15 minutes to avoid rate limits
+    // Refresh once a day to avoid rate limits
     const interval = setInterval(() => {
       fetchDiscordMembers();
       fetchTwitterFollowers();
-    }, 15 * 60 * 1000);
+    }, 24 * 60 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
