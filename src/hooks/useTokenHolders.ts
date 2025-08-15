@@ -27,14 +27,14 @@ export function useTokenHolders(tokenAddress: string) {
         const data = await res.json();
         
         // Extract holder count from Solscan response
-        const holderCount = data.total || 1318;
+        const holderCount = data.total || 123;
         
         setHolders(holderCount);
         localStorage.setItem(cacheKey, JSON.stringify({ v: holderCount, t: Date.now() }));
       } catch (e) {
         // Set fallback value when API fails  
         console.debug("holders fetch failed, using fallback", e);
-        setHolders(1318);
+        setHolders(123);
       }
     };
 
