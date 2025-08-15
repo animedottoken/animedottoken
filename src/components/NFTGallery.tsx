@@ -457,19 +457,16 @@ export function NFTGallery() {
                 </Button>
               ))}
               
-              {/* Admin Access - Moved to top right, almost invisible */}
             </div>
-          </div>
-
-          {/* Admin Button - Top Right, Almost Invisible */}
-          <div className="flex justify-end mb-4">
+            
+            {/* Admin Button - Top Right, Almost Invisible */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => {
                 window.location.href = "/admin";
               }}
-              className="opacity-10 hover:opacity-30 text-xs px-2 py-1 text-muted-foreground/50 hover:text-muted-foreground transition-opacity duration-300"
+              className="absolute top-0 right-0 opacity-20 hover:opacity-60 text-xs px-2 py-1 text-muted-foreground/50 hover:text-muted-foreground transition-opacity duration-300"
               title="Admin"
             >
               •••

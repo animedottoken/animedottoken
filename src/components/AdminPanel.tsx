@@ -106,9 +106,14 @@ export const AdminPanel = () => {
             <p className="text-muted-foreground">Manage NFT submissions and approvals</p>
           </div>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <a href="/">Back to Home</a>
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={fetchSubmissions} variant="outline" size="sm">
+            Refresh
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <a href="/">Back to Home</a>
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
