@@ -33,19 +33,22 @@ export function useLiveStats(): LiveStats {
 
     const fetchTwitterFollowers = async () => {
       try {
-        // Twitter API v2 endpoint (requires Bearer token in production)
-        // For now, falling back to manual count since Twitter API requires auth
-        console.log('Twitter API: Using fallback count');
-        setTwitterFollowers(123);
+        // Call our Supabase edge function for Twitter data
+        const response = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/get-twitter-stats');
+        console.log('Twitter edge function response status:', response.status);
         
-        // Future implementation with proper API:
-        // const response = await fetch('https://api.twitter.com/2/users/by/username/AnimeDotToken?user.fields=public_metrics');
-        // if (response.ok) {
-        //   const data = await response.json();
-        //   setTwitterFollowers(data.data.public_metrics.followers_count);
-        // }
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Twitter edge function data:', data);
+          const count = data.followers_count || 123;
+          console.log('Setting Twitter followers to:', count);
+          setTwitterFollowers(count);
+        } else {
+          console.log('Twitter edge function failed with status:', response.status);
+          setTwitterFollowers(123);
+        }
       } catch (error) {
-        console.log('Twitter API error:', error);
+        console.log('Twitter edge function error:', error);
         setTwitterFollowers(123);
       }
     };
