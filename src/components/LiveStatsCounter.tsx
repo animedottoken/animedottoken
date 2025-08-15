@@ -15,7 +15,7 @@ export function LiveStatsCounter() {
       value: holders?.toLocaleString() || "Loading...",
       color: "text-primary",
       button: (
-        <Button asChild variant="glass" size="sm">
+        <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700 text-white border-0">
           <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">
             Buy $ANIME
           </a>
@@ -24,8 +24,8 @@ export function LiveStatsCounter() {
     },
     {
       icon: MessageCircle,
-      label: "Discord Members",
-      value: discordMembers?.toLocaleString() || "Loading...",
+      label: "New server—be among the first to join!",
+      value: "", // Hide the number
       color: "text-accent",
       button: (
         <Button asChild variant="glass" size="sm">
