@@ -12,8 +12,8 @@ export function useLiveStats(): LiveStats {
   useEffect(() => {
     const fetchDiscordMembers = async () => {
       try {
-        // Discord widget API for server stats - using correct server ID from the invite link
-        const response = await fetch('https://discord.com/api/guilds/1234567890/widget.json');
+        // Discord widget API for server stats - using real server ID
+        const response = await fetch('https://discord.com/api/guilds/1403646153253195877/widget.json');
         if (response.ok) {
           const data = await response.json();
           setDiscordMembers(data.presence_count || 1);
