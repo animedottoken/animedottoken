@@ -18,12 +18,33 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    const { image_url, caption, author, type = 'art', submission_source = 'form' } = await req.json()
+    const { 
+      image_url, 
+      caption, 
+      author, 
+      author_bio,
+      contact,
+      tags = [],
+      edition_type = 'standard',
+      theme,
+      type = 'art', 
+      submission_source = 'form' 
+    } = await req.json()
 
     // Validate required fields
-    if (!image_url || !caption || !author) {
+    if (!image_url || !caption || !author || !theme) {
       return new Response(JSON.stringify({ 
-        error: 'Missing required fields: image_url, caption, and author are required' 
+        error: 'Missing required fields: image_url, caption, author, and theme are required' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Validate tags array length
+    if (tags.length > 3) {
+      return new Response(JSON.stringify({ 
+        error: 'Maximum 3 tags allowed' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -37,6 +58,11 @@ serve(async (req) => {
         image_url,
         caption,
         author,
+        author_bio,
+        contact,
+        tags,
+        edition_type,
+        theme,
         type,
         submission_source,
         status: 'pending'

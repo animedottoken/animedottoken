@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Copy, Share, ExternalLink, Heart } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Copy, Share, ExternalLink, Heart, Plus } from "lucide-react";
+import { NFTSubmissionForm } from "@/components/NFTSubmissionForm";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -326,13 +327,29 @@ export function NFTGallery() {
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent flex items-center justify-center">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
-          Anime Art Gallery
-        </h2>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent flex items-center justify-center md:justify-start">
+              <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
+              Anime Art Gallery
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+              Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
+            </p>
+          </div>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" className="gap-2 shrink-0">
+                <Plus className="h-4 w-4" />
+                Submit Your NFT
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <NFTSubmissionForm />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Community Favorites Section */}

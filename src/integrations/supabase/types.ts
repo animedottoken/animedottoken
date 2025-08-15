@@ -17,37 +17,52 @@ export type Database = {
       community_submissions: {
         Row: {
           author: string
+          author_bio: string | null
           caption: string
+          contact: string | null
           created_at: string
+          edition_type: Database["public"]["Enums"]["edition_type"] | null
           external_id: string | null
           id: string
           image_url: string
           status: Database["public"]["Enums"]["submission_status"]
           submission_source: Database["public"]["Enums"]["submission_source"]
+          tags: string[] | null
+          theme: Database["public"]["Enums"]["theme_type"] | null
           type: Database["public"]["Enums"]["submission_type"]
           updated_at: string
         }
         Insert: {
           author: string
+          author_bio?: string | null
           caption: string
+          contact?: string | null
           created_at?: string
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
           external_id?: string | null
           id?: string
           image_url: string
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
           type?: Database["public"]["Enums"]["submission_type"]
           updated_at?: string
         }
         Update: {
           author?: string
+          author_bio?: string | null
           caption?: string
+          contact?: string | null
           created_at?: string
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
           external_id?: string | null
           id?: string
           image_url?: string
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
           type?: Database["public"]["Enums"]["submission_type"]
           updated_at?: string
         }
@@ -93,9 +108,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      edition_type: "standard" | "limited" | "exclusive"
       submission_source: "discord" | "twitter" | "form"
       submission_status: "pending" | "approved" | "rejected"
       submission_type: "art" | "meme" | "story"
+      theme_type:
+        | "anime"
+        | "digital_culture"
+        | "meme"
+        | "ai"
+        | "new_internet_money"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -223,9 +245,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      edition_type: ["standard", "limited", "exclusive"],
       submission_source: ["discord", "twitter", "form"],
       submission_status: ["pending", "approved", "rejected"],
       submission_type: ["art", "meme", "story"],
+      theme_type: [
+        "anime",
+        "digital_culture",
+        "meme",
+        "ai",
+        "new_internet_money",
+      ],
     },
   },
 } as const
