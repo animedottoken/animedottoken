@@ -222,7 +222,7 @@ const Index = () => {
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
         <div className="text-center animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
           <div className="flex items-center justify-center gap-3">
-            <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
+            <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-16 w-16 md:h-20 md:w-20" loading="eager" />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
               ANIME.TOKEN – Community-Driven Anime Crypto Token on Solana.
             </h1>
