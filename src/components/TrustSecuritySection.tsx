@@ -19,7 +19,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
   const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const holders = useTokenHolders(tokenAddress);
+  const holders = useTokenHolders("H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc");
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <header className="mb-6 text-center">

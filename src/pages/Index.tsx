@@ -23,7 +23,7 @@ const TOTAL_SUPPLY = 974338302;
 
 const Index = () => {
   const { tokenData } = useLivePrice(PAIR_ADDRESS);
-  const holders = useTokenHolders(CONTRACT);
+  const holders = useTokenHolders(PAIR_ADDRESS);
   const copyContract = async () => {
     await navigator.clipboard.writeText(CONTRACT);
     toast.success("Contract address copied");
