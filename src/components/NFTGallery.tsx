@@ -243,6 +243,20 @@ export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  // Get unique categories from all artworks
+  const allArtworks = [...communityFavorites, ...additionalArtworks];
+  const categories = ["All", ...Array.from(new Set(allArtworks.map(nft => nft.category)))];
+
+  // Filter artworks based on active category
+  const filteredCommunityFavorites = activeCategory === "All" 
+    ? communityFavorites 
+    : communityFavorites.filter(nft => nft.category === activeCategory);
+  
+  const filteredAdditionalArtworks = activeCategory === "All" 
+    ? additionalArtworks 
+    : additionalArtworks.filter(nft => nft.category === activeCategory);
   
   const handleLike = (nftId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -288,11 +302,34 @@ export function NFTGallery() {
         </p>
       </div>
 
+      {/* Category Filter Tags */}
+      <div className="mb-8">
+        <div className="flex flex-wrap justify-center gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={activeCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveCategory(category)}
+              className={`
+                transition-all duration-200 
+                ${activeCategory === category 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                }
+              `}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       {/* Community Favorites Section */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favorites</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {communityFavorites.map((nft, index) => {
+          {filteredCommunityFavorites.map((nft, index) => {
             const rankIcons = ['🥇', '🥈', '🥉', '🏅']; // Platinum, Gold, Silver, Bronze
             return (
               <Card 
@@ -352,14 +389,14 @@ export function NFTGallery() {
           size="lg"
           className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
-          {showMoreArtworks ? 'See Less' : 'See More'} Art Works ({additionalArtworks.length})
+          {showMoreArtworks ? 'See Less' : 'See More'} Art Works ({filteredAdditionalArtworks.length})
         </Button>
       </div>
 
       {/* Additional Artworks Grid */}
       {showMoreArtworks && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
-          {additionalArtworks.map((nft) => (
+          {filteredAdditionalArtworks.map((nft) => (
             <Card 
               key={nft.id} 
               className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
