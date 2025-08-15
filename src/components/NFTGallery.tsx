@@ -289,14 +289,14 @@ export function NFTGallery() {
         // Transform submissions to match NFT format
         const transformedSubmissions = data.map(submission => ({
           id: submission.id,
-          name: submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption,
+          name: submission.name || (submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption),
           creator: submission.author,
           image: submission.image_url,
           description: submission.caption,
           category: submission.type === 'art' ? 'Digital Art' : 'Others',
           editionRemaining: submission.edition_type || "Unique",
           price: "Community Upload",
-          metadataUrl: "#",
+          metadataUrl: submission.nft_address ? `https://solscan.io/token/${submission.nft_address}` : "#",
           status: "Approved",
           statusType: "available" as const,
           isLimited: submission.edition_type === 'limited',
@@ -602,20 +602,40 @@ export function NFTGallery() {
                       const overlay = document.createElement('div');
                       overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
                       
-                      const img = document.createElement('img');
-                      img.src = selectedNFT.image;
-                      img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
+                      const isVideo = selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/');
                       
-                      overlay.appendChild(img);
+                      if (isVideo) {
+                        const video = document.createElement('video');
+                        video.src = selectedNFT.image;
+                        video.controls = true;
+                        video.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
+                        overlay.appendChild(video);
+                      } else {
+                        const img = document.createElement('img');
+                        img.src = selectedNFT.image;
+                        img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
+                        overlay.appendChild(img);
+                      }
+                      
                       overlay.onclick = () => document.body.removeChild(overlay);
                       document.body.appendChild(overlay);
                     }}
                   >
-                    <img 
-                      src={selectedNFT.image}
-                      alt={selectedNFT.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/') ? (
+                      <video 
+                        src={selectedNFT.image}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        muted
+                        loop
+                        autoPlay
+                      />
+                    ) : (
+                      <img 
+                        src={selectedNFT.image}
+                        alt={selectedNFT.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground text-center">Click to view fullscreen</p>
                 </div>

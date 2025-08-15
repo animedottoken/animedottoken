@@ -16,7 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const submissionSchema = z.object({
   image_url: z.string().min(1, "Image is required"),
-  caption: z.string().min(10, "Caption must be at least 10 characters").max(200, "Caption must not exceed 200 characters"),
+  name: z.string().min(3, "NFT name must be at least 3 characters").max(50, "NFT name must not exceed 50 characters"),
+  caption: z.string().min(10, "Description must be at least 10 characters").max(200, "Description must not exceed 200 characters"),
   author: z.string().min(1, "Author name is required").max(50, "Author name must not exceed 50 characters"),
   author_bio: z.string().min(10, "Author bio must be at least 10 characters").max(200, "Author bio must not exceed 200 characters"),
   contact: z.string().optional(),
@@ -47,6 +48,7 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
     resolver: zodResolver(submissionSchema),
     defaultValues: {
       image_url: '',
+      name: '',
       caption: '',
       author: '',
       author_bio: '',
@@ -138,6 +140,9 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
       setImageFile(null);
       setImagePreview('');
       
+      // Refresh the gallery to show new submission
+      window.location.reload();
+      
       // Close dialog if callback provided
       onSuccess?.();
 
@@ -186,11 +191,20 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
                       {imagePreview ? (
                         <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
                           <div className="space-y-4">
-                            <img 
-                              src={imagePreview} 
-                              alt="Preview" 
-                              className="max-h-48 mx-auto rounded-lg"
-                            />
+                            {imageFile?.type.startsWith('video/') ? (
+                              <video 
+                                src={imagePreview} 
+                                controls
+                                className="max-h-48 mx-auto rounded-lg"
+                                style={{ maxWidth: '100%' }}
+                              />
+                            ) : (
+                              <img 
+                                src={imagePreview} 
+                                alt="Preview" 
+                                className="max-h-48 mx-auto rounded-lg"
+                              />
+                            )}
                             <Button
                               type="button"
                               variant="outline"
@@ -262,6 +276,24 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
               )}
             />
 
+
+            {/* NFT Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NFT Name *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Name your NFT (e.g., 'Cyber Samurai', 'Neon Dreams')" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    A catchy name for your NFT that will be displayed as the title
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Caption */}
             <FormField
