@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Copy, Share, ExternalLink } from "lucide-react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -11,7 +14,11 @@ const nftGalleryItems = [
     id: "early-supporter",
     name: "First 100 Early Supporter",
     image: earlySupporterBadge,
-    description: "Awarded to the first 100 active members on X (Twitter) and Discord.",
+    description: "Legacy badge for early adopters.",
+    category: "AI Art",
+    editionRemaining: "100",
+    price: "Free",
+    metadataUrl: "https://solscan.io/account/example1",
     status: "100 Available",
     statusType: "available" as const,
     isLimited: true,
@@ -21,7 +28,11 @@ const nftGalleryItems = [
     id: "founder", 
     name: "Founder",
     image: foundersNFT,
-    description: "For strategic leaders—max 100.",
+    description: "For strategic leaders.",
+    category: "Profile Picture (PFP)",
+    editionRemaining: "100",
+    price: "Invitation Only",
+    metadataUrl: "https://solscan.io/account/example2",
     status: "Special Edition",
     statusType: "special" as const,
     isLimited: true,
@@ -31,7 +42,11 @@ const nftGalleryItems = [
     id: "ambassador",
     name: "Ambassador", 
     image: ambassadorsNFT,
-    description: "For creators/community builders—max 1,000.",
+    description: "For community builders.",
+    category: "Illustration",
+    editionRemaining: "1,000",
+    price: "Earned",
+    metadataUrl: "https://solscan.io/account/example3",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
@@ -42,6 +57,10 @@ const nftGalleryItems = [
     name: "Hodler",
     image: hodlersNFT,
     description: "For long-term holders.",
+    category: "3D Art",
+    editionRemaining: "Unlimited",
+    price: "Hold $ANIME",
+    metadataUrl: "https://solscan.io/account/example4",
     status: "Always Available",
     statusType: "unlimited" as const,
     isLimited: false,
@@ -50,34 +69,16 @@ const nftGalleryItems = [
 ];
 
 export function NFTGallery() {
-  const getStatusBadgeVariant = (statusType: string) => {
-    switch (statusType) {
-      case "available":
-        return "default";
-      case "special":
-        return "secondary";
-      case "limited":
-        return "outline";
-      case "unlimited":
-        return "secondary";
-      default:
-        return "default";
-    }
+  const [selectedNFT, setSelectedNFT] = useState<typeof nftGalleryItems[0] | null>(null);
+  
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
   };
 
-  const getStatusColor = (statusType: string) => {
-    switch (statusType) {
-      case "available":
-        return "text-green-400";
-      case "special":
-        return "text-yellow-400";
-      case "limited":
-        return "text-orange-400";
-      case "unlimited":
-        return "text-blue-400";
-      default:
-        return "text-muted-foreground";
-    }
+  const handleShareX = () => {
+    const text = `Check out this amazing NFT: ${selectedNFT?.name}`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+    window.open(url, '_blank');
   };
 
   const handleLearnMore = () => {
@@ -107,65 +108,123 @@ export function NFTGallery() {
         </div>
       </div>
 
-      {/* NFT Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {/* Visual-First NFT Gallery Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
         {nftGalleryItems.map((nft) => (
-          <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden">
+          <Card 
+            key={nft.id} 
+            className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
+            onClick={() => setSelectedNFT(nft)}
+          >
             <CardContent className="p-0">
-              {/* NFT Image */}
-              <div className="relative overflow-hidden">
+              <div className="relative overflow-hidden aspect-square">
                 <img 
                   src={nft.image}
                   alt={`${nft.name} NFT`}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
-                {/* Limited Badge Overlay */}
                 {nft.isLimited && (
                   <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                       Limited
                     </Badge>
                   </div>
                 )}
-              </div>
-              
-              <div className="p-4">
-                {/* Name and Status */}
-                <div className="mb-3">
-                  <h3 className="font-bold text-lg mb-1">{nft.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <Badge variant={getStatusBadgeVariant(nft.statusType)} className="text-xs">
-                      {nft.status}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      Max: {nft.maxSupply}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Description */}
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
-                  {nft.description}
-                </p>
-                
-                {/* Status Indicator */}
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm font-medium ${getStatusColor(nft.statusType)}`}>
-                    {nft.status}
-                  </span>
-                  {nft.id === "early-supporter" && (
-                    <span className="text-xs text-muted-foreground animate-pulse">
-                      Ready to Claim
-                    </span>
-                  )}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                  <h3 className="font-bold text-white text-sm">{nft.name}</h3>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* NFT Details Modal */}
+      <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>{selectedNFT?.name}</span>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => window.open(selectedNFT?.metadataUrl, '_blank')}
+                  className="text-xs"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" />
+                  Metadata
+                </Button>
+                <Button variant="ghost" size="sm" className="text-xs">
+                  <Share className="w-3 h-3 mr-1" />
+                  Share
+                </Button>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedNFT && (
+            <div className="space-y-4">
+              <div className="aspect-square overflow-hidden rounded-lg">
+                <img 
+                  src={selectedNFT.image}
+                  alt={selectedNFT.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <span className="font-semibold text-sm">Name:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.name}</p>
+                </div>
+                
+                <div>
+                  <span className="font-semibold text-sm">Description:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.description}</p>
+                </div>
+                
+                <div>
+                  <span className="font-semibold text-sm">Category:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.category}</p>
+                </div>
+                
+                <div>
+                  <span className="font-semibold text-sm">Edition Remaining:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.editionRemaining}</p>
+                </div>
+                
+                <div>
+                  <span className="font-semibold text-sm">Price:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.price}</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCopyLink}
+                  className="flex-1"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Link
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleShareX}
+                  className="flex-1"
+                >
+                  Share via X
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Community Submission Call to Action */}
       <div className="text-center mb-8">
