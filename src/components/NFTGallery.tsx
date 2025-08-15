@@ -643,7 +643,12 @@ export function NFTGallery() {
                       
                       overlay.appendChild(closeBtn);
                       
-                      const closeOverlay = () => document.body.removeChild(overlay);
+                      const closeOverlay = () => {
+                        if (overlay && overlay.parentNode) {
+                          overlay.parentNode.removeChild(overlay);
+                        }
+                        document.removeEventListener('keydown', handleKeyDown);
+                      };
                       
                       // Close on click (but not on media element)
                       overlay.onclick = (e) => {

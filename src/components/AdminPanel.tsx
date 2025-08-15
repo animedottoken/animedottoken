@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 interface Submission {
   id: string;
   image_url: string;
+  name?: string | null;
   caption: string;
   author: string;
   author_bio: string;
@@ -19,7 +20,9 @@ interface Submission {
   edition_type: string;
   status: string;
   created_at: string;
+  nft_address?: string | null;
 }
+
 
 export const AdminPanel = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -174,19 +177,30 @@ export const AdminPanel = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     {/* Image Preview */}
                     <div className="space-y-4">
-                      <div className="aspect-square w-full max-w-sm mx-auto bg-muted rounded-lg overflow-hidden">
-                        <img 
-                          src={submission.image_url} 
-                          alt={submission.caption}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            const parent = (e.target as HTMLElement).parentElement;
-                            if (parent) {
-                              parent.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground"><ImageIcon class="h-12 w-12" /><span class="ml-2">Image not available</span></div>`;
-                            }
-                          }}
-                        />
+                      <div className="aspect-square w-full max-w-sm mx-auto bg-muted rounded-lg overflow-hidden flex items-center justify-center">
+                        { (submission.type === 'video' || submission.image_url?.includes('.mp4') || submission.image_url?.includes('.webm') || submission.image_url?.startsWith('data:video/')) ? (
+                          <video
+                            src={submission.image_url}
+                            className="w-full h-full object-cover"
+                            controls
+                            playsInline
+                            muted
+                          />
+                        ) : (
+                          <img 
+                            src={submission.image_url} 
+                            alt={submission.name || submission.caption}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                              const fallback = document.createElement('div');
+                              fallback.className = 'w-full h-full flex items-center justify-center text-muted-foreground';
+                              fallback.textContent = 'Preview not available';
+                              const parent = (e.currentTarget as HTMLElement).parentElement;
+                              if (parent) parent.appendChild(fallback);
+                            }}
+                          />
+                        )}
                       </div>
                       
                       <div className="flex gap-2 justify-center">
@@ -212,6 +226,12 @@ export const AdminPanel = () => {
                       <div>
                         <h3 className="font-semibold text-lg mb-2">Submission Details</h3>
                         <div className="space-y-3">
+                          {submission.name && (
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Name</label>
+                              <p className="text-sm bg-background p-2 rounded border">{submission.name}</p>
+                            </div>
+                          )}
                           <div>
                             <label className="text-sm font-medium text-muted-foreground">Caption</label>
                             <p className="text-sm bg-background p-2 rounded border">{submission.caption}</p>
