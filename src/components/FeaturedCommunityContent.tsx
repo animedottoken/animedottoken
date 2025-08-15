@@ -63,18 +63,18 @@ export function FeaturedCommunityContent() {
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <Button 
             variant="outline" 
-            className="gap-2"
+            className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
             onClick={() => window.open('https://discord.gg/anime', '_blank')}
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-4 h-4 text-purple-400" />
             Submit on Discord
           </Button>
           <Button 
             variant="outline" 
-            className="gap-2"
+            className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
             onClick={() => window.open('https://x.com/animecoin', '_blank')}
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-4 h-4 text-purple-400" />
             Tag us on X
           </Button>
         </div>
