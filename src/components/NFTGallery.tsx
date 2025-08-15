@@ -262,27 +262,55 @@ export function NFTGallery() {
   // Main content categories
   const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Trending"];
   // Special attributes that can be combined with main categories
-  const attributeCategories = ["Limited", "Exclusive"];
+  const attributeCategories = ["Limited", "Exclusive", "My Favorites"];
   
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
 
   // Filter artworks based on active category and attributes
   const filteredCommunityFavorites = communityFavorites.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // Check if artwork matches selected attributes
-    const matchesAttributes = selectedAttributes.size === 0 || 
-      (selectedAttributes.has("Limited") && nft.isLimited) ||
-      (selectedAttributes.has("Exclusive") && nft.isExclusive);
-    return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
+    
+    // Check if artwork matches ALL selected attributes (AND logic)
+    if (selectedAttributes.size === 0) {
+      return matchesCategory; // No attributes selected, just match category
+    }
+    
+    let matchesAllAttributes = true;
+    
+    if (selectedAttributes.has("Limited") && !nft.isLimited) {
+      matchesAllAttributes = false;
+    }
+    if (selectedAttributes.has("Exclusive") && !nft.isExclusive) {
+      matchesAllAttributes = false;
+    }
+    if (selectedAttributes.has("My Favorites") && !likedNFTs.has(nft.id)) {
+      matchesAllAttributes = false;
+    }
+    
+    return matchesCategory && matchesAllAttributes;
   });
   
   const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // Check if artwork matches selected attributes
-    const matchesAttributes = selectedAttributes.size === 0 || 
-      (selectedAttributes.has("Limited") && nft.isLimited) ||
-      (selectedAttributes.has("Exclusive") && nft.isExclusive);
-    return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
+    
+    // Check if artwork matches ALL selected attributes (AND logic)
+    if (selectedAttributes.size === 0) {
+      return matchesCategory; // No attributes selected, just match category
+    }
+    
+    let matchesAllAttributes = true;
+    
+    if (selectedAttributes.has("Limited") && !nft.isLimited) {
+      matchesAllAttributes = false;
+    }
+    if (selectedAttributes.has("Exclusive") && !nft.isExclusive) {
+      matchesAllAttributes = false;
+    }
+    if (selectedAttributes.has("My Favorites") && !likedNFTs.has(nft.id)) {
+      matchesAllAttributes = false;
+    }
+    
+    return matchesCategory && matchesAllAttributes;
   });
   
   const handleLike = (nftId: string, e: React.MouseEvent) => {
@@ -447,8 +475,12 @@ export function NFTGallery() {
                   className={`
                     transition-all duration-200 
                     ${selectedAttributes.has(attribute)
-                      ? 'bg-purple-600 text-white shadow-md border-purple-600 hover:bg-purple-700' 
-                      : 'bg-background/30 text-muted-foreground hover:bg-purple-100 hover:text-purple-700 border-purple-200'
+                      ? attribute === "My Favorites" 
+                        ? 'bg-red-600 text-white shadow-md border-red-600 hover:bg-red-700'
+                        : 'bg-purple-600 text-white shadow-md border-purple-600 hover:bg-purple-700'
+                      : attribute === "My Favorites"
+                        ? 'bg-background/30 text-muted-foreground hover:bg-red-100 hover:text-red-700 border-red-200'
+                        : 'bg-background/30 text-muted-foreground hover:bg-purple-100 hover:text-purple-700 border-purple-200'
                     }
                   `}
                 >
