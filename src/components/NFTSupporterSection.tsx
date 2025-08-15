@@ -67,7 +67,7 @@ const nftTypes = [
 export function NFTSupporterSection() {
   const [openDetails, setOpenDetails] = useState<string[]>([]);
   // Simulated counter - in real implementation, this would come from an API
-  const earlySupportersClaimed = 27;
+  const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
   const earlySupportersTotal = 100;
 
   return (
@@ -174,9 +174,14 @@ export function NFTSupporterSection() {
                     {/* Real-time Counter */}
                     <div className="text-center mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-purple-500/20 rounded-lg border border-yellow-500/30">
                       <div className="text-2xl font-bold text-yellow-400">
-                        {earlySupportersClaimed}/{earlySupportersTotal}
+                        {earlySupportersClaimed === 0 
+                          ? `${earlySupportersTotal} NFTs Available`
+                          : `${earlySupportersTotal - earlySupportersClaimed}/${earlySupportersTotal} Available`
+                        }
                       </div>
-                      <p className="text-xs text-purple-300">NFTs Claimed</p>
+                      <p className="text-xs text-purple-300">
+                        {earlySupportersClaimed === 0 ? "Ready to Claim" : "Remaining"}
+                      </p>
                     </div>
                     
                     {/* Campaign Criteria */}
