@@ -140,9 +140,6 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
       setImageFile(null);
       setImagePreview('');
       
-      // Refresh the gallery to show new submission
-      window.location.reload();
-      
       // Close dialog if callback provided
       onSuccess?.();
 

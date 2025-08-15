@@ -20,10 +20,12 @@ serve(async (req) => {
 
     const { 
       image_url, 
+      name,
       caption, 
       author, 
       author_bio,
       contact,
+      nft_address,
       tags = [],
       edition_type = 'standard',
       type = 'picture', 
@@ -31,9 +33,9 @@ serve(async (req) => {
     } = await req.json()
 
     // Validate required fields
-    if (!image_url || !caption || !author || !author_bio || !type || !tags || tags.length === 0) {
+    if (!image_url || !name || !caption || !author || !author_bio || !nft_address || !type || !tags || tags.length === 0) {
       return new Response(JSON.stringify({ 
-        error: 'Missing required fields: image_url, caption, author, author_bio, type, and at least 1 tag are required' 
+        error: 'Missing required fields: image_url, name, caption, author, author_bio, nft_address, type, and at least 1 tag are required' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -55,10 +57,12 @@ serve(async (req) => {
       .from('community_submissions')
       .insert({
         image_url,
+        name,
         caption,
         author,
         author_bio,
         contact,
+        nft_address,
         tags,
         edition_type,
         type,

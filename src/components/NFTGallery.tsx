@@ -289,7 +289,7 @@ export function NFTGallery() {
         // Transform submissions to match NFT format
         const transformedSubmissions = data.map(submission => ({
           id: submission.id,
-          name: submission.name || (submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption),
+          name: (submission as any).name || (submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption),
           creator: submission.author,
           image: submission.image_url,
           description: submission.caption,

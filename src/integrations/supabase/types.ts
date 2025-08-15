@@ -25,6 +25,7 @@ export type Database = {
           external_id: string | null
           id: string
           image_url: string
+          name: string | null
           nft_address: string | null
           status: Database["public"]["Enums"]["submission_status"]
           submission_source: Database["public"]["Enums"]["submission_source"]
@@ -43,6 +44,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           image_url: string
+          name?: string | null
           nft_address?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
@@ -61,6 +63,7 @@ export type Database = {
           external_id?: string | null
           id?: string
           image_url?: string
+          name?: string | null
           nft_address?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
