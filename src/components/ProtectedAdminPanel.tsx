@@ -37,6 +37,8 @@ export const ProtectedAdminPanel = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('admin_authenticated');
     setPassword('');
+    // Go directly back to home page
+    window.location.href = '/';
   };
 
   if (isAuthenticated) {
@@ -44,7 +46,7 @@ export const ProtectedAdminPanel = () => {
       <div>
         <div className="flex justify-end mb-4">
           <Button onClick={handleLogout} variant="outline" size="sm">
-            Logout
+            ← Back to Home
           </Button>
         </div>
         <AdminPanel />

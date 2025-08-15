@@ -457,23 +457,23 @@ export function NFTGallery() {
                 </Button>
               ))}
               
-              {/* Admin Access - Hidden among other buttons */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const password = prompt("Admin access code:");
-                  if (password === "anime2025") {
-                    window.location.href = "/admin";
-                  } else if (password) {
-                    alert("Invalid access code");
-                  }
-                }}
-                className="bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50 opacity-70"
-              >
-                Manage
-              </Button>
+              {/* Admin Access - Moved to top right, almost invisible */}
             </div>
+          </div>
+
+          {/* Admin Button - Top Right, Almost Invisible */}
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                window.location.href = "/admin";
+              }}
+              className="opacity-10 hover:opacity-30 text-xs px-2 py-1 text-muted-foreground/50 hover:text-muted-foreground transition-opacity duration-300"
+              title="Admin"
+            >
+              •••
+            </Button>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
