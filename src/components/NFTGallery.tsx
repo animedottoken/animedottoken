@@ -266,30 +266,8 @@ export function NFTGallery() {
   
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
 
-  // Filter artworks based on active category and attributes
-  const filteredCommunityFavorites = communityFavorites.filter(nft => {
-    const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    
-    // Check if artwork matches ALL selected attributes (AND logic)
-    if (selectedAttributes.size === 0) {
-      return matchesCategory; // No attributes selected, just match category
-    }
-    
-    let matchesAllAttributes = true;
-    
-    if (selectedAttributes.has("Limited") && !nft.isLimited) {
-      matchesAllAttributes = false;
-    }
-    if (selectedAttributes.has("Exclusive") && !nft.isExclusive) {
-      matchesAllAttributes = false;
-    }
-    if (selectedAttributes.has("My Favorites") && !likedNFTs.has(nft.id)) {
-      matchesAllAttributes = false;
-    }
-    
-    return matchesCategory && matchesAllAttributes;
-  });
-  
+  // Community Favorites always show all items (no filtering)
+  // Only filter additional artworks
   const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
     
@@ -361,7 +339,7 @@ export function NFTGallery() {
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favorites</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {filteredCommunityFavorites.map((nft, index) => {
+          {communityFavorites.map((nft, index) => {
             const rankIcons = ['🥇', '🥈', '🥉', '🏅']; // Platinum, Gold, Silver, Bronze
             return (
               <Card 
