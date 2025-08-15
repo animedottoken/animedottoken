@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -206,13 +207,56 @@ export function NFTSupporterSection() {
                     </div>
                     
                     {/* How to Qualify Button */}
-                    <Button 
-                      size="sm" 
-                      className="w-full bg-gradient-to-r from-yellow-500 to-purple-500 hover:from-yellow-600 hover:to-purple-600 text-black font-semibold"
-                      onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
-                    >
-                      How to Qualify
-                    </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-gradient-to-r from-yellow-500 to-purple-500 hover:from-yellow-600 hover:to-purple-600 text-black font-semibold"
+                        >
+                          How to Qualify
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-4">
+                        <div className="space-y-4">
+                          <h4 className="font-semibold text-lg mb-3">How to Qualify for Early Supporter NFT</h4>
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-2">
+                              <span className="text-primary font-bold">1.</span>
+                              <p className="text-sm">Follow us on X (Twitter) and join our Discord.</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-primary font-bold">2.</span>
+                              <p className="text-sm">Start posting or sharing anime content in either community.</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-primary font-bold">3.</span>
+                              <p className="text-sm">Stay active until September 30, 2025.</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="text-primary font-bold">4.</span>
+                              <p className="text-sm">The most engaged early supporters will get the NFT.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mt-4">
+                            <Button 
+                              size="sm"
+                              onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
+                              className="flex-1"
+                            >
+                              Follow on X
+                            </Button>
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open('https://discord.gg/EZ9wRhjr', '_blank')}
+                              className="flex-1"
+                            >
+                              Join Discord
+                            </Button>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 )}
 
