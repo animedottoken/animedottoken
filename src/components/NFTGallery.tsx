@@ -11,7 +11,7 @@ const nftGalleryItems = [
     id: "early-supporter",
     name: "First 100 Early Supporter",
     image: earlySupporterBadge,
-    description: "Awarded exclusively to the first 100 active supporters who join and engage in our X (Twitter) and Discord communities. Marks your legacy as a pioneer of the $ANIME community.",
+    description: "Awarded to the first 100 active members on X (Twitter) and Discord.",
     status: "100 Available",
     statusType: "available" as const,
     isLimited: true,
@@ -21,7 +21,7 @@ const nftGalleryItems = [
     id: "founder", 
     name: "Founder",
     image: foundersNFT,
-    description: "For strategic leaders who secure partnerships, lead projects, grow the treasury, or deliver tools for the community. Maximum 100 members.",
+    description: "For strategic leaders—max 100.",
     status: "Special Edition",
     statusType: "special" as const,
     isLimited: true,
@@ -31,7 +31,7 @@ const nftGalleryItems = [
     id: "ambassador",
     name: "Ambassador", 
     image: ambassadorsNFT,
-    description: "For content creators, moderators, or event organizers who actively grow the community. Maximum 1,000 members.",
+    description: "For creators/community builders—max 1,000.",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
@@ -41,7 +41,7 @@ const nftGalleryItems = [
     id: "hodler",
     name: "Hodler",
     image: hodlersNFT,
-    description: "For long-term $ANIME holders. Earn gold, diamond, or legend badges for holding over 3, 12 months, or never selling. Unlimited supply.",
+    description: "For long-term holders.",
     status: "Always Available",
     statusType: "unlimited" as const,
     isLimited: false,
@@ -88,11 +88,23 @@ export function NFTGallery() {
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-          🎨 NFT Gallery
+          🎨 Anime Art Gallery
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-          Discover our exclusive NFT collection for community supporters. Each NFT represents a unique role and contribution to the $ANIME ecosystem.
+          Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
         </p>
+      </div>
+
+      {/* Community Favorite / NFT of the Month */}
+      <div className="text-center mb-12">
+        <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6 max-w-2xl mx-auto">
+          <h3 className="text-xl font-semibold mb-2 text-primary">
+            🌟 Community Favorite
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            This month's featured artwork will be highlighted here. Submit your anime art to be considered for the spotlight!
+          </p>
+        </div>
       </div>
 
       {/* NFT Gallery Grid */}
@@ -155,22 +167,32 @@ export function NFTGallery() {
         ))}
       </div>
 
-      {/* Call to Action */}
+      {/* Community Submission Call to Action */}
       <div className="text-center mb-8">
         <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-6 max-w-3xl mx-auto">
           <h3 className="text-xl md:text-2xl font-semibold mb-4">
-            🚀 Ready to Earn Your NFT?
+            🎨 Want Your NFT Featured Here?
           </h3>
           <p className="text-muted-foreground mb-6">
-            Each NFT is earned through meaningful contributions to our community. Learn how to qualify and claim your supporter role.
+            Submit your anime art and join our gallery. Top creations get highlighted and recognized! Build your reputation now while we prepare the marketplace.
           </p>
-          <Button 
-            size="lg" 
-            onClick={handleLearnMore}
-            className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold"
-          >
-            Learn How to Earn NFTs
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              onClick={handleLearnMore}
+              className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold"
+            >
+              Learn How to Earn NFTs
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => window.open('mailto:nft@anime.com?subject=NFT Gallery Submission', '_blank')}
+              className="border-primary/20 hover:bg-primary/5"
+            >
+              Submit Your Art
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -181,7 +203,7 @@ export function NFTGallery() {
             🔮 Coming Soon: NFT Marketplace
           </h4>
           <p className="text-sm text-muted-foreground">
-            Future trading and marketplace features will allow you to buy, sell, and trade NFTs using $ANIME tokens.
+            NFT trading and marketplace coming soon—build your reputation now!
           </p>
         </div>
       </div>
