@@ -31,9 +31,9 @@ serve(async (req) => {
     } = await req.json()
 
     // Validate required fields
-    if (!image_url || !caption || !author || !author_bio || !type) {
+    if (!image_url || !caption || !author || !author_bio || !type || !tags || tags.length === 0) {
       return new Response(JSON.stringify({ 
-        error: 'Missing required fields: image_url, caption, author, author_bio, and type are required' 
+        error: 'Missing required fields: image_url, caption, author, author_bio, type, and at least 1 tag are required' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -41,9 +41,9 @@ serve(async (req) => {
     }
 
     // Validate tags array length
-    if (tags.length > 3) {
+    if (!tags || tags.length === 0 || tags.length > 3) {
       return new Response(JSON.stringify({ 
-        error: 'Maximum 3 tags allowed' 
+        error: 'Tags are required: minimum 1 tag, maximum 3 tags allowed' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -20,7 +20,7 @@ const submissionSchema = z.object({
   author: z.string().min(1, "Author name is required").max(50, "Author name must not exceed 50 characters"),
   author_bio: z.string().min(10, "Author bio must be at least 10 characters").max(200, "Author bio must not exceed 200 characters"),
   contact: z.string().optional(),
-  tags: z.array(z.string()).max(3, "Maximum 3 tags allowed"),
+  tags: z.array(z.string()).min(1, "At least 1 tag is required").max(3, "Maximum 3 tags allowed"),
   edition_type: z.enum(['standard', 'limited']),
   type: z.enum(['picture', 'video', 'animation', 'music', 'other'])
 });
@@ -96,6 +96,11 @@ export const NFTSubmissionForm = () => {
 
     setSelectedTags(newTags);
     form.setValue('tags', newTags);
+    
+    // Clear validation error when user selects tags
+    if (newTags.length > 0) {
+      form.clearErrors('tags');
+    }
   };
 
   const removeTag = (tagToRemove: string) => {
@@ -331,7 +336,7 @@ export const NFTSubmissionForm = () => {
 
             {/* Tags */}
             <div className="space-y-3">
-              <FormLabel>Tags (Select up to 3)</FormLabel>
+              <FormLabel>Tags (Select at least 1, up to 3) *</FormLabel>
               <div className="flex flex-wrap gap-2">
                 {availableTags.map((tag) => (
                   <Button
@@ -359,6 +364,9 @@ export const NFTSubmissionForm = () => {
                   ))}
                 </div>
               )}
+              {selectedTags.length === 0 && (
+                <p className="text-sm text-destructive">Please select at least 1 tag</p>
+              )}
             </div>
 
             {/* Edition Type */}
@@ -367,7 +375,7 @@ export const NFTSubmissionForm = () => {
               name="edition_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Edition Type</FormLabel>
+                  <FormLabel>Edition Type *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
