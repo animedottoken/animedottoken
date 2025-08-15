@@ -33,10 +33,19 @@ export function useLiveStats(): LiveStats {
 
     const fetchTwitterFollowers = async () => {
       try {
-        // Using actual follower count
+        // Twitter API v2 endpoint (requires Bearer token in production)
+        // For now, falling back to manual count since Twitter API requires auth
+        console.log('Twitter API: Using fallback count');
         setTwitterFollowers(9);
+        
+        // Future implementation with proper API:
+        // const response = await fetch('https://api.twitter.com/2/users/by/username/AnimeDotToken?user.fields=public_metrics');
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   setTwitterFollowers(data.data.public_metrics.followers_count);
+        // }
       } catch (error) {
-        console.debug('Twitter follower count fetch failed', error);
+        console.log('Twitter API error:', error);
         setTwitterFollowers(9);
       }
     };
