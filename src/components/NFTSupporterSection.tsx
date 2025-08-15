@@ -169,7 +169,7 @@ export function NFTSupporterSection() {
               <Button 
                 variant="outline"
                 size="lg" 
-                onClick={() => window.open('https://discord.gg/your-discord', '_blank')}
+                onClick={() => window.open('https://discord.gg/EZ9wRhjr', '_blank')}
               >
                 Contact us on Discord
               </Button>
