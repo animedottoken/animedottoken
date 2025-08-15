@@ -323,8 +323,13 @@ export function NFTGallery() {
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
 
   // Community Favorites always show all items (no filtering)
-  // Combine additional artworks with approved community submissions
-  const allAdditionalArtworks = [...additionalArtworks, ...approvedSubmissions];
+  // Combine additional artworks with approved community submissions, sorted by date
+  const allAdditionalArtworks = [
+    // First add approved submissions (newest first) 
+    ...approvedSubmissions,
+    // Then add static artworks
+    ...additionalArtworks
+  ];
   
   // Only filter additional artworks (including community submissions)
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
