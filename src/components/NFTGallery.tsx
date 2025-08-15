@@ -327,28 +327,14 @@ export function NFTGallery() {
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div className="text-center mb-12">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-          <div className="text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent flex items-center justify-center md:justify-start">
-              <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
-              Anime Art Gallery
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
-              Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
-            </p>
-          </div>
-          
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="default" className="gap-2 shrink-0">
-                <Plus className="h-4 w-4" />
-                Submit Your NFT
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <NFTSubmissionForm />
-            </DialogContent>
-          </Dialog>
+        <div className="text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
+            Anime Art Gallery
+          </h2>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
+          </p>
         </div>
       </div>
 
@@ -633,20 +619,27 @@ export function NFTGallery() {
       {/* Community Submission Call to Action */}
       <div className="text-center mb-8">
         <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-6 max-w-3xl mx-auto">
-          <h3 className="text-xl md:text-2xl font-semibold mb-4">
+          <h3 className="text-xl md:text-2xl font-semibold mb-4 text-center">
             🎨 Want Your NFT Featured Here?
           </h3>
           <p className="text-muted-foreground mb-6">
             Submit your anime art and join our gallery. Top creations get highlighted and recognized! Build your reputation now while we prepare the marketplace.
           </p>
           <div className="flex justify-center">
-            <Button 
-              size="lg"
-              onClick={() => window.open('mailto:nft@anime.com?subject=NFT Gallery Submission', '_blank')}
-              className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold"
-            >
-              Submit Your Art
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Submit Your Art
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <NFTSubmissionForm />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

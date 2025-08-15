@@ -157,67 +157,6 @@ export const NFTSubmissionForm = () => {
       <CardContent className="space-y-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Image Upload */}
-            <FormField
-              control={form.control}
-              name="image_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NFT Image/Animation/Video *</FormLabel>
-                  <FormControl>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                      {imagePreview ? (
-                        <div className="space-y-4">
-                          <img 
-                            src={imagePreview} 
-                            alt="Preview" 
-                            className="max-h-48 mx-auto rounded-lg"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setImagePreview('');
-                              setImageFile(null);
-                              form.setValue('image_url', '');
-                            }}
-                          >
-                            Change Image
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                          <div>
-                            <Input
-                              type="file"
-                              accept="image/*,video/*"
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              id="image-upload"
-                            />
-                            <label
-                              htmlFor="image-upload"
-                              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
-                            >
-                              Click to upload or drag and drop
-                              <br />
-                              Square format (1:1 ratio) recommended
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormDescription>
-                    Upload your NFT in square format for best display. Supports images, animations, and videos.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Theme Selection */}
             <FormField
               control={form.control}
@@ -253,7 +192,7 @@ export const NFTSubmissionForm = () => {
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>NFT Type</FormLabel>
+                  <FormLabel>NFT Type *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -268,10 +207,78 @@ export const NFTSubmissionForm = () => {
                       <SelectItem value="story">📖 Story/Concept</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormDescription>
+                    Select the type of content you're submitting
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Image Upload */}
+            <FormField
+              control={form.control}
+              name="image_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NFT Image/Animation/Video *</FormLabel>
+                  <FormControl>
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                      {imagePreview ? (
+                        <div className="space-y-4">
+                          <img 
+                            src={imagePreview} 
+                            alt="Preview" 
+                            className="max-h-48 mx-auto rounded-lg"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setImagePreview('');
+                              setImageFile(null);
+                              form.setValue('image_url', '');
+                            }}
+                          >
+                            Change Image
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <Upload className="h-12 w-12 mx-auto text-primary animate-pulse" />
+                          <div className="space-y-2">
+                            <Input
+                              type="file"
+                              accept="image/*,video/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              id="image-upload"
+                            />
+                            <label
+                              htmlFor="image-upload"
+                              className="block w-full text-center cursor-pointer bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 rounded-lg py-6 px-4 transition-colors"
+                            >
+                              <div className="text-primary font-medium">
+                                Click to upload or drag and drop
+                              </div>
+                              <div className="text-sm text-muted-foreground mt-1">
+                                Square format (1:1 ratio) recommended
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Upload your NFT in square format for best display. Supports images, animations, and videos.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             {/* Caption */}
             <FormField
@@ -341,12 +348,12 @@ export const NFTSubmissionForm = () => {
               name="contact"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact (Optional)</FormLabel>
+                  <FormLabel>Social Contact (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="@username on Twitter/X or Discord" {...field} />
+                    <Input placeholder="@yourhandle (Twitter/X) or yourname#1234 (Discord)" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Your Twitter/X handle or Discord username for community connection (optional)
+                    Twitter/X handle (with @) or Discord username for community connection. No email or phone numbers.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -391,7 +398,7 @@ export const NFTSubmissionForm = () => {
               name="edition_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Edition/Availability</FormLabel>
+                  <FormLabel>Edition Type</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -399,13 +406,13 @@ export const NFTSubmissionForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="standard">🔓 Standard Edition</SelectItem>
-                      <SelectItem value="limited">⭐ Limited Edition</SelectItem>
-                      <SelectItem value="exclusive">💎 Exclusive</SelectItem>
+                      <SelectItem value="standard">🔓 Standard - Available to everyone</SelectItem>
+                      <SelectItem value="limited">⭐ Limited Edition - Restricted number of copies</SelectItem>
+                      <SelectItem value="exclusive">💎 Exclusive - One-of-a-kind or VIP access only</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Specify if your NFT has special availability or edition status
+                    Standard = regular availability. Limited = few copies. Exclusive = unique/VIP only.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
