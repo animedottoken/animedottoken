@@ -289,14 +289,18 @@ export function NFTGallery() {
         // Transform submissions to match NFT format
         const transformedSubmissions = data.map(submission => ({
           id: submission.id,
-          name: (submission as any).name || (submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption),
+          name: (submission as any).name || 'Untitled',
           creator: submission.author,
           image: submission.image_url,
           description: submission.caption,
           category: submission.type === 'art' ? 'Digital Art' : 'Others',
           editionRemaining: submission.edition_type || "Unique",
           price: "Community Upload",
-          metadataUrl: submission.nft_address ? `https://solscan.io/token/${submission.nft_address}` : "#",
+          metadataUrl: submission.nft_address ? (
+            submission.nft_address.startsWith('http') 
+              ? submission.nft_address 
+              : `https://solscan.io/token/${submission.nft_address}`
+          ) : "#",
           status: "Approved",
           statusType: "available" as const,
           isLimited: submission.edition_type === 'limited',
@@ -548,13 +552,25 @@ export function NFTGallery() {
             >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden aspect-square">
-                  <img 
-                    src={nft.image}
-                    alt={`${nft.name} NFT`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
+                  {nft.image.includes('video') || nft.image.includes('.mp4') || nft.image.includes('.webm') ? (
+                    <video 
+                      src={nft.image}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      muted
+                      loop
+                      playsInline
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseLeave={(e) => e.currentTarget.pause()}
+                    />
+                  ) : (
+                    <img 
+                      src={nft.image}
+                      alt={`${nft.name} NFT`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  )}
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
                       {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
@@ -602,12 +618,20 @@ export function NFTGallery() {
                       const overlay = document.createElement('div');
                       overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
                       
-                      const isVideo = selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/');
+                      // Add close button
+                      const closeBtn = document.createElement('button');
+                      closeBtn.innerHTML = '×';
+                      closeBtn.style.cssText = 'position:absolute;top:20px;right:30px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:40px;font-weight:bold;cursor:pointer;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);';
+                      closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(255,255,255,0.3)';
+                      closeBtn.onmouseout = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';
+                      
+                      const isVideo = selectedNFT.image.includes('video') || selectedNFT.image.includes('.mp4') || selectedNFT.image.includes('.webm') || selectedNFT.image.startsWith('data:video/');
                       
                       if (isVideo) {
                         const video = document.createElement('video');
                         video.src = selectedNFT.image;
                         video.controls = true;
+                        video.autoplay = true;
                         video.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
                         overlay.appendChild(video);
                       } else {
@@ -617,7 +641,27 @@ export function NFTGallery() {
                         overlay.appendChild(img);
                       }
                       
-                      overlay.onclick = () => document.body.removeChild(overlay);
+                      overlay.appendChild(closeBtn);
+                      
+                      const closeOverlay = () => document.body.removeChild(overlay);
+                      
+                      // Close on click (but not on media element)
+                      overlay.onclick = (e) => {
+                        if (e.target === overlay) closeOverlay();
+                      };
+                      
+                      // Close button handler
+                      closeBtn.onclick = closeOverlay;
+                      
+                      // Close on Escape key
+                      const handleKeyDown = (e) => {
+                        if (e.key === 'Escape') {
+                          closeOverlay();
+                          document.removeEventListener('keydown', handleKeyDown);
+                        }
+                      };
+                      document.addEventListener('keydown', handleKeyDown);
+                      
                       document.body.appendChild(overlay);
                     }}
                   >
@@ -646,20 +690,21 @@ export function NFTGallery() {
                     variant="outline" 
                     size="sm"
                     onClick={() => {
-                      if (selectedNFT.metadataUrl !== "#") {
+                      if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
                         window.open(selectedNFT.metadataUrl, '_blank');
                       } else {
                         toast({
-                          title: "No NFT address available",
-                          description: "This NFT doesn't have a Solscan link available",
+                          title: "No Solscan link available",
+                          description: "This NFT doesn't have a verified address for Solscan viewing",
                           variant: "destructive"
                         });
                       }
                     }}
                     className="flex-1"
+                    disabled={!selectedNFT.metadataUrl || selectedNFT.metadataUrl === "#"}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    Check on Solscan
+                    {selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#" ? "View on Solscan" : "No Solscan Link"}
                   </Button>
                   <Button 
                     variant="outline" 
