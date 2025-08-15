@@ -11,6 +11,7 @@ import { MarketCapChart } from "@/components/MarketCapChart";
 import { NFTSupporterSection } from "@/components/NFTSupporterSection";
 import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { LiveStatsCounter } from "@/components/LiveStatsCounter";
+import { FeaturedCommunityContent } from "@/components/FeaturedCommunityContent";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
@@ -234,6 +235,7 @@ const Index = () => {
         </div>
       </div>
 
+      <FeaturedCommunityContent />
 
       <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
 
