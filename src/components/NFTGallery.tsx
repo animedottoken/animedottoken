@@ -245,9 +245,12 @@ export function NFTGallery() {
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  // Get unique categories from all artworks
-  const allArtworks = [...communityFavorites, ...additionalArtworks];
-  const categories = ["All", ...Array.from(new Set(allArtworks.map(nft => nft.category)))];
+  // Core categories for filtering
+  const categories = [
+    "All", "Anime", "Digital Art", "AI Art", "Meme", "Pixel Art", "3D Art", 
+    "Animation", "Community Favorite", "Limited Edition", "Founder", 
+    "Ambassador", "Hodler", "Early Supporter", "Exclusive", "Trending", "New"
+  ];
 
   // Filter artworks based on active category
   const filteredCommunityFavorites = activeCategory === "All" 
@@ -300,29 +303,6 @@ export function NFTGallery() {
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
           Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
         </p>
-      </div>
-
-      {/* Category Filter Tags */}
-      <div className="mb-8">
-        <div className="flex flex-wrap justify-center gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={activeCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveCategory(category)}
-              className={`
-                transition-all duration-200 
-                ${activeCategory === category 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
-                  : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                }
-              `}
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
       </div>
 
       {/* Community Favorites Section */}
@@ -395,7 +375,31 @@ export function NFTGallery() {
 
       {/* Additional Artworks Grid */}
       {showMoreArtworks && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
+        <div>
+          {/* Category Filter Tags */}
+          <div className="mb-6">
+            <div className="flex flex-wrap justify-center gap-2">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={activeCategory === category ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveCategory(category)}
+                  className={`
+                    transition-all duration-200 
+                    ${activeCategory === category 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                    }
+                  `}
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
           {filteredAdditionalArtworks.map((nft) => (
             <Card 
               key={nft.id} 
@@ -436,6 +440,7 @@ export function NFTGallery() {
               </CardContent>
             </Card>
           ))}
+          </div>
         </div>
       )}
 
