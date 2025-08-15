@@ -263,7 +263,7 @@ export function NFTGallery() {
   // Main content categories
   const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Others"];
   // Special attributes that can be combined with main categories
-  const attributeCategories = ["Limited", "Exclusive", "My Favorites"];
+  const attributeCategories = ["Limited", "My Favorites"];
   
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
 
@@ -280,9 +280,6 @@ export function NFTGallery() {
     let matchesAllAttributes = true;
     
     if (selectedAttributes.has("Limited") && !nft.isLimited) {
-      matchesAllAttributes = false;
-    }
-    if (selectedAttributes.has("Exclusive") && !nft.isExclusive) {
       matchesAllAttributes = false;
     }
     if (selectedAttributes.has("My Favorites") && !likedNFTs.has(nft.id)) {
@@ -366,15 +363,11 @@ export function NFTGallery() {
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      {nft.isExclusive ? (
-                        <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
-                          Exclusive
-                        </Badge>
-                      ) : nft.isLimited ? (
+                      {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                           Limited
                         </Badge>
-                      ) : null}
+                      )}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                       <div className="flex items-center justify-between">
@@ -452,17 +445,17 @@ export function NFTGallery() {
                     }
                     setSelectedAttributes(newAttributes);
                   }}
-                  className={`
-                    transition-all duration-200 
-                    ${selectedAttributes.has(attribute)
-                      ? attribute === "My Favorites" 
-                        ? 'bg-red-600 text-white shadow-md border-red-600 hover:bg-red-700'
-                        : 'bg-purple-600 text-white shadow-md border-purple-600 hover:bg-purple-700'
-                      : attribute === "My Favorites"
-                        ? 'bg-background/30 text-muted-foreground hover:bg-red-100 hover:text-red-700 border-red-200'
-                        : 'bg-background/30 text-muted-foreground hover:bg-purple-100 hover:text-purple-700 border-purple-200'
-                    }
-                  `}
+                    className={`
+                      transition-all duration-200 
+                      ${selectedAttributes.has(attribute)
+                        ? attribute === "My Favorites" 
+                          ? 'bg-red-600 text-white shadow-md border-red-600 hover:bg-red-700'
+                          : 'bg-primary text-primary-foreground shadow-md border-primary hover:bg-primary/90'
+                        : attribute === "My Favorites"
+                          ? 'bg-background/30 text-muted-foreground hover:bg-red-100 hover:text-red-700 border-red-200'
+                          : 'bg-background/30 text-muted-foreground hover:bg-primary/10 hover:text-primary border-primary/30'
+                      }
+                    `}
                 >
                   {attribute}
                 </Button>
@@ -487,15 +480,11 @@ export function NFTGallery() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      {nft.isExclusive ? (
-                        <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
-                          Exclusive
-                        </Badge>
-                      ) : nft.isLimited ? (
+                      {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                           Limited
                         </Badge>
-                      ) : null}
+                      )}
                     </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
                     <div className="flex items-center justify-between">

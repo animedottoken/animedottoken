@@ -21,7 +21,7 @@ const submissionSchema = z.object({
   author_bio: z.string().min(10, "Author bio must be at least 10 characters").max(200, "Author bio must not exceed 200 characters"),
   contact: z.string().optional(),
   tags: z.array(z.string()).max(3, "Maximum 3 tags allowed"),
-  edition_type: z.enum(['standard', 'limited', 'exclusive']),
+  edition_type: z.enum(['standard', 'limited']),
   theme: z.enum(['anime', 'digital_culture', 'meme', 'ai', 'new_internet_money']),
   type: z.enum(['art', 'meme', 'story', 'animation', 'video'])
 });
@@ -408,11 +408,10 @@ export const NFTSubmissionForm = () => {
                     <SelectContent>
                       <SelectItem value="standard">🔓 Standard - Available to everyone</SelectItem>
                       <SelectItem value="limited">⭐ Limited Edition - Restricted number of copies</SelectItem>
-                      <SelectItem value="exclusive">💎 Exclusive - One-of-a-kind or VIP access only</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Standard = regular availability. Limited = few copies. Exclusive = unique/VIP only.
+                    Standard = regular availability. Limited = few copies.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
