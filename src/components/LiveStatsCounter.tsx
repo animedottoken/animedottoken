@@ -1,6 +1,6 @@
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { useLiveStats } from "@/hooks/useLiveStats";
-import { Users, MessageCircle, Twitter } from "lucide-react";
+import { Users, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiDiscord, SiX } from "react-icons/si";
 
@@ -15,7 +15,7 @@ export function LiveStatsCounter() {
       value: holders?.toLocaleString() || "Loading...",
       color: "text-primary",
       button: (
-        <Button asChild variant="hero" size="sm">
+        <Button asChild variant="glass" size="sm">
           <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">
             Buy $ANIME
           </a>
@@ -37,7 +37,7 @@ export function LiveStatsCounter() {
       )
     },
     {
-      icon: Twitter,
+      icon: SiX,
       label: "X Followers",
       value: twitterFollowers?.toLocaleString() || "Loading...",
       color: "text-secondary",
