@@ -1,6 +1,6 @@
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { useLiveStats } from "@/hooks/useLiveStats";
-import { Users, MessageCircle } from "lucide-react";
+import { Users, MessageCircle, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiDiscord, SiX } from "react-icons/si";
 
@@ -37,7 +37,7 @@ export function LiveStatsCounter() {
       )
     },
     {
-      icon: SiX,
+      icon: Twitter,
       label: "X Followers",
       value: twitterFollowers?.toLocaleString() || "Loading...",
       color: "text-primary",
