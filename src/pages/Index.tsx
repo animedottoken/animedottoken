@@ -505,7 +505,7 @@ const Index = () => {
         </section>
 
         <section className="mt-8">
-          <h3 className="text-lg font-semibold"><span className="text-primary">F</span><span className="text-accent">A</span><span className="text-primary">Q</span>s (Frequented Answers & Questions)</h3>
+          <h3 className="text-lg font-semibold"><span className="text-primary">F</span><span className="text-primary">A</span><span className="text-primary">Q</span>s (Frequented Answers & Questions)</h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
