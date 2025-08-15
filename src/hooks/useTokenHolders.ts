@@ -22,12 +22,19 @@ export function useTokenHolders(tokenAddress: string) {
 
     const fetchHolders = async () => {
       try {
-        const res = await fetch(`https://api.solscan.io/token/holders?address=${tokenAddress}&offset=0&size=1`);
-        if (!res.ok) throw new Error(`Solscan ${res.status}`);
+        // Use edge function to avoid CORS issues
+        const res = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/get-token-holders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ tokenAddress })
+        });
+        
+        if (!res.ok) throw new Error(`Edge function ${res.status}`);
         const data = await res.json();
         
-        // Extract holder count from Solscan response
-        const holderCount = data.total || 123;
+        const holderCount = data.holders || 123;
         
         setHolders(holderCount);
         localStorage.setItem(cacheKey, JSON.stringify({ v: holderCount, t: Date.now() }));
