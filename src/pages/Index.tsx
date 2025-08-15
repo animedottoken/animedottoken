@@ -231,23 +231,6 @@ const Index = () => {
           </p>
           
           <LiveStatsCounter />
-          <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row justify-center">
-            <Button asChild variant="hero">
-              <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">Buy $ANIME on DEX Screener</a>
-            </Button>
-            <Button asChild variant="glass">
-              <a href="https://discord.gg/animetoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                <SiDiscord className="h-4 w-4" aria-hidden="true" />
-                Join Our Discord
-              </a>
-            </Button>
-            <Button asChild variant="glass">
-              <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                <SiX className="h-4 w-4" aria-hidden="true" />
-                Follow us on X (Twitter)
-              </a>
-            </Button>
-          </div>
         </div>
       </div>
 

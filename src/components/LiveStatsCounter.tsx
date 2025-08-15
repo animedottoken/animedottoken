@@ -1,6 +1,8 @@
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { useLiveStats } from "@/hooks/useLiveStats";
 import { Users, MessageCircle, Twitter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SiDiscord, SiX } from "react-icons/si";
 
 export function LiveStatsCounter() {
   const holders = useTokenHolders("GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump");
@@ -11,19 +13,42 @@ export function LiveStatsCounter() {
       icon: Users,
       label: "$ANIME Holders",
       value: holders?.toLocaleString() || "Loading...",
-      color: "text-primary"
+      color: "text-primary",
+      button: (
+        <Button asChild variant="hero" size="sm">
+          <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">
+            Buy $ANIME
+          </a>
+        </Button>
+      )
     },
     {
       icon: MessageCircle,
       label: "Discord Members",
       value: discordMembers?.toLocaleString() || "Loading...",
-      color: "text-accent"
+      color: "text-accent",
+      button: (
+        <Button asChild variant="glass" size="sm">
+          <a href="https://discord.gg/animetoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+            <SiDiscord className="h-4 w-4" aria-hidden="true" />
+            Join Discord
+          </a>
+        </Button>
+      )
     },
     {
       icon: Twitter,
       label: "X Followers",
       value: twitterFollowers?.toLocaleString() || "Loading...",
-      color: "text-secondary"
+      color: "text-secondary",
+      button: (
+        <Button asChild variant="glass" size="sm">
+          <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+            <SiX className="h-4 w-4" aria-hidden="true" />
+            Follow us
+          </a>
+        </Button>
+      )
     }
   ];
 
@@ -41,9 +66,10 @@ export function LiveStatsCounter() {
               <div className="text-3xl font-bold text-white mb-1">
                 {stat.value}
               </div>
-              <div className="text-sm text-white/70 font-medium">
+              <div className="text-sm text-white/70 font-medium mb-4">
                 {stat.label}
               </div>
+              {stat.button}
             </div>
           );
         })}
