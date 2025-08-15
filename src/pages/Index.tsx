@@ -218,14 +218,14 @@ const Index = () => {
         </AspectRatio>
       </header>
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
-        <div className="max-w-3xl animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
-          <div className="flex items-center gap-3">
+        <div className="text-center animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
+          <div className="flex items-center justify-center gap-3">
             <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
               ANIME.TOKEN – Community-Driven Anime Crypto Token on Solana.
             </h1>
           </div>
-          <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg">
+          <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg max-w-4xl mx-auto">
             Join the #1 Solana anime project. Earn NFT supporter roles and be part of a transparent, community-owned token movement.
           </p>
           <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
