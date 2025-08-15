@@ -16,25 +16,25 @@ export function useLiveStats(): LiveStats {
         const response = await fetch('https://discord.com/api/guilds/1234567890/widget.json');
         if (response.ok) {
           const data = await response.json();
-          setDiscordMembers(data.presence_count || 12);
+          setDiscordMembers(data.presence_count || 1);
         } else {
-          // Fallback to estimated count
-          setDiscordMembers(12);
+          // Fallback to actual count
+          setDiscordMembers(1);
         }
       } catch (error) {
         console.debug('Discord member count fetch failed', error);
-        // Fallback to estimated count
-        setDiscordMembers(12);
+        // Fallback to actual count
+        setDiscordMembers(1);
       }
     };
 
     const fetchTwitterFollowers = async () => {
       try {
-        // Using more accurate follower count
-        setTwitterFollowers(45);
+        // Using actual follower count
+        setTwitterFollowers(9);
       } catch (error) {
         console.debug('Twitter follower count fetch failed', error);
-        setTwitterFollowers(45);
+        setTwitterFollowers(9);
       }
     };
 
