@@ -2,6 +2,31 @@ import { Button } from "@/components/ui/button";
 import { SiDiscord, SiX } from "react-icons/si";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 
+// Community content data - easily update this array to add/modify submissions
+const communitySubmissions = [
+  {
+    id: 1,
+    image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png", // Sample image for testing
+    caption: "Amazing anime art by @CommunityArtist",
+    author: "CommunityArtist",
+    type: "art" as const
+  },
+  // Add more submissions here as they come in
+  // {
+  //   id: 2,
+  //   image: "/path-to-image.jpg",
+  //   caption: "Your caption here",
+  //   author: "AuthorName",
+  //   type: "meme" | "art" | "story"
+  // },
+];
+
+const emptySlots = [
+  { icon: "🎨", text: "Your art here", type: "art" },
+  { icon: "📝", text: "Coming soon!", type: "story" },
+  { icon: "🎭", text: "Your meme here", type: "meme" }
+];
+
 export function FeaturedCommunityContent() {
   return (
     <section className="w-full max-w-6xl mx-auto my-12 px-4">
@@ -80,41 +105,43 @@ export function FeaturedCommunityContent() {
           
           {/* Community Content Slots */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {/* Slot 1 - Empty with overlay */}
-            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">🎨</div>
-                  <div className="text-white/80 font-medium text-sm">Your art here</div>
+            {Array.from({ length: 3 }, (_, index) => {
+              const submission = communitySubmissions[index];
+              const emptySlot = emptySlots[index];
+              
+              if (submission) {
+                // Render community submission
+                return (
+                  <div key={submission.id} className="relative aspect-square rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
+                    <img 
+                      src={submission.image} 
+                      alt={submission.caption}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <p className="text-white text-sm font-medium mb-1">{submission.caption}</p>
+                      <p className="text-white/70 text-xs">by @{submission.author}</p>
+                    </div>
+                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                );
+              }
+              
+              // Render empty slot
+              return (
+                <div key={`empty-${index}`} className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{emptySlot.icon}</div>
+                      <div className="text-white/80 font-medium text-sm">{emptySlot.text}</div>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-              </div>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-
-            {/* Slot 2 - Empty with overlay */}
-            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">📝</div>
-                  <div className="text-white/80 font-medium text-sm">Coming soon!</div>
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-
-            {/* Slot 3 - Empty with overlay */}
-            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">🎭</div>
-                  <div className="text-white/80 font-medium text-sm">Your meme here</div>
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
+              );
+            })}
           </div>
 
           {/* Call to Action Prompt */}
