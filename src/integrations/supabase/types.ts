@@ -117,7 +117,15 @@ export type Database = {
       edition_type: "standard" | "limited" | "exclusive"
       submission_source: "discord" | "twitter" | "form"
       submission_status: "pending" | "approved" | "rejected"
-      submission_type: "art" | "meme" | "story" | "picture" | "music" | "other"
+      submission_type:
+        | "art"
+        | "meme"
+        | "story"
+        | "picture"
+        | "music"
+        | "other"
+        | "video"
+        | "animation"
       theme_type:
         | "anime"
         | "digital_culture"
@@ -254,7 +262,16 @@ export const Constants = {
       edition_type: ["standard", "limited", "exclusive"],
       submission_source: ["discord", "twitter", "form"],
       submission_status: ["pending", "approved", "rejected"],
-      submission_type: ["art", "meme", "story", "picture", "music", "other"],
+      submission_type: [
+        "art",
+        "meme",
+        "story",
+        "picture",
+        "music",
+        "other",
+        "video",
+        "animation",
+      ],
       theme_type: [
         "anime",
         "digital_culture",
