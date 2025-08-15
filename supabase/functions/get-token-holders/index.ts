@@ -21,32 +21,37 @@ serve(async (req) => {
 
     console.log('Fetching holders for token:', tokenAddress);
 
-    // Try Solscan API
+    // Try Solscan Pro API v2.0
     const response = await fetch(
-      `https://api.solscan.io/token/holders?address=${tokenAddress}&offset=0&size=1`,
+      `https://pro-api.solscan.io/v2.0/token/holders?address=${tokenAddress}`,
       {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; TokenHolderBot/1.0)',
+          'Accept': 'application/json',
         }
       }
     );
 
-    console.log('Solscan API response status:', response.status);
-
+    console.log('Solscan Pro API response status:', response.status);
+    
     if (response.ok) {
       const data = await response.json();
-      console.log('Solscan API response:', data);
+      console.log('Solscan Pro API response:', JSON.stringify(data, null, 2));
       
-      const holderCount = data.total || 123;
+      // The Pro API might have a different response structure
+      const holderCount = data.total || data.count || data.holders?.length || 123;
       
       return new Response(JSON.stringify({ 
         holders: holderCount,
-        source: 'solscan' 
+        source: 'solscan-pro',
+        raw: data
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } else {
-      throw new Error(`Solscan API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Solscan Pro API error:', response.status, errorText);
+      throw new Error(`Solscan Pro API error: ${response.status} - ${errorText}`);
     }
   } catch (error) {
     console.error('Error fetching token holders:', error);
