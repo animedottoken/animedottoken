@@ -12,11 +12,16 @@ Deno.serve(async (req) => {
   try {
     const TWITTER_BEARER_TOKEN = Deno.env.get('TWITTER_BEARER_TOKEN');
     
+    console.log('Bearer token exists:', !!TWITTER_BEARER_TOKEN);
+    console.log('Bearer token length:', TWITTER_BEARER_TOKEN?.length || 0);
+    
     if (!TWITTER_BEARER_TOKEN) {
+      console.error('Missing TWITTER_BEARER_TOKEN environment variable');
       throw new Error('Twitter Bearer Token not configured');
     }
 
     // Fetch Twitter user data for @AnimeDotToken
+    console.log('Calling Twitter API...');
     const response = await fetch('https://api.twitter.com/2/users/by/username/AnimeDotToken?user.fields=public_metrics', {
       headers: {
         'Authorization': `Bearer ${TWITTER_BEARER_TOKEN}`,
@@ -24,8 +29,11 @@ Deno.serve(async (req) => {
       },
     });
 
+    console.log('Twitter API response status:', response.status);
+    
     if (!response.ok) {
-      console.error('Twitter API error:', response.status, await response.text());
+      const errorText = await response.text();
+      console.error('Twitter API error details:', errorText);
       // Return fallback data if Twitter API fails
       return new Response(
         JSON.stringify({ followers_count: 123 }),
