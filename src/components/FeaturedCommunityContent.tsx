@@ -52,7 +52,7 @@ export function FeaturedCommunityContent() {
   return (
     <section className="mx-auto mt-16 max-w-5xl px-4">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold mb-4 text-white">
           Community Showcase
         </h2>
         <p className="text-muted-foreground text-lg mb-6">
