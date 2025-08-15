@@ -255,14 +255,20 @@ export function NFTGallery() {
   // Filter artworks based on active category and attributes
   const filteredCommunityFavorites = communityFavorites.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // For attributes, check if any selected attributes apply (simplified logic for demo)
-    return matchesCategory;
+    // Check if artwork matches selected attributes (simplified - in real app would check NFT properties)
+    const matchesAttributes = selectedAttributes.size === 0 || 
+      (selectedAttributes.has("Limited") && nft.isLimited) ||
+      (selectedAttributes.has("Exclusive") && nft.status.includes("Special"));
+    return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
   });
   
   const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // For attributes, check if any selected attributes apply (simplified logic for demo)
-    return matchesCategory;
+    // Check if artwork matches selected attributes (simplified - in real app would check NFT properties)
+    const matchesAttributes = selectedAttributes.size === 0 || 
+      (selectedAttributes.has("Limited") && nft.isLimited) ||
+      (selectedAttributes.has("Exclusive") && nft.status.includes("Special"));
+    return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
   });
   
   const handleLike = (nftId: string, e: React.MouseEvent) => {
@@ -422,8 +428,8 @@ export function NFTGallery() {
                   className={`
                     transition-all duration-200 
                     ${selectedAttributes.has(attribute)
-                      ? 'bg-secondary text-secondary-foreground shadow-md border-secondary' 
-                      : 'bg-background/30 text-muted-foreground hover:bg-secondary/10 hover:text-secondary border-border/30'
+                      ? 'bg-purple-600 text-white shadow-md border-purple-600 hover:bg-purple-700' 
+                      : 'bg-background/30 text-muted-foreground hover:bg-purple-100 hover:text-purple-700 border-purple-200'
                     }
                   `}
                 >
