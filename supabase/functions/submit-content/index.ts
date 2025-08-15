@@ -26,15 +26,14 @@ serve(async (req) => {
       contact,
       tags = [],
       edition_type = 'standard',
-      theme,
-      type = 'art', 
+      type = 'picture', 
       submission_source = 'form' 
     } = await req.json()
 
     // Validate required fields
-    if (!image_url || !caption || !author || !theme) {
+    if (!image_url || !caption || !author || !author_bio || !type) {
       return new Response(JSON.stringify({ 
-        error: 'Missing required fields: image_url, caption, author, and theme are required' 
+        error: 'Missing required fields: image_url, caption, author, author_bio, and type are required' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -62,7 +61,6 @@ serve(async (req) => {
         contact,
         tags,
         edition_type,
-        theme,
         type,
         submission_source,
         status: 'pending'
