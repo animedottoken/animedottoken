@@ -228,7 +228,7 @@ const Index = () => {
           <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg max-w-4xl mx-auto">
             Join the #1 Solana anime project. Earn NFT supporter roles and be part of a transparent, community-owned token movement.
           </p>
-          <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row justify-center">
             <Button asChild variant="hero">
               <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">Buy $ANIME on DEX Screener</a>
             </Button>
