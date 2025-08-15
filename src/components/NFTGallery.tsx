@@ -9,7 +9,7 @@ import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eab
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
 import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c85026ca6ea.png";
 
-const nftGalleryItems = [
+const communityFavorites = [
   {
     id: "early-supporter",
     name: "First 100 Early Supporter",
@@ -68,8 +68,152 @@ const nftGalleryItems = [
   }
 ];
 
+const additionalArtworks = [
+  {
+    id: "cyber-samurai",
+    name: "Cyber Samurai",
+    image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png",
+    description: "Futuristic samurai warrior.",
+    category: "3D Art",
+    editionRemaining: "50",
+    price: "0.5 $ANIME",
+    metadataUrl: "https://solscan.io/account/example5",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "50"
+  },
+  {
+    id: "neon-girl",
+    name: "Neon Girl",
+    image: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png",
+    description: "Cyberpunk anime character.",
+    category: "Profile Picture (PFP)",
+    editionRemaining: "75",
+    price: "0.3 $ANIME",
+    metadataUrl: "https://solscan.io/account/example6",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "75"
+  },
+  {
+    id: "mecha-pilot",
+    name: "Mecha Pilot",
+    image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
+    description: "Elite mecha pilot design.",
+    category: "Illustration",
+    editionRemaining: "25",
+    price: "1.0 $ANIME",
+    metadataUrl: "https://solscan.io/account/example7",
+    status: "Limited",
+    statusType: "limited" as const,
+    isLimited: true,
+    maxSupply: "25"
+  },
+  {
+    id: "dragon-spirit",
+    name: "Dragon Spirit",
+    image: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png",
+    description: "Mystical dragon companion.",
+    category: "Animation",
+    editionRemaining: "100",
+    price: "0.8 $ANIME",
+    metadataUrl: "https://solscan.io/account/example8",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "100"
+  },
+  {
+    id: "pixel-hero",
+    name: "Pixel Hero",
+    image: "/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png",
+    description: "Retro pixel art character.",
+    category: "Pixel Art",
+    editionRemaining: "200",
+    price: "0.2 $ANIME",
+    metadataUrl: "https://solscan.io/account/example9",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "200"
+  },
+  {
+    id: "ai-waifu",
+    name: "AI Waifu",
+    image: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png",
+    description: "AI-generated anime character.",
+    category: "AI Art",
+    editionRemaining: "150",
+    price: "0.4 $ANIME",
+    metadataUrl: "https://solscan.io/account/example10",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "150"
+  },
+  {
+    id: "space-girl",
+    name: "Space Girl",
+    image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
+    description: "Cosmic anime explorer.",
+    category: "Illustration",
+    editionRemaining: "60",
+    price: "0.7 $ANIME",
+    metadataUrl: "https://solscan.io/account/example11",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "60"
+  },
+  {
+    id: "meme-cat",
+    name: "Meme Cat",
+    image: "/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png",
+    description: "Popular anime meme cat.",
+    category: "Meme",
+    editionRemaining: "500",
+    price: "0.1 $ANIME",
+    metadataUrl: "https://solscan.io/account/example12",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "500"
+  },
+  {
+    id: "warrior-princess",
+    name: "Warrior Princess",
+    image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
+    description: "Fierce anime warrior maiden.",
+    category: "Profile Picture (PFP)",
+    editionRemaining: "80",
+    price: "0.6 $ANIME",
+    metadataUrl: "https://solscan.io/account/example13",
+    status: "Available",
+    statusType: "available" as const,
+    isLimited: true,
+    maxSupply: "80"
+  },
+  {
+    id: "digital-ninja",
+    name: "Digital Ninja",
+    image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
+    description: "Stealth cyber ninja.",
+    category: "3D Art",
+    editionRemaining: "40",
+    price: "0.9 $ANIME",
+    metadataUrl: "https://solscan.io/account/example14",
+    status: "Limited",
+    statusType: "limited" as const,
+    isLimited: true,
+    maxSupply: "40"
+  }
+];
+
 export function NFTGallery() {
-  const [selectedNFT, setSelectedNFT] = useState<typeof nftGalleryItems[0] | null>(null);
+  const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
+  const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -108,38 +252,88 @@ export function NFTGallery() {
         </div>
       </div>
 
-      {/* Visual-First NFT Gallery Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
-        {nftGalleryItems.map((nft) => (
-          <Card 
-            key={nft.id} 
-            className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
-            onClick={() => setSelectedNFT(nft)}
-          >
-            <CardContent className="p-0">
-              <div className="relative overflow-hidden aspect-square">
-                <img 
-                  src={nft.image}
-                  alt={`${nft.name} NFT`}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                {nft.isLimited && (
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                      Limited
-                    </Badge>
+      {/* Community Favorites Section */}
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favorites</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {communityFavorites.map((nft) => (
+            <Card 
+              key={nft.id} 
+              className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
+              onClick={() => setSelectedNFT(nft)}
+            >
+              <CardContent className="p-0">
+                <div className="relative overflow-hidden aspect-square">
+                  <img 
+                    src={nft.image}
+                    alt={`${nft.name} NFT`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  {nft.isLimited && (
+                    <div className="absolute top-2 right-2">
+                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                        Limited
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                    <h3 className="font-bold text-white text-sm">{nft.name}</h3>
                   </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                  <h3 className="font-bold text-white text-sm">{nft.name}</h3>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
+
+      {/* See More Artworks Section */}
+      <div className="text-center mb-8">
+        <Button 
+          onClick={() => setShowMoreArtworks(!showMoreArtworks)}
+          variant="outline"
+          size="lg"
+          className="border-primary/20 hover:bg-primary/5"
+        >
+          {showMoreArtworks ? 'Hide' : 'See More'} Art Works ({additionalArtworks.length})
+        </Button>
+      </div>
+
+      {/* Additional Artworks Grid */}
+      {showMoreArtworks && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
+          {additionalArtworks.map((nft) => (
+            <Card 
+              key={nft.id} 
+              className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
+              onClick={() => setSelectedNFT(nft)}
+            >
+              <CardContent className="p-0">
+                <div className="relative overflow-hidden aspect-square">
+                  <img 
+                    src={nft.image}
+                    alt={`${nft.name} NFT`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  {nft.isLimited && (
+                    <div className="absolute top-2 right-2">
+                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                        Limited
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                    <h3 className="font-bold text-white text-xs">{nft.name}</h3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
