@@ -240,51 +240,48 @@ export function NFTGallery() {
         </p>
       </div>
 
-      {/* Community Favorite / NFT of the Month */}
-      <div className="text-center mb-12">
-        <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6 max-w-2xl mx-auto">
-          <h3 className="text-xl font-semibold mb-2 text-primary">
-            🌟 Community Favorite
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            This month's featured artwork will be highlighted here. Submit your anime art to be considered for the spotlight!
-          </p>
-        </div>
-      </div>
-
       {/* Community Favorites Section */}
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favorites</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {communityFavorites.map((nft) => (
-            <Card 
-              key={nft.id} 
-              className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
-              onClick={() => setSelectedNFT(nft)}
-            >
-              <CardContent className="p-0">
-                <div className="relative overflow-hidden aspect-square">
-                  <img 
-                    src={nft.image}
-                    alt={`${nft.name} NFT`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  {nft.isLimited && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                        Limited
-                      </Badge>
+          {communityFavorites.map((nft, index) => {
+            const rankIcons = ['🥇', '🥈', '🥉', '🏅']; // Platinum, Gold, Silver, Bronze
+            return (
+              <Card 
+                key={nft.id} 
+                className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 overflow-hidden"
+                onClick={() => setSelectedNFT(nft)}
+              >
+                <CardContent className="p-0">
+                  <div className="relative overflow-hidden aspect-square">
+                    <img 
+                      src={nft.image}
+                      alt={`${nft.name} NFT`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {/* Ranking Icon */}
+                    <div className="absolute top-2 left-2">
+                      <div className="bg-black/70 rounded-full w-8 h-8 flex items-center justify-center">
+                        <span className="text-lg">{rankIcons[index]}</span>
+                      </div>
                     </div>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                    <h3 className="font-bold text-white text-sm">{nft.name}</h3>
+                    {nft.isLimited && (
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                          Limited
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                      <h3 className="font-bold text-white text-sm">{nft.name}</h3>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
@@ -294,7 +291,7 @@ export function NFTGallery() {
           onClick={() => setShowMoreArtworks(!showMoreArtworks)}
           variant="outline"
           size="lg"
-          className="border-primary/20 hover:bg-primary/5"
+          className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
           {showMoreArtworks ? 'Hide' : 'See More'} Art Works ({additionalArtworks.length})
         </Button>
@@ -429,19 +426,12 @@ export function NFTGallery() {
           <p className="text-muted-foreground mb-6">
             Submit your anime art and join our gallery. Top creations get highlighted and recognized! Build your reputation now while we prepare the marketplace.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              onClick={handleLearnMore}
-              className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold"
-            >
-              Learn How to Earn NFTs
-            </Button>
+          <div className="flex justify-center">
             <Button 
               size="lg" 
               variant="outline"
               onClick={() => window.open('mailto:nft@anime.com?subject=NFT Gallery Submission', '_blank')}
-              className="border-primary/20 hover:bg-primary/5"
+              className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
             >
               Submit Your Art
             </Button>
