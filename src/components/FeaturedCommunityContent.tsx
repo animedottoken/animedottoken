@@ -31,12 +31,19 @@ export function FeaturedCommunityContent() {
   
   // Create slots array with featured content and empty placeholders
   const slots = Array.from({ length: 3 }, (_, index) => {
-    const featuredItem = featuredContent?.find(item => item.position === index + 1);
+    const position = index + 1; // positions are 1, 2, 3
+    const featuredItem = featuredContent?.find(item => item.position === position);
+    
+    console.log(`Slot ${position}:`, featuredItem ? 'has content' : 'empty', featuredItem);
+    
     if (featuredItem) {
       return { type: 'featured', content: featuredItem };
     }
     return { type: 'empty', content: emptySlots[index] };
   });
+
+  console.log('Featured content from API:', featuredContent);
+  console.log('Final slots array:', slots);
 
   if (error) {
     console.error('Featured content error:', error);
