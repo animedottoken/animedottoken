@@ -43,7 +43,7 @@ export function OwnershipCalculator() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Your $ANIME Tokens:</Label>
             <div className="p-3 bg-muted rounded-md font-mono text-sm">
@@ -69,17 +69,10 @@ export function OwnershipCalculator() {
               )}
             </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label>Live Holder Rank:</Label>
-            <div className="p-3 bg-muted rounded-md font-mono text-sm">
-              {holders ? (
-                `Top ${Math.ceil((calculatePercentage() / 100) * holders)} of ${holders.toLocaleString('en-US')}`
-              ) : (
-                "Loading..."
-              )}
-            </div>
-          </div>
+        <div className="text-center text-muted-foreground">
+          Join over {holders ? holders.toLocaleString('en-US') : "Loading..."} holders and become a key member of our movement. Your contribution, no matter the size, helps us build the #1 global hub for anime culture.
         </div>
       </CardContent>
     </Card>
