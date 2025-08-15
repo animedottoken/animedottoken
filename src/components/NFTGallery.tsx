@@ -245,11 +245,10 @@ export function NFTGallery() {
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  // Core categories for filtering
+  // Core categories for filtering - short and anime-focused
   const categories = [
-    "All", "Anime", "Digital Art", "AI Art", "Meme", "Pixel Art", "3D Art", 
-    "Animation", "Community Favorite", "Limited Edition", "Founder", 
-    "Ambassador", "Hodler", "Early Supporter", "Exclusive", "Trending", "New"
+    "All", "Anime", "Digital Art", "AI Art", "Meme", "Pixel Art", 
+    "Limited", "Exclusive", "Trending"
   ];
 
   // Filter artworks based on active category
