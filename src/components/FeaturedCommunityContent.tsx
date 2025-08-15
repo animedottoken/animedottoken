@@ -1,168 +1,154 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SiDiscord, SiX } from "react-icons/si";
+import { Loader2, Upload, ExternalLink } from "lucide-react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
-
-// Community content data - easily update this array to add/modify submissions
-const communitySubmissions = [
-  {
-    id: 1,
-    image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png", // Sample image for testing
-    caption: "Amazing anime art by @CommunityArtist",
-    author: "CommunityArtist",
-    type: "art" as const
-  },
-  // Add more submissions here as they come in
-  // {
-  //   id: 2,
-  //   image: "/path-to-image.jpg",
-  //   caption: "Your caption here",
-  //   author: "AuthorName",
-  //   type: "meme" | "art" | "story"
-  // },
-];
+import { useFeaturedContent, type FeaturedSubmission } from "@/hooks/useFeaturedContent";
 
 const emptySlots = [
-  { icon: "🎨", text: "Your art here", type: "art" },
-  { icon: "📝", text: "Coming soon!", type: "story" },
-  { icon: "🎭", text: "Your meme here", type: "meme" }
+  { 
+    placeholder: communityPlaceholder,
+    overlay: "Your art here",
+    cta: "Submit your work to be featured!",
+    type: "art" 
+  },
+  { 
+    placeholder: communityPlaceholder,
+    overlay: "Coming soon!",
+    cta: "Share your story with the community!",
+    type: "story" 
+  },
+  { 
+    placeholder: communityPlaceholder,
+    overlay: "Your meme here",
+    cta: "Make us laugh with your creativity!",
+    type: "meme" 
+  }
 ];
 
 export function FeaturedCommunityContent() {
+  const { data: featuredContent, isLoading, error } = useFeaturedContent();
+  
+  // Create slots array with featured content and empty placeholders
+  const slots = Array.from({ length: 3 }, (_, index) => {
+    const featuredItem = featuredContent?.find(item => item.position === index + 1);
+    if (featuredItem) {
+      return { type: 'featured', content: featuredItem };
+    }
+    return { type: 'empty', content: emptySlots[index] };
+  });
+
+  if (error) {
+    console.error('Featured content error:', error);
+  }
+
   return (
-    <section className="w-full max-w-6xl mx-auto my-12 px-4">
+    <section className="mx-auto mt-16 max-w-5xl px-4">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Featured Community Content
+        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+          Community Showcase
         </h2>
-        <p className="text-white/70 text-lg">
-          Celebrating creativity from our amazing community
+        <p className="text-muted-foreground text-lg mb-6">
+          See what our amazing community is creating! Submit your ANIME-inspired content to be featured.
         </p>
+        
+        {/* Call to Action Buttons */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => window.open('https://discord.gg/anime', '_blank')}
+          >
+            <Upload className="w-4 h-4" />
+            Submit on Discord
+          </Button>
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => window.open('https://x.com/animecoin', '_blank')}
+          >
+            <ExternalLink className="w-4 h-4" />
+            Tag us on X
+          </Button>
+        </div>
       </div>
 
-      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-8 hover:bg-white/10 transition-all duration-300">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Placeholder Image */}
-          <div className="relative overflow-hidden rounded-lg">
-            <img 
-              src={communityPlaceholder} 
-              alt="Community content placeholder showing anime characters creating art"
-              className="w-full h-40 lg:h-48 object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-          </div>
-
-          {/* Content */}
-          <div className="text-center lg:text-left">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Your Art Could Be Here!
-            </h3>
-            <p className="text-white/80 text-lg mb-6 leading-relaxed">
-              Your art, memes, or stories could be featured here! Submit on Discord or tag us on X.
-            </p>
-            
-            {/* Call to Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button asChild variant="glass" size="lg" className="inline-flex items-center gap-3">
-                <a 
-                  href="https://discord.gg/animetoken" 
-                  target="_blank" 
-                  rel="noreferrer noopener"
-                  className="flex items-center gap-3"
-                >
-                  <SiDiscord className="h-5 w-5" aria-hidden="true" />
-                  Submit on Discord
-                </a>
-              </Button>
-              
-              <Button asChild variant="outline" size="lg" className="inline-flex items-center gap-3 border-white/20 text-white hover:bg-white/10">
-                <a 
-                  href="https://x.com/AnimeDotToken" 
-                  target="_blank" 
-                  rel="noreferrer noopener"
-                  className="flex items-center gap-3"
-                >
-                  <SiX className="h-5 w-5" aria-hidden="true" />
-                  Tag us on X
-                </a>
-              </Button>
-            </div>
-          </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Loading community content...</span>
         </div>
+      )}
 
-        {/* Enhanced Community Submissions Area */}
-        <div className="mt-8 bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-8">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-              <span className="text-3xl">🎨</span>
-            </div>
-            <h4 className="text-xl font-semibold text-white mb-2">
-              Community Showcase
-            </h4>
-            <p className="text-white/60 text-sm max-w-md mx-auto">
-              This space features amazing community submissions. Your creativity could be showcased here!
-            </p>
-          </div>
-          
-          {/* Community Content Slots */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {Array.from({ length: 3 }, (_, index) => {
-              const submission = communitySubmissions[index];
-              const emptySlot = emptySlots[index];
-              
-              if (submission) {
-                // Render community submission
-                return (
-                  <div key={submission.id} className="relative aspect-square rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
-                    <img 
-                      src={submission.image} 
-                      alt={submission.caption}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-white text-sm font-medium mb-1">{submission.caption}</p>
-                      <p className="text-white/70 text-xs">by @{submission.author}</p>
-                    </div>
-                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                );
-              }
-              
-              // Render empty slot
+      {/* Featured Content Grid */}
+      {!isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {slots.map((slot, index) => {
+            if (slot.type === 'featured') {
+              const submission = slot.content as FeaturedSubmission;
               return (
-                <div key={`empty-${index}`} className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">{emptySlot.icon}</div>
-                      <div className="text-white/80 font-medium text-sm">{emptySlot.text}</div>
-                    </div>
+                <div key={submission.id} className="group relative overflow-hidden rounded-lg border bg-card">
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={submission.image}
+                      alt={submission.caption}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
-                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {submission.type}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">{submission.author}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {submission.caption}
+                    </p>
+                  </div>
                 </div>
               );
-            })}
-          </div>
-
-          {/* Call to Action Prompt */}
-          <div className="text-center">
-            <p className="text-purple-400 font-semibold text-lg mb-2">
-              Submit your work to be featured!
-            </p>
-            <p className="text-white/60 text-sm">
-              Share your art, memes, or stories with our community and get showcased here
-            </p>
-          </div>
+            } else {
+              const emptySlot = slot.content as typeof emptySlots[0];
+              return (
+                <div key={`empty-${index}`} className="group relative overflow-hidden rounded-lg border bg-card/50 border-dashed">
+                  <div className="aspect-square overflow-hidden relative">
+                    <img
+                      src={emptySlot.placeholder}
+                      alt="Community submission placeholder"
+                      className="w-full h-full object-cover opacity-30"
+                    />
+                    
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
+                      <div className="mb-3">
+                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-lg font-semibold text-foreground">{emptySlot.overlay}</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {emptySlot.cta}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-xs border-dashed">
+                        Coming Soon
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Your amazing content could be featured here!
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+          })}
         </div>
-      </div>
-
-      {/* Additional Info */}
-      <div className="mt-6 text-center">
-        <p className="text-white/60 text-sm">
-          We review all submissions and feature the best content weekly. 
-          <span className="text-purple-400"> Keep creating!</span>
-        </p>
-      </div>
+      )}
     </section>
   );
 }

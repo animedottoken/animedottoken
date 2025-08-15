@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.get-token-holders]
 verify_jwt = false
+
+[functions.get-featured-content]
+verify_jwt = false
+
+[functions.submit-content]
+verify_jwt = false
