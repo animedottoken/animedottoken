@@ -33,6 +33,7 @@ export function useLiveStats(): LiveStats {
 
     const fetchTwitterFollowers = async () => {
       try {
+        console.log('Fetching Twitter followers...');
         // Call our Supabase edge function for Twitter data
         const response = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/get-twitter-stats');
         console.log('Twitter edge function response status:', response.status);
@@ -44,11 +45,12 @@ export function useLiveStats(): LiveStats {
           console.log('Setting Twitter followers to:', count);
           setTwitterFollowers(count);
         } else {
-          console.log('Twitter edge function failed with status:', response.status);
+          const errorText = await response.text();
+          console.error('Twitter edge function failed with status:', response.status, errorText);
           setTwitterFollowers(123);
         }
       } catch (error) {
-        console.log('Twitter edge function error:', error);
+        console.error('Twitter edge function error:', error);
         setTwitterFollowers(123);
       }
     };
