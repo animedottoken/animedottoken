@@ -23,7 +23,6 @@ const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
 const TOTAL_SUPPLY = 974338302;
 
 const Index = () => {
-  console.log('Index component rendering...');
   const { tokenData } = useLivePrice(PAIR_ADDRESS);
   const holders = useTokenHolders(CONTRACT);
   const copyContract = async () => {
@@ -267,7 +266,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a part of this great movement is easier than ever. Follow these 4 simple steps:</p>
         <ul className="mt-6 space-y-5 list-none pl-0">

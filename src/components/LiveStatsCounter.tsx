@@ -15,10 +15,13 @@ export function LiveStatsCounter() {
       value: holders?.toLocaleString() || "Loading...",
       color: "text-primary",
       button: (
-        <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700 text-white border-0">
-          <a href="https://dexscreener.com/solana/h5eyz1skumdwrddhucfnvsps1ns3lhf7wdtqmfdt8zwc?maker=HHW5T7c8sXZ25J9GDXaA81aJ1DQZ15NgWACbeBzxBzKJ" target="_blank" rel="noreferrer noopener">
-            Buy $ANIME
-          </a>
+        <Button 
+          variant="default" 
+          size="sm" 
+          className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+          onClick={() => document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          Buy $ANIME
         </Button>
       )
     },
@@ -29,7 +32,7 @@ export function LiveStatsCounter() {
       color: "text-accent",
       button: (
         <Button asChild variant="glass" size="sm">
-          <a href="https://discord.gg/animetoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+          <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
             <SiDiscord className="h-4 w-4" aria-hidden="true" />
             Join Discord
           </a>

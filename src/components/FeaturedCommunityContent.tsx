@@ -27,7 +27,6 @@ const emptySlots = [
 ];
 
 export function FeaturedCommunityContent() {
-  console.log('FeaturedCommunityContent rendering...');
   const { data: featuredContent, isLoading, error } = useFeaturedContent();
   
   // Create slots array with featured content and empty placeholders
@@ -35,7 +34,7 @@ export function FeaturedCommunityContent() {
     const position = index + 1; // positions are 1, 2, 3
     const featuredItem = featuredContent?.find(item => item.position === position);
     
-    console.log(`Slot ${position}:`, featuredItem ? 'has content' : 'empty', featuredItem);
+    
     
     if (featuredItem) {
       return { type: 'featured', content: featuredItem };
@@ -43,8 +42,6 @@ export function FeaturedCommunityContent() {
     return { type: 'empty', content: emptySlots[index] };
   });
 
-  console.log('Featured content from API:', featuredContent);
-  console.log('Final slots array:', slots);
 
   if (error) {
     console.error('Featured content error:', error);
@@ -65,7 +62,7 @@ export function FeaturedCommunityContent() {
           <Button 
             variant="outline" 
             className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            onClick={() => window.open('https://discord.gg/anime', '_blank')}
+            onClick={() => window.open('https://discord.gg/EZ9wRhjr', '_blank')}
           >
             <Upload className="w-4 h-4 text-purple-400" />
             Submit on Discord
@@ -73,7 +70,7 @@ export function FeaturedCommunityContent() {
           <Button 
             variant="outline" 
             className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            onClick={() => window.open('https://x.com/animecoin', '_blank')}
+            onClick={() => window.open('https://x.com/AnimeDotToken', '_blank')}
           >
             <ExternalLink className="w-4 h-4 text-purple-400" />
             Tag us on X
