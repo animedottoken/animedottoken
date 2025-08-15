@@ -12,6 +12,7 @@ import { NFTSupporterSection } from "@/components/NFTSupporterSection";
 import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { FeaturedCommunityContent } from "@/components/FeaturedCommunityContent";
+import { NFTGallery } from "@/components/NFTGallery";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
@@ -566,6 +567,9 @@ const Index = () => {
 
       {/* NFT Supporter Program Section */}
       <NFTSupporterSection />
+
+      {/* NFT Gallery Section */}
+      <NFTGallery />
 
       <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
