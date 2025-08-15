@@ -40,7 +40,7 @@ export function LiveStatsCounter() {
       icon: SiX,
       label: "X Followers",
       value: twitterFollowers?.toLocaleString() || "Loading...",
-      color: "text-secondary",
+      color: "text-primary",
       button: (
         <Button asChild variant="glass" size="sm">
           <a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
