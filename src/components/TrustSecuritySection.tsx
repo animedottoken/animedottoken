@@ -38,7 +38,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               100% LP Burned
             </CardTitle>
             <CardDescription>
-              The provider tokens for the liquidity pool were sent to a dead address. This makes liquidity withdrawal impossible.
+              All liquidity pool tokens are burned forever. Liquidity cannot be withdrawn. $ANIME trading is always safe and permanent.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -58,7 +58,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               Creator Holds 0 Tokens
             </CardTitle>
             <CardDescription>
-              The original creator's wallet holds a functional zero balance of $ANIME tokens — fully community owned.
+              Creator wallet holds zero $ANIME. Project is fully community-owned and verifiable on-chain.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
