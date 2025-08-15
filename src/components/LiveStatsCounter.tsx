@@ -41,8 +41,8 @@ export function LiveStatsCounter() {
     },
     {
       icon: Twitter,
-      label: "X Followers",
-      value: twitterFollowers?.toLocaleString() || "Loading...",
+      label: "New server—be among the first to join!",
+      value: "", // Hide the number
       color: "text-primary",
       button: (
         <Button asChild variant="glass" size="sm">
