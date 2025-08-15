@@ -127,7 +127,7 @@ export function NFTSupporterSection() {
                     }}
                   >
                     <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-xs text-primary mb-2">
+                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
                         {openDetails.includes(nft.id) ? "Show less" : "Show more"}
                       </Button>
                     </CollapsibleTrigger>
