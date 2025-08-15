@@ -222,11 +222,11 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-10 w-10 md:h-12 md:w-12" loading="eager" />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              Beyond a Token. A New Era for Anime.
+              ANIME.TOKEN – Community-Driven Anime Crypto Token on Solana.
             </h1>
           </div>
           <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg">
-            Welcome to the official home of $ANIME, a truly community-driven project on Solana dedicated to building the #1 global hub for anime culture.
+            Join the #1 Solana anime project. Earn NFT supporter roles and be part of a transparent, community-owned token movement.
           </p>
           <div className="mt-5 md:mt-6 flex flex-col gap-3 sm:flex-row">
             <Button asChild variant="hero">
@@ -242,18 +242,6 @@ const Index = () => {
         </div>
       </div>
 
-      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <Card className="shadow-elevated">
-          <CardHeader>
-            <CardTitle>From a Powerful Idea to a Community Movement</CardTitle>
-            <CardDescription>
-              The $ANIME token was born from a powerful vision: A New Internet Money Era. It laid the foundation for a project with massive potential.
-              Today, the community is stepping up to carry that torch forward. With the original creator having fully divested their holdings, the project is now verifiably and completely in the hands of its community.
-              Our mission is to build a decentralized, self-sustaining ecosystem where fans can connect, creators can thrive, and everyone can share their passion for anime.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </section>
 
       <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
 
