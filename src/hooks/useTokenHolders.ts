@@ -7,6 +7,11 @@ export function useTokenHolders(tokenAddress: string) {
   useEffect(() => {
     if (!tokenAddress) return;
 
+    // Manually set token holders count to 1300+
+    setHolders(1300);
+    
+    // Commented out API call - using manual value
+    /*
     const cacheKey = `holders:${tokenAddress}`;
     
     // Clear old cache to force fresh fetch
@@ -36,18 +41,19 @@ export function useTokenHolders(tokenAddress: string) {
         const data = await res.json();
         console.log('Token holders edge function response:', data);
         
-        const holderCount = data.holders || 123;
+        const holderCount = data.holders || 1300;
         
         setHolders(holderCount);
         localStorage.setItem(cacheKey, JSON.stringify({ v: holderCount, t: Date.now() }));
       } catch (e) {
         // Set fallback value when API fails  
         console.error("Token holders fetch failed, using fallback:", e);
-        setHolders(123);
+        setHolders(1300);
       }
     };
 
     fetchHolders();
+    */
   }, [tokenAddress]);
 
   return holders;
