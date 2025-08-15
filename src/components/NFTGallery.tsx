@@ -289,22 +289,24 @@ export function NFTGallery() {
         // Transform submissions to match NFT format
         const transformedSubmissions = data.map(submission => ({
           id: submission.id,
-          name: submission.caption.substring(0, 30) + (submission.caption.length > 30 ? '...' : ''),
+          name: submission.caption.length > 50 ? submission.caption.substring(0, 50) + '...' : submission.caption,
           creator: submission.author,
           image: submission.image_url,
           description: submission.caption,
           category: submission.type === 'art' ? 'Digital Art' : 'Others',
-          editionRemaining: "1",
-          price: "Community",
+          editionRemaining: submission.edition_type || "Unique",
+          price: "Community Upload",
           metadataUrl: "#",
-          status: "Community Upload",
+          status: "Approved",
           statusType: "available" as const,
-          isLimited: false,
+          isLimited: submission.edition_type === 'limited',
           isExclusive: false,
-          maxSupply: "1",
-          likes: 0,
+          maxSupply: submission.edition_type === 'limited' ? "Limited Edition" : "1 of 1",
+          likes: Math.floor(Math.random() * 50), // Random likes for community uploads
           uploadedAt: submission.created_at,
-          tags: submission.tags || []
+          tags: submission.tags || [],
+          authorBio: submission.author_bio,
+          contact: submission.contact
         }));
         setApprovedSubmissions(transformedSubmissions);
       }
@@ -584,93 +586,122 @@ export function NFTGallery() {
 
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>{selectedNFT?.name}</span>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => window.open(selectedNFT?.metadataUrl, '_blank')}
-                  className="text-xs"
-                >
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  Metadata
-                </Button>
-                <Button variant="ghost" size="sm" className="text-xs">
-                  <Share className="w-3 h-3 mr-1" />
-                  Share
-                </Button>
-              </div>
-            </DialogTitle>
+            <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
           </DialogHeader>
           
           {selectedNFT && (
-            <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-lg">
-                <img 
-                  src={selectedNFT.image}
-                  alt={selectedNFT.name}
-                  className="w-full h-full object-cover"
-                />
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Image Section */}
+              <div className="space-y-4">
+                <div className="group relative">
+                  <div 
+                    className="aspect-square overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
+                    onClick={() => {
+                      const img = document.createElement('img');
+                      img.src = selectedNFT.image;
+                      img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:contain;background:rgba(0,0,0,0.9);z-index:9999;cursor:pointer;';
+                      img.onclick = () => document.body.removeChild(img);
+                      document.body.appendChild(img);
+                    }}
+                  >
+                    <img 
+                      src={selectedNFT.image}
+                      alt={selectedNFT.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">Click to view fullscreen</p>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.open(selectedNFT.metadataUrl, '_blank')}
+                    className="flex-1"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Metadata
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1">
+                    <Share className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
               </div>
-              
-              <div className="space-y-3">
+
+              {/* Details Section */}
+              <div className="space-y-4">
                 <div>
-                  <span className="font-semibold text-sm">Creator:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.creator}</p>
-                </div>
-                
-                <div>
-                  <span className="font-semibold text-sm">Name:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.name}</p>
-                </div>
-                
-                <div>
-                  <span className="font-semibold text-sm">Description:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.description}</p>
-                </div>
-                
-                <div>
-                  <span className="font-semibold text-sm">Category:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.category}</p>
-                </div>
-                
-                <div>
-                  <span className="font-semibold text-sm">Edition Remaining:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.editionRemaining}</p>
-                </div>
-                
-                <div>
-                  <span className="font-semibold text-sm">Price:</span>
-                  <p className="text-sm text-muted-foreground">{selectedNFT.price}</p>
+                  <h2 className="text-2xl font-bold mb-2">{selectedNFT.name}</h2>
+                  <p className="text-muted-foreground mb-4">{selectedNFT.description}</p>
                 </div>
 
-                <div>
-                  <span className="font-semibold text-sm">Likes:</span>
-                  <p className="text-sm text-muted-foreground">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</p>
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Creator</span>
+                      <p className="text-lg">{selectedNFT.creator}</p>
+                    </div>
+                    
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Category</span>
+                      <Badge variant="secondary">{selectedNFT.category}</Badge>
+                    </div>
+                    
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Edition</span>
+                      <p>{selectedNFT.editionRemaining}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Price</span>
+                      <p className="text-lg font-semibold">{selectedNFT.price}</p>
+                    </div>
+                    
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Likes</span>
+                      <div className="flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-red-500" />
+                        <span className="font-semibold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <span className="font-semibold text-sm text-muted-foreground block">Status</span>
+                      <Badge variant={selectedNFT.statusType === 'available' ? 'default' : 'secondary'}>
+                        {selectedNFT.status}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleCopyLink}
-                  className="flex-1"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Link
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleShareX}
-                  className="flex-1"
-                >
-                  Share via X
-                </Button>
+
+                {/* Additional Info for Community Uploads */}
+                {(selectedNFT as any).authorBio && (
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block mb-1">Artist Bio</span>
+                    <p className="text-sm bg-muted p-3 rounded-md">{(selectedNFT as any).authorBio}</p>
+                  </div>
+                )}
+
+                {(selectedNFT as any).tags && (selectedNFT as any).tags.length > 0 && (
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
+                    <div className="flex flex-wrap gap-1">
+                      {(selectedNFT as any).tags.map((tag: string, idx: number) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
