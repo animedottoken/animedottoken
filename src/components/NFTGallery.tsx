@@ -280,7 +280,7 @@ export function NFTGallery() {
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent flex items-center justify-center">
-          <span className="text-4xl mr-3 leading-none">🎨</span>
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
           Anime Art Gallery
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
