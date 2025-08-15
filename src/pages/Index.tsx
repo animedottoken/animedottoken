@@ -505,7 +505,7 @@ const Index = () => {
         </section>
 
         <section className="mt-8">
-          <h3 className="text-lg font-semibold">FAQ</h3>
+          <h3 className="text-lg font-semibold"><span className="text-primary">F</span><span className="text-secondary">A</span><span className="text-accent">Q</span>s (Frequented Answers & Questions)</h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
@@ -518,7 +518,7 @@ const Index = () => {
 
           <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary text-xs">{faqOpen ? "Hide all answers" : "See all answers"}</Button>
+              <Button variant="link" size="sm" className="px-0 text-primary text-xs">{faqOpen ? "Hide all answers" : "See more frequented answers and questions"}</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">
