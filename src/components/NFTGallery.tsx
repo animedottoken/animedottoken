@@ -23,6 +23,7 @@ const communityFavorites = [
     status: "100 Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: true,
     maxSupply: "100",
     likes: 2847
   },
@@ -32,13 +33,14 @@ const communityFavorites = [
     creator: "CryptoSamurai",
     image: foundersNFT,
     description: "For strategic leaders.",
-    category: "Profile Picture (PFP)",
+    category: "Digital Art",
     editionRemaining: "100",
     price: "Invitation Only",
     metadataUrl: "https://solscan.io/account/example2",
     status: "Special Edition",
     statusType: "special" as const,
     isLimited: true,
+    isExclusive: true,
     maxSupply: "100",
     likes: 1923
   },
@@ -48,13 +50,14 @@ const communityFavorites = [
     creator: "DigitalArtist",
     image: ambassadorsNFT,
     description: "For community builders.",
-    category: "Illustration",
+    category: "Trending",
     editionRemaining: "1,000",
     price: "Earned",
     metadataUrl: "https://solscan.io/account/example3",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "1,000",
     likes: 1456
   },
@@ -64,13 +67,14 @@ const communityFavorites = [
     creator: "GoldMiner",
     image: hodlersNFT,
     description: "For long-term holders.",
-    category: "3D Art",
+    category: "Meme",
     editionRemaining: "Unlimited",
     price: "Hold $ANIME",
     metadataUrl: "https://solscan.io/account/example4",
     status: "Always Available",
     statusType: "unlimited" as const,
     isLimited: false,
+    isExclusive: false,
     maxSupply: "Unlimited",
     likes: 998
   }
@@ -83,13 +87,14 @@ const additionalArtworks = [
     creator: "tommo8",
     image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png",
     description: "Futuristic samurai warrior.",
-    category: "3D Art",
+    category: "Digital Art",
     editionRemaining: "50",
     price: "0.5 $ANIME",
     metadataUrl: "https://solscan.io/account/example5",
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "50",
     likes: 10200
   },
@@ -99,13 +104,14 @@ const additionalArtworks = [
     creator: "NeonDreamer",
     image: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png",
     description: "Cyberpunk anime character.",
-    category: "Profile Picture (PFP)",
+    category: "AI Art",
     editionRemaining: "75",
     price: "0.3 $ANIME",
     metadataUrl: "https://solscan.io/account/example6",
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: true,
     maxSupply: "75",
     likes: 856
   },
@@ -115,13 +121,14 @@ const additionalArtworks = [
     creator: "RobotMaster",
     image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
     description: "Elite mecha pilot design.",
-    category: "Illustration",
+    category: "Trending",
     editionRemaining: "25",
     price: "1.0 $ANIME",
     metadataUrl: "https://solscan.io/account/example7",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
+    isExclusive: true,
     maxSupply: "25",
     likes: 643
   },
@@ -131,13 +138,14 @@ const additionalArtworks = [
     creator: "MysticDragon",
     image: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png",
     description: "Mystical dragon companion.",
-    category: "Animation",
+    category: "Digital Art",
     editionRemaining: "100",
     price: "0.8 $ANIME",
     metadataUrl: "https://solscan.io/account/example8",
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "100",
     likes: 1205
   },
@@ -154,6 +162,7 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "200",
     likes: 432
   },
@@ -169,7 +178,8 @@ const additionalArtworks = [
     metadataUrl: "https://solscan.io/account/example10",
     status: "Available",
     statusType: "available" as const,
-    isLimited: true,
+    isLimited: false,
+    isExclusive: true,
     maxSupply: "150",
     likes: 789
   },
@@ -179,13 +189,14 @@ const additionalArtworks = [
     creator: "CosmicArt",
     image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
     description: "Cosmic anime explorer.",
-    category: "Illustration",
+    category: "Digital Art",
     editionRemaining: "60",
     price: "0.7 $ANIME",
     metadataUrl: "https://solscan.io/account/example11",
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "60",
     likes: 567
   },
@@ -201,7 +212,8 @@ const additionalArtworks = [
     metadataUrl: "https://solscan.io/account/example12",
     status: "Available",
     statusType: "available" as const,
-    isLimited: true,
+    isLimited: false,
+    isExclusive: false,
     maxSupply: "500",
     likes: 2156
   },
@@ -211,13 +223,14 @@ const additionalArtworks = [
     creator: "WarriorArt",
     image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
     description: "Fierce anime warrior maiden.",
-    category: "Profile Picture (PFP)",
+    category: "Trending",
     editionRemaining: "80",
     price: "0.6 $ANIME",
     metadataUrl: "https://solscan.io/account/example13",
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
+    isExclusive: false,
     maxSupply: "80",
     likes: 345
   },
@@ -227,13 +240,14 @@ const additionalArtworks = [
     creator: "ShadowNinja",
     image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
     description: "Stealth cyber ninja.",
-    category: "3D Art",
+    category: "Pixel Art",
     editionRemaining: "40",
     price: "0.9 $ANIME",
     metadataUrl: "https://solscan.io/account/example14",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
+    isExclusive: true,
     maxSupply: "40",
     likes: 892
   }
@@ -255,19 +269,19 @@ export function NFTGallery() {
   // Filter artworks based on active category and attributes
   const filteredCommunityFavorites = communityFavorites.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // Check if artwork matches selected attributes (simplified - in real app would check NFT properties)
+    // Check if artwork matches selected attributes
     const matchesAttributes = selectedAttributes.size === 0 || 
       (selectedAttributes.has("Limited") && nft.isLimited) ||
-      (selectedAttributes.has("Exclusive") && nft.status.includes("Special"));
+      (selectedAttributes.has("Exclusive") && nft.isExclusive);
     return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
   });
   
   const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
-    // Check if artwork matches selected attributes (simplified - in real app would check NFT properties)
+    // Check if artwork matches selected attributes
     const matchesAttributes = selectedAttributes.size === 0 || 
       (selectedAttributes.has("Limited") && nft.isLimited) ||
-      (selectedAttributes.has("Exclusive") && nft.status.includes("Special"));
+      (selectedAttributes.has("Exclusive") && nft.isExclusive);
     return matchesCategory && (selectedAttributes.size === 0 || matchesAttributes);
   });
   
@@ -342,13 +356,18 @@ export function NFTGallery() {
                         <span className="text-lg">{rankIcons[index]}</span>
                       </div>
                     </div>
-                    {nft.isLimited && (
-                      <div className="absolute top-2 right-2">
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                           Limited
                         </Badge>
-                      </div>
-                    )}
+                      )}
+                      {nft.isExclusive && (
+                        <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
+                          Exclusive
+                        </Badge>
+                      )}
+                    </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white text-sm">{nft.creator}</h3>
@@ -455,13 +474,18 @@ export function NFTGallery() {
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  {nft.isLimited && (
-                    <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 flex flex-col gap-1">
+                    {nft.isLimited && (
                       <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                         Limited
                       </Badge>
-                    </div>
-                  )}
+                    )}
+                    {nft.isExclusive && (
+                      <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
+                        Exclusive
+                      </Badge>
+                    )}
+                  </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
                     <div className="flex items-center justify-between">
                       <h3 className="font-bold text-white text-xs">{nft.creator}</h3>
