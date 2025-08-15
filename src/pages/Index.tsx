@@ -154,6 +154,19 @@ const Index = () => {
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
+      {/* Admin Link */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="bg-background/80 backdrop-blur-sm border-muted hover:bg-muted"
+        >
+          <a href="/admin" className="text-xs">
+            Admin Panel
+          </a>
+        </Button>
+      </div>
       <Helmet>
         <title>ANIME Token | Official Community on Solana</title>
         <meta name="description" content="Official home of $ANIME on Solana. Community-driven vision, trust & verification, how to buy, and links to Telegram, X, Discord, and TikTok." />
