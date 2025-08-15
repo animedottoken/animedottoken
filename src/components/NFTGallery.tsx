@@ -625,11 +625,9 @@ export function NFTGallery() {
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <NFTSubmissionForm onSuccess={() => {
-                  const dialog = document.querySelector('[data-state="open"]');
-                  if (dialog) {
-                    const closeButton = dialog.querySelector('[data-radix-collection-item]');
-                    if (closeButton) (closeButton as HTMLElement).click();
-                  }
+                  // Close the dialog by dispatching Escape key (Radix handles it)
+                  const event = new KeyboardEvent('keydown', { key: 'Escape' });
+                  document.dispatchEvent(event);
                 }} />
               </DialogContent>
             </Dialog>

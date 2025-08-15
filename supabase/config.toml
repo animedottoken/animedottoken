@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.submit-content]
 verify_jwt = false
+
+[functions.admin-list-submissions]
+verify_jwt = false
+
+[functions.admin-update-submission]
+verify_jwt = false

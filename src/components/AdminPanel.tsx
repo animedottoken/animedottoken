@@ -33,13 +33,9 @@ export const AdminPanel = () => {
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('community_submissions')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.functions.invoke('admin-list-submissions');
       if (error) throw error;
-      setSubmissions(data || []);
+      setSubmissions(data?.submissions || []);
     } catch (error) {
       console.error('Error fetching submissions:', error);
       toast({
@@ -54,18 +50,15 @@ export const AdminPanel = () => {
 
   const updateSubmissionStatus = async (id: string, status: 'approved' | 'rejected') => {
     try {
-      const { error } = await supabase
-        .from('community_submissions')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', id);
-
+      const { data, error } = await supabase.functions.invoke('admin-update-submission', {
+        body: { id, status },
+      });
       if (error) throw error;
 
-      setSubmissions(prev => 
-        prev.map(sub => 
-          sub.id === id ? { ...sub, status } : sub
-        )
-      );
+      const updated = data?.submission as Submission | null;
+      if (updated) {
+        setSubmissions(prev => prev.map(sub => sub.id === id ? { ...sub, status: updated.status } : sub));
+      }
 
       toast({
         title: "Success",
@@ -105,12 +98,17 @@ export const AdminPanel = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <div className="flex items-center gap-3">
-        <Eye className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground">Manage NFT submissions and approvals</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Eye className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-bold">Admin Panel</h1>
+            <p className="text-muted-foreground">Manage NFT submissions and approvals</p>
+          </div>
         </div>
+        <Button asChild variant="outline" size="sm">
+          <a href="/">Back to Home</a>
+        </Button>
       </div>
 
       {/* Stats */}
