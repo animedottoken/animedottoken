@@ -20,6 +20,7 @@ const submissionSchema = z.object({
   author: z.string().min(1, "Author name is required").max(50, "Author name must not exceed 50 characters"),
   author_bio: z.string().min(10, "Author bio must be at least 10 characters").max(200, "Author bio must not exceed 200 characters"),
   contact: z.string().optional(),
+  nft_address: z.string().min(1, "NFT address is required").max(100, "NFT address is too long"),
   tags: z.array(z.string()).min(1, "At least 1 tag is required").max(3, "Maximum 3 tags allowed"),
   edition_type: z.enum(['standard', 'limited']),
   type: z.enum(['picture', 'video', 'animation', 'music', 'other'])
@@ -50,6 +51,7 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
       author: '',
       author_bio: '',
       contact: '',
+      nft_address: '',
       tags: [],
       edition_type: 'standard',
       type: 'picture'
@@ -335,6 +337,24 @@ export const NFTSubmissionForm = ({ onSuccess }: NFTSubmissionFormProps) => {
                   </FormControl>
                   <FormDescription>
                     Twitter/X handle (with @) or Discord username for community connection. No email or phone numbers.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* NFT Address */}
+            <FormField
+              control={form.control}
+              name="nft_address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NFT Address/Token ID *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="NFT mint address or token ID from Solscan" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    The Solana NFT mint address or token ID so others can verify your NFT on Solscan
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

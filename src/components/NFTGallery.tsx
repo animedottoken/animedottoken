@@ -599,11 +599,16 @@ export function NFTGallery() {
                   <div 
                     className="aspect-square overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
                     onClick={() => {
+                      const overlay = document.createElement('div');
+                      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
+                      
                       const img = document.createElement('img');
                       img.src = selectedNFT.image;
-                      img.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:contain;background:rgba(0,0,0,0.9);z-index:9999;cursor:pointer;';
-                      img.onclick = () => document.body.removeChild(img);
-                      document.body.appendChild(img);
+                      img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
+                      
+                      overlay.appendChild(img);
+                      overlay.onclick = () => document.body.removeChild(overlay);
+                      document.body.appendChild(overlay);
                     }}
                   >
                     <img 
@@ -620,13 +625,32 @@ export function NFTGallery() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => window.open(selectedNFT.metadataUrl, '_blank')}
+                    onClick={() => {
+                      if (selectedNFT.metadataUrl !== "#") {
+                        window.open(selectedNFT.metadataUrl, '_blank');
+                      } else {
+                        toast({
+                          title: "No NFT address available",
+                          description: "This NFT doesn't have a Solscan link available",
+                          variant: "destructive"
+                        });
+                      }
+                    }}
                     className="flex-1"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    Metadata
+                    Check on Solscan
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => {
+                      const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
+                      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+                      window.open(url, '_blank');
+                    }}
+                  >
                     <Share className="w-4 h-4 mr-2" />
                     Share
                   </Button>
