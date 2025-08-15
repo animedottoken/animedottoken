@@ -223,51 +223,53 @@ export const NFTSubmissionForm = () => {
                 <FormItem>
                   <FormLabel>NFT Image/Animation/Video *</FormLabel>
                   <FormControl>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <div className="relative">
+                      <Input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                      />
                       {imagePreview ? (
-                        <div className="space-y-4">
-                          <img 
-                            src={imagePreview} 
-                            alt="Preview" 
-                            className="max-h-48 mx-auto rounded-lg"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setImagePreview('');
-                              setImageFile(null);
-                              form.setValue('image_url', '');
-                            }}
-                          >
-                            Change Image
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <Upload className="h-12 w-12 mx-auto text-primary animate-pulse" />
-                          <div className="space-y-2">
-                            <Input
-                              type="file"
-                              accept="image/*,video/*"
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              id="image-upload"
+                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                          <div className="space-y-4">
+                            <img 
+                              src={imagePreview} 
+                              alt="Preview" 
+                              className="max-h-48 mx-auto rounded-lg"
                             />
-                            <label
-                              htmlFor="image-upload"
-                              className="block w-full text-center cursor-pointer bg-primary/5 hover:bg-primary/10 border-2 border-dashed border-primary/30 rounded-lg py-6 px-4 transition-colors"
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setImagePreview('');
+                                setImageFile(null);
+                                form.setValue('image_url', '');
+                              }}
                             >
-                              <div className="text-primary font-medium">
-                                Click to upload or drag and drop
-                              </div>
-                              <div className="text-sm text-muted-foreground mt-1">
-                                Square format (1:1 ratio) recommended
-                              </div>
-                            </label>
+                              Change Image
+                            </Button>
                           </div>
                         </div>
+                      ) : (
+                        <label
+                          htmlFor="image-upload"
+                          className="block w-full cursor-pointer border-2 border-dashed border-primary/30 hover:border-primary/50 bg-primary/5 hover:bg-primary/10 rounded-lg p-8 text-center transition-all duration-200"
+                        >
+                          <div className="space-y-4">
+                            <Upload className="h-12 w-12 mx-auto text-primary animate-pulse" />
+                            <div className="space-y-2">
+                              <div className="text-primary font-medium text-lg">
+                                Click to upload or drag and drop
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                Square format (1:1 ratio) recommended
+                              </div>
+                            </div>
+                          </div>
+                        </label>
                       )}
                     </div>
                   </FormControl>
