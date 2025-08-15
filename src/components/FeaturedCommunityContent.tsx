@@ -143,11 +143,11 @@ export function FeaturedCommunityContent() {
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="text-xs border-dashed">
-                        Coming Soon
+                        Your Spot
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Your amazing content could be featured here!
+                      Submit your amazing art to be featured here!
                     </p>
                   </div>
                 </div>
