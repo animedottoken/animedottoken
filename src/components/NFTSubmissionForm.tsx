@@ -157,64 +157,6 @@ export const NFTSubmissionForm = () => {
       <CardContent className="space-y-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Theme Selection */}
-            <FormField
-              control={form.control}
-              name="theme"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Theme *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a theme" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="anime">🎌 Anime-Inspired</SelectItem>
-                      <SelectItem value="digital_culture">💻 Digital Culture</SelectItem>
-                      <SelectItem value="meme">😄 Meme Culture</SelectItem>
-                      <SelectItem value="ai">🤖 AI & Technology</SelectItem>
-                      <SelectItem value="new_internet_money">💰 New Internet Money Era</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Choose the theme that best represents your NFT
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* NFT Type */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NFT Type *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="art">🎨 Digital Art</SelectItem>
-                      <SelectItem value="animation">🎬 Animation</SelectItem>
-                      <SelectItem value="video">📹 Video</SelectItem>
-                      <SelectItem value="meme">😄 Meme</SelectItem>
-                      <SelectItem value="story">📖 Story/Concept</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Select the type of content you're submitting
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Image Upload */}
             <FormField
               control={form.control}
@@ -275,6 +217,64 @@ export const NFTSubmissionForm = () => {
                   </FormControl>
                   <FormDescription>
                     Upload your NFT in square format for best display. Supports images, animations, and videos.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Theme Selection */}
+            <FormField
+              control={form.control}
+              name="theme"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Theme *</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a theme" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="anime">🎌 Anime-Inspired</SelectItem>
+                      <SelectItem value="digital_culture">💻 Digital Culture</SelectItem>
+                      <SelectItem value="meme">😄 Meme Culture</SelectItem>
+                      <SelectItem value="ai">🤖 AI & Technology</SelectItem>
+                      <SelectItem value="new_internet_money">💰 New Internet Money Era</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choose the theme that best represents your NFT
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* NFT Type */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NFT Type *</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="art">🎨 Digital Art</SelectItem>
+                      <SelectItem value="animation">🎬 Animation</SelectItem>
+                      <SelectItem value="video">📹 Video</SelectItem>
+                      <SelectItem value="meme">😄 Meme</SelectItem>
+                      <SelectItem value="story">📖 Story/Concept</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Select the type of content you're submitting
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
