@@ -12,7 +12,7 @@ export function LiveStatsCounter() {
     {
       icon: Users,
       label: "$ANIME Holders",
-      value: holders?.toLocaleString() || "Loading...",
+      value: holders ? `${holders.toLocaleString()}+` : "Loading...",
       color: "text-primary",
       button: (
         <Button 
