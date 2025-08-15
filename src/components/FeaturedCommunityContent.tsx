@@ -27,6 +27,7 @@ const emptySlots = [
 ];
 
 export function FeaturedCommunityContent() {
+  console.log('FeaturedCommunityContent rendering...');
   const { data: featuredContent, isLoading, error } = useFeaturedContent();
   
   // Create slots array with featured content and empty placeholders

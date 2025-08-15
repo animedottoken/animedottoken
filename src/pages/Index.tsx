@@ -23,6 +23,7 @@ const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
 const TOTAL_SUPPLY = 974338302;
 
 const Index = () => {
+  console.log('Index component rendering...');
   const { tokenData } = useLivePrice(PAIR_ADDRESS);
   const holders = useTokenHolders(CONTRACT);
   const copyContract = async () => {
