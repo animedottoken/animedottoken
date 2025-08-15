@@ -14,9 +14,9 @@ const emptySlots = [
   },
   { 
     placeholder: communityPlaceholder,
-    overlay: "Coming soon!",
-    cta: "Share your story with the community!",
-    type: "story" 
+    overlay: "Your art here",
+    cta: "Submit your work to be featured!",
+    type: "art" 
   },
   { 
     placeholder: communityPlaceholder,
