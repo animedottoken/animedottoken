@@ -405,7 +405,20 @@ export function NFTGallery() {
 
       {/* Additional Artworks Grid */}
       {showMoreArtworks && (
-        <div>
+        <div className="relative">
+          {/* Admin Button - Top Right, Semi-visible */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              window.location.href = "/admin";
+            }}
+            className="absolute -top-12 right-0 z-10 opacity-30 hover:opacity-80 text-xs px-2 py-1 text-muted-foreground hover:text-primary transition-all duration-300 bg-background/50 hover:bg-primary/10 border border-border/30"
+            title="Admin Panel Access"
+          >
+            •••
+          </Button>
+          
           {/* Category Filter Tags */}
           <div className="mb-6">
             {/* Main Content Categories */}
@@ -459,18 +472,6 @@ export function NFTGallery() {
               
             </div>
             
-            {/* Admin Button - Top Right, Almost Invisible */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                window.location.href = "/admin";
-              }}
-              className="absolute top-0 right-0 opacity-20 hover:opacity-60 text-xs px-2 py-1 text-muted-foreground/50 hover:text-muted-foreground transition-opacity duration-300"
-              title="Admin"
-            >
-              •••
-            </Button>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
