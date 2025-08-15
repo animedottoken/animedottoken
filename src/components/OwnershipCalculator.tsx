@@ -3,13 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLivePrice } from "@/hooks/useLivePrice";
+import { useTokenHolders } from "@/hooks/useTokenHolders";
 
 const TOTAL_SUPPLY = 974338302;
 const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
+const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 
 export function OwnershipCalculator() {
   const [usdAmount, setUsdAmount] = useState(100);
   const { tokenData, loading } = useLivePrice(PAIR_ADDRESS);
+  const holders = useTokenHolders(CONTRACT);
 
   const calculateTokens = () => {
     if (!tokenData?.price || tokenData.price <= 0) return 0;
@@ -40,7 +43,7 @@ export function OwnershipCalculator() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label>Your $ANIME Tokens:</Label>
             <div className="p-3 bg-muted rounded-md font-mono text-sm">
@@ -63,6 +66,17 @@ export function OwnershipCalculator() {
                 `${calculatePercentage().toFixed(4)}%`
               ) : (
                 "Price unavailable"
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Live Holder Rank:</Label>
+            <div className="p-3 bg-muted rounded-md font-mono text-sm">
+              {holders ? (
+                `Top ${Math.ceil((calculatePercentage() / 100) * holders)} of ${holders.toLocaleString()}`
+              ) : (
+                "Loading..."
               )}
             </div>
           </div>
