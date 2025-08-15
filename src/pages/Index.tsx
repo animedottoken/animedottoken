@@ -518,7 +518,7 @@ const Index = () => {
 
           <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary text-xs">{faqOpen ? "Hide all answers" : "See more frequented answers and questions"}</Button>
+              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "Hide all answers" : "See more frequented answers and questions"}</Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">
