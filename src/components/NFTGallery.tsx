@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Copy, Share, ExternalLink, Heart, Plus } from "lucide-react";
 import { NFTSubmissionForm } from "@/components/NFTSubmissionForm";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -259,6 +261,59 @@ export function NFTGallery() {
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
+  const { toast } = useToast();
+
+  // Fetch approved submissions from database
+  useEffect(() => {
+    fetchApprovedSubmissions();
+  }, []);
+
+  const fetchApprovedSubmissions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_submissions')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false }); // Sort by date uploaded (newest first)
+
+      if (error) {
+        console.error('Error fetching approved submissions:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load community submissions",
+          variant: "destructive"
+        });
+      } else {
+        // Transform submissions to match NFT format
+        const transformedSubmissions = data.map(submission => ({
+          id: submission.id,
+          name: submission.caption.substring(0, 30) + (submission.caption.length > 30 ? '...' : ''),
+          creator: submission.author,
+          image: submission.image_url,
+          description: submission.caption,
+          category: submission.type === 'art' ? 'Digital Art' : 'Others',
+          editionRemaining: "1",
+          price: "Community",
+          metadataUrl: "#",
+          status: "Community Upload",
+          statusType: "available" as const,
+          isLimited: false,
+          isExclusive: false,
+          maxSupply: "1",
+          likes: 0,
+          uploadedAt: submission.created_at,
+          tags: submission.tags || []
+        }));
+        setApprovedSubmissions(transformedSubmissions);
+      }
+    } catch (error) {
+      console.error('Error in fetchApprovedSubmissions:', error);
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  };
 
   // Main content categories
   const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Others"];
@@ -268,8 +323,11 @@ export function NFTGallery() {
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
 
   // Community Favorites always show all items (no filtering)
-  // Only filter additional artworks
-  const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
+  // Combine additional artworks with approved community submissions
+  const allAdditionalArtworks = [...additionalArtworks, ...approvedSubmissions];
+  
+  // Only filter additional artworks (including community submissions)
+  const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
     const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
     
     // Check if artwork matches ALL selected attributes (AND logic)
