@@ -245,20 +245,25 @@ export function NFTGallery() {
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  // Core categories for filtering - short and anime-focused
-  const categories = [
-    "All", "Anime", "Digital Art", "AI Art", "Meme", "Pixel Art", 
-    "Limited", "Exclusive", "Trending"
-  ];
-
-  // Filter artworks based on active category
-  const filteredCommunityFavorites = activeCategory === "All" 
-    ? communityFavorites 
-    : communityFavorites.filter(nft => nft.category === activeCategory);
+  // Main content categories
+  const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Trending"];
+  // Special attributes that can be combined with main categories
+  const attributeCategories = ["Limited", "Exclusive"];
   
-  const filteredAdditionalArtworks = activeCategory === "All" 
-    ? additionalArtworks 
-    : additionalArtworks.filter(nft => nft.category === activeCategory);
+  const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
+
+  // Filter artworks based on active category and attributes
+  const filteredCommunityFavorites = communityFavorites.filter(nft => {
+    const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
+    // For attributes, check if any selected attributes apply (simplified logic for demo)
+    return matchesCategory;
+  });
+  
+  const filteredAdditionalArtworks = additionalArtworks.filter(nft => {
+    const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
+    // For attributes, check if any selected attributes apply (simplified logic for demo)
+    return matchesCategory;
+  });
   
   const handleLike = (nftId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -377,8 +382,9 @@ export function NFTGallery() {
         <div>
           {/* Category Filter Tags */}
           <div className="mb-6">
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
+            {/* Main Content Categories */}
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
+              {mainCategories.map((category) => (
                 <Button
                   key={category}
                   variant={activeCategory === category ? "default" : "outline"}
@@ -393,6 +399,35 @@ export function NFTGallery() {
                   `}
                 >
                   {category}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Attribute Tags */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {attributeCategories.map((attribute) => (
+                <Button
+                  key={attribute}
+                  variant={selectedAttributes.has(attribute) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    const newAttributes = new Set(selectedAttributes);
+                    if (selectedAttributes.has(attribute)) {
+                      newAttributes.delete(attribute);
+                    } else {
+                      newAttributes.add(attribute);
+                    }
+                    setSelectedAttributes(newAttributes);
+                  }}
+                  className={`
+                    transition-all duration-200 
+                    ${selectedAttributes.has(attribute)
+                      ? 'bg-secondary text-secondary-foreground shadow-md border-secondary' 
+                      : 'bg-background/30 text-muted-foreground hover:bg-secondary/10 hover:text-secondary border-border/30'
+                    }
+                  `}
+                >
+                  {attribute}
                 </Button>
               ))}
             </div>
