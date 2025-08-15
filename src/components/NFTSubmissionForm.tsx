@@ -29,9 +29,7 @@ const submissionSchema = z.object({
 type SubmissionFormData = z.infer<typeof submissionSchema>;
 
 const availableTags = [
-  'Cyberpunk', 'Kawaii', 'Futuristic', 'Retro', 'Neon', 'Minimalist',
-  'Abstract', 'Portrait', 'Landscape', 'Fantasy', 'Sci-Fi', 'Dark',
-  'Colorful', 'Monochrome', 'Glitch', 'Vaporwave'
+  'Digital Art', 'AI Art', 'Meme', 'Pixel Art', 'Others'
 ];
 
 export const NFTSubmissionForm = () => {

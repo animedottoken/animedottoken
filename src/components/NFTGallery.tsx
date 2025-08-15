@@ -51,7 +51,7 @@ const communityFavorites = [
     creator: "DigitalArtist",
     image: ambassadorsNFT,
     description: "For community builders.",
-    category: "Trending",
+    category: "Others",
     editionRemaining: "1,000",
     price: "Earned",
     metadataUrl: "https://solscan.io/account/example3",
@@ -122,7 +122,7 @@ const additionalArtworks = [
     creator: "RobotMaster",
     image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
     description: "Elite mecha pilot design.",
-    category: "Trending",
+    category: "Others",
     editionRemaining: "25",
     price: "1.0 $ANIME",
     metadataUrl: "https://solscan.io/account/example7",
@@ -224,7 +224,7 @@ const additionalArtworks = [
     creator: "WarriorArt",
     image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
     description: "Fierce anime warrior maiden.",
-    category: "Trending",
+    category: "Others",
     editionRemaining: "80",
     price: "0.6 $ANIME",
     metadataUrl: "https://solscan.io/account/example13",
@@ -261,7 +261,7 @@ export function NFTGallery() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
   // Main content categories
-  const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Trending"];
+  const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Others"];
   // Special attributes that can be combined with main categories
   const attributeCategories = ["Limited", "Exclusive", "My Favorites"];
   
@@ -366,16 +366,15 @@ export function NFTGallery() {
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      {nft.isLimited && (
-                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                          Limited
-                        </Badge>
-                      )}
-                      {nft.isExclusive && (
+                      {nft.isExclusive ? (
                         <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
                           Exclusive
                         </Badge>
-                      )}
+                      ) : nft.isLimited ? (
+                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                          Limited
+                        </Badge>
+                      ) : null}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                       <div className="flex items-center justify-between">
@@ -487,18 +486,17 @@ export function NFTGallery() {
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute top-2 right-2 flex flex-col gap-1">
-                    {nft.isLimited && (
-                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                        Limited
-                      </Badge>
-                    )}
-                    {nft.isExclusive && (
-                      <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
-                        Exclusive
-                      </Badge>
-                    )}
-                  </div>
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      {nft.isExclusive ? (
+                        <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-400/30 text-xs">
+                          Exclusive
+                        </Badge>
+                      ) : nft.isLimited ? (
+                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                          Limited
+                        </Badge>
+                      ) : null}
+                    </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
                     <div className="flex items-center justify-between">
                       <h3 className="font-bold text-white text-xs">{nft.creator}</h3>
