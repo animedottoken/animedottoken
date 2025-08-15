@@ -722,7 +722,7 @@ export function NFTGallery() {
               <DialogTrigger asChild>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold gap-2"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
                 >
                   <Plus className="h-4 w-4" />
                   Submit Your Art
