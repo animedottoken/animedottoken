@@ -74,7 +74,7 @@ export function OwnershipCalculator() {
             <Label>Live Holder Rank:</Label>
             <div className="p-3 bg-muted rounded-md font-mono text-sm">
               {holders ? (
-                `Top ${Math.ceil((calculatePercentage() / 100) * holders)} of ${holders.toLocaleString()}`
+                `Top ${Math.ceil((calculatePercentage() / 100) * holders)} of ${holders.toLocaleString('en-US')}`
               ) : (
                 "Loading..."
               )}
