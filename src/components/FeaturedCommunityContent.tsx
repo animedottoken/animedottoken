@@ -65,32 +65,66 @@ export function FeaturedCommunityContent() {
         </div>
 
         {/* Enhanced Community Submissions Area */}
-        <div className="mt-8 bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-8 min-h-[200px] lg:min-h-[240px]">
-          <div className="text-center h-full flex flex-col justify-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                <span className="text-3xl">🎨</span>
-              </div>
-              <h4 className="text-xl font-semibold text-white mb-2">
-                Community Showcase
-              </h4>
-              <p className="text-white/60 text-sm max-w-md mx-auto">
-                This space is reserved for amazing community submissions. Your creativity will be featured here for everyone to see!
-              </p>
+        <div className="mt-8 bg-white/5 border-2 border-dashed border-white/20 rounded-xl p-8">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <span className="text-3xl">🎨</span>
             </div>
-            
-            {/* Expandable content area for future submissions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-              {/* Placeholder slots for future content */}
-              {[1, 2, 3].map((slot) => (
-                <div 
-                  key={slot}
-                  className="aspect-square bg-white/5 rounded-lg border border-white/10 flex items-center justify-center opacity-50"
-                >
-                  <span className="text-white/40 text-sm">Slot {slot}</span>
+            <h4 className="text-xl font-semibold text-white mb-2">
+              Community Showcase
+            </h4>
+            <p className="text-white/60 text-sm max-w-md mx-auto">
+              This space features amazing community submissions. Your creativity could be showcased here!
+            </p>
+          </div>
+          
+          {/* Community Content Slots */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {/* Slot 1 - Empty with overlay */}
+            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🎨</div>
+                  <div className="text-white/80 font-medium text-sm">Your art here</div>
                 </div>
-              ))}
+              </div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
+
+            {/* Slot 2 - Empty with overlay */}
+            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">📝</div>
+                  <div className="text-white/80 font-medium text-sm">Coming soon!</div>
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+
+            {/* Slot 3 - Empty with overlay */}
+            <div className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group hover:border-white/20 transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-primary/10" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🎭</div>
+                  <div className="text-white/80 font-medium text-sm">Your meme here</div>
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          </div>
+
+          {/* Call to Action Prompt */}
+          <div className="text-center">
+            <p className="text-purple-400 font-semibold text-lg mb-2">
+              Submit your work to be featured!
+            </p>
+            <p className="text-white/60 text-sm">
+              Share your art, memes, or stories with our community and get showcased here
+            </p>
           </div>
         </div>
       </div>
