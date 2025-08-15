@@ -22,8 +22,7 @@ const submissionSchema = z.object({
   contact: z.string().optional(),
   tags: z.array(z.string()).max(3, "Maximum 3 tags allowed"),
   edition_type: z.enum(['standard', 'limited']),
-  theme: z.enum(['anime', 'digital_culture', 'meme', 'ai', 'new_internet_money']),
-  type: z.enum(['art', 'meme', 'story', 'animation', 'video'])
+  type: z.enum(['picture', 'video', 'animation', 'music', 'other'])
 });
 
 type SubmissionFormData = z.infer<typeof submissionSchema>;
@@ -49,8 +48,7 @@ export const NFTSubmissionForm = () => {
       contact: '',
       tags: [],
       edition_type: 'standard',
-      theme: 'anime',
-      type: 'art'
+      type: 'picture'
     }
   });
 
@@ -221,35 +219,6 @@ export const NFTSubmissionForm = () => {
               )}
             />
 
-            {/* Theme Selection */}
-            <FormField
-              control={form.control}
-              name="theme"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Theme *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a theme" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="anime">🎌 Anime-Inspired</SelectItem>
-                      <SelectItem value="digital_culture">💻 Digital Culture</SelectItem>
-                      <SelectItem value="meme">😄 Meme Culture</SelectItem>
-                      <SelectItem value="ai">🤖 AI & Technology</SelectItem>
-                      <SelectItem value="new_internet_money">💰 New Internet Money Era</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Choose the theme that best represents your NFT
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* NFT Type */}
             <FormField
               control={form.control}
@@ -264,11 +233,11 @@ export const NFTSubmissionForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="art">🎨 Digital Art</SelectItem>
-                      <SelectItem value="animation">🎬 Animation</SelectItem>
+                      <SelectItem value="picture">🖼️ Picture</SelectItem>
                       <SelectItem value="video">📹 Video</SelectItem>
-                      <SelectItem value="meme">😄 Meme</SelectItem>
-                      <SelectItem value="story">📖 Story/Concept</SelectItem>
+                      <SelectItem value="animation">🎬 Animation</SelectItem>
+                      <SelectItem value="music">🎵 Music</SelectItem>
+                      <SelectItem value="other">📋 Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
