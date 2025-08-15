@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Copy, Share, ExternalLink } from "lucide-react";
+import { Copy, Share, ExternalLink, Heart } from "lucide-react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -13,6 +13,7 @@ const communityFavorites = [
   {
     id: "early-supporter",
     name: "First 100 Early Supporter",
+    creator: "AnimeTeam",
     image: earlySupporterBadge,
     description: "Legacy badge for early adopters.",
     category: "AI Art",
@@ -22,11 +23,13 @@ const communityFavorites = [
     status: "100 Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "100"
+    maxSupply: "100",
+    likes: 2847
   },
   {
     id: "founder", 
     name: "Founder",
+    creator: "CryptoSamurai",
     image: foundersNFT,
     description: "For strategic leaders.",
     category: "Profile Picture (PFP)",
@@ -36,11 +39,13 @@ const communityFavorites = [
     status: "Special Edition",
     statusType: "special" as const,
     isLimited: true,
-    maxSupply: "100"
+    maxSupply: "100",
+    likes: 1923
   },
   {
     id: "ambassador",
     name: "Ambassador", 
+    creator: "DigitalArtist",
     image: ambassadorsNFT,
     description: "For community builders.",
     category: "Illustration",
@@ -50,11 +55,13 @@ const communityFavorites = [
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
-    maxSupply: "1,000"
+    maxSupply: "1,000",
+    likes: 1456
   },
   {
     id: "hodler",
     name: "Hodler",
+    creator: "GoldMiner",
     image: hodlersNFT,
     description: "For long-term holders.",
     category: "3D Art",
@@ -64,7 +71,8 @@ const communityFavorites = [
     status: "Always Available",
     statusType: "unlimited" as const,
     isLimited: false,
-    maxSupply: "Unlimited"
+    maxSupply: "Unlimited",
+    likes: 998
   }
 ];
 
@@ -72,6 +80,7 @@ const additionalArtworks = [
   {
     id: "cyber-samurai",
     name: "Cyber Samurai",
+    creator: "tommo8",
     image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png",
     description: "Futuristic samurai warrior.",
     category: "3D Art",
@@ -81,11 +90,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "50"
+    maxSupply: "50",
+    likes: 10200
   },
   {
     id: "neon-girl",
     name: "Neon Girl",
+    creator: "NeonDreamer",
     image: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png",
     description: "Cyberpunk anime character.",
     category: "Profile Picture (PFP)",
@@ -95,11 +106,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "75"
+    maxSupply: "75",
+    likes: 856
   },
   {
     id: "mecha-pilot",
     name: "Mecha Pilot",
+    creator: "RobotMaster",
     image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
     description: "Elite mecha pilot design.",
     category: "Illustration",
@@ -109,11 +122,13 @@ const additionalArtworks = [
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
-    maxSupply: "25"
+    maxSupply: "25",
+    likes: 643
   },
   {
     id: "dragon-spirit",
     name: "Dragon Spirit",
+    creator: "MysticDragon",
     image: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png",
     description: "Mystical dragon companion.",
     category: "Animation",
@@ -123,11 +138,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "100"
+    maxSupply: "100",
+    likes: 1205
   },
   {
     id: "pixel-hero",
     name: "Pixel Hero",
+    creator: "PixelWizard",
     image: "/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png",
     description: "Retro pixel art character.",
     category: "Pixel Art",
@@ -137,11 +154,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "200"
+    maxSupply: "200",
+    likes: 432
   },
   {
     id: "ai-waifu",
     name: "AI Waifu",
+    creator: "AIArtist",
     image: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png",
     description: "AI-generated anime character.",
     category: "AI Art",
@@ -151,11 +170,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "150"
+    maxSupply: "150",
+    likes: 789
   },
   {
     id: "space-girl",
     name: "Space Girl",
+    creator: "CosmicArt",
     image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
     description: "Cosmic anime explorer.",
     category: "Illustration",
@@ -165,11 +186,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "60"
+    maxSupply: "60",
+    likes: 567
   },
   {
     id: "meme-cat",
     name: "Meme Cat",
+    creator: "MemeLord",
     image: "/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png",
     description: "Popular anime meme cat.",
     category: "Meme",
@@ -179,11 +202,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "500"
+    maxSupply: "500",
+    likes: 2156
   },
   {
     id: "warrior-princess",
     name: "Warrior Princess",
+    creator: "WarriorArt",
     image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
     description: "Fierce anime warrior maiden.",
     category: "Profile Picture (PFP)",
@@ -193,11 +218,13 @@ const additionalArtworks = [
     status: "Available",
     statusType: "available" as const,
     isLimited: true,
-    maxSupply: "80"
+    maxSupply: "80",
+    likes: 345
   },
   {
     id: "digital-ninja",
     name: "Digital Ninja",
+    creator: "ShadowNinja",
     image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
     description: "Stealth cyber ninja.",
     category: "3D Art",
@@ -207,13 +234,33 @@ const additionalArtworks = [
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
-    maxSupply: "40"
+    maxSupply: "40",
+    likes: 892
   }
 ];
 
 export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
+  const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
+  
+  const handleLike = (nftId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newLikedNFTs = new Set(likedNFTs);
+    if (likedNFTs.has(nftId)) {
+      newLikedNFTs.delete(nftId);
+    } else {
+      newLikedNFTs.add(nftId);
+    }
+    setLikedNFTs(newLikedNFTs);
+  };
+
+  const formatLikes = (likes: number) => {
+    if (likes >= 1000) {
+      return `${(likes / 1000).toFixed(1)}K`;
+    }
+    return likes.toString();
+  };
   
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -275,7 +322,18 @@ export function NFTGallery() {
                       </div>
                     )}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                      <h3 className="font-bold text-white text-sm">{nft.name}</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-white text-sm">{nft.creator}</h3>
+                        <button
+                          onClick={(e) => handleLike(nft.id, e)}
+                          className="flex items-center gap-1 bg-black/50 rounded-full px-2 py-1 hover:bg-black/70 transition-colors"
+                        >
+                          <Heart 
+                            className={`w-3 h-3 ${likedNFTs.has(nft.id) ? 'fill-red-500 text-red-500' : 'text-white'}`}
+                          />
+                          <span className="text-white text-xs">{formatLikes(nft.likes + (likedNFTs.has(nft.id) ? 1 : 0))}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -293,7 +351,7 @@ export function NFTGallery() {
           size="lg"
           className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
-          {showMoreArtworks ? 'Hide' : 'See More'} Art Works ({additionalArtworks.length})
+          {showMoreArtworks ? 'See Less' : 'See More'} Art Works ({additionalArtworks.length})
         </Button>
       </div>
 
@@ -323,7 +381,18 @@ export function NFTGallery() {
                     </div>
                   )}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                    <h3 className="font-bold text-white text-xs">{nft.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-xs">{nft.creator}</h3>
+                      <button
+                        onClick={(e) => handleLike(nft.id, e)}
+                        className="flex items-center gap-1 bg-black/50 rounded-full px-2 py-1 hover:bg-black/70 transition-colors"
+                      >
+                        <Heart 
+                          className={`w-3 h-3 ${likedNFTs.has(nft.id) ? 'fill-red-500 text-red-500' : 'text-white'}`}
+                        />
+                        <span className="text-white text-xs">{formatLikes(nft.likes + (likedNFTs.has(nft.id) ? 1 : 0))}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -368,6 +437,11 @@ export function NFTGallery() {
               
               <div className="space-y-3">
                 <div>
+                  <span className="font-semibold text-sm">Creator:</span>
+                  <p className="text-sm text-muted-foreground">{selectedNFT.creator}</p>
+                </div>
+                
+                <div>
                   <span className="font-semibold text-sm">Name:</span>
                   <p className="text-sm text-muted-foreground">{selectedNFT.name}</p>
                 </div>
@@ -390,6 +464,11 @@ export function NFTGallery() {
                 <div>
                   <span className="font-semibold text-sm">Price:</span>
                   <p className="text-sm text-muted-foreground">{selectedNFT.price}</p>
+                </div>
+
+                <div>
+                  <span className="font-semibold text-sm">Likes:</span>
+                  <p className="text-sm text-muted-foreground">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</p>
                 </div>
               </div>
               
