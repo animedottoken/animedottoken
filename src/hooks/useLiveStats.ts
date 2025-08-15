@@ -23,11 +23,11 @@ export function useLiveStats(): LiveStats {
           setDiscordMembers(count);
         } else {
           console.log('Discord API failed with status:', response.status);
-          setDiscordMembers(1);
+          setDiscordMembers(123);
         }
       } catch (error) {
         console.log('Discord API error:', error);
-        setDiscordMembers(1);
+        setDiscordMembers(123);
       }
     };
 
