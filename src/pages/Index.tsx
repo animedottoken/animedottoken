@@ -251,9 +251,11 @@ const Index = () => {
         </Button>
       </section>
 
-      <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
+      <div className="trust-security-section">
+        <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
+      </div>
 
-      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: A Decentralized Future</h2>
           <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
@@ -275,7 +277,7 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="mt-8">
+        <div className="mt-8 market-cap-chart">
           <MarketCapChart />
         </div>
       </section>
@@ -511,7 +513,7 @@ const Index = () => {
           </Collapsible>
         </section>
 
-        <section className="mt-8">
+        <section id="faq-section" className="mt-8">
           <h3 className="text-lg font-semibold"><span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)</h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
@@ -576,10 +578,11 @@ const Index = () => {
       {/* NFT Supporter Program Section */}
       <NFTSupporterSection />
 
-      {/* NFT Gallery Section */}
-      <NFTGallery />
+      <div className="nft-gallery">
+        <NFTGallery />
+      </div>
 
-      <section className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
         <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
         <div className="mt-6 space-y-4">
