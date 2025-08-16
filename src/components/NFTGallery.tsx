@@ -315,7 +315,7 @@ export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
-  const [activeMandatoryTag, setActiveMandatoryTag] = useState<string>("");
+  const [selectedMandatoryTags, setSelectedMandatoryTags] = useState<Set<string>>(new Set());
   const [selectedOptionalTags, setSelectedOptionalTags] = useState<Set<string>>(new Set());
   const [showMyFavorites, setShowMyFavorites] = useState(false);
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
@@ -343,7 +343,7 @@ export function NFTGallery() {
   // Filter logic for additional artworks
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
     // Check mandatory tag filter (if none selected, show all)
-    const matchesMandatory = !activeMandatoryTag || nft.mandatoryTag === activeMandatoryTag;
+    const matchesMandatory = selectedMandatoryTags.size === 0 || selectedMandatoryTags.has(nft.mandatoryTag);
     
     // Check optional tag filters (must match ALL selected)
     const matchesOptional = selectedOptionalTags.size === 0 || 
@@ -544,74 +544,85 @@ export function NFTGallery() {
               {/* Separator */}
               <div className="w-px h-6 bg-border mx-2"></div>
 
-              {/* Primary Tags */}
-              {mandatoryTags.map((tag) => (
-                <Button
-                  key={tag}
-                  variant={activeMandatoryTag === tag ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveMandatoryTag(tag)}
-                  className={`
-                    transition-all duration-200 
-                    ${activeMandatoryTag === tag 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
-                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                    }
-                  `}
-                >
-                  {tag}
-                </Button>
-              ))}
+              {/* Format Type Tags (with distinct styling) */}
+              <div className="flex flex-wrap items-center gap-2 px-2 py-1 bg-muted/20 rounded-md border">
+                <span className="text-xs font-medium text-muted-foreground">Format:</span>
+                {mandatoryTags.map((tag) => (
+                  <Button
+                    key={tag}
+                    variant={selectedMandatoryTags.has(tag) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const newTags = new Set(selectedMandatoryTags);
+                      if (selectedMandatoryTags.has(tag)) {
+                        newTags.delete(tag);
+                      } else {
+                        newTags.add(tag);
+                      }
+                      setSelectedMandatoryTags(newTags);
+                    }}
+                    className={`
+                      transition-all duration-200 
+                      ${selectedMandatoryTags.has(tag) 
+                        ? 'bg-primary text-primary-foreground shadow-md' 
+                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                      }
+                    `}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
 
               {/* Separator */}
               <div className="w-px h-6 bg-border mx-2"></div>
 
-              {/* Optional Tags */}
-              {optionalTags.map((tag) => (
-                <Button
-                  key={tag}
-                  variant={selectedOptionalTags.has(tag) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    const newTags = new Set(selectedOptionalTags);
-                    if (selectedOptionalTags.has(tag)) {
-                      newTags.delete(tag);
-                    } else if (selectedOptionalTags.size < 3) {
-                      newTags.add(tag);
-                    } else {
-                      toast.error("Maximum 3 optional tags allowed");
-                      return;
-                    }
-                    setSelectedOptionalTags(newTags);
-                  }}
-                  className={`
-                    transition-all duration-200 
-                    ${selectedOptionalTags.has(tag)
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                    }
-                  `}
-                >
-                  {tag}
-                </Button>
-              ))}
+              {/* Style Tags (with distinct styling) */}
+              <div className="flex flex-wrap items-center gap-2 px-2 py-1 bg-accent/10 rounded-md border border-accent/20">
+                <span className="text-xs font-medium text-muted-foreground">Style:</span>
+                {optionalTags.map((tag) => (
+                  <Button
+                    key={tag}
+                    variant={selectedOptionalTags.has(tag) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const newTags = new Set(selectedOptionalTags);
+                      if (selectedOptionalTags.has(tag)) {
+                        newTags.delete(tag);
+                      } else {
+                        newTags.add(tag);
+                      }
+                      setSelectedOptionalTags(newTags);
+                    }}
+                    className={`
+                      transition-all duration-200 
+                      ${selectedOptionalTags.has(tag)
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                      }
+                    `}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
 
               {/* Separator */}
               <div className="w-px h-6 bg-border mx-2"></div>
 
-              {/* Delete Filters */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setActiveMandatoryTag("");
-                  setSelectedOptionalTags(new Set());
-                  setShowMyFavorites(false);
-                }}
-                className="transition-all duration-200"
-              >
-                Delete filters
-              </Button>
+               {/* Delete Filters */}
+               <Button
+                 variant="outline"
+                 size="sm"
+                 onClick={() => {
+                   setSelectedMandatoryTags(new Set());
+                   setSelectedOptionalTags(new Set());
+                   setShowMyFavorites(false);
+                 }}
+                 className="transition-all duration-200"
+               >
+                 Delete filters
+               </Button>
             </div>
           </div>
           
