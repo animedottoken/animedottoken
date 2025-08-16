@@ -437,7 +437,7 @@ export function NFTGallery() {
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
             <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
-            NFT Anime Art Gallery
+            NFT Anime Art Marketplace
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Showcase your anime-inspired NFTs and compete to create the most beautiful, unique art. Join the $ANIME community and get ready for our NFT marketplace!
