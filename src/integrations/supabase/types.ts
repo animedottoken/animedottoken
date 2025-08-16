@@ -192,6 +192,24 @@ export type Database = {
       }
     }
     Functions: {
+      get_public_submissions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          author: string
+          caption: string
+          created_at: string
+          edition_type: Database["public"]["Enums"]["edition_type"]
+          id: string
+          image_url: string
+          name: string
+          status: Database["public"]["Enums"]["submission_status"]
+          submission_source: Database["public"]["Enums"]["submission_source"]
+          tags: string[]
+          theme: string
+          type: Database["public"]["Enums"]["submission_type"]
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
