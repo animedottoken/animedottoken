@@ -2,24 +2,33 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Capacitor imports for mobile app
-import { Capacitor } from '@capacitor/core';
-import { SplashScreen } from '@capacitor/splash-screen';
-import { StatusBar, Style } from '@capacitor/status-bar';
+// Initialize React app first
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
 
-// Initialize native mobile features
+// Initialize mobile features after React is fully loaded
 const initMobile = async () => {
-  if (Capacitor.isNativePlatform()) {
-    // Configure status bar
-    await StatusBar.setStyle({ style: Style.Dark });
-    await StatusBar.setBackgroundColor({ color: '#8B5CF6' });
-    
-    // Hide splash screen after app loads
-    await SplashScreen.hide();
+  try {
+    // Only import Capacitor modules if we're in a mobile environment
+    if (typeof window !== 'undefined' && 'Capacitor' in window) {
+      const { Capacitor } = await import('@capacitor/core');
+      
+      if (Capacitor.isNativePlatform()) {
+        const { SplashScreen } = await import('@capacitor/splash-screen');
+        const { StatusBar, Style } = await import('@capacitor/status-bar');
+        
+        // Configure status bar
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setBackgroundColor({ color: '#8B5CF6' });
+        
+        // Hide splash screen after app loads
+        await SplashScreen.hide();
+      }
+    }
+  } catch (error) {
+    console.log('Mobile features not available:', error);
   }
 };
 
-createRoot(document.getElementById("root")!).render(<App />);
-
-// Initialize mobile features after React renders
-initMobile();
+// Run mobile initialization after a short delay to ensure React is ready
+setTimeout(initMobile, 100);
