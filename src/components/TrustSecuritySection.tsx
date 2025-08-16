@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -113,26 +113,38 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               <p>
                 To fuel the community-led revival and ensure long-term growth, the official ANIME Revival & Ecosystem Fund has been established. This is not a private team wallet; it is a <span className="font-semibold text-foreground">publicly viewable treasury</span> dedicated to the project's success.
               </p>
-              <p>
-                It holds <span className="font-semibold text-foreground">11.18% (109,000,000 $ANIME)</span> of the current token supply. These funds are the project's "war chest" and will be used exclusively for strategic growth, including marketing, exchange listings, and future development.
-              </p>
-              <p className="font-medium text-foreground">
-                Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
-              </p>
-              <div className="bg-muted/50 p-3 rounded-lg">
-                <p className="text-sm font-medium text-foreground mb-2">View the Fund live on Solscan:</p>
-                <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
-                  <span className="text-muted-foreground break-all">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8')}
-                    aria-label="Copy wallet address to clipboard"
-                  >
-                    Copy Address
+              
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal text-primary hover:text-primary/80">
+                    Show Details <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
-                </div>
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="mt-3 space-y-3">
+                    <p>
+                      It holds <span className="font-semibold text-foreground">11.18% (109,000,000 $ANIME)</span> of the current token supply. These funds are the project's "war chest" and will be used exclusively for strategic growth, including marketing, exchange listings, and future development.
+                    </p>
+                    <p className="font-medium text-foreground">
+                      Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
+                    </p>
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <p className="text-sm font-medium text-foreground mb-2">View the Fund live on Solscan:</p>
+                      <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
+                        <span className="text-muted-foreground break-all">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8')}
+                          aria-label="Copy wallet address to clipboard"
+                        >
+                          Copy Address
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild variant="hero">
