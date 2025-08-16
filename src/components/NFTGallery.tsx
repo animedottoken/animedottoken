@@ -768,35 +768,36 @@ export function NFTGallery() {
 
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
-        <DialogContent className="max-w-6xl h-[95vh] flex flex-col">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
-          </DialogHeader>
-          
-          {/* Navigation Arrows */}
-          {selectedNFT && (
-            <>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateToNFT('prev')}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => navigateToNFT('next')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </Button>
-            </>
-          )}
-          
-          {selectedNFT && (
-            <div className="grid md:grid-cols-3 gap-8 flex-1 overflow-y-auto">{/* This container will scroll internally if needed */}
+        <DialogContent className="max-w-6xl h-[95vh] p-0">
+          <div className="flex flex-col h-full">
+            <DialogHeader className="flex-shrink-0 p-6 pb-0">
+              <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
+            </DialogHeader>
+            
+            {/* Navigation Arrows */}
+            {selectedNFT && (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateToNFT('prev')}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateToNFT('next')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </>
+            )}
+            
+            {selectedNFT && (
+              <div className="grid md:grid-cols-3 gap-6 p-6 flex-1 overflow-y-auto min-h-0">{/* This container will scroll internally if needed */}
               {/* Image Section - takes 2 columns for more space */}
               <div className="md:col-span-2 space-y-4">
                 <div className="group relative max-w-lg mx-auto">
@@ -982,8 +983,8 @@ export function NFTGallery() {
                   </div>
                 )}
 
-                {/* Price - Bottom Right like webshops */} 
-                <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-4 mt-6">
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-4">
                   <div className="flex justify-between items-end">
                     <span className="font-semibold text-sm text-muted-foreground">Price</span>
                     <div className="text-right">
@@ -995,36 +996,35 @@ export function NFTGallery() {
                   </div>
                 </div>
 
-                {/* Purchase Button and Security Text */}
-                <div className="space-y-3">
-                  <Button 
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
-                    onClick={() => {
-                      const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
-                      
-                      navigator.clipboard.writeText(purchaseMessage).then(() => {
-                        setShowPurchasePopup(true);
-                      }).catch(() => {
-                        // Fallback if clipboard API fails
-                        setShowPurchasePopup(true);
-                        toast.error("Could not copy to clipboard", {
-                          description: "Please manually type your purchase request in Discord"
-                        });
+                <Button 
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
+                  onClick={() => {
+                    const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
+                    
+                    navigator.clipboard.writeText(purchaseMessage).then(() => {
+                      setShowPurchasePopup(true);
+                    }).catch(() => {
+                      // Fallback if clipboard API fails
+                      setShowPurchasePopup(true);
+                      toast.error("Could not copy to clipboard", {
+                        description: "Please manually type your purchase request in Discord"
                       });
-                    }}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Start Purchase on Discord
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                    To ensure security, all purchases are handled manually by our official Escrow service on Discord.
-                  </p>
+                    });
+                  }}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Start Purchase on Discord
+                </Button>
+                
+                <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                  To ensure security, all purchases are handled manually by our official Escrow service on Discord.
+                </p>
                 </div>
               </div>
             </div>
-          )}
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
