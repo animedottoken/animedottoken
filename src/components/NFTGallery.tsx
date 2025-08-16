@@ -10,6 +10,14 @@ import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.p
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
 import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c85026ca6ea.png";
+import nftDigitalArt from "@/assets/nft-digital-art.jpg";
+import nftAIArt from "@/assets/nft-ai-art.jpg";
+import nftMeme from "@/assets/nft-meme.jpg";
+import nftPixelArt from "@/assets/nft-pixel-art.jpg";
+import nftOthers from "@/assets/nft-others.jpg";
+import nftMusicCover from "@/assets/nft-music-cover.jpg";
+import nftAnimationFrame from "@/assets/nft-animation-frame.jpg";
+import nftVideoThumbnail from "@/assets/nft-video-thumbnail.jpg";
 
 const communityFavorites = [
   {
@@ -103,7 +111,7 @@ const additionalArtworks = [
     id: "cyber-samurai",
     name: "Forest Guardian",
     creator: "DigitalDreamer",
-    image: "/assets/nft-digital-art.jpg",
+    image: nftDigitalArt,
     description: "A mystical guardian watching over an enchanted forest with magical butterflies.",
     category: "Digital Art",
     editionRemaining: "50",
@@ -124,7 +132,7 @@ const additionalArtworks = [
     id: "neon-girl",
     name: "Circuit Goddess",
     creator: "AIArtist",
-    image: "/assets/nft-ai-art.jpg",
+    image: nftAIArt,
     description: "AI-generated anime character with cybernetic enhancements and holographic aura.",
     category: "AI Art",
     editionRemaining: "75",
@@ -250,7 +258,7 @@ const additionalArtworks = [
     id: "meme-cat",
     name: "Anime Meme Explosion",
     creator: "MemeMaster",
-    image: "/assets/nft-meme.jpg",
+    image: nftMeme,
     description: "The viral anime meme that's taking the internet by storm!",
     category: "Meme",
     editionRemaining: "500",
@@ -271,7 +279,7 @@ const additionalArtworks = [
     id: "warrior-princess",
     name: "Abstract Dreams",
     creator: "ArtistX",
-    image: "/assets/nft-others.jpg",
+    image: nftOthers,
     description: "Experimental anime art blending surreal elements with traditional techniques.",
     category: "Others",
     editionRemaining: "25",
@@ -292,7 +300,7 @@ const additionalArtworks = [
     id: "digital-ninja",
     name: "8-Bit Warrior",
     creator: "PixelWizard",
-    image: "/assets/nft-pixel-art.jpg",
+    image: nftPixelArt,
     description: "Classic retro pixel art character straight from the golden age of gaming.",
     category: "Pixel Art",
     editionRemaining: "200",
@@ -313,7 +321,7 @@ const additionalArtworks = [
     id: "epic-journey-video",
     name: "Epic Journey",
     creator: "FilmMaker",
-    image: "/assets/nft-video-thumbnail.jpg",
+    image: nftVideoThumbnail,
     description: "Professional anime short film with cinematic quality and storytelling.",
     category: "Digital Art",
     editionRemaining: "15",
@@ -334,7 +342,7 @@ const additionalArtworks = [
     id: "dynamic-action-animation",
     name: "Dynamic Action",
     creator: "AnimationStudio",
-    image: "/assets/nft-animation-frame.jpg",
+    image: nftAnimationFrame,
     description: "High-quality animated sequence featuring dynamic character movement.",
     category: "Digital Art",
     editionRemaining: "30",
@@ -355,7 +363,7 @@ const additionalArtworks = [
     id: "rhythm-of-anime-music",
     name: "Rhythm of Anime",
     creator: "SoundWave",
-    image: "/assets/nft-music-cover.jpg",
+    image: nftMusicCover,
     description: "Original anime soundtrack with stunning visual accompaniment.",
     category: "Digital Art",
     editionRemaining: "100",
