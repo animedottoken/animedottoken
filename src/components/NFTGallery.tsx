@@ -879,18 +879,15 @@ export function NFTGallery() {
                   </div>
                 </div>
 
-                {/* Details Section - Always visible */}
+                {/* Details Section */}
                 <div className="flex flex-col h-full max-h-[70vh]">
-                  {/* Scrollable content area */}
-                  <div className="flex-1 overflow-auto space-y-4 pr-2">
-                    {/* Name, Description, Creator Group */}
-                    <div className="space-y-3">
-                      <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
-                      <p className="text-muted-foreground">{selectedNFT.description}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Created by</span>
-                        <span className="font-semibold text-primary">{selectedNFT.creator}</span>
-                      </div>
+                  {/* Always Visible Info */}
+                  <div className="flex-shrink-0 space-y-3 pb-4 border-b border-border/50">
+                    <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
+                    <p className="text-muted-foreground">{selectedNFT.description}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Created by</span>
+                      <span className="font-semibold text-primary">{selectedNFT.creator}</span>
                     </div>
 
                     {/* Max Supply and Likes */}
@@ -907,7 +904,10 @@ export function NFTGallery() {
                         </div>
                       </div>
                     </div>
+                  </div>
 
+                  {/* Scrollable content area */}
+                  <div className="flex-1 overflow-auto space-y-4 pt-4 pr-2">
                     {/* Tags */}
                     <div>
                       <span className="text-sm text-muted-foreground block mb-2">Tags</span>
@@ -930,11 +930,8 @@ export function NFTGallery() {
                         <p className="text-sm bg-muted p-3 rounded-lg">{(selectedNFT as any).authorBio}</p>
                       </div>
                     )}
-                  </div>
 
-                  {/* Price Section - Always Visible (Sticky Bottom) */}
-                  <div className="flex-shrink-0 border-t border-border/50 pt-4 mt-4 space-y-4 bg-background">
-                    {/* Price Section - Prominent Display */}
+                    {/* Price Section - Now in scrollable area */}
                     <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
                       <div className="text-center">
                         <span className="text-sm text-muted-foreground block mb-1">Price</span>
