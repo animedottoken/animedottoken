@@ -19,25 +19,9 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Get approved submissions from the secure public view (excludes sensitive info like author_bio, contact, nft_address)
+    // Get approved submissions using the secure function (avoids security definer view issues)
     const { data: submissions, error } = await supabase
-      .from('public_submissions')
-      .select(`
-        id,
-        image_url,
-        name,
-        caption,
-        author,
-        type,
-        status,
-        submission_source,
-        created_at,
-        updated_at,
-        edition_type,
-        theme,
-        tags
-      `)
-      .order('created_at', { ascending: false })
+      .rpc('get_public_submissions')
 
     if (error) {
       console.error('Error fetching approved submissions:', error)

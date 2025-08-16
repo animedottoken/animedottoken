@@ -205,7 +205,7 @@ export type Database = {
           status: Database["public"]["Enums"]["submission_status"]
           submission_source: Database["public"]["Enums"]["submission_source"]
           tags: string[]
-          theme: string
+          theme: Database["public"]["Enums"]["theme_type"]
           type: Database["public"]["Enums"]["submission_type"]
           updated_at: string
         }[]
