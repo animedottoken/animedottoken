@@ -26,10 +26,11 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast', '@radix-ui/react-collapsible'],
           'icons-vendor': ['react-icons/si', 'lucide-react'],
           'chart-vendor': ['recharts'],
-          'utils-vendor': ['clsx', 'class-variance-authority', 'tailwind-merge']
+          'utils-vendor': ['clsx', 'class-variance-authority', 'tailwind-merge'],
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod']
         }
       }
     },
@@ -37,8 +38,10 @@ export default defineConfig(({ mode }) => ({
       compress: {
         drop_console: mode === 'production',
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
-      }
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        unused: true
+      },
+      mangle: true
     }
   }
 }));

@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo } from "react";
 import JSZip from "jszip";
+import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import heroOptimized from "@/assets/hero-optimized.webp";
 
 // Lazy load heavy components with higher priority for desktop
@@ -223,15 +224,15 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/5 to-background animate-pulse">
-            <img
+            <ImageLazyLoad
               src={heroOptimized}
               alt="ANIME Token 3:2 hero banner with anime characters and logo"
+              className="w-full h-full object-cover block"
               loading="eager"
               decoding="async"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-              className="w-full h-full object-cover block"
+              fallbackSrc="/images/og-anime.jpg"
               onLoad={(e) => {
-                const container = e.currentTarget.parentElement;
+                const container = e.currentTarget.parentElement?.parentElement;
                 if (container) container.classList.remove('animate-pulse');
               }}
             />
