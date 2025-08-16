@@ -7,13 +7,13 @@ import sampleAnimeMeme from "@/assets/sample-anime-meme.jpg";
 
 const emptySlots = [
   { 
-    placeholder: sampleTwitterPost,
-    overlay: "Viral X Post",
-    cta: "This post got 10K+ engagements!",
-    type: "post",
+    placeholder: sampleAnimeMeme,
+    overlay: "Top Community Meme",
+    cta: "Made everyone laugh for days!",
+    type: "meme",
     sample: true,
-    title: "@CryptoSamurai_",
-    description: "Shared their $ANIME journey and got massive community love!"
+    title: "@MemeLord_Otaku",
+    description: "Created the funniest $ANIME meme that went viral!"
   },
   { 
     placeholder: communityPlaceholder,
@@ -25,13 +25,13 @@ const emptySlots = [
     description: "Submit your amazing art to be featured here!"
   },
   { 
-    placeholder: sampleAnimeMeme,
-    overlay: "Top Community Meme",
-    cta: "Made everyone laugh for days!",
-    type: "meme",
+    placeholder: sampleTwitterPost,
+    overlay: "Viral X Post",
+    cta: "This post got 10K+ engagements!",
+    type: "post",
     sample: true,
-    title: "@MemeLord_Otaku",
-    description: "Created the funniest $ANIME meme that went viral!"
+    title: "@CryptoSamurai_",
+    description: "Shared their $ANIME journey and got massive community love!"
   }
 ];
 
