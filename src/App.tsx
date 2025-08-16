@@ -6,6 +6,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Reports from "./pages/Reports";
+import ShareNFT from "./pages/ShareNFT";
 
 const App = () => (
   <HelmetProvider>
@@ -16,6 +17,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/share/nft/:nftId" element={<ShareNFT />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
