@@ -10,14 +10,18 @@ import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.p
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
 import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c85026ca6ea.png";
-import nftDigitalArt from "@/assets/nft-digital-art.jpg";
-import nftAIArt from "@/assets/nft-ai-art.jpg";
+import nftDigitalArt from "@/assets/nft-digital-painting.jpg";
+import nftAIArt from "@/assets/nft-ai-generated.jpg";
 import nftMeme from "@/assets/nft-meme.jpg";
-import nftPixelArt from "@/assets/nft-pixel-art.jpg";
-import nftOthers from "@/assets/nft-others.jpg";
-import nftMusicCover from "@/assets/nft-music-cover.jpg";
-import nftAnimationFrame from "@/assets/nft-animation-frame.jpg";
-import nftVideoThumbnail from "@/assets/nft-video-thumbnail.jpg";
+import nftPixelArt from "@/assets/nft-8bit-pixel.jpg";
+import nftOthers from "@/assets/nft-abstract-art.jpg";
+import nftMusicCover from "@/assets/nft-music-producer.jpg";
+import nftAnimationFrame from "@/assets/nft-animation-scene.jpg";
+import nftVideoThumbnail from "@/assets/nft-film-production.jpg";
+import nftMechaPilot from "@/assets/nft-mecha-pilot.jpg";
+import nftDragonSpirit from "@/assets/nft-dragon-spirit.jpg";
+import nftSpaceExplorer from "@/assets/nft-space-explorer.jpg";
+import nftPixelWarrior from "@/assets/nft-pixel-warrior.jpg";
 
 const communityFavorites = [
   {
@@ -153,7 +157,7 @@ const additionalArtworks = [
     id: "mecha-pilot",
     name: "Mecha Pilot",
     creator: "RobotMaster",
-    image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
+    image: nftMechaPilot,
     description: "Elite mecha pilot design.",
     category: "Others",
     editionRemaining: "25",
@@ -174,7 +178,7 @@ const additionalArtworks = [
     id: "dragon-spirit",
     name: "Dragon Spirit",
     creator: "MysticDragon",
-    image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
+    image: nftDragonSpirit,
     description: "Mystical dragon companion.",
     category: "Digital Art",
     editionRemaining: "100",
@@ -216,7 +220,7 @@ const additionalArtworks = [
     id: "ai-waifu",
     name: "AI Waifu",
     creator: "AIArtist",
-    image: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png",
+    image: nftAIArt,
     description: "AI-generated anime character.",
     category: "AI Art",
     editionRemaining: "150",
@@ -237,7 +241,7 @@ const additionalArtworks = [
     id: "space-girl",
     name: "Space Girl",
     creator: "CosmicArt",
-    image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
+    image: nftSpaceExplorer,
     description: "Cosmic anime explorer.",
     category: "Digital Art",
     editionRemaining: "60",
@@ -279,7 +283,7 @@ const additionalArtworks = [
     id: "warrior-princess",
     name: "Abstract Dreams",
     creator: "ArtistX",
-    image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
+    image: nftOthers,
     description: "Experimental anime art blending surreal elements with traditional techniques.",
     category: "Others",
     editionRemaining: "25",
@@ -300,7 +304,7 @@ const additionalArtworks = [
     id: "digital-ninja",
     name: "8-Bit Warrior",
     creator: "PixelWizard",
-    image: "/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png",
+    image: nftPixelWarrior,
     description: "Classic retro pixel art character straight from the golden age of gaming.",
     category: "Pixel Art",
     editionRemaining: "200",
