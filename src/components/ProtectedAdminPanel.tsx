@@ -2,102 +2,51 @@ import React, { useState, useEffect } from 'react';
 import { AdminPanel } from './AdminPanel';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Lock, Eye, EyeOff } from "lucide-react";
+import { Lock, Shield } from "lucide-react";
+import { useAuth } from './AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 export const ProtectedAdminPanel = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const { user, session, loading, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
-  // Check if already authenticated (session storage)
-  useEffect(() => {
-    const authStatus = sessionStorage.getItem('admin_authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simple password check - you can make this more secure
-    if (password === 'anime2025') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('admin_authenticated', 'true');
-      setError('');
-    } else {
-      setError('Invalid password');
-      setPassword('');
-    }
+  const handleLogin = () => {
+    navigate('/auth');
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('admin_authenticated');
-    setPassword('');
-    // Go directly back to home page
+  const handleLogout = async () => {
     window.location.href = '/';
   };
 
-  if (isAuthenticated) {
+  if (loading) {
     return (
-      <div>
-        <div className="flex justify-end mb-4">
-          <Button onClick={handleLogout} variant="outline" size="sm">
-            ← Back to Home
-          </Button>
-        </div>
-        <AdminPanel />
+      <div className="container mx-auto p-6 max-w-md">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  return (
-    <div className="container mx-auto p-6 max-w-md">
-      <Card>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Lock className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <CardTitle>Admin Access</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Enter password to access admin panel
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
+  if (!user || !session) {
+    return (
+      <div className="container mx-auto p-6 max-w-md">
+        <Card>
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <Lock className="h-12 w-12 text-muted-foreground" />
             </div>
-            
-            <Button type="submit" className="w-full">
-              Access Admin Panel
+            <CardTitle>Authentication Required</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Please sign in to access the admin panel
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button onClick={handleLogin} className="w-full">
+              Sign In
             </Button>
             
             <div className="text-center">
@@ -105,9 +54,44 @@ export const ProtectedAdminPanel = () => {
                 <a href="/">Back to Home</a>
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto p-6 max-w-md">
+        <Card>
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <Shield className="h-12 w-12 text-destructive" />
+            </div>
+            <CardTitle>Access Denied</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Admin privileges required to access this panel
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button onClick={handleLogout} variant="outline" className="w-full">
+              Back to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Admin Panel</h1>
+        <Button onClick={handleLogout} variant="outline" size="sm">
+          ← Back to Home
+        </Button>
+      </div>
+      <AdminPanel />
     </div>
   );
 };

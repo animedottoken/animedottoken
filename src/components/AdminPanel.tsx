@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, XCircle, Eye, Clock, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from './AuthProvider';
 
 interface Submission {
   id: string;
@@ -28,6 +29,7 @@ export const AdminPanel = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { session } = useAuth();
 
   useEffect(() => {
     fetchSubmissions();
@@ -36,14 +38,24 @@ export const AdminPanel = () => {
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke('admin-list-submissions');
+      
+      if (!session) {
+        throw new Error('No authentication session');
+      }
+
+      const { data, error } = await supabase.functions.invoke('admin-list-submissions', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      
       if (error) throw error;
       setSubmissions(data?.submissions || []);
     } catch (error) {
       console.error('Error fetching submissions:', error);
       toast({
         title: "Error",
-        description: "Failed to load submissions",
+        description: "Failed to load submissions. Please check your permissions.",
         variant: "destructive"
       });
     } finally {
@@ -53,9 +65,17 @@ export const AdminPanel = () => {
 
   const updateSubmissionStatus = async (id: string, status: 'approved' | 'rejected') => {
     try {
+      if (!session) {
+        throw new Error('No authentication session');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-update-submission', {
         body: { id, status },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
+      
       if (error) throw error;
 
       const updated = data?.submission as Submission | null;
@@ -71,7 +91,7 @@ export const AdminPanel = () => {
       console.error('Error updating submission:', error);
       toast({
         title: "Error", 
-        description: "Failed to update submission",
+        description: "Failed to update submission. Please check your permissions.",
         variant: "destructive"
       });
     }
