@@ -22,6 +22,7 @@ import nftMechaPilot from "@/assets/nft-mecha-pilot.jpg";
 import nftDragonSpirit from "@/assets/nft-dragon-spirit.jpg";
 import nftSpaceExplorer from "@/assets/nft-space-explorer.jpg";
 import nftPixelWarrior from "@/assets/nft-pixel-warrior.jpg";
+import nftAIPortraitAlt from "@/assets/nft-ai-portrait-alt.jpg";
 
 const communityFavorites = [
   {
@@ -220,7 +221,7 @@ const additionalArtworks = [
     id: "ai-waifu",
     name: "AI Waifu",
     creator: "AIArtist",
-    image: nftAIArt,
+    image: nftAIPortraitAlt,
     description: "AI-generated anime character.",
     category: "AI Art",
     editionRemaining: "150",
