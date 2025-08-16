@@ -397,6 +397,7 @@ export function NFTGallery() {
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [showPurchasePopup, setShowPurchasePopup] = useState(false);
+  const [isMediaOverlayOpen, setIsMediaOverlayOpen] = useState(false);
 
   // Static site: no backend fetch
   useEffect(() => {
@@ -803,68 +804,7 @@ export function NFTGallery() {
                 <div className="group relative mx-auto h-[70vh] w-full">
                   <div 
                     className="h-full overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
-                    onClick={() => {
-                      const overlay = document.createElement('div');
-                      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
-                      
-                      // Add close button
-                      const closeBtn = document.createElement('button');
-                      closeBtn.innerHTML = '×';
-                      closeBtn.style.cssText = 'position:absolute;top:20px;right:30px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:40px;font-weight:bold;cursor:pointer;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);';
-                      closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(255,255,255,0.3)';
-                      closeBtn.onmouseout = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';
-                      
-                      const isVideo = selectedNFT.image.includes('video') || selectedNFT.image.includes('.mp4') || selectedNFT.image.includes('.webm') || selectedNFT.image.startsWith('data:video/');
-                      
-                      if (isVideo) {
-                        const video = document.createElement('video');
-                        video.src = selectedNFT.image;
-                        video.controls = true;
-                        video.autoplay = true;
-                        video.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
-                        overlay.appendChild(video);
-                      } else {
-                        const img = document.createElement('img');
-                        img.src = selectedNFT.image;
-                        img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
-                        overlay.appendChild(img);
-                      }
-                      
-                      overlay.appendChild(closeBtn);
-                      
-                      const closeOverlay = () => {
-                        if (overlay && overlay.parentNode) {
-                          overlay.parentNode.removeChild(overlay);
-                        }
-                        document.removeEventListener('keydown', handleKeyDown);
-                      };
-                      
-                       // Close on click (but not on media element)
-                       overlay.onclick = (e) => {
-                         e.stopPropagation();
-                         if (e.target === overlay) {
-                           closeOverlay();
-                         }
-                       };
-                      
-                       // Close button handler - fix event propagation
-                       closeBtn.onclick = (e) => {
-                         e.preventDefault();
-                         e.stopPropagation();
-                         closeOverlay();
-                       };
-                      
-                       // Close on Escape key
-                       const handleKeyDown = (e) => {
-                         if (e.key === 'Escape') {
-                           e.preventDefault();
-                           closeOverlay();
-                         }
-                       };
-                       document.addEventListener('keydown', handleKeyDown);
-                      
-                      document.body.appendChild(overlay);
-                    }}
+                    onClick={() => setIsMediaOverlayOpen(true)}
                   >
                     {selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/') ? (
                       <video 
@@ -1030,6 +970,28 @@ export function NFTGallery() {
                 </div>
               </div>
             </div>
+            )}
+
+            {isMediaOverlayOpen && selectedNFT && (
+              <div
+                className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+                onClick={(e) => {
+                  if (e.currentTarget === e.target) setIsMediaOverlayOpen(false)
+                }}
+              >
+                <button
+                  aria-label="Close fullscreen"
+                  onClick={(e) => { e.stopPropagation(); setIsMediaOverlayOpen(false); }}
+                  className="absolute top-5 right-6 rounded-full bg-white/20 hover:bg-white/30 text-white w-12 h-12 text-3xl leading-none"
+                >
+                  ×
+                </button>
+                {(selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/')) ? (
+                  <video src={selectedNFT.image} controls autoPlay className="max-w-[90%] max-h-[90%] object-contain" />
+                ) : (
+                  <img src={selectedNFT.image} alt={selectedNFT.name} className="max-w-[90%] max-h-[90%] object-contain" />
+                )}
+              </div>
             )}
           </div>
         </DialogContent>

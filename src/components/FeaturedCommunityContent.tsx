@@ -48,6 +48,7 @@ const emptySlots = [
 
 export function FeaturedCommunityContent() {
   const [selectedItem, setSelectedItem] = useState<typeof emptySlots[0] | null>(null);
+  const [isItemOverlayOpen, setIsItemOverlayOpen] = useState(false);
 
   return (
     <section className="mx-auto mt-16 max-w-5xl px-4 featured-community-content">
@@ -145,44 +146,7 @@ export function FeaturedCommunityContent() {
                 <div className="group relative">
                   <div 
                     className="aspect-square overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
-                    onClick={() => {
-                      const overlay = document.createElement('div');
-                      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
-                      
-                      const closeBtn = document.createElement('button');
-                      closeBtn.innerHTML = '×';
-                      closeBtn.style.cssText = 'position:absolute;top:20px;right:30px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:40px;font-weight:bold;cursor:pointer;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);';
-                      closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(255,255,255,0.3)';
-                      closeBtn.onmouseout = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';
-                      
-                      const img = document.createElement('img');
-                      img.src = selectedItem.placeholder;
-                      img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
-                      overlay.appendChild(img);
-                      overlay.appendChild(closeBtn);
-                      
-                      const closeOverlay = () => {
-                        if (overlay && overlay.parentNode) {
-                          overlay.parentNode.removeChild(overlay);
-                        }
-                        document.removeEventListener('keydown', handleKeyDown);
-                      };
-                      
-                      overlay.onclick = (e) => {
-                        if (e.target === overlay) closeOverlay();
-                      };
-                      
-                      closeBtn.onclick = closeOverlay;
-                      
-                      const handleKeyDown = (e) => {
-                        if (e.key === 'Escape') {
-                          closeOverlay();
-                          document.removeEventListener('keydown', handleKeyDown);
-                        }
-                      };
-                      document.addEventListener('keydown', handleKeyDown);
-                      document.body.appendChild(overlay);
-                    }}
+                    onClick={() => setIsItemOverlayOpen(true)}
                   >
                     <img 
                       src={selectedItem.placeholder}
@@ -219,6 +183,22 @@ export function FeaturedCommunityContent() {
                   </p>
                 </div>
               </div>
+            </div>
+          )}
+
+          {isItemOverlayOpen && selectedItem && (
+            <div
+              className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+              onClick={(e) => { if (e.currentTarget === e.target) setIsItemOverlayOpen(false); }}
+            >
+              <button
+                aria-label="Close fullscreen"
+                onClick={(e) => { e.stopPropagation(); setIsItemOverlayOpen(false); }}
+                className="absolute top-5 right-6 rounded-full bg-white/20 hover:bg-white/30 text-white w-12 h-12 text-3xl leading-none"
+              >
+                ×
+              </button>
+              <img src={selectedItem.placeholder} alt={selectedItem.title} className="max-w-[90%] max-h-[90%] object-contain" />
             </div>
           )}
         </DialogContent>
