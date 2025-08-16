@@ -620,9 +620,6 @@ const Index = () => {
         </p>
         <p className="mt-2">Disclaimer: Investing in cryptocurrency involves risk. This is not financial advice.</p>
         <p className="mt-2">Website created with <a href="https://lovable.dev/invite/f59fc72f-7a4c-44ba-9735-226d9f24e4b0" target="_blank" rel="noopener noreferrer sponsored" className="underline underline-offset-4">Lovable</a>.</p>
-        <p className="mt-4 text-xs">
-          <a href="/admin" className="text-muted-foreground hover:text-foreground transition-colors">Admin</a>
-        </p>
       </footer>
 
       <script type="application/ld+json">{JSON.stringify({

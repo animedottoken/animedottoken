@@ -421,22 +421,9 @@ useEffect(() => {
         </Button>
       </div>
 
-      {/* Additional Artworks Grid */}
+{/* Additional Artworks Grid */}
       {showMoreArtworks && (
-        <div className="relative">
-          {/* Admin Button - Top Right, Semi-visible */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              window.location.href = "/admin";
-            }}
-            className="absolute -top-12 right-0 z-10 opacity-30 hover:opacity-80 text-xs px-2 py-1 text-muted-foreground hover:text-primary transition-all duration-300 bg-background/50 hover:bg-primary/10 border border-border/30"
-            title="Admin Panel Access"
-          >
-            •••
-          </Button>
-          
+        <div className="relative">          
           {/* Category Filter Tags */}
           <div className="mb-6">
             {/* Main Content Categories */}
