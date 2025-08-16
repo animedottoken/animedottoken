@@ -56,8 +56,9 @@ const Index = () => {
   const shareUrls = useMemo(() => ({
     x: shareUrlX,
     telegram: shareUrlTelegram,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://animedottoken.com")}&quote=${encodeURIComponent(shareText)}`,
-  }), [shareUrlX, shareUrlTelegram, shareText]);
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePageUrl)}&quote=${encodeURIComponent(shareText)}`,
+    facebookDebugger: `https://developers.facebook.com/tools/debug/?q=${encodeURIComponent("https://animedottoken.com")}`,
+  }), [shareUrlX, shareUrlTelegram, sharePageUrl, shareText]);
 
   const copyShare = async () => {
     try {
@@ -457,6 +458,12 @@ const Index = () => {
                   <a href={shareUrls.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
                     <SiFacebook className="h-4 w-4" />
                     Share on Facebook
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href={shareUrls.facebookDebugger} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full text-xs text-muted-foreground">
+                    <SiFacebook className="h-3 w-3" />
+                    Refresh Facebook Cache
                   </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
