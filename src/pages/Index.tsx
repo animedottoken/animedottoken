@@ -16,6 +16,7 @@ import { NFTGallery } from "@/components/NFTGallery";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
+import { ChevronDown } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -287,7 +288,7 @@ const Index = () => {
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step1Open ? "Hide details" : "Show details"}</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step1Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} /></Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -312,7 +313,7 @@ const Index = () => {
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step2Open ? "Hide details" : "Show details"}</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step2Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} /></Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -332,7 +333,7 @@ const Index = () => {
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 3: Fund Your Wallet</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step3Open ? "Hide details" : "Show details"}</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step3Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step3Open ? "rotate-180" : ""}`} /></Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -354,7 +355,7 @@ const Index = () => {
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 4: Swap for $ANIME</span>
                 <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step4Open ? "Hide details" : "Show details"}</Button>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step4Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step4Open ? "rotate-180" : ""}`} /></Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -445,7 +446,7 @@ const Index = () => {
           {/* minimal link only */}
           <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"}</Button>
+              <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <p className="mt-2 text-xs text-muted-foreground">1) Download an image or all 2) Copy text 3) Post on X or Telegram (attach the image).</p>
@@ -519,7 +520,7 @@ const Index = () => {
 
           <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See less FAQs (Frequented Answers & Questions)" : "See more FAQs (Frequented Answers & Questions)"}</Button>
+              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See less FAQs (Frequented Answers & Questions)" : "See more FAQs (Frequented Answers & Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">

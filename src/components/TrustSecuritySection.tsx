@@ -90,7 +90,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             </ul>
             <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
               <CollapsibleTrigger asChild>
-                <Button variant="link" className="px-0">{detailsOpen ? "Hide details" : "Show details"}</Button>
+                <Button variant="link" className="px-0">{detailsOpen ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? "rotate-180" : ""}`} /></Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="mt-4">

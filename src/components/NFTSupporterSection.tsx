@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -128,7 +129,7 @@ export function NFTSupporterSection() {
                   >
                     <CollapsibleTrigger asChild>
                       <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                        {openDetails.includes(nft.id) ? "Show less" : "Show more"}
+                        {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-2">
