@@ -29,7 +29,8 @@ const communityFavorites = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "100",
-    likes: 2847
+    likes: 2847,
+    tags: ["Early Access", "Limited", "Badge", "Community", "Exclusive"]
   },
   {
     id: "founder", 
@@ -48,7 +49,8 @@ const communityFavorites = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "100",
-    likes: 1923
+    likes: 1923,
+    tags: ["Founder", "Invitation Only", "Leadership", "Premium", "Exclusive"]
   },
   {
     id: "ambassador",
@@ -67,7 +69,8 @@ const communityFavorites = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "1,000",
-    likes: 1456
+    likes: 1456,
+    tags: ["Ambassador", "Community", "Builder", "Earned", "Limited"]
   },
   {
     id: "hodler",
@@ -86,7 +89,8 @@ const communityFavorites = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "Unlimited",
-    likes: 998
+    likes: 998,
+    tags: ["Hodler", "Long-term", "ANIME", "Meme", "Investment"]
   }
 ];
 
@@ -108,7 +112,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "50",
-    likes: 10200
+    likes: 10200,
+    tags: ["Samurai", "Cyberpunk", "Futuristic", "Warrior", "Digital Art"]
   },
   {
     id: "neon-girl",
@@ -127,7 +132,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "75",
-    likes: 856
+    likes: 856,
+    tags: ["Neon", "Cyberpunk", "Girl", "AI Generated", "Exclusive"]
   },
   {
     id: "mecha-pilot",
@@ -146,7 +152,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "25",
-    likes: 643
+    likes: 643,
+    tags: ["Mecha", "Pilot", "Robot", "Elite", "Limited Edition"]
   },
   {
     id: "dragon-spirit",
@@ -165,7 +172,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "100",
-    likes: 1205
+    likes: 1205,
+    tags: ["Dragon", "Mystical", "Spirit", "Fantasy", "Companion"]
   },
   {
     id: "pixel-hero",
@@ -184,7 +192,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "200",
-    likes: 432
+    likes: 432,
+    tags: ["Pixel Art", "Retro", "Hero", "8-bit", "Nostalgic"]
   },
   {
     id: "ai-waifu",
@@ -203,7 +212,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "150",
-    likes: 789
+    likes: 789,
+    tags: ["Waifu", "AI Generated", "Anime", "Character", "Exclusive"]
   },
   {
     id: "space-girl",
@@ -222,7 +232,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "60",
-    likes: 567
+    likes: 567,
+    tags: ["Space", "Cosmic", "Explorer", "Sci-Fi", "Adventure"]
   },
   {
     id: "meme-cat",
@@ -241,7 +252,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "500",
-    likes: 2156
+    likes: 2156,
+    tags: ["Meme", "Cat", "Funny", "Popular", "Viral"]
   },
   {
     id: "warrior-princess",
@@ -260,7 +272,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: false,
     maxSupply: "80",
-    likes: 345
+    likes: 345,
+    tags: ["Warrior", "Princess", "Fierce", "Medieval", "Strong"]
   },
   {
     id: "digital-ninja",
@@ -279,7 +292,8 @@ const additionalArtworks = [
     isLimited: true,
     isExclusive: true,
     maxSupply: "40",
-    likes: 892
+    likes: 892,
+    tags: ["Ninja", "Digital", "Stealth", "Cyber", "Limited Edition"]
   }
 ];
 
