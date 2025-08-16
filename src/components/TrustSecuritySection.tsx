@@ -131,7 +131,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                       Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
                     </p>
                     <div className="bg-muted/50 p-3 rounded-lg">
-                      <p className="text-sm font-medium text-foreground mb-2">View the Fund live on Solscan:</p>
                       <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
                         <span className="text-muted-foreground break-all">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
                         <Button
@@ -151,7 +150,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild variant="hero">
                 <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
-                  View the Revival Wallet
+                  View Ecosystem Fund on Solscan
                 </a>
               </Button>
               <Button asChild variant="outline">
