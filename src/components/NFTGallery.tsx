@@ -30,7 +30,8 @@ const communityFavorites = [
     isExclusive: true,
     maxSupply: "100",
     likes: 2847,
-    tags: ["image", "AI Art", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["AI Art", "Digital Art", "Limited"]
   },
   {
     id: "founder", 
@@ -50,7 +51,8 @@ const communityFavorites = [
     isExclusive: true,
     maxSupply: "100",
     likes: 1923,
-    tags: ["image", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Digital Art", "Limited"]
   },
   {
     id: "ambassador",
@@ -70,7 +72,8 @@ const communityFavorites = [
     isExclusive: false,
     maxSupply: "1,000",
     likes: 1456,
-    tags: ["image", "Others", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Others", "Digital Art", "Limited"]
   },
   {
     id: "hodler",
@@ -90,7 +93,8 @@ const communityFavorites = [
     isExclusive: false,
     maxSupply: "Unlimited",
     likes: 998,
-    tags: ["image", "Meme", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Meme", "Digital Art", "Limited"]
   }
 ];
 
@@ -113,7 +117,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "50",
     likes: 10200,
-    tags: ["image", "Digital Art", "AI Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Digital Art", "AI Art", "Limited"]
   },
   {
     id: "neon-girl",
@@ -133,7 +138,8 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "75",
     likes: 856,
-    tags: ["image", "AI Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["AI Art", "Limited"]
   },
   {
     id: "mecha-pilot",
@@ -153,7 +159,8 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "25",
     likes: 643,
-    tags: ["image", "Others", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Others", "Digital Art", "Limited"]
   },
   {
     id: "dragon-spirit",
@@ -173,7 +180,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "100",
     likes: 1205,
-    tags: ["image", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Digital Art", "Limited"]
   },
   {
     id: "pixel-hero",
@@ -193,7 +201,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "200",
     likes: 432,
-    tags: ["image", "Pixel Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Pixel Art", "Limited"]
   },
   {
     id: "ai-waifu",
@@ -213,7 +222,8 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "150",
     likes: 789,
-    tags: ["image", "AI Art", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["AI Art", "Digital Art", "Limited"]
   },
   {
     id: "space-girl",
@@ -233,7 +243,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "60",
     likes: 567,
-    tags: ["image", "Digital Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Digital Art", "Limited"]
   },
   {
     id: "meme-cat",
@@ -253,7 +264,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "500",
     likes: 2156,
-    tags: ["image", "Meme"]
+    mandatoryTag: "Image",
+    optionalTags: ["Meme", "Limited"]
   },
   {
     id: "warrior-princess",
@@ -273,7 +285,8 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "80",
     likes: 345,
-    tags: ["image", "Others"]
+    mandatoryTag: "Image",
+    optionalTags: ["Others", "Limited"]
   },
   {
     id: "digital-ninja",
@@ -293,7 +306,8 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "40",
     likes: 892,
-    tags: ["image", "Pixel Art"]
+    mandatoryTag: "Image",
+    optionalTags: ["Pixel Art", "Limited"]
   }
 ];
 
@@ -301,22 +315,21 @@ export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
-  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [activeMandatoryTag, setActiveMandatoryTag] = useState<string>("All");
+  const [selectedOptionalTags, setSelectedOptionalTags] = useState<Set<string>>(new Set());
+  const [showMyFavorites, setShowMyFavorites] = useState(false);
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
-const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
-// Static site: no backend fetch
-useEffect(() => {
-  setApprovedSubmissions([]);
-  setLoadingSubmissions(false);
-}, []);
+  // Static site: no backend fetch
+  useEffect(() => {
+    setApprovedSubmissions([]);
+    setLoadingSubmissions(false);
+  }, []);
 
-// Main content categories
-  const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Others"];
-  // Special attributes that can be combined with main categories
-  const attributeCategories = ["Limited", "My Favorites"];
-  
-  const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set());
+  // Tag definitions
+  const mandatoryTags = ["All", "Image", "Video", "Animation", "Music", "Other"];
+  const optionalTags = ["Digital Art", "AI Art", "Meme", "Pixel Art", "Others", "Limited"];
 
   // Community Favorites always show all items (no filtering)
   // Combine additional artworks with approved community submissions, sorted by date
@@ -327,25 +340,22 @@ useEffect(() => {
     ...additionalArtworks
   ];
   
-  // Only filter additional artworks (including community submissions)
+  // Filter logic for additional artworks
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
-    const matchesCategory = activeCategory === "All" || nft.category === activeCategory;
+    // Check mandatory tag filter
+    const matchesMandatory = activeMandatoryTag === "All" || nft.mandatoryTag === activeMandatoryTag;
     
-    // Check if artwork matches ALL selected attributes (AND logic)
-    if (selectedAttributes.size === 0) {
-      return matchesCategory; // No attributes selected, just match category
-    }
+    // Check optional tag filters (must match ALL selected)
+    const matchesOptional = selectedOptionalTags.size === 0 || 
+      Array.from(selectedOptionalTags).every(tag => {
+        if (tag === "Limited") return nft.isLimited;
+        return nft.optionalTags?.includes(tag);
+      });
     
-    let matchesAllAttributes = true;
+    // Check My Favorites filter
+    const matchesFavorites = !showMyFavorites || likedNFTs.has(nft.id);
     
-    if (selectedAttributes.has("Limited") && !nft.isLimited) {
-      matchesAllAttributes = false;
-    }
-    if (selectedAttributes.has("My Favorites") && !likedNFTs.has(nft.id)) {
-      matchesAllAttributes = false;
-    }
-    
-    return matchesCategory && matchesAllAttributes;
+    return matchesMandatory && matchesOptional && matchesFavorites;
   });
   
   const handleLike = (nftId: string, e: React.MouseEvent) => {
@@ -461,16 +471,19 @@ useEffect(() => {
                         <span className="text-lg">{rankIcons[index]}</span>
                       </div>
                     </div>
-                    <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
-                        Sample
-                      </Badge>
-                      {nft.isLimited && (
-                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                          Limited
-                        </Badge>
-                      )}
-                    </div>
+                     <div className="absolute top-2 right-2 flex flex-col gap-1">
+                       <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                         Sample
+                       </Badge>
+                       <Badge variant="outline" className="bg-background/90 text-primary border-primary/30 text-xs">
+                         {nft.mandatoryTag}
+                       </Badge>
+                       {nft.isLimited && (
+                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                           Limited
+                         </Badge>
+                       )}
+                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-white text-sm">{nft.creator}</h3>
@@ -508,59 +521,84 @@ useEffect(() => {
 {/* Additional Artworks Grid */}
       {showMoreArtworks && (
         <div className="relative">          
-          {/* Category Filter Tags */}
-          <div className="mb-6">
-            {/* Main Content Categories */}
-            <div className="flex flex-wrap justify-center gap-2 mb-4">
-              {mainCategories.map((category) => (
-                <Button
-                  key={category}
-                  variant={activeCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveCategory(category)}
-                  className={`
-                    transition-all duration-200 
-                    ${activeCategory === category 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
-                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                    }
-                  `}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-            
-            {/* Attribute Tags */}
-            <div className="flex flex-wrap justify-center gap-2">
-              {attributeCategories.map((attribute) => (
-                <Button
-                  key={attribute}
-                  variant={selectedAttributes.has(attribute) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    const newAttributes = new Set(selectedAttributes);
-                    if (selectedAttributes.has(attribute)) {
-                      newAttributes.delete(attribute);
-                    } else {
-                      newAttributes.add(attribute);
-                    }
-                    setSelectedAttributes(newAttributes);
-                  }}
+          {/* Tags Filter */}
+          <div className="mb-6 space-y-4">
+            {/* Mandatory Tags */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Tags</h4>
+              <div className="flex flex-wrap justify-center gap-2">
+                {mandatoryTags.map((tag) => (
+                  <Button
+                    key={tag}
+                    variant={activeMandatoryTag === tag ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setActiveMandatoryTag(tag)}
                     className={`
                       transition-all duration-200 
-                      ${selectedAttributes.has(attribute)
+                      ${activeMandatoryTag === tag 
+                        ? 'bg-primary text-primary-foreground shadow-md' 
+                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                      }
+                    `}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Optional Tags */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Optional Tags (max 3)</h4>
+              <div className="flex flex-wrap justify-center gap-2">
+                {optionalTags.map((tag) => (
+                  <Button
+                    key={tag}
+                    variant={selectedOptionalTags.has(tag) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const newTags = new Set(selectedOptionalTags);
+                      if (selectedOptionalTags.has(tag)) {
+                        newTags.delete(tag);
+                      } else if (selectedOptionalTags.size < 3) {
+                        newTags.add(tag);
+                      } else {
+                        toast.error("Maximum 3 optional tags allowed");
+                        return;
+                      }
+                      setSelectedOptionalTags(newTags);
+                    }}
+                    className={`
+                      transition-all duration-200 
+                      ${selectedOptionalTags.has(tag)
                         ? 'bg-primary text-primary-foreground shadow-md'
                         : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
                       }
                     `}
-                >
-                  {attribute}
-                </Button>
-              ))}
-              
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
             </div>
-            
+
+            {/* My Favorites Filter */}
+            <div className="flex justify-center">
+              <Button
+                variant={showMyFavorites ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMyFavorites(!showMyFavorites)}
+                className={`
+                  transition-all duration-200 
+                  ${showMyFavorites
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                  }
+                `}
+              >
+                My Favorites
+              </Button>
+            </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
@@ -591,16 +629,19 @@ useEffect(() => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   )}
-                    <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
-                        Sample
-                      </Badge>
-                      {nft.isLimited && (
-                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
-                          Limited
-                        </Badge>
-                      )}
-                    </div>
+                     <div className="absolute top-2 right-2 flex flex-col gap-1">
+                       <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                         Sample
+                       </Badge>
+                       <Badge variant="outline" className="bg-background/90 text-primary border-primary/30 text-xs">
+                         {nft.mandatoryTag}
+                       </Badge>
+                       {nft.isLimited && (
+                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                           Limited
+                         </Badge>
+                       )}
+                     </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
                     <div className="flex items-center justify-between">
                       <h3 className="font-bold text-white text-xs">{nft.creator}</h3>
@@ -804,18 +845,34 @@ useEffect(() => {
                 </div>
 
                 {/* Tags */}
-                {(selectedNFT as any).tags && (selectedNFT as any).tags.length > 0 && (
-                  <div>
-                    <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
-                    <div className="flex flex-wrap gap-2">
-                      {(selectedNFT as any).tags.map((tag: string, idx: number) => (
-                        <Badge key={idx} variant="outline" className="text-sm">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                <div>
+                  <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="default" className="text-sm">
+                      {selectedNFT.mandatoryTag}
+                    </Badge>
+                    {selectedNFT.optionalTags?.map((tag: string, idx: number) => (
+                      <Badge key={idx} variant="outline" className="text-sm">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                )}
+                </div>
+                
+                {/* Like Button in Modal */}
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                    className="flex items-center gap-2"
+                  >
+                    <Heart 
+                      className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
+                    />
+                    {likedNFTs.has(selectedNFT.id) ? 'Liked' : 'Like'} ({formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))})
+                  </Button>
+                </div>
 
                 {/* Additional Info for Community Uploads */}
                 {(selectedNFT as any).authorBio && (
