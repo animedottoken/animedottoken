@@ -63,27 +63,32 @@ export function FeaturedCommunityContent() {
       {/* Static placeholders only (no backend) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {emptySlots.map((emptySlot, index) => (
-          <div key={`empty-${index}`} className="group relative overflow-hidden rounded-lg border bg-card/50 border-dashed">
-            <div className="aspect-square overflow-hidden relative">
-              <img
-                src={emptySlot.placeholder}
-                alt={emptySlot.sample ? (emptySlot.type === "post" ? "Sample social post" : "Sample anime meme") : "Community submission placeholder"}
-                className="w-full h-full object-cover opacity-30"
-                loading="lazy"
-                decoding="async"
-              />
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
-                <div className="mb-3">
-                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-lg font-semibold text-foreground">{emptySlot.overlay}</p>
+            <div key={`empty-${index}`} className="group relative overflow-hidden rounded-lg border bg-card/50 border-dashed">
+              <div className="aspect-square overflow-hidden relative">
+                {emptySlot.sample && (
+                  <span className="absolute top-3 left-3 z-10 rounded-full bg-primary/90 text-primary-foreground text-xs font-medium px-2 py-1">
+                    Sample
+                  </span>
+                )}
+                <img
+                  src={emptySlot.placeholder}
+                  alt={emptySlot.sample ? (emptySlot.type === "post" ? "Sample social post" : "Sample anime meme") : "Community submission placeholder"}
+                  className={`w-full h-full object-cover ${emptySlot.sample ? "opacity-70" : "opacity-30"}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-background/70 flex flex-col items-center justify-center text-center p-4">
+                  <div className="mb-3">
+                    <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-lg font-semibold text-foreground">{emptySlot.overlay}</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {emptySlot.cta}
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {emptySlot.cta}
-                </p>
               </div>
-            </div>
             
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
