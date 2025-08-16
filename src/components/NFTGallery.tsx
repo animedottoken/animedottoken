@@ -887,9 +887,9 @@ export function NFTGallery() {
                 <div>
                   <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="default" className="text-sm">
-                      {selectedNFT.mandatoryTag}
-                    </Badge>
+                     <Badge variant="secondary" className="text-sm">
+                       {selectedNFT.mandatoryTag}
+                     </Badge>
                     {selectedNFT.optionalTags?.map((tag: string, idx: number) => (
                       <Badge key={idx} variant="outline" className="text-sm">
                         {tag}
