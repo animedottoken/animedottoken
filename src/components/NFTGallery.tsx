@@ -768,8 +768,8 @@ export function NFTGallery() {
 
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-6xl h-[95vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
           </DialogHeader>
           
@@ -796,7 +796,7 @@ export function NFTGallery() {
           )}
           
           {selectedNFT && (
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 flex-1 overflow-y-auto">{/* This container will scroll internally if needed */}
               {/* Image Section - takes 2 columns for more space */}
               <div className="md:col-span-2 space-y-4">
                 <div className="group relative max-w-lg mx-auto">
