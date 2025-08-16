@@ -787,17 +787,6 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Price - More Prominent */} 
-                <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-4">
-                  <span className="font-semibold text-sm text-muted-foreground block mb-1">Price</span>
-                  <div className="space-y-1">
-                    <p className="text-2xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
-                    {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
-                      <p className="text-sm text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
-                    )}
-                  </div>
-                </div>
-
                 {/* Max Supply and Likes Group */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -834,6 +823,19 @@ useEffect(() => {
                     <p className="text-sm bg-muted p-3 rounded-md">{(selectedNFT as any).authorBio}</p>
                   </div>
                 )}
+
+                {/* Price - Bottom Right like webshops */} 
+                <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-4 mt-6">
+                  <div className="flex justify-between items-end">
+                    <span className="font-semibold text-sm text-muted-foreground">Price</span>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
+                      {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
+                        <p className="text-sm text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
