@@ -625,7 +625,7 @@ useEffect(() => {
 
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
           </DialogHeader>
@@ -634,29 +634,29 @@ useEffect(() => {
           {selectedNFT && (
             <>
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
+                size="icon"
                 onClick={() => navigateToNFT('prev')}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background border border-border/50"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-6 h-6" />
               </Button>
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
+                size="icon"
                 onClick={() => navigateToNFT('next')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background border border-border/50"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-6 h-6" />
               </Button>
             </>
           )}
           
           {selectedNFT && (
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Image Section */}
-              <div className="space-y-4">
-                <div className="group relative">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Image Section - takes 2 columns for more space */}
+              <div className="md:col-span-2 space-y-4">
+                <div className="group relative max-w-lg mx-auto">
                   <div 
                     className="aspect-square overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
                     onClick={() => {
@@ -731,11 +731,11 @@ useEffect(() => {
                       />
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">Click to view fullscreen</p>
+                  <p className="text-xs text-muted-foreground text-center mt-2">Click to view fullscreen</p>
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 max-w-lg mx-auto">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -775,66 +775,63 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Details Section */}
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">{selectedNFT.name}</h2>
-                  <p className="text-muted-foreground mb-4">{selectedNFT.description}</p>
+              {/* Details Section - takes 1 column, more narrow */}
+              <div className="space-y-6">
+                {/* Name, Description, Creator Group */}
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
+                  <p className="text-muted-foreground">{selectedNFT.description}</p>
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block">Created by</span>
+                    <p className="text-lg font-medium">{selectedNFT.creator}</p>
+                  </div>
                 </div>
 
-                {/* Info Grid */}
+                {/* Price - More Prominent */} 
+                <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-4">
+                  <span className="font-semibold text-sm text-muted-foreground block mb-1">Price</span>
+                  <div className="space-y-1">
+                    <p className="text-2xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
+                    {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
+                      <p className="text-sm text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Max Supply and Likes Group */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Creator</span>
-                      <p className="text-lg">{selectedNFT.creator}</p>
-                    </div>
-                    
-                    <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Max supply</span>
-                      <p>{selectedNFT.maxSupply}</p>
-                    </div>
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block">Max supply</span>
+                    <p className="text-lg font-medium">{selectedNFT.maxSupply}</p>
                   </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Price</span>
-                      <div className="space-y-1">
-                        <p className="text-lg font-semibold">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
-                        {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
-                          <p className="text-sm text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Likes</span>
-                      <div className="flex items-center gap-2">
-                        <Heart className="w-4 h-4 text-red-500" />
-                        <span className="font-semibold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
-                      </div>
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block">Likes</span>
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-red-500" />
+                      <span className="text-lg font-medium">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
                     </div>
                   </div>
                 </div>
+
+                {/* Tags */}
+                {(selectedNFT as any).tags && (selectedNFT as any).tags.length > 0 && (
+                  <div>
+                    <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
+                    <div className="flex flex-wrap gap-2">
+                      {(selectedNFT as any).tags.map((tag: string, idx: number) => (
+                        <Badge key={idx} variant="outline" className="text-sm">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Additional Info for Community Uploads */}
                 {(selectedNFT as any).authorBio && (
                   <div>
                     <span className="font-semibold text-sm text-muted-foreground block mb-1">Artist Bio</span>
                     <p className="text-sm bg-muted p-3 rounded-md">{(selectedNFT as any).authorBio}</p>
-                  </div>
-                )}
-
-                {(selectedNFT as any).tags && (selectedNFT as any).tags.length > 0 && (
-                  <div>
-                    <span className="font-semibold text-sm text-muted-foreground block mb-2">Tags</span>
-                    <div className="flex flex-wrap gap-1">
-                      {(selectedNFT as any).tags.map((tag: string, idx: number) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
                   </div>
                 )}
               </div>
