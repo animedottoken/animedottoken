@@ -1,12 +1,18 @@
 import { Helmet } from "react-helmet-async";
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useMemo } from "react";
 import JSZip from "jszip";
 import heroOptimized from "@/assets/hero-optimized.webp";
 
-// Lazy load heavy components  
-const NFTGallery = lazy(() => import("@/components/NFTGallery").then(m => ({ default: m.NFTGallery })));
-const MarketCapChart = lazy(() => import("@/components/MarketCapChart").then(m => ({ default: m.MarketCapChart })));
-const FeaturedCommunityContent = lazy(() => import("@/components/FeaturedCommunityContent").then(m => ({ default: m.FeaturedCommunityContent })));
+// Lazy load heavy components with higher priority for desktop
+const NFTGallery = lazy(() => 
+  import("@/components/NFTGallery").then(m => ({ default: m.NFTGallery }))
+);
+const MarketCapChart = lazy(() => 
+  import("@/components/MarketCapChart").then(m => ({ default: m.MarketCapChart }))
+);
+const FeaturedCommunityContent = lazy(() => 
+  import("@/components/FeaturedCommunityContent").then(m => ({ default: m.FeaturedCommunityContent }))
+);
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +48,12 @@ const Index = () => {
   const shareText = "I just joined the @AnimeDotToken movement on #Solana. A community-revived project building the #1 global hub for #anime culture. Check out the vision and get involved! #ANIMEtoken $ANIME";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(sharePageUrl)}&text=${encodeURIComponent(shareText)}`;
+
+  // Memoize expensive computations for better performance
+  const shareUrls = useMemo(() => ({
+    x: shareUrlX,
+    telegram: shareUrlTelegram,
+  }), [shareUrlX, shareUrlTelegram]);
 
   const copyShare = async () => {
     try {
@@ -128,6 +140,8 @@ const Index = () => {
     { src: "/lovable-uploads/b27ad849-b843-4ef7-b5af-3a941e9f0789.png", filename: "anime-token-banner-black.png", alt: "Black ANIME Token banner" },
     { src: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png", filename: "anime-token-hooded-heroes-banner-2.png", alt: "ANIME.TOKEN banner with hooded figure and heroes variant" },
   ];
+
+  const memoizedPromoImages = useMemo(() => promoImages, []);
   
   const downloadAllPromo = async () => {
     try {
@@ -420,7 +434,7 @@ const Index = () => {
               <h3 id="share-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
               <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Button asChild variant="glass">
-                  <a href={shareUrlX} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                  <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
                     <SiX className="h-4 w-4" aria-hidden="true" />
                     Share on X/Twitter
                   </a>
@@ -435,7 +449,7 @@ const Index = () => {
               <h3 id="share-community" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Community</h3>
               <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Button asChild variant="glass">
-                  <a href={shareUrlTelegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                  <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
                     <SiTelegram className="h-4 w-4" aria-hidden="true" />
                     Share on Telegram
                   </a>
@@ -507,7 +521,7 @@ const Index = () => {
                 </Button>
               </div>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
-                {promoImages.map((img) => (
+                {memoizedPromoImages.map((img) => (
                   <article key={img.src} className="rounded-md border bg-card/50 p-3">
                     <img 
                       src={img.src} 
