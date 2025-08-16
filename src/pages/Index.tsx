@@ -26,7 +26,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
-import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
+import { SiX, SiTelegram, SiDiscord, SiFacebook } from "react-icons/si";
 import { ChevronDown, Copy, Share } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
@@ -82,49 +82,6 @@ const Index = () => {
     });
   };
 
-  const copyForTikTok = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
-    toast("Copied for TikTok", {
-      description: "Paste the text into your post.",
-      action: {
-        label: "Open TikTok",
-        onClick: () => window.open("https://www.tiktok.com/tiktokstudio/upload", "_blank"),
-      },
-    });
-  };
-
-  const copyForInstagram = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
-    toast("Copied for Instagram", {
-      description: "Paste the text into your caption.",
-      action: {
-        label: "Open Instagram",
-        onClick: () => window.open("https://www.instagram.com/create/select/", "_blank"),
-      },
-    });
-  };
-
-  const copyForFacebook = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
-    toast("Copied for Facebook", {
-      description: "Paste the text into your post.",
-      action: {
-        label: "Open Facebook",
-        onClick: () => window.open("https://www.facebook.com/anime.token", "_blank"),
-      },
-    });
-  };
-
-  const copyForYouTube = async () => {
-    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
-    toast("Copied for YouTube", {
-      description: "Paste the text into your video description.",
-      action: {
-        label: "Open YouTube",
-        onClick: () => window.open("https://www.youtube.com/upload", "_blank"),
-      },
-    });
-  };
 
   // Optimize images with intersection observer for better mobile performance
   useEffect(() => {
@@ -471,7 +428,7 @@ const Index = () => {
             <Button asChild variant="glass" size="lg">
               <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
                 <SiX className="h-5 w-5" />
-                Share on Twitter
+                Share on X (Twitter)
               </a>
             </Button>
             
@@ -501,18 +458,6 @@ const Index = () => {
                     <SiFacebook className="h-4 w-4" />
                     Share on Facebook
                   </a>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={copyForInstagram} className="inline-flex items-center gap-2">
-                  <SiInstagram className="h-4 w-4" />
-                  Copy for Instagram
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={copyForTikTok} className="inline-flex items-center gap-2">
-                  <SiTiktok className="h-4 w-4" />
-                  Copy for TikTok
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={copyForYouTube} className="inline-flex items-center gap-2">
-                  <SiYoutube className="h-4 w-4" />
-                  Copy for YouTube
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
                   <Copy className="h-4 w-4" />
@@ -673,9 +618,8 @@ const Index = () => {
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />Twitter (X)</a></Button>
+              <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />X (Twitter)</a></Button>
               <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
-              <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/?hl=en" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
             </div>
           </div>
           <div aria-labelledby="join-community">
@@ -683,13 +627,6 @@ const Index = () => {
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
               <Button asChild variant="glass"><a href="https://discord.gg/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
-            </div>
-          </div>
-          <div aria-labelledby="join-video">
-            <h3 id="join-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
-            <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
-              <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
             </div>
           </div>
         </div>
@@ -719,10 +656,7 @@ const Index = () => {
           'https://x.com/AnimeDotToken',
           'https://www.facebook.com/anime.token',
           'https://t.me/AnimeDotTokenCommunity',
-          'https://discord.gg/HmSJdT5MRX',
-          'https://www.tiktok.com/@animedottoken',
-          'https://www.instagram.com/animedottoken/',
-          'https://www.youtube.com/@AnimeDotToken'
+          'https://discord.gg/HmSJdT5MRX'
         ]
       })}</script>
     </main>
