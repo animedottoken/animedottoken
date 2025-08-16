@@ -108,7 +108,7 @@ const Index = () => {
       description: "Paste the text into your post.",
       action: {
         label: "Open Facebook",
-        onClick: () => window.open(shareUrls.facebook, "_blank"),
+        onClick: () => window.open("https://www.facebook.com/anime.token", "_blank"),
       },
     });
   };
@@ -669,7 +669,7 @@ const Index = () => {
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />Twitter (X)</a></Button>
-              <Button asChild variant="glass"><a href="https://www.facebook.com/animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
+              <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
               <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/?hl=en" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
             </div>
           </div>
@@ -712,7 +712,7 @@ const Index = () => {
         url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080',
         sameAs: [
           'https://x.com/AnimeDotToken',
-          'https://www.facebook.com/animedottoken',
+          'https://www.facebook.com/anime.token',
           'https://t.me/AnimeDotTokenCommunity',
           'https://discord.gg/HmSJdT5MRX',
           'https://www.tiktok.com/@animedottoken',
