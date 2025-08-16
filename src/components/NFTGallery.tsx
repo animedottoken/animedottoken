@@ -798,7 +798,7 @@ export function NFTGallery() {
             )}
             
             {selectedNFT && (
-              <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden">
+              <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden min-h-0">
                 {/* Image Section */}
                 <div className="lg:col-span-2 space-y-3">
                   <div className="group relative mx-auto h-[50vh] lg:h-[70vh] w-full">
@@ -880,9 +880,9 @@ export function NFTGallery() {
                 </div>
 
                 {/* Details Section */}
-                <div className="flex flex-col h-full max-h-[70vh] overflow-auto pr-2">
+                <div className="flex flex-col h-full max-h-[70vh] min-h-0 overflow-hidden">
                   {/* Always Visible Info */}
-                  <div className="space-y-3 pb-4 border-b border-border/50">
+                  <div className="flex-shrink-0 space-y-3 pb-4 border-b border-border/50">
                     <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
                     <p className="text-muted-foreground">{selectedNFT.description}</p>
                     <div className="flex items-center gap-2">
@@ -907,7 +907,7 @@ export function NFTGallery() {
                   </div>
 
                   {/* Scrollable content area */}
-                  <div className="space-y-4 pt-4">
+                  <div className="flex-1 overflow-auto space-y-4 pt-4 pr-2">
                     {/* Tags */}
                     <div>
                       <span className="text-sm text-muted-foreground block mb-2">Tags</span>
