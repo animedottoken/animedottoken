@@ -72,12 +72,13 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { state, open } = useSidebar();
+  const isCollapsed = state === "collapsed" || !open;
 
   return (
     <Sidebar
       collapsible="icon"
+      className={isCollapsed ? "w-16" : "w-64"}
     >
       <SidebarContent>
         <SidebarGroup>
@@ -92,9 +93,10 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    tooltip={isCollapsed ? item.title : undefined}
                   >
                     <div onClick={item.onClick} className="flex items-center">
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4 shrink-0" />
                       {!isCollapsed && <span className="ml-2">{item.title}</span>}
                     </div>
                   </SidebarMenuButton>
