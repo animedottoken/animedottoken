@@ -725,8 +725,13 @@ useEffect(() => {
                   <Button 
                     variant="outline" 
                     size="sm"
-onClick={() => {
-                      if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
+                    onClick={() => {
+                      // Check if this is a sample NFT (contains "SAMPLE" in name)
+                      if (selectedNFT.name.includes("SAMPLE")) {
+                        toast.info("Sample NFT", {
+                          description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
+                        });
+                      } else if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
                         window.open(selectedNFT.metadataUrl, '_blank');
                       } else {
                         toast.error("No Solscan link available", {
@@ -735,10 +740,10 @@ onClick={() => {
                       }
                     }}
                     className="flex-1"
-                    disabled={!selectedNFT.metadataUrl || selectedNFT.metadataUrl === "#"}
+                    disabled={false}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    {selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#" ? "SAMPLE - Will be real Solscan link" : "SAMPLE - No Solscan link"}
+                    View on Solscan
                   </Button>
                   <Button 
                     variant="outline" 
