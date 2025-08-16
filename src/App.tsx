@@ -16,7 +16,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={false}>
           <div className="min-h-screen flex w-full">
             {/* Global trigger that is ALWAYS visible */}
             <header className="fixed top-4 left-4 z-50">
