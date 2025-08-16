@@ -2,9 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
-import { ExternalLink, ChevronDown } from "lucide-react";
+import { ExternalLink, ChevronDown, Copy } from "lucide-react";
 import { useState } from "react";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
+import { toast } from "sonner";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
@@ -132,14 +133,18 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                     </p>
                     <div className="bg-muted/50 p-3 rounded-lg">
                       <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
-                        <span className="text-muted-foreground break-all">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
+                        <span className="text-muted-foreground break-all flex-1">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
                         <Button
                           size="sm"
-                          variant="outline"
-                          onClick={() => navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8')}
+                          variant="ghost"
+                          className="h-8 w-8 p-0 hover:bg-muted"
+                          onClick={async () => {
+                            await navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8');
+                            toast.success("Address copied to clipboard!");
+                          }}
                           aria-label="Copy wallet address to clipboard"
                         >
-                          Copy Address
+                          <Copy className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
