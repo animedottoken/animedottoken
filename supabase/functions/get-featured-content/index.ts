@@ -18,21 +18,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    // Get featured content with submission details using public view
+    // Get featured content with submission details
+    // We'll join manually since the view relationship might not work as expected
     const { data: featuredContent, error } = await supabaseClient
       .from('featured_content')
-      .select(`
-        position,
-        featured_at,
-        public_submissions (
-          id,
-          image_url,
-          caption,
-          author,
-          type,
-          created_at
-        )
-      `)
+      .select('position, featured_at, submission_id')
       .order('position')
 
     if (error) {
@@ -43,16 +33,36 @@ serve(async (req) => {
       })
     }
 
+    // Get submission details from the public view
+    const submissionIds = featuredContent?.map(item => item.submission_id) || []
+    const { data: submissions, error: submissionsError } = await supabaseClient
+      .from('public_submissions')
+      .select('id, image_url, caption, author, type, created_at')
+      .in('id', submissionIds)
+
+    if (submissionsError) {
+      console.error('Error fetching submissions:', submissionsError)
+      return new Response(JSON.stringify({ error: submissionsError.message }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     // Transform the data to match expected format
-    const transformedData = featuredContent?.map(item => ({
-      id: item.public_submissions.id,
-      image: item.public_submissions.image_url,
-      caption: item.public_submissions.caption,
-      author: item.public_submissions.author,
-      type: item.public_submissions.type,
-      position: item.position,
-      featured_at: item.featured_at
-    })) || []
+    const transformedData = featuredContent?.map(featuredItem => {
+      const submission = submissions?.find(sub => sub.id === featuredItem.submission_id)
+      if (!submission) return null
+      
+      return {
+        id: submission.id,
+        image: submission.image_url,
+        caption: submission.caption,
+        author: submission.author,
+        type: submission.type,
+        position: featuredItem.position,
+        featured_at: featuredItem.featured_at
+      }
+    }).filter(Boolean) || []
 
     return new Response(JSON.stringify(transformedData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
