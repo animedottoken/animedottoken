@@ -32,7 +32,7 @@ export function LiveStatsCounter() {
       color: "text-accent",
       button: (
         <Button asChild variant="glass" size="sm">
-          <a href="https://discord.gg/EZ9wRhjr" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+          <a href="https://discord.gg/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
             <SiDiscord className="h-4 w-4" aria-hidden="true" />
             Join Discord
           </a>

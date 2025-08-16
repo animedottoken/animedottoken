@@ -936,7 +936,7 @@ export function NFTGallery() {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
-              onClick={() => window.open('https://discord.gg/EZ9wRhjr', '_blank')}
+              onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
             >
               <SiDiscord className="h-4 w-4" />
               Submit on Discord
