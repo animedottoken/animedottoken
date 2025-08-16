@@ -8,7 +8,8 @@ import {
   Store, 
   HelpCircle,
   Share2,
-  Trophy
+  Trophy,
+  Users
 } from "lucide-react";
 
 import {
@@ -53,6 +54,11 @@ const navigationItems = [
     title: "Market Chart", 
     icon: TrendingUp,
     onClick: () => document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' })
+  },
+  { 
+    title: "Community Showcase", 
+    icon: Users,
+    onClick: () => document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' })
   },
   { 
     title: "NFT Marketplace", 

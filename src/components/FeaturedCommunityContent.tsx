@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Upload, ExternalLink } from "lucide-react";
+import { Upload, ExternalLink, Users } from "lucide-react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
+import communityMeme from "@/assets/community-meme-sample.jpg";
+import communityTwitter from "@/assets/community-twitter-sample.jpg";
 
 const emptySlots = [
   { 
-    placeholder: communityPlaceholder,
+    placeholder: communityTwitter,
     overlay: "Your art here",
     cta: "Submit your work to be featured!",
     type: "art" 
@@ -17,7 +19,7 @@ const emptySlots = [
     type: "art" 
   },
   { 
-    placeholder: communityPlaceholder,
+    placeholder: communityMeme,
     overlay: "Your meme here",
     cta: "Make us laugh with your creativity!",
     type: "meme" 
@@ -26,9 +28,10 @@ const emptySlots = [
 
 export function FeaturedCommunityContent() {
   return (
-    <section className="mx-auto mt-16 max-w-5xl px-4">
+    <section className="mx-auto mt-16 max-w-5xl px-4 featured-community-content">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-4 text-white">
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">👥</span>
           Community Showcase
         </h2>
         <p className="text-muted-foreground text-lg mb-6">
