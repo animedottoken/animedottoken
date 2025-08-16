@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Copy, Share, ExternalLink, Heart, Plus } from "lucide-react";
-import { NFTSubmissionForm } from "@/components/NFTSubmissionForm";
+import { Copy, Share, ExternalLink, Heart } from "lucide-react";
+import { SiDiscord } from "react-icons/si";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
@@ -807,27 +807,17 @@ export function NFTGallery() {
             🎨 Want Your NFT Featured Here?
           </h3>
           <p className="text-muted-foreground mb-6">
-            Submit your anime art and join our gallery. Top creations get highlighted and recognized! Build your reputation now while we prepare the marketplace.
+            Join our Discord community to submit your anime art and get featured! Share your creations with fellow artists and builders.
           </p>
-          <div className="flex justify-center">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Submit Your Art
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <NFTSubmissionForm onSuccess={() => {
-                  // Close the dialog by dispatching Escape key (Radix handles it)
-                  const event = new KeyboardEvent('keydown', { key: 'Escape' });
-                  document.dispatchEvent(event);
-                }} />
-              </DialogContent>
-            </Dialog>
+          <div className="flex justify-center gap-4">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
+              onClick={() => window.open('https://discord.gg/EZ9wRhjr', '_blank')}
+            >
+              <SiDiscord className="h-4 w-4" />
+              Submit on Discord
+            </Button>
           </div>
         </div>
       </div>

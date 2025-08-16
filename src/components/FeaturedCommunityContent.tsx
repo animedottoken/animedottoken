@@ -34,17 +34,16 @@ export function FeaturedCommunityContent() {
     const position = index + 1; // positions are 1, 2, 3
     const featuredItem = featuredContent?.find(item => item.position === position);
     
-    
-    
     if (featuredItem) {
       return { type: 'featured', content: featuredItem };
     }
     return { type: 'empty', content: emptySlots[index] };
   });
 
-
+  // Defensive handling: if there's an error, quietly show placeholders
   if (error) {
     console.error('Featured content error:', error);
+    // Continue with empty slots instead of breaking the UI
   }
 
   return (

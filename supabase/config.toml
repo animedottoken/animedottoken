@@ -9,8 +9,11 @@ verify_jwt = false
 [functions.get-featured-content]
 verify_jwt = false
 
-[functions.submit-content]
+[functions.get-approved-submissions]
 verify_jwt = false
+
+[functions.submit-content]
+verify_jwt = true
 
 [functions.admin-list-submissions]
 verify_jwt = true

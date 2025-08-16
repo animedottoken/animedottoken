@@ -60,102 +60,13 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    const submissionData = await req.json()
-    
-    // Validate input data
-    const validation = validateContent(submissionData)
-    if (!validation.isValid) {
-      return new Response(JSON.stringify({ 
-        error: 'Validation failed', 
-        details: validation.errors 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const { 
-      image_url, 
-      name,
-      caption, 
-      author, 
-      author_bio,
-      contact,
-      nft_address,
-      tags = [],
-      edition_type = 'standard',
-      type = 'picture', 
-      submission_source = 'form' 
-    } = submissionData
-
-    // Basic required field validation (legacy support)
-    if (!image_url || !name || !caption || !author) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields: image_url, name, caption, and author are required' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Validate tags array length if provided
-    if (tags && tags.length > 5) {
-      return new Response(JSON.stringify({ 
-        error: 'Maximum 5 tags allowed' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Insert new submission
-    const { data: submission, error } = await supabaseClient
-      .from('community_submissions')
-      .insert({
-        image_url,
-        name,
-        caption,
-        author,
-        author_bio,
-        contact,
-        nft_address,
-        tags,
-        edition_type,
-        type,
-        submission_source,
-        status: 'pending'
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error creating submission:', error)
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    console.log('New submission created:', submission.id)
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      submission_id: submission.id,
-      message: 'Submission received! It will be reviewed before being featured.' 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
-  } catch (error) {
-    console.error('Error in submit-content function:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
-  }
+  // Submissions have been moved to Discord - return 410 Gone
+  return new Response(JSON.stringify({ 
+    error: 'Submissions Moved', 
+    message: 'NFT submissions have moved to our Discord community! Join us at https://discord.gg/EZ9wRhjr to submit your amazing art.',
+    redirect_url: 'https://discord.gg/EZ9wRhjr'
+  }), {
+    status: 410, // Gone
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
 })
