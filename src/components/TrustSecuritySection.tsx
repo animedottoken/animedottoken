@@ -116,7 +116,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               
               <Collapsible>
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal text-primary hover:text-primary/80">
+                  <Button variant="link" className="px-0">
                     Show Details <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
                 </CollapsibleTrigger>
