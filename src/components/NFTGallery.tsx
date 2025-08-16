@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Copy, Share, ExternalLink, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Copy, Share, ExternalLink, Heart, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { toast } from "sonner";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
@@ -320,6 +320,7 @@ export function NFTGallery() {
   const [showMyFavorites, setShowMyFavorites] = useState(false);
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [showPurchasePopup, setShowPurchasePopup] = useState(false);
 
   // Static site: no backend fetch
   useEffect(() => {
@@ -917,9 +918,64 @@ export function NFTGallery() {
                     </div>
                   </div>
                 </div>
+
+                {/* Purchase Button and Security Text */}
+                <div className="space-y-3">
+                  <Button 
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
+                    onClick={() => {
+                      const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
+                      
+                      navigator.clipboard.writeText(purchaseMessage).then(() => {
+                        setShowPurchasePopup(true);
+                      }).catch(() => {
+                        // Fallback if clipboard API fails
+                        setShowPurchasePopup(true);
+                        toast.error("Could not copy to clipboard", {
+                          description: "Please manually type your purchase request in Discord"
+                        });
+                      });
+                    }}
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    Start Purchase on Discord
+                  </Button>
+                  
+                  <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                    To ensure security, all purchases are handled manually by our official Escrow service on Discord.
+                  </p>
+                </div>
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Purchase Popup */}
+      <Dialog open={showPurchasePopup} onOpenChange={setShowPurchasePopup}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Purchase details copied!</DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              A message has been copied for you. Click the button below to go to our Discord, then simply paste the message in the #nft-buyers channel to start.
+            </p>
+            
+            <Button 
+              size="lg"
+              className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
+              onClick={() => {
+                window.open('https://discord.gg/HmSJdT5MRX', '_blank');
+                setShowPurchasePopup(false);
+              }}
+            >
+              <SiDiscord className="h-4 w-4" />
+              Click here to go to the #nft-buyers channel
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
