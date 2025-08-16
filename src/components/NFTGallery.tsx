@@ -469,41 +469,29 @@ export function NFTGallery() {
     document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Navigation between NFTs - respects current filters
+  // Navigation between NFTs - respects current filters and excludes Community Favorites when filters are active
   const getFilteredNFTs = () => {
-    const allNFTs = [...communityFavorites, ...allAdditionalArtworks];
-    
-    return allNFTs.filter(nft => {
-      // Apply mandatory tags filter
-      if (selectedMandatoryTags.size > 0 && !selectedMandatoryTags.has(nft.mandatoryTag)) {
-        return false;
-      }
-
-      // Apply optional tags filter
-      if (selectedOptionalTags.size > 0) {
-        const matchesOptional = Array.from(selectedOptionalTags).every(tag => {
-          if (tag === "Limited") return nft.isLimited;
-          return nft.optionalTags?.includes(tag);
-        });
-        if (!matchesOptional) return false;
-      }
-
-      // Apply favorites filter
-      if (showMyFavorites && !likedNFTs.has(nft.id)) {
-        return false;
-      }
-
-      return true;
-    });
+    const filterActive = selectedMandatoryTags.size > 0 || selectedOptionalTags.size > 0 || showMyFavorites;
+    if (filterActive) {
+      // When filtering, only navigate through filtered additional artworks (exclude Community Favorites)
+      return filteredAdditionalArtworks;
+    }
+    // No filters: navigate through everything
+    return [...communityFavorites, ...allAdditionalArtworks];
   };
   
   const navigateToNFT = (direction: 'prev' | 'next') => {
     if (!selectedNFT) return;
     
     const filteredNFTs = getFilteredNFTs();
+    if (filteredNFTs.length === 0) return;
     const currentIndex = filteredNFTs.findIndex(nft => nft.id === selectedNFT.id);
     
-    if (currentIndex === -1) return;
+    // If current selection isn't part of the filtered list (e.g., Community Favorite while filters active), jump into the filtered stream
+    if (currentIndex === -1) {
+      setSelectedNFT(direction === 'next' ? filteredNFTs[0] : filteredNFTs[filteredNFTs.length - 1]);
+      return;
+    }
     
     let newIndex;
     if (direction === 'prev') {
