@@ -30,7 +30,7 @@ const communityFavorites = [
     isExclusive: true,
     maxSupply: "100",
     likes: 2847,
-    tags: ["AI Art", "Digital Art"]
+    tags: ["image", "AI Art", "Digital Art"]
   },
   {
     id: "founder", 
@@ -50,7 +50,7 @@ const communityFavorites = [
     isExclusive: true,
     maxSupply: "100",
     likes: 1923,
-    tags: ["Digital Art", "Others"]
+    tags: ["image", "Digital Art"]
   },
   {
     id: "ambassador",
@@ -70,7 +70,7 @@ const communityFavorites = [
     isExclusive: false,
     maxSupply: "1,000",
     likes: 1456,
-    tags: ["Others", "Digital Art"]
+    tags: ["image", "Others", "Digital Art"]
   },
   {
     id: "hodler",
@@ -90,7 +90,7 @@ const communityFavorites = [
     isExclusive: false,
     maxSupply: "Unlimited",
     likes: 998,
-    tags: ["Meme", "Digital Art", "Others"]
+    tags: ["image", "Meme", "Digital Art"]
   }
 ];
 
@@ -113,7 +113,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "50",
     likes: 10200,
-    tags: ["Digital Art", "AI Art"]
+    tags: ["image", "Digital Art", "AI Art"]
   },
   {
     id: "neon-girl",
@@ -133,7 +133,7 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "75",
     likes: 856,
-    tags: ["AI Art", "Digital Art"]
+    tags: ["image", "AI Art"]
   },
   {
     id: "mecha-pilot",
@@ -153,7 +153,7 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "25",
     likes: 643,
-    tags: ["Others", "Digital Art", "AI Art"]
+    tags: ["image", "Others", "Digital Art"]
   },
   {
     id: "dragon-spirit",
@@ -173,7 +173,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "100",
     likes: 1205,
-    tags: ["Digital Art", "Others"]
+    tags: ["image", "Digital Art"]
   },
   {
     id: "pixel-hero",
@@ -193,7 +193,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "200",
     likes: 432,
-    tags: ["Pixel Art", "Digital Art"]
+    tags: ["image", "Pixel Art"]
   },
   {
     id: "ai-waifu",
@@ -213,7 +213,7 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "150",
     likes: 789,
-    tags: ["AI Art", "Digital Art", "Others"]
+    tags: ["image", "AI Art", "Digital Art"]
   },
   {
     id: "space-girl",
@@ -233,7 +233,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "60",
     likes: 567,
-    tags: ["Digital Art", "AI Art"]
+    tags: ["image", "Digital Art"]
   },
   {
     id: "meme-cat",
@@ -253,7 +253,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "500",
     likes: 2156,
-    tags: ["Meme", "Digital Art"]
+    tags: ["image", "Meme"]
   },
   {
     id: "warrior-princess",
@@ -273,7 +273,7 @@ const additionalArtworks = [
     isExclusive: false,
     maxSupply: "80",
     likes: 345,
-    tags: ["Others", "Digital Art", "AI Art"]
+    tags: ["image", "Others"]
   },
   {
     id: "digital-ninja",
@@ -293,7 +293,7 @@ const additionalArtworks = [
     isExclusive: true,
     maxSupply: "40",
     likes: 892,
-    tags: ["Pixel Art", "Digital Art"]
+    tags: ["image", "Pixel Art"]
   }
 ];
 
