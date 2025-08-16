@@ -28,7 +28,7 @@ const emptySlots = [
     type: "art",
     sample: false,
     title: "Your Spot",
-    description: "Submit your amazing art to be featured here!",
+    description: "Submit your amazing anime art or meme here to get featured!",
     createdBy: "",
     achievement: ""
   },
@@ -58,7 +58,7 @@ export function FeaturedCommunityContent() {
           Community Showcase
         </h2>
         <p className="text-muted-foreground text-lg mb-6">
-          See what our amazing community is creating! Submit your ANIME-inspired content to be featured.
+          See what our community is creating! Submit your ANIME-inspired memes, art, or posts to be featured.
         </p>
         
         {/* Call to Action Buttons */}
@@ -128,6 +128,23 @@ export function FeaturedCommunityContent() {
             </div>
             </div>
         ))}
+      </div>
+
+      {/* How to Buy Button */}
+      <div className="text-center mt-8">
+        <Button 
+          variant="default" 
+          size="lg"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-3"
+          onClick={() => {
+            const howToBuySection = document.querySelector('.how-to-buy-section');
+            if (howToBuySection) {
+              howToBuySection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+        >
+          How to Buy $ANIME
+        </Button>
       </div>
 
       {/* Community Item Details Modal */}
