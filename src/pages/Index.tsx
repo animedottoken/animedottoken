@@ -15,6 +15,7 @@ import { FeaturedCommunityContent } from "@/components/FeaturedCommunityContent"
 import { NFTGallery } from "@/components/NFTGallery";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+// Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
 import { ChevronDown } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
