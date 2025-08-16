@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Copy, Share, ExternalLink, Heart } from "lucide-react";
+import { Copy, Share, ExternalLink, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
 import { toast } from "sonner";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
@@ -14,13 +14,15 @@ import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c8502
 const communityFavorites = [
   {
     id: "early-supporter",
-    name: "First 100 Early Supporter",
+    name: "SAMPLE - First 100 Early Supporter",
     creator: "AnimeTeam",
     image: earlySupporterBadge,
     description: "Legacy badge for early adopters.",
     category: "AI Art",
     editionRemaining: "100",
     price: "Free",
+    priceUSDC: "0.00 USDC",
+    priceANIME: "0 $ANIME",
     metadataUrl: "https://solscan.io/account/example1",
     status: "100 Available",
     statusType: "available" as const,
@@ -31,13 +33,15 @@ const communityFavorites = [
   },
   {
     id: "founder", 
-    name: "Founder",
+    name: "SAMPLE - Founder",
     creator: "CryptoSamurai",
     image: foundersNFT,
     description: "For strategic leaders.",
     category: "Digital Art",
     editionRemaining: "100",
     price: "Invitation Only",
+    priceUSDC: "Invitation Only",
+    priceANIME: "Invitation Only",
     metadataUrl: "https://solscan.io/account/example2",
     status: "Special Edition",
     statusType: "special" as const,
@@ -48,13 +52,15 @@ const communityFavorites = [
   },
   {
     id: "ambassador",
-    name: "Ambassador", 
+    name: "SAMPLE - Ambassador", 
     creator: "DigitalArtist",
     image: ambassadorsNFT,
     description: "For community builders.",
     category: "Others",
     editionRemaining: "1,000",
     price: "Earned",
+    priceUSDC: "Earned",
+    priceANIME: "Earned",
     metadataUrl: "https://solscan.io/account/example3",
     status: "Limited",
     statusType: "limited" as const,
@@ -65,13 +71,15 @@ const communityFavorites = [
   },
   {
     id: "hodler",
-    name: "Hodler",
+    name: "SAMPLE - Hodler",
     creator: "GoldMiner",
     image: hodlersNFT,
     description: "For long-term holders.",
     category: "Meme",
     editionRemaining: "Unlimited",
     price: "Hold $ANIME",
+    priceUSDC: "Hold $ANIME",
+    priceANIME: "Hold $ANIME",
     metadataUrl: "https://solscan.io/account/example4",
     status: "Always Available",
     statusType: "unlimited" as const,
@@ -85,13 +93,15 @@ const communityFavorites = [
 const additionalArtworks = [
   {
     id: "cyber-samurai",
-    name: "Cyber Samurai",
+    name: "SAMPLE - Cyber Samurai",
     creator: "tommo8",
     image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png",
     description: "Futuristic samurai warrior.",
     category: "Digital Art",
     editionRemaining: "50",
     price: "0.5 $ANIME",
+    priceUSDC: "12.50 USDC",
+    priceANIME: "500 $ANIME",
     metadataUrl: "https://solscan.io/account/example5",
     status: "Available",
     statusType: "available" as const,
@@ -102,13 +112,15 @@ const additionalArtworks = [
   },
   {
     id: "neon-girl",
-    name: "Neon Girl",
+    name: "SAMPLE - Neon Girl",
     creator: "NeonDreamer",
     image: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png",
     description: "Cyberpunk anime character.",
     category: "AI Art",
     editionRemaining: "75",
     price: "0.3 $ANIME",
+    priceUSDC: "7.50 USDC",
+    priceANIME: "300 $ANIME",
     metadataUrl: "https://solscan.io/account/example6",
     status: "Available",
     statusType: "available" as const,
@@ -119,13 +131,15 @@ const additionalArtworks = [
   },
   {
     id: "mecha-pilot",
-    name: "Mecha Pilot",
+    name: "SAMPLE - Mecha Pilot",
     creator: "RobotMaster",
     image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
     description: "Elite mecha pilot design.",
     category: "Others",
     editionRemaining: "25",
     price: "1.0 $ANIME",
+    priceUSDC: "25.00 USDC",
+    priceANIME: "1,000 $ANIME",
     metadataUrl: "https://solscan.io/account/example7",
     status: "Limited",
     statusType: "limited" as const,
@@ -136,13 +150,15 @@ const additionalArtworks = [
   },
   {
     id: "dragon-spirit",
-    name: "Dragon Spirit",
+    name: "SAMPLE - Dragon Spirit",
     creator: "MysticDragon",
     image: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png",
     description: "Mystical dragon companion.",
     category: "Digital Art",
     editionRemaining: "100",
     price: "0.8 $ANIME",
+    priceUSDC: "20.00 USDC",
+    priceANIME: "800 $ANIME",
     metadataUrl: "https://solscan.io/account/example8",
     status: "Available",
     statusType: "available" as const,
@@ -153,13 +169,15 @@ const additionalArtworks = [
   },
   {
     id: "pixel-hero",
-    name: "Pixel Hero",
+    name: "SAMPLE - Pixel Hero",
     creator: "PixelWizard",
     image: "/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png",
     description: "Retro pixel art character.",
     category: "Pixel Art",
     editionRemaining: "200",
     price: "0.2 $ANIME",
+    priceUSDC: "5.00 USDC",
+    priceANIME: "200 $ANIME",
     metadataUrl: "https://solscan.io/account/example9",
     status: "Available",
     statusType: "available" as const,
@@ -170,13 +188,15 @@ const additionalArtworks = [
   },
   {
     id: "ai-waifu",
-    name: "AI Waifu",
+    name: "SAMPLE - AI Waifu",
     creator: "AIArtist",
     image: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png",
     description: "AI-generated anime character.",
     category: "AI Art",
     editionRemaining: "150",
     price: "0.4 $ANIME",
+    priceUSDC: "10.00 USDC",
+    priceANIME: "400 $ANIME",
     metadataUrl: "https://solscan.io/account/example10",
     status: "Available",
     statusType: "available" as const,
@@ -187,13 +207,15 @@ const additionalArtworks = [
   },
   {
     id: "space-girl",
-    name: "Space Girl",
+    name: "SAMPLE - Space Girl",
     creator: "CosmicArt",
     image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
     description: "Cosmic anime explorer.",
     category: "Digital Art",
     editionRemaining: "60",
     price: "0.7 $ANIME",
+    priceUSDC: "17.50 USDC",
+    priceANIME: "700 $ANIME",
     metadataUrl: "https://solscan.io/account/example11",
     status: "Available",
     statusType: "available" as const,
@@ -204,13 +226,15 @@ const additionalArtworks = [
   },
   {
     id: "meme-cat",
-    name: "Meme Cat",
+    name: "SAMPLE - Meme Cat",
     creator: "MemeLord",
     image: "/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png",
     description: "Popular anime meme cat.",
     category: "Meme",
     editionRemaining: "500",
     price: "0.1 $ANIME",
+    priceUSDC: "2.50 USDC",
+    priceANIME: "100 $ANIME",
     metadataUrl: "https://solscan.io/account/example12",
     status: "Available",
     statusType: "available" as const,
@@ -221,13 +245,15 @@ const additionalArtworks = [
   },
   {
     id: "warrior-princess",
-    name: "Warrior Princess",
+    name: "SAMPLE - Warrior Princess",
     creator: "WarriorArt",
     image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
     description: "Fierce anime warrior maiden.",
     category: "Others",
     editionRemaining: "80",
     price: "0.6 $ANIME",
+    priceUSDC: "15.00 USDC",
+    priceANIME: "600 $ANIME",
     metadataUrl: "https://solscan.io/account/example13",
     status: "Available",
     statusType: "available" as const,
@@ -238,13 +264,15 @@ const additionalArtworks = [
   },
   {
     id: "digital-ninja",
-    name: "Digital Ninja",
+    name: "SAMPLE - Digital Ninja",
     creator: "ShadowNinja",
     image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
     description: "Stealth cyber ninja.",
     category: "Pixel Art",
     editionRemaining: "40",
     price: "0.9 $ANIME",
+    priceUSDC: "22.50 USDC",
+    priceANIME: "900 $ANIME",
     metadataUrl: "https://solscan.io/account/example14",
     status: "Limited",
     statusType: "limited" as const,
@@ -338,6 +366,45 @@ useEffect(() => {
   const handleLearnMore = () => {
     document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Navigation between NFTs
+  const getAllNFTs = () => [...communityFavorites, ...allAdditionalArtworks];
+  
+  const navigateToNFT = (direction: 'prev' | 'next') => {
+    if (!selectedNFT) return;
+    
+    const allNFTs = getAllNFTs();
+    const currentIndex = allNFTs.findIndex(nft => nft.id === selectedNFT.id);
+    
+    if (currentIndex === -1) return;
+    
+    let newIndex;
+    if (direction === 'prev') {
+      newIndex = currentIndex > 0 ? currentIndex - 1 : allNFTs.length - 1;
+    } else {
+      newIndex = currentIndex < allNFTs.length - 1 ? currentIndex + 1 : 0;
+    }
+    
+    setSelectedNFT(allNFTs[newIndex]);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedNFT) return;
+      
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navigateToNFT('prev');
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navigateToNFT('next');
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNFT]);
 
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -543,6 +610,28 @@ useEffect(() => {
             <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
           </DialogHeader>
           
+          {/* Navigation Arrows */}
+          {selectedNFT && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToNFT('prev')}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background border border-border/50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigateToNFT('next')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background border border-border/50"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </>
+          )}
+          
           {selectedNFT && (
             <div className="grid md:grid-cols-2 gap-6">
               {/* Image Section */}
@@ -643,7 +732,7 @@ onClick={() => {
                     disabled={!selectedNFT.metadataUrl || selectedNFT.metadataUrl === "#"}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    {selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#" ? "View on Solscan" : "No Solscan Link"}
+                    {selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#" ? "SAMPLE - Will be real Solscan link" : "SAMPLE - No Solscan link"}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -690,7 +779,12 @@ onClick={() => {
                   <div className="space-y-3">
                     <div>
                       <span className="font-semibold text-sm text-muted-foreground block">Price</span>
-                      <p className="text-lg font-semibold">{selectedNFT.price}</p>
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
+                        {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
+                          <p className="text-sm text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
+                        )}
+                      </div>
                     </div>
                     
                     <div>
