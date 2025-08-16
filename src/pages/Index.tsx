@@ -257,7 +257,10 @@ const Index = () => {
 
       <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">The Power of Community: A Decentralized Future</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">
+            <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">📊</span>
+            The Power of Community: A Decentralized Future
+          </h2>
           <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
             Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how support translates into a real share of the network.
           </p>
@@ -283,7 +286,10 @@ const Index = () => {
       </section>
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h2 className="text-center text-2xl md:text-3xl font-bold">How to Join the Era: Buying $ANIME</h2>
+        <h2 className="text-center text-2xl md:text-3xl font-bold">
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🛒</span>
+          How to Join the Era: Buying $ANIME
+        </h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a part of this great movement is easier than ever. Follow these 4 simple steps:</p>
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
@@ -386,7 +392,10 @@ const Index = () => {
         </ul>
 
         <div className="mt-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold">Congratulations!</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">
+            <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎉</span>
+            Congratulations!
+          </h2>
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
@@ -514,7 +523,10 @@ const Index = () => {
         </section>
 
         <section id="faq-section" className="mt-8">
-          <h3 className="text-lg font-semibold"><span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)</h3>
+          <h3 className="text-lg font-semibold">
+            <span className="text-xl mr-2 leading-[1.2] align-middle pb-1">❓</span>
+            <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
+          </h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
@@ -583,7 +595,10 @@ const Index = () => {
       </div>
 
       <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <h2 className="text-2xl md:text-3xl font-bold">The Conversation is Happening Now. Join Us.</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🔗</span>
+          The Conversation is Happening Now. Join Us.
+        </h2>
         <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
         <div className="mt-6 space-y-4">
           <div aria-labelledby="join-social">
