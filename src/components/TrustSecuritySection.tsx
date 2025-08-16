@@ -150,12 +150,12 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild variant="hero">
                 <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
-                  View Ecosystem Fund on Solscan
+                  View Ecosystem Fund <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
               <Button asChild variant="outline">
                 <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="View all holders on Solscan">
-                  See All Holders on Solscan
+                  See All Holders <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
             </div>
