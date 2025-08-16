@@ -55,7 +55,7 @@ const navigationItems = [
     onClick: () => document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' })
   },
   { 
-    title: "NFT Gallery", 
+    title: "NFT Marketplace", 
     icon: ImageIcon,
     onClick: () => document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' })
   },
