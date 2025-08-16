@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Copy, Share, ExternalLink, Heart } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -263,63 +261,15 @@ export function NFTGallery() {
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
-  const [loadingSubmissions, setLoadingSubmissions] = useState(true);
-  const { toast: showToast } = useToast();
+const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
-  // Fetch approved submissions from database
-  useEffect(() => {
-    fetchApprovedSubmissions();
-  }, []);
+// Static site: no backend fetch
+useEffect(() => {
+  setApprovedSubmissions([]);
+  setLoadingSubmissions(false);
+}, []);
 
-  const fetchApprovedSubmissions = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('get-approved-submissions');
-      
-      if (error) {
-        console.error('Error fetching approved submissions:', error);
-        showToast({
-          title: "Error",
-          description: "Failed to load community submissions",
-          variant: "destructive"
-        });
-      } else {
-        // Transform submissions to match NFT format
-        const submissions = data?.submissions || [];
-        const transformedSubmissions = submissions.map((submission: any) => ({
-          id: submission.id,
-          name: submission.name || 'Untitled',
-          creator: submission.artist_nickname || submission.author || 'Unknown Artist',
-          image: submission.image_url,
-          description: submission.caption,
-          category: submission.type === 'art' ? 'Digital Art' : 'Others',
-          editionRemaining: submission.edition_type || "Unique",
-          price: submission.price || "Community Upload",
-          metadataUrl: submission.nft_address ? (
-            submission.nft_address.startsWith('http') 
-              ? submission.nft_address 
-              : `https://solscan.io/token/${submission.nft_address}`
-          ) : "#",
-          status: "Approved",
-          statusType: "available" as const,
-          isLimited: submission.edition_type === 'limited',
-          isExclusive: false,
-          maxSupply: submission.edition_type === 'limited' ? "Limited Edition" : "1 of 1",
-          likes: Math.floor(Math.random() * 50), // Random likes for community uploads
-          uploadedAt: submission.created_at,
-          tags: submission.tags || [],
-          authorBio: submission.author_bio,
-          solscanLink: submission.solscan_link
-        }));
-        setApprovedSubmissions(transformedSubmissions);
-      }
-    } catch (error) {
-      console.error('Error in fetchApprovedSubmissions:', error);
-    } finally {
-      setLoadingSubmissions(false);
-    }
-  };
-
-  // Main content categories
+// Main content categories
   const mainCategories = ["All", "Digital Art", "AI Art", "Meme", "Pixel Art", "Others"];
   // Special attributes that can be combined with main categories
   const attributeCategories = ["Limited", "My Favorites"];
@@ -693,14 +643,12 @@ export function NFTGallery() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => {
+onClick={() => {
                       if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
                         window.open(selectedNFT.metadataUrl, '_blank');
                       } else {
-                        showToast({
-                          title: "No Solscan link available",
+                        toast.error("No Solscan link available", {
                           description: "This NFT doesn't have a verified address for Solscan viewing",
-                          variant: "destructive"
                         });
                       }
                     }}
