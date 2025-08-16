@@ -24,9 +24,6 @@
     fbq('init', '1767624193859301');
     fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1767624193859301&ev=PageView&noscript=1"
-    /></noscript>
     <!-- End Meta Pixel Code -->
     
     <meta charset="UTF-8" />
@@ -74,6 +71,11 @@
   </head>
 
   <body>
+    <!-- Meta Pixel noscript fallback -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1767624193859301&ev=PageView&noscript=1"
+    /></noscript>
+    
     <div id="root"></div>
     
     <!-- Service worker registration -->
