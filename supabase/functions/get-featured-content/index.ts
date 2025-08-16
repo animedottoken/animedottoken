@@ -18,13 +18,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    // Get featured content with submission details
+    // Get featured content with submission details using public view
     const { data: featuredContent, error } = await supabaseClient
       .from('featured_content')
       .select(`
         position,
         featured_at,
-        community_submissions (
+        public_submissions (
           id,
           image_url,
           caption,
@@ -45,11 +45,11 @@ serve(async (req) => {
 
     // Transform the data to match expected format
     const transformedData = featuredContent?.map(item => ({
-      id: item.community_submissions.id,
-      image: item.community_submissions.image_url,
-      caption: item.community_submissions.caption,
-      author: item.community_submissions.author,
-      type: item.community_submissions.type,
+      id: item.public_submissions.id,
+      image: item.public_submissions.image_url,
+      caption: item.public_submissions.caption,
+      author: item.public_submissions.author,
+      type: item.public_submissions.type,
       position: item.position,
       featured_at: item.featured_at
     })) || []

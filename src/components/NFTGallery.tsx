@@ -273,9 +273,8 @@ export function NFTGallery() {
   const fetchApprovedSubmissions = async () => {
     try {
       const { data, error } = await supabase
-        .from('community_submissions')
+        .from('public_submissions')
         .select('*')
-        .eq('status', 'approved')
         .order('created_at', { ascending: false }); // Sort by date uploaded (newest first)
 
       if (error) {
@@ -309,8 +308,7 @@ export function NFTGallery() {
           likes: Math.floor(Math.random() * 50), // Random likes for community uploads
           uploadedAt: submission.created_at,
           tags: submission.tags || [],
-          authorBio: submission.author_bio,
-          contact: submission.contact
+          authorBio: submission.author_bio
         }));
         setApprovedSubmissions(transformedSubmissions);
       }

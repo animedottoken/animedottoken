@@ -104,11 +104,77 @@ export type Database = {
             referencedRelation: "community_submissions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "featured_content_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "public_submissions"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      public_submissions: {
+        Row: {
+          author: string | null
+          author_bio: string | null
+          caption: string | null
+          created_at: string | null
+          edition_type: Database["public"]["Enums"]["edition_type"] | null
+          id: string | null
+          image_url: string | null
+          name: string | null
+          nft_address: string | null
+          status: Database["public"]["Enums"]["submission_status"] | null
+          submission_source:
+            | Database["public"]["Enums"]["submission_source"]
+            | null
+          tags: string[] | null
+          theme: Database["public"]["Enums"]["theme_type"] | null
+          type: Database["public"]["Enums"]["submission_type"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          author?: string | null
+          author_bio?: string | null
+          caption?: string | null
+          created_at?: string | null
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          nft_address?: string | null
+          status?: Database["public"]["Enums"]["submission_status"] | null
+          submission_source?:
+            | Database["public"]["Enums"]["submission_source"]
+            | null
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
+          type?: Database["public"]["Enums"]["submission_type"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          author?: string | null
+          author_bio?: string | null
+          caption?: string | null
+          created_at?: string | null
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          nft_address?: string | null
+          status?: Database["public"]["Enums"]["submission_status"] | null
+          submission_source?:
+            | Database["public"]["Enums"]["submission_source"]
+            | null
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
+          type?: Database["public"]["Enums"]["submission_type"] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
