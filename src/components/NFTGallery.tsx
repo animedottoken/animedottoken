@@ -448,6 +448,9 @@ useEffect(() => {
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                        Sample
+                      </Badge>
                       {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                           Limited
@@ -575,6 +578,9 @@ useEffect(() => {
                     />
                   )}
                     <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                        Sample
+                      </Badge>
                       {nft.isLimited && (
                         <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                           Limited
