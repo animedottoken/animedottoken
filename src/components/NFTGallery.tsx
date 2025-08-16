@@ -315,7 +315,7 @@ export function NFTGallery() {
   const [selectedNFT, setSelectedNFT] = useState<typeof communityFavorites[0] | null>(null);
   const [showMoreArtworks, setShowMoreArtworks] = useState(false);
   const [likedNFTs, setLikedNFTs] = useState<Set<string>>(new Set());
-  const [activeMandatoryTag, setActiveMandatoryTag] = useState<string>("All");
+  const [activeMandatoryTag, setActiveMandatoryTag] = useState<string>("");
   const [selectedOptionalTags, setSelectedOptionalTags] = useState<Set<string>>(new Set());
   const [showMyFavorites, setShowMyFavorites] = useState(false);
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
@@ -328,7 +328,7 @@ export function NFTGallery() {
   }, []);
 
   // Tag definitions
-  const mandatoryTags = ["All", "Image", "Video", "Animation", "Music", "Other"];
+  const mandatoryTags = ["Image", "Video", "Animation", "Music", "Other"];
   const optionalTags = ["Digital Art", "AI Art", "Meme", "Pixel Art", "Others", "Limited"];
 
   // Community Favorites always show all items (no filtering)
@@ -342,8 +342,8 @@ export function NFTGallery() {
   
   // Filter logic for additional artworks
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
-    // Check mandatory tag filter
-    const matchesMandatory = activeMandatoryTag === "All" || nft.mandatoryTag === activeMandatoryTag;
+    // Check mandatory tag filter (if none selected, show all)
+    const matchesMandatory = !activeMandatoryTag || nft.mandatoryTag === activeMandatoryTag;
     
     // Check optional tag filters (must match ALL selected)
     const matchesOptional = selectedOptionalTags.size === 0 || 
@@ -521,12 +521,45 @@ export function NFTGallery() {
 {/* Additional Artworks Grid */}
       {showMoreArtworks && (
         <div className="relative">          
-          {/* Tags Filter */}
+          {/* Filter Controls */}
           <div className="mb-6 space-y-4">
-            {/* Mandatory Tags */}
+            {/* My Favorites Toggle - Top Position with Heart */}
+            <div className="flex justify-center">
+              <Button
+                variant={showMyFavorites ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMyFavorites(!showMyFavorites)}
+                className={`
+                  transition-all duration-200 flex items-center gap-2
+                  ${showMyFavorites
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                  }
+                `}
+              >
+                <Heart className={`w-4 h-4 ${showMyFavorites ? 'fill-current' : ''}`} />
+                My Favorites {likedNFTs.size > 0 && `(${likedNFTs.size})`}
+              </Button>
+            </div>
+
+            {/* Primary Tags */}
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag (max 1)</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag</h4>
               <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  variant={!activeMandatoryTag ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveMandatoryTag("")}
+                  className={`
+                    transition-all duration-200 
+                    ${!activeMandatoryTag 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                    }
+                  `}
+                >
+                  All
+                </Button>
                 {mandatoryTags.map((tag) => (
                   <Button
                     key={tag}
@@ -580,24 +613,6 @@ export function NFTGallery() {
                   </Button>
                 ))}
               </div>
-            </div>
-
-            {/* My Favorites Filter */}
-            <div className="flex justify-center">
-              <Button
-                variant={showMyFavorites ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowMyFavorites(!showMyFavorites)}
-                className={`
-                  transition-all duration-200 
-                  ${showMyFavorites
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                  }
-                `}
-              >
-                My Favorites
-              </Button>
             </div>
           </div>
           
