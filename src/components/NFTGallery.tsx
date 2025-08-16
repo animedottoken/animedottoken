@@ -7,6 +7,7 @@ import { Copy, Share, ExternalLink, Heart, Plus } from "lucide-react";
 import { NFTSubmissionForm } from "@/components/NFTSubmissionForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -263,7 +264,7 @@ export function NFTGallery() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [approvedSubmissions, setApprovedSubmissions] = useState<any[]>([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(true);
-  const { toast } = useToast();
+  const { toast: showToast } = useToast();
 
   // Fetch approved submissions from database
   useEffect(() => {
@@ -276,7 +277,7 @@ export function NFTGallery() {
       
       if (error) {
         console.error('Error fetching approved submissions:', error);
-        toast({
+        showToast({
           title: "Error",
           description: "Failed to load community submissions",
           variant: "destructive"
@@ -374,6 +375,7 @@ export function NFTGallery() {
   
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard!");
   };
 
   const handleShareX = () => {
@@ -694,7 +696,7 @@ export function NFTGallery() {
                       if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
                         window.open(selectedNFT.metadataUrl, '_blank');
                       } else {
-                        toast({
+                        showToast({
                           title: "No Solscan link available",
                           description: "This NFT doesn't have a verified address for Solscan viewing",
                           variant: "destructive"

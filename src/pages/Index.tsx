@@ -17,7 +17,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Copy } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -367,8 +367,10 @@ const Index = () => {
                   <li>
                     In To, paste the official $ANIME contract address:
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block">{CONTRACT}</code>
-                      <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+                      <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block flex-1">{CONTRACT}</code>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
                     </div>
                   </li>
                   <li>Enter the amount, review the quote (including fees), and adjust slippage in Swap Settings if needed.</li>
@@ -455,11 +457,13 @@ const Index = () => {
                 <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
                 <Button 
                   variant="glass" 
+                  className="inline-flex items-center gap-2"
                   onClick={async () => { 
                     await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
-                    toast.success("Text copied"); 
+                    toast.success("Text copied to clipboard!"); 
                   }}
                 >
+                  <Copy className="h-4 w-4" />
                   Copy Text
                 </Button>
                 <Button asChild variant="glass">
@@ -513,8 +517,10 @@ const Index = () => {
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block">{CONTRACT}</code>
-                <Button variant="outline" size="sm" onClick={copyContract}>Copy</Button>
+                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block flex-1">{CONTRACT}</code>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
+                  <Copy className="h-4 w-4" />
+                </Button>
               </div>
             </li>
           </ul>
@@ -605,10 +611,12 @@ const Index = () => {
         <p>© 2024 ANIME.TOKEN | All Rights Reserved</p>
         <p className="mt-1 flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
           <span>Official Contract:</span>
-          <code className="rounded-md bg-secondary px-2 py-0.5 text-xs sm:text-sm break-all max-w-full">
+          <code className="rounded-md bg-secondary px-2 py-0.5 text-xs sm:text-sm break-all max-w-full flex-1">
             {CONTRACT}
           </code>
-          <Button variant="outline" size="sm" onClick={copyContract} aria-label="Copy contract address">Copy</Button>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract} aria-label="Copy contract address">
+            <Copy className="h-4 w-4" />
+          </Button>
         </p>
         <p className="mt-2">Disclaimer: Investing in cryptocurrency involves risk. This is not financial advice.</p>
         <p className="mt-2">Website created with <a href="https://lovable.dev/invite/f59fc72f-7a4c-44ba-9735-226d9f24e4b0" target="_blank" rel="noopener noreferrer sponsored" className="underline underline-offset-4">Lovable</a>.</p>
