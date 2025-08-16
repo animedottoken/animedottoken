@@ -15,9 +15,9 @@ const emptySlots = [
     cta: "Made everyone laugh for days!",
     type: "meme",
     sample: true,
-    title: "@MemeLord_Otaku",
+    title: "Viral $ANIME Meme",
     description: "Created the funniest $ANIME meme that went viral!",
-    createdBy: "MemeLord_Otaku",
+    createdBy: "@MemeLord_Otaku",
     achievement: "Achieved 2,500 retweets and 15K likes in just 3 days!"
   },
   { 
@@ -39,9 +39,9 @@ const emptySlots = [
     cta: "This post got 10K+ engagements!",
     type: "post",
     sample: true,
-    title: "@CryptoSamurai_",
+    title: "Community Growth Post",
     description: "Shared their $ANIME journey and got massive community love!",
-    createdBy: "CryptoSamurai_",
+    createdBy: "@CryptoSamurai_",
     achievement: "Generated 10K+ engagements and brought 500+ new holders!"
   }
 ];
