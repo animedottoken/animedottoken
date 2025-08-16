@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Upload, ExternalLink, Users } from "lucide-react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
-import communityMeme from "@/assets/community-meme-sample.jpg";
-import communityTwitter from "@/assets/community-twitter-sample.jpg";
 
 const emptySlots = [
   { 
-    placeholder: communityTwitter,
+    placeholder: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png",
     overlay: "Sample Post",
     cta: "Example: a strong X post that got great engagement.",
     type: "post",
@@ -21,7 +19,7 @@ const emptySlots = [
     sample: false,
   },
   { 
-    placeholder: communityMeme,
+    placeholder: "/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png",
     overlay: "Sample Meme",
     cta: "Anime meme example that made people laugh!",
     type: "meme",
