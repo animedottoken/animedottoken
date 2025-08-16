@@ -782,8 +782,8 @@ useEffect(() => {
                     </div>
                     
                     <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Edition</span>
-                      <p>{selectedNFT.editionRemaining}</p>
+                      <span className="font-semibold text-sm text-muted-foreground block">Max supply</span>
+                      <p>{selectedNFT.maxSupply}</p>
                     </div>
                   </div>
 
@@ -804,13 +804,6 @@ useEffect(() => {
                         <Heart className="w-4 h-4 text-red-500" />
                         <span className="font-semibold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <span className="font-semibold text-sm text-muted-foreground block">Status</span>
-                      <Badge variant={selectedNFT.statusType === 'available' ? 'default' : 'secondary'}>
-                        {selectedNFT.status}
-                      </Badge>
                     </div>
                   </div>
                 </div>
