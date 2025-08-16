@@ -16,7 +16,8 @@ export type Database = {
     Tables: {
       community_submissions: {
         Row: {
-          author: string
+          artist_nickname: string | null
+          author: string | null
           author_bio: string | null
           caption: string
           contact: string | null
@@ -27,6 +28,8 @@ export type Database = {
           image_url: string
           name: string | null
           nft_address: string | null
+          price: string | null
+          solscan_link: string | null
           status: Database["public"]["Enums"]["submission_status"]
           submission_source: Database["public"]["Enums"]["submission_source"]
           tags: string[] | null
@@ -35,7 +38,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          author: string
+          artist_nickname?: string | null
+          author?: string | null
           author_bio?: string | null
           caption: string
           contact?: string | null
@@ -46,6 +50,8 @@ export type Database = {
           image_url: string
           name?: string | null
           nft_address?: string | null
+          price?: string | null
+          solscan_link?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
           tags?: string[] | null
@@ -54,7 +60,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          author?: string
+          artist_nickname?: string | null
+          author?: string | null
           author_bio?: string | null
           caption?: string
           contact?: string | null
@@ -65,6 +72,8 @@ export type Database = {
           image_url?: string
           name?: string | null
           nft_address?: string | null
+          price?: string | null
+          solscan_link?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submission_source?: Database["public"]["Enums"]["submission_source"]
           tags?: string[] | null
@@ -135,6 +144,7 @@ export type Database = {
       get_public_submissions: {
         Args: Record<PropertyKey, never>
         Returns: {
+          artist_nickname: string
           author: string
           caption: string
           created_at: string
@@ -142,6 +152,8 @@ export type Database = {
           id: string
           image_url: string
           name: string
+          price: string
+          solscan_link: string
           status: Database["public"]["Enums"]["submission_status"]
           submission_source: Database["public"]["Enums"]["submission_source"]
           tags: string[]

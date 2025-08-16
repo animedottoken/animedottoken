@@ -6,6 +6,7 @@ export interface FeaturedSubmission {
   image: string;
   caption: string;
   author: string;
+  artist_nickname?: string;
   type: 'art' | 'meme' | 'story';
   position?: number;
   featured_at?: string;

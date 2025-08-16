@@ -288,12 +288,12 @@ export function NFTGallery() {
         const transformedSubmissions = submissions.map((submission: any) => ({
           id: submission.id,
           name: submission.name || 'Untitled',
-          creator: submission.author,
+          creator: submission.artist_nickname || submission.author || 'Unknown Artist',
           image: submission.image_url,
           description: submission.caption,
           category: submission.type === 'art' ? 'Digital Art' : 'Others',
           editionRemaining: submission.edition_type || "Unique",
-          price: "Community Upload",
+          price: submission.price || "Community Upload",
           metadataUrl: submission.nft_address ? (
             submission.nft_address.startsWith('http') 
               ? submission.nft_address 
@@ -307,7 +307,8 @@ export function NFTGallery() {
           likes: Math.floor(Math.random() * 50), // Random likes for community uploads
           uploadedAt: submission.created_at,
           tags: submission.tags || [],
-          authorBio: submission.author_bio
+          authorBio: submission.author_bio,
+          solscanLink: submission.solscan_link
         }));
         setApprovedSubmissions(transformedSubmissions);
       }

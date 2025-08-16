@@ -14,6 +14,7 @@ interface Submission {
   name?: string | null;
   caption: string;
   author: string;
+  artist_nickname?: string | null;
   author_bio: string;
   contact: string | null;
   tags: string[];
@@ -259,8 +260,8 @@ export const AdminPanel = () => {
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-medium text-muted-foreground">Artist</label>
-                              <p className="text-sm">{submission.author}</p>
+                              <label className="text-sm font-medium text-muted-foreground">Artist Nickname</label>
+                              <p className="text-sm">{submission.artist_nickname || submission.author}</p>
                             </div>
                             <div>
                               <label className="text-sm font-medium text-muted-foreground">Type</label>
@@ -325,7 +326,7 @@ export const AdminPanel = () => {
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium truncate">{submission.author}</p>
+                        <p className="font-medium truncate">{submission.artist_nickname || submission.author}</p>
                         <Badge className={getStatusColor(submission.status)}>
                           {submission.status}
                         </Badge>

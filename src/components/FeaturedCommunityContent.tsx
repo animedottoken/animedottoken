@@ -106,7 +106,7 @@ export function FeaturedCommunityContent() {
                       <Badge variant="secondary" className="text-xs">
                         {submission.type}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">{submission.author}</span>
+                      <span className="text-sm text-muted-foreground">{submission.artist_nickname || submission.author}</span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {submission.caption}
