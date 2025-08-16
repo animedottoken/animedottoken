@@ -8,21 +8,24 @@ import communityTwitter from "@/assets/community-twitter-sample.jpg";
 const emptySlots = [
   { 
     placeholder: communityTwitter,
-    overlay: "Your art here",
-    cta: "Submit your work to be featured!",
-    type: "art" 
+    overlay: "Sample Post",
+    cta: "Example: a strong X post that got great engagement.",
+    type: "post",
+    sample: true,
   },
   { 
     placeholder: communityPlaceholder,
     overlay: "Your art here",
     cta: "Submit your work to be featured!",
-    type: "art" 
+    type: "art",
+    sample: false,
   },
   { 
     placeholder: communityMeme,
-    overlay: "Your meme here",
-    cta: "Make us laugh with your creativity!",
-    type: "meme" 
+    overlay: "Sample Meme",
+    cta: "Anime meme example that made people laugh!",
+    type: "meme",
+    sample: true,
   }
 ];
 
@@ -66,7 +69,7 @@ export function FeaturedCommunityContent() {
             <div className="aspect-square overflow-hidden relative">
               <img
                 src={emptySlot.placeholder}
-                alt="Community submission placeholder"
+                alt={emptySlot.sample ? (emptySlot.type === "post" ? "Sample social post" : "Sample anime meme") : "Community submission placeholder"}
                 className="w-full h-full object-cover opacity-30"
                 loading="lazy"
                 decoding="async"
@@ -87,7 +90,7 @@ export function FeaturedCommunityContent() {
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="outline" className="text-xs border-dashed">
-                  Your Spot
+                  {emptySlot.sample ? "Sample" : "Your Spot"}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
