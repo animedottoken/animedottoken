@@ -26,7 +26,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
-import { SiX, SiTelegram, SiDiscord, SiFacebook } from "react-icons/si";
+import { SiX, SiTelegram, SiDiscord } from "react-icons/si";
 import { ChevronDown, Copy, Share } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
@@ -56,9 +56,7 @@ const Index = () => {
   const shareUrls = useMemo(() => ({
     x: shareUrlX,
     telegram: shareUrlTelegram,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePageUrl)}&quote=${encodeURIComponent(shareText)}`,
-    facebookDebugger: `https://developers.facebook.com/tools/debug/?q=${encodeURIComponent("https://animedottoken.com")}`,
-  }), [shareUrlX, shareUrlTelegram, sharePageUrl, shareText]);
+  }), [shareUrlX, shareUrlTelegram]);
 
   const copyShare = async () => {
     try {
@@ -454,18 +452,6 @@ const Index = () => {
                     Share on Telegram
                   </a>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <a href={shareUrls.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
-                    <SiFacebook className="h-4 w-4" />
-                    Share on Facebook
-                  </a>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <a href={shareUrls.facebookDebugger} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full text-xs text-muted-foreground">
-                    <SiFacebook className="h-3 w-3" />
-                    Refresh Facebook Cache
-                  </a>
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
                   <Copy className="h-4 w-4" />
                   Copy share text
@@ -626,7 +612,6 @@ const Index = () => {
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />X (Twitter)</a></Button>
-              <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
             </div>
           </div>
           <div aria-labelledby="join-community">
@@ -661,7 +646,6 @@ const Index = () => {
         url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080',
         sameAs: [
           'https://x.com/AnimeDotToken',
-          'https://www.facebook.com/anime.token',
           'https://t.me/AnimeDotTokenCommunity',
           'https://discord.gg/HmSJdT5MRX'
         ]
