@@ -19,6 +19,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
   const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [treasuryDetailsOpen, setTreasuryDetailsOpen] = useState(false);
   const holders = useTokenHolders(tokenAddress);
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -114,10 +115,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                 To fuel the community-led revival and ensure long-term growth, the official ANIME Revival & Ecosystem Fund has been established. This is not a private team wallet; it is a <span className="font-semibold text-foreground">publicly viewable treasury</span> dedicated to the project's success.
               </p>
               
-              <Collapsible>
+              <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
                 <CollapsibleTrigger asChild>
                   <Button variant="link" className="px-0">
-                    Show Details <ChevronDown className="ml-1 h-4 w-4" />
+                    {treasuryDetailsOpen ? "Hide details" : "Show details"} 
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${treasuryDetailsOpen ? "rotate-180" : ""}`} />
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
