@@ -157,10 +157,10 @@ const Index = () => {
   return (
     <main className="min-h-screen py-12 md:py-20 container">
       <Helmet>
-        <title>ANIME.TOKEN | Community-Driven Solana Anime Token | NFT Rewards, Transparent Wallets, 100% LP Burned</title>
-        <meta name="description" content="Official home of $ANIME on Solana. Community-driven anime token. NFT marketplace live—buy, sell, and earn rewards. 100% LP burned, verified wallets, on-chain NFT roles. Join us on Telegram, X, Discord, TikTok." />
+        <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
+        <meta name="description" content="Join the ANIME token community on Solana! NFT marketplace live with NFTs to buy, sell & earn. How to join: Discord, Telegram, X, TikTok. 100% LP burned, verified wallets." />
         <link rel="canonical" href={pageUrl} />
-        <meta property="og:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | NFT Rewards, Transparent Wallets, 100% LP Burned" />
+        <meta property="og:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More" />
         <meta property="og:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
@@ -171,7 +171,7 @@ const Index = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@AnimeDotToken" />
         <meta name="twitter:creator" content="@AnimeDotToken" />
-        <meta name="twitter:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | NFT Rewards, Transparent Wallets, 100% LP Burned" />
+        <meta name="twitter:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More" />
         <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
