@@ -43,7 +43,8 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
-  const shareBase = typeof window !== 'undefined' ? window.location.origin : 'https://animedottoken.com';
+  // Use the production domain for social sharing to ensure proper OG metadata
+  const shareBase = "https://animedottoken.com";
   const pageUrl = shareBase;
   const sharePageUrl = `${shareBase}/share-army.html?v=12`;
   const shareImage = `${shareBase}/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png`;
@@ -55,8 +56,8 @@ const Index = () => {
   const shareUrls = useMemo(() => ({
     x: shareUrlX,
     telegram: shareUrlTelegram,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePageUrl)}`,
-  }), [shareUrlX, shareUrlTelegram, sharePageUrl]);
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://animedottoken.com")}&quote=${encodeURIComponent(shareText)}`,
+  }), [shareUrlX, shareUrlTelegram, shareText]);
 
   const copyShare = async () => {
     try {
