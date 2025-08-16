@@ -33,12 +33,13 @@ serve(async (req) => {
       })
     }
 
-    // Get submission details from the public view
+    // Get submission details directly from community_submissions (approved only)
     const submissionIds = featuredContent?.map(item => item.submission_id) || []
     const { data: submissions, error: submissionsError } = await supabaseClient
-      .from('public_submissions')
+      .from('community_submissions')
       .select('id, image_url, caption, author, type, created_at')
       .in('id', submissionIds)
+      .eq('status', 'approved')
 
     if (submissionsError) {
       console.error('Error fetching submissions:', submissionsError)

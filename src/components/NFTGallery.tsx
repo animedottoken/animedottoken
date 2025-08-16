@@ -272,11 +272,8 @@ export function NFTGallery() {
 
   const fetchApprovedSubmissions = async () => {
     try {
-      const { data, error } = await supabase
-        .from('public_submissions')
-        .select('*')
-        .order('created_at', { ascending: false }); // Sort by date uploaded (newest first)
-
+      const { data, error } = await supabase.functions.invoke('get-approved-submissions');
+      
       if (error) {
         console.error('Error fetching approved submissions:', error);
         toast({
@@ -286,9 +283,10 @@ export function NFTGallery() {
         });
       } else {
         // Transform submissions to match NFT format
-        const transformedSubmissions = data.map(submission => ({
+        const submissions = data?.submissions || [];
+        const transformedSubmissions = submissions.map((submission: any) => ({
           id: submission.id,
-          name: (submission as any).name || 'Untitled',
+          name: submission.name || 'Untitled',
           creator: submission.author,
           image: submission.image_url,
           description: submission.caption,

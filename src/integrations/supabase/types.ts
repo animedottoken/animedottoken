@@ -129,50 +129,9 @@ export type Database = {
       }
     }
     Views: {
-      public_submissions: {
-        Row: {
-          author: string | null
-          author_bio: string | null
-          caption: string | null
-          created_at: string | null
-          edition_type: Database["public"]["Enums"]["edition_type"] | null
-          id: string | null
-          image_url: string | null
-          name: string | null
-          nft_address: string | null
-          status: Database["public"]["Enums"]["submission_status"] | null
-          submission_source:
-            | Database["public"]["Enums"]["submission_source"]
-            | null
-          tags: string[] | null
-          theme: Database["public"]["Enums"]["theme_type"] | null
-          type: Database["public"]["Enums"]["submission_type"] | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      get_approved_submissions: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          author: string
-          author_bio: string
-          caption: string
-          created_at: string
-          edition_type: Database["public"]["Enums"]["edition_type"]
-          id: string
-          image_url: string
-          name: string
-          nft_address: string
-          status: Database["public"]["Enums"]["submission_status"]
-          submission_source: Database["public"]["Enums"]["submission_source"]
-          tags: string[]
-          theme: Database["public"]["Enums"]["theme_type"]
-          type: Database["public"]["Enums"]["submission_type"]
-          updated_at: string
-        }[]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
