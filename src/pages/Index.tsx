@@ -158,7 +158,7 @@ const Index = () => {
     <main className="min-h-screen py-12 md:py-20 container">
       <Helmet>
         <title>ANIME.TOKEN | Community-Driven Solana Anime Token | NFT Rewards, Transparent Wallets, 100% LP Burned</title>
-        <meta name="description" content="Official home of $ANIME on Solana. Community-driven vision, trust & verification, how to buy, and links to Telegram, X, Discord, and TikTok." />
+        <meta name="description" content="Official home of $ANIME on Solana. Community-driven anime token. NFT rewards, verified wallets, 100% LP burned. NFT marketplace launching soon—join Telegram, X, Discord, and TikTok." />
         <link rel="canonical" href={pageUrl} />
         <meta property="og:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | NFT Rewards, Transparent Wallets, 100% LP Burned" />
         <meta property="og:description" content="$ANIME is a truly community-driven project on Solana." />
