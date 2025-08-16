@@ -25,7 +25,7 @@ import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 // Social media icons and chevron for collapsibles
-import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube } from "react-icons/si";
+import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
 import { ChevronDown, Copy } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
@@ -54,7 +54,8 @@ const Index = () => {
   const shareUrls = useMemo(() => ({
     x: shareUrlX,
     telegram: shareUrlTelegram,
-  }), [shareUrlX, shareUrlTelegram]);
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePageUrl)}`,
+  }), [shareUrlX, shareUrlTelegram, sharePageUrl]);
 
   const copyShare = async () => {
     try {
@@ -97,6 +98,17 @@ const Index = () => {
       action: {
         label: "Open Instagram",
         onClick: () => window.open("https://www.instagram.com/create/select/", "_blank"),
+      },
+    });
+  };
+
+  const copyForFacebook = async () => {
+    await navigator.clipboard.writeText(`${shareText} ${sharePageUrl}`);
+    toast("Copied for Facebook", {
+      description: "Paste the text into your post.",
+      action: {
+        label: "Open Facebook",
+        onClick: () => window.open(shareUrls.facebook, "_blank"),
       },
     });
   };
@@ -452,51 +464,58 @@ const Index = () => {
           </picture>
           </div>
           <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
-          <div className="mt-5 space-y-4">
-            <div aria-labelledby="share-social">
-              <h3 id="share-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
-              <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                 <Button asChild variant="glass">
                   <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
                     <SiX className="h-4 w-4" aria-hidden="true" />
                     Share on X/Twitter
                   </a>
                 </Button>
-                <Button variant="glass" onClick={() => window.open("https://www.instagram.com/create/select/", "_blank")}>
-                  <SiInstagram className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Open Instagram
+
+                <Button onClick={copyShare} variant="glass" className="inline-flex items-center gap-2">
+                  <Copy className="h-4 w-4" aria-hidden="true" />
+                  Copy Share Text
                 </Button>
-              </div>
-            </div>
-            <div aria-labelledby="share-community">
-              <h3 id="share-community" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Community</h3>
-              <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
+
                 <Button asChild variant="glass">
                   <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
                     <SiTelegram className="h-4 w-4" aria-hidden="true" />
                     Share on Telegram
                   </a>
                 </Button>
-                <Button variant="glass" onClick={() => window.open("https://discord.com/channels/@me", "_blank")}>
-                  <SiDiscord className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Open Discord
+
+                <Button asChild variant="glass">
+                  <a href={shareUrls.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                    <SiFacebook className="h-4 w-4" aria-hidden="true" />
+                    Share on Facebook
+                  </a>
+                </Button>
+
+                <Button onClick={copyForDiscord} variant="glass" className="inline-flex items-center gap-2">
+                  <SiDiscord className="h-4 w-4" aria-hidden="true" />
+                  Copy for Discord
+                </Button>
+
+                <Button onClick={copyForTikTok} variant="glass" className="inline-flex items-center gap-2">
+                  <SiTiktok className="h-4 w-4" aria-hidden="true" />
+                  Copy for TikTok
+                </Button>
+
+                <Button onClick={copyForInstagram} variant="glass" className="inline-flex items-center gap-2">
+                  <SiInstagram className="h-4 w-4" aria-hidden="true" />
+                  Copy for Instagram
+                </Button>
+
+                <Button onClick={copyForFacebook} variant="glass" className="inline-flex items-center gap-2">
+                  <SiFacebook className="h-4 w-4" aria-hidden="true" />
+                  Copy for Facebook
+                </Button>
+
+                <Button onClick={copyForYouTube} variant="glass" className="inline-flex items-center gap-2">
+                  <SiYoutube className="h-4 w-4" aria-hidden="true" />
+                  Copy for YouTube
                 </Button>
               </div>
-            </div>
-            <div aria-labelledby="share-video">
-              <h3 id="share-video" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</h3>
-              <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button variant="glass" onClick={() => window.open("https://www.tiktok.com/tiktokstudio/upload", "_blank")}>
-                  <SiTiktok className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Open TikTok
-                </Button>
-                <Button variant="glass" onClick={() => window.open("https://www.youtube.com/upload", "_blank")}>
-                  <SiYoutube className="h-4 w-4 mr-2" aria-hidden="true" />
-                  Open YouTube
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
 
         <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -650,6 +669,7 @@ const Index = () => {
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />Twitter (X)</a></Button>
+              <Button asChild variant="glass"><a href="https://www.facebook.com/animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
               <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/?hl=en" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
             </div>
           </div>
@@ -692,6 +712,7 @@ const Index = () => {
         url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080',
         sameAs: [
           'https://x.com/AnimeDotToken',
+          'https://www.facebook.com/animedottoken',
           'https://t.me/AnimeDotTokenCommunity',
           'https://discord.gg/HmSJdT5MRX',
           'https://www.tiktok.com/@animedottoken',
