@@ -765,8 +765,8 @@ useEffect(() => {
                     className="flex-1"
                     onClick={() => {
                       const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
-                      const cleanUrl = window.location.origin; // Just use the base URL
-                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cleanUrl)}`;
+                      const shareUrl = `${window.location.origin}/share/nft/${selectedNFT.id}`;
+                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
                       window.open(twitterUrl, '_blank');
                     }}
                   >
