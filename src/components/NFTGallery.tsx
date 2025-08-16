@@ -355,7 +355,7 @@ useEffect(() => {
 
       {/* Community Favorites Section */}
       <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favorites</h3>
+        <h3 className="text-xl font-semibold mb-6 text-center">🌟 Community Favourites NFTs</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {communityFavorites.map((nft, index) => {
             const rankIcons = ['🥇', '🥈', '🥉', '🏅']; // Platinum, Gold, Silver, Bronze
@@ -417,7 +417,7 @@ useEffect(() => {
           size="lg"
           className="border-primary bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         >
-          {showMoreArtworks ? 'See Less' : 'See More'} Art Works ({filteredAdditionalArtworks.length})
+          {showMoreArtworks ? 'See Less' : 'See More'} NFTs Art Works ({filteredAdditionalArtworks.length})
         </Button>
       </div>
 
