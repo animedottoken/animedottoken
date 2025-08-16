@@ -33,20 +33,20 @@ serve(async (req) => {
       })
     }
 
-    // Get submission details from public_submissions view (secure, no contact info)
+    // Get submission details via secure RPC (avoids security definer views)
     const submissionIds = featuredContent?.map(item => item.submission_id) || []
-    const { data: submissions, error: submissionsError } = await supabaseClient
-      .from('public_submissions')
-      .select('id, image_url, caption, author, type, created_at')
-      .in('id', submissionIds)
+    const { data: allApproved, error: submissionsError } = await supabaseClient
+      .rpc('get_public_submissions')
 
     if (submissionsError) {
-      console.error('Error fetching submissions:', submissionsError)
+      console.error('Error fetching submissions via RPC:', submissionsError)
       return new Response(JSON.stringify({ error: submissionsError.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
+
+    const submissions = (allApproved || []).filter((sub: any) => submissionIds.includes(sub.id))
 
     // Transform the data to match expected format
     const transformedData = featuredContent?.map(featuredItem => {
