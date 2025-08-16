@@ -105,13 +105,35 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <span aria-hidden className="text-2xl">🌱</span>
-              Community-Led Revival
+              A Treasury for the Revival
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <p className="text-muted-foreground">
-              The ANIME project has been revived by its strong and growing community of over <span className="font-semibold text-foreground">{holders ? holders.toLocaleString() : "1,300+"}</span> holders. To honor this trust and commit to long-term growth, we have established the official Revival Wallet, which is publicly viewable by everyone. These funds are dedicated to building the ecosystem and supporting our community, not for selling.
-            </p>
+            <div className="space-y-3 text-muted-foreground">
+              <p>
+                To fuel the community-led revival and ensure long-term growth, the official ANIME Revival & Ecosystem Fund has been established. This is not a private team wallet; it is a <span className="font-semibold text-foreground">publicly viewable treasury</span> dedicated to the project's success.
+              </p>
+              <p>
+                It holds <span className="font-semibold text-foreground">11.18% (109,000,000 $ANIME)</span> of the current token supply. These funds are the project's "war chest" and will be used exclusively for strategic growth, including marketing, exchange listings, and future development.
+              </p>
+              <p className="font-medium text-foreground">
+                Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
+              </p>
+              <div className="bg-muted/50 p-3 rounded-lg">
+                <p className="text-sm font-medium text-foreground mb-2">View the Fund live on Solscan:</p>
+                <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
+                  <span className="text-muted-foreground break-all">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8')}
+                    aria-label="Copy wallet address to clipboard"
+                  >
+                    Copy Address
+                  </Button>
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button asChild variant="hero">
                 <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
