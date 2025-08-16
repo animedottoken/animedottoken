@@ -83,7 +83,7 @@ const communityFavorites = [
     metadataUrl: "https://solscan.io/account/example4",
     status: "Always Available",
     statusType: "unlimited" as const,
-    isLimited: false,
+    isLimited: true,
     isExclusive: false,
     maxSupply: "Unlimited",
     likes: 998
@@ -200,7 +200,7 @@ const additionalArtworks = [
     metadataUrl: "https://solscan.io/account/example10",
     status: "Available",
     statusType: "available" as const,
-    isLimited: false,
+    isLimited: true,
     isExclusive: true,
     maxSupply: "150",
     likes: 789
@@ -238,7 +238,7 @@ const additionalArtworks = [
     metadataUrl: "https://solscan.io/account/example12",
     status: "Available",
     statusType: "available" as const,
-    isLimited: false,
+    isLimited: true,
     isExclusive: false,
     maxSupply: "500",
     likes: 2156
