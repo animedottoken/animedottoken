@@ -130,23 +130,6 @@ export function FeaturedCommunityContent() {
         ))}
       </div>
 
-      {/* How to Buy Button */}
-      <div className="text-center mt-8">
-        <Button 
-          variant="default" 
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-3"
-          onClick={() => {
-            const howToBuySection = document.querySelector('.how-to-buy-section');
-            if (howToBuySection) {
-              howToBuySection.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}
-        >
-          How to Buy $ANIME
-        </Button>
-      </div>
-
       {/* Community Item Details Modal */}
       <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
