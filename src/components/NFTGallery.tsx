@@ -469,25 +469,50 @@ export function NFTGallery() {
     document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Navigation between NFTs
-  const getAllNFTs = () => [...communityFavorites, ...allAdditionalArtworks];
+  // Navigation between NFTs - respects current filters
+  const getFilteredNFTs = () => {
+    const allNFTs = [...communityFavorites, ...allAdditionalArtworks];
+    
+    return allNFTs.filter(nft => {
+      // Apply mandatory tags filter
+      if (selectedMandatoryTags.size > 0 && !selectedMandatoryTags.has(nft.mandatoryTag)) {
+        return false;
+      }
+
+      // Apply optional tags filter
+      if (selectedOptionalTags.size > 0) {
+        const matchesOptional = Array.from(selectedOptionalTags).every(tag => {
+          if (tag === "Limited") return nft.isLimited;
+          return nft.optionalTags?.includes(tag);
+        });
+        if (!matchesOptional) return false;
+      }
+
+      // Apply favorites filter
+      if (showMyFavorites && !likedNFTs.has(nft.id)) {
+        return false;
+      }
+
+      return true;
+    });
+  };
   
   const navigateToNFT = (direction: 'prev' | 'next') => {
     if (!selectedNFT) return;
     
-    const allNFTs = getAllNFTs();
-    const currentIndex = allNFTs.findIndex(nft => nft.id === selectedNFT.id);
+    const filteredNFTs = getFilteredNFTs();
+    const currentIndex = filteredNFTs.findIndex(nft => nft.id === selectedNFT.id);
     
     if (currentIndex === -1) return;
     
     let newIndex;
     if (direction === 'prev') {
-      newIndex = currentIndex > 0 ? currentIndex - 1 : allNFTs.length - 1;
+      newIndex = currentIndex > 0 ? currentIndex - 1 : filteredNFTs.length - 1;
     } else {
-      newIndex = currentIndex < allNFTs.length - 1 ? currentIndex + 1 : 0;
+      newIndex = currentIndex < filteredNFTs.length - 1 ? currentIndex + 1 : 0;
     }
     
-    setSelectedNFT(allNFTs[newIndex]);
+    setSelectedNFT(filteredNFTs[newIndex]);
   };
 
   // Keyboard navigation
@@ -802,27 +827,23 @@ export function NFTGallery() {
                         />
                       )}
                     </div>
-                    {/* Scoped Navigation Arrows over media only - disabled when filters active */}
-                    {selectedMandatoryTags.size === 0 && selectedOptionalTags.size === 0 && !showMyFavorites && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => navigateToNFT('prev')}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => navigateToNFT('next')}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </Button>
-                      </>
-                    )}
+                     {/* Scoped Navigation Arrows over media only */}
+                     <Button
+                       variant="outline"
+                       size="icon"
+                       onClick={() => navigateToNFT('prev')}
+                       className="absolute left-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
+                     >
+                       <ChevronLeft className="w-5 h-5" />
+                     </Button>
+                     <Button
+                       variant="outline"
+                       size="icon"
+                       onClick={() => navigateToNFT('next')}
+                       className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
+                     >
+                       <ChevronRight className="w-5 h-5" />
+                     </Button>
                   </div>
                   
                   {/* Action Buttons */}
