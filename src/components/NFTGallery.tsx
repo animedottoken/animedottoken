@@ -797,12 +797,12 @@ export function NFTGallery() {
             )}
             
             {selectedNFT && (
-              <div className="grid md:grid-cols-3 gap-6 p-6 flex-1 overflow-y-auto min-h-0">{/* This container will scroll internally if needed */}
+              <div className="grid md:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden min-h-0 items-start">{/* This container will scroll internally if needed */}
               {/* Image Section - takes 2 columns for more space */}
-              <div className="md:col-span-2 space-y-4">
-                <div className="group relative max-w-lg mx-auto">
+              <div className="md:col-span-2 space-y-3">
+                <div className="group relative mx-auto h-[70vh] w-full">
                   <div 
-                    className="aspect-square overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
+                    className="h-full overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
                     onClick={() => {
                       const overlay = document.createElement('div');
                       overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;';
@@ -862,7 +862,7 @@ export function NFTGallery() {
                     {selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/') ? (
                       <video 
                         src={selectedNFT.image}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                         muted
                         loop
                         autoPlay
@@ -871,11 +871,11 @@ export function NFTGallery() {
                       <img 
                         src={selectedNFT.image}
                         alt={selectedNFT.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground text-center mt-2">Click to view fullscreen</p>
+                  
                 </div>
                 
                 {/* Action Buttons */}
@@ -934,7 +934,7 @@ export function NFTGallery() {
               </div>
 
               {/* Details Section - takes 1 column, more narrow */}
-              <div className="space-y-6">
+              <div className="space-y-4 max-h-[70vh] overflow-auto pr-2">
                 {/* Name, Description, Creator Group */}
                 <div className="space-y-3">
                   <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
