@@ -521,10 +521,10 @@ export function NFTGallery() {
 {/* Additional Artworks Grid */}
       {showMoreArtworks && (
         <div className="relative">          
-          {/* Filter Controls */}
-          <div className="mb-6 space-y-4">
-            {/* My Favorites Toggle - Top Position with Heart */}
-            <div className="flex justify-center gap-2">
+          {/* Filter Controls - One Row Layout */}
+          <div className="mb-6">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {/* My Favorites */}
               <Button
                 variant={showMyFavorites ? "default" : "outline"}
                 size="sm"
@@ -540,6 +540,66 @@ export function NFTGallery() {
                 <Heart className={`w-4 h-4 ${showMyFavorites ? 'fill-current' : ''}`} />
                 My Favorites {likedNFTs.size > 0 && `(${likedNFTs.size})`}
               </Button>
+
+              {/* Separator */}
+              <div className="w-px h-6 bg-border mx-2"></div>
+
+              {/* Primary Tags */}
+              {mandatoryTags.map((tag) => (
+                <Button
+                  key={tag}
+                  variant={activeMandatoryTag === tag ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveMandatoryTag(tag)}
+                  className={`
+                    transition-all duration-200 
+                    ${activeMandatoryTag === tag 
+                      ? 'bg-primary text-primary-foreground shadow-md' 
+                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                    }
+                  `}
+                >
+                  {tag}
+                </Button>
+              ))}
+
+              {/* Separator */}
+              <div className="w-px h-6 bg-border mx-2"></div>
+
+              {/* Optional Tags */}
+              {optionalTags.map((tag) => (
+                <Button
+                  key={tag}
+                  variant={selectedOptionalTags.has(tag) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    const newTags = new Set(selectedOptionalTags);
+                    if (selectedOptionalTags.has(tag)) {
+                      newTags.delete(tag);
+                    } else if (selectedOptionalTags.size < 3) {
+                      newTags.add(tag);
+                    } else {
+                      toast.error("Maximum 3 optional tags allowed");
+                      return;
+                    }
+                    setSelectedOptionalTags(newTags);
+                  }}
+                  className={`
+                    transition-all duration-200 
+                    ${selectedOptionalTags.has(tag)
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
+                    }
+                  `}
+                >
+                  {tag}
+                </Button>
+              ))}
+
+              {/* Separator */}
+              <div className="w-px h-6 bg-border mx-2"></div>
+
+              {/* Delete Filters */}
               <Button
                 variant="outline"
                 size="sm"
@@ -552,65 +612,6 @@ export function NFTGallery() {
               >
                 Delete filters
               </Button>
-            </div>
-
-            {/* Primary Tags */}
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag (max 1)</h4>
-              <div className="flex flex-wrap justify-center gap-2">
-                {mandatoryTags.map((tag) => (
-                  <Button
-                    key={tag}
-                    variant={activeMandatoryTag === tag ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveMandatoryTag(tag)}
-                    className={`
-                      transition-all duration-200 
-                      ${activeMandatoryTag === tag 
-                        ? 'bg-primary text-primary-foreground shadow-md' 
-                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                      }
-                    `}
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Optional Tags */}
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Optional Tags (max 3)</h4>
-              <div className="flex flex-wrap justify-center gap-2">
-                {optionalTags.map((tag) => (
-                  <Button
-                    key={tag}
-                    variant={selectedOptionalTags.has(tag) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      const newTags = new Set(selectedOptionalTags);
-                      if (selectedOptionalTags.has(tag)) {
-                        newTags.delete(tag);
-                      } else if (selectedOptionalTags.size < 3) {
-                        newTags.add(tag);
-                      } else {
-                        toast.error("Maximum 3 optional tags allowed");
-                        return;
-                      }
-                      setSelectedOptionalTags(newTags);
-                    }}
-                    className={`
-                      transition-all duration-200 
-                      ${selectedOptionalTags.has(tag)
-                        ? 'bg-primary text-primary-foreground shadow-md'
-                        : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                      }
-                    `}
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
             </div>
           </div>
           
