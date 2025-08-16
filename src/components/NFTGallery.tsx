@@ -342,6 +342,8 @@ export function NFTGallery() {
   
   // Filter logic for additional artworks
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
+    console.log('Filtering NFT:', nft.id, 'selectedMandatoryTags:', selectedMandatoryTags.size);
+    
     // Check mandatory tag filter (if none selected, show all)
     const matchesMandatory = selectedMandatoryTags.size === 0 || selectedMandatoryTags.has(nft.mandatoryTag);
     
