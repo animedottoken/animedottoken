@@ -113,6 +113,13 @@ export type Database = {
             referencedRelation: "community_submissions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "featured_content_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "public_approved_submissions"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -138,7 +145,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_approved_submissions: {
+        Row: {
+          artist_nickname: string | null
+          author: string | null
+          caption: string | null
+          created_at: string | null
+          edition_type: Database["public"]["Enums"]["edition_type"] | null
+          id: string | null
+          image_url: string | null
+          name: string | null
+          price: string | null
+          solscan_link: string | null
+          tags: string[] | null
+          theme: Database["public"]["Enums"]["theme_type"] | null
+          type: Database["public"]["Enums"]["submission_type"] | null
+        }
+        Insert: {
+          artist_nickname?: string | null
+          author?: string | null
+          caption?: string | null
+          created_at?: string | null
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          price?: string | null
+          solscan_link?: string | null
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
+          type?: Database["public"]["Enums"]["submission_type"] | null
+        }
+        Update: {
+          artist_nickname?: string | null
+          author?: string | null
+          caption?: string | null
+          created_at?: string | null
+          edition_type?: Database["public"]["Enums"]["edition_type"] | null
+          id?: string | null
+          image_url?: string | null
+          name?: string | null
+          price?: string | null
+          solscan_link?: string | null
+          tags?: string[] | null
+          theme?: Database["public"]["Enums"]["theme_type"] | null
+          type?: Database["public"]["Enums"]["submission_type"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_public_submissions: {
