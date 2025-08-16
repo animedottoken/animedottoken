@@ -880,9 +880,9 @@ export function NFTGallery() {
                 </div>
 
                 {/* Details Section - Always visible */}
-                <div className="space-y-4 lg:max-h-[70vh] flex flex-col">
+                <div className="flex flex-col h-full max-h-[70vh]">
                   {/* Scrollable content area */}
-                  <div className="flex-1 lg:overflow-auto space-y-4">
+                  <div className="flex-1 overflow-auto space-y-4 pr-2">
                     {/* Name, Description, Creator Group */}
                     <div className="space-y-3">
                       <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
@@ -890,17 +890,6 @@ export function NFTGallery() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">Created by</span>
                         <span className="font-semibold text-primary">{selectedNFT.creator}</span>
-                      </div>
-                    </div>
-
-                    {/* Price Section - Prominent Display */}
-                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
-                      <div className="text-center">
-                        <span className="text-sm text-muted-foreground block mb-1">Price</span>
-                        <p className="text-3xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
-                        {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
-                          <p className="text-sm text-muted-foreground mt-1">≈ {(selectedNFT as any).priceANIME}</p>
-                        )}
                       </div>
                     </div>
 
@@ -943,31 +932,45 @@ export function NFTGallery() {
                     )}
                   </div>
 
-                  {/* Purchase Button */}
-                  <div className="space-y-3 flex-shrink-0">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2 py-3"
-                      onClick={() => {
-                        const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
-                        
-                        navigator.clipboard.writeText(purchaseMessage).then(() => {
-                          setShowPurchasePopup(true);
-                        }).catch(() => {
-                          // Fallback if clipboard API fails
-                          setShowPurchasePopup(true);
-                          toast.error("Could not copy to clipboard", {
-                            description: "Please manually type your purchase request in Discord"
+                  {/* Price Section - Always Visible (Sticky Bottom) */}
+                  <div className="flex-shrink-0 border-t border-border/50 pt-4 mt-4 space-y-4 bg-background">
+                    {/* Price Section - Prominent Display */}
+                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
+                      <div className="text-center">
+                        <span className="text-sm text-muted-foreground block mb-1">Price</span>
+                        <p className="text-3xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
+                        {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
+                          <p className="text-sm text-muted-foreground mt-1">≈ {(selectedNFT as any).priceANIME}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Purchase Button */}
+                    <div className="space-y-3">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2 py-3"
+                        onClick={() => {
+                          const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
+                          
+                          navigator.clipboard.writeText(purchaseMessage).then(() => {
+                            setShowPurchasePopup(true);
+                          }).catch(() => {
+                            // Fallback if clipboard API fails
+                            setShowPurchasePopup(true);
+                            toast.error("Could not copy to clipboard", {
+                              description: "Please manually type your purchase request in Discord"
+                            });
                           });
-                        });
-                      }}
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                      Start Purchase on Discord
-                    </Button>
-                    
-                    <p className="text-xs text-muted-foreground text-center leading-tight">
-                      To ensure security, all purchases are handled manually by our official Escrow service on Discord.
-                    </p>
+                        }}
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Start Purchase on Discord
+                      </Button>
+                      
+                      <p className="text-xs text-muted-foreground text-center leading-tight">
+                        To ensure security, all purchases are handled manually by our official Escrow service on Discord.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
