@@ -103,12 +103,7 @@ export function FeaturedCommunityContent() {
               </div>
             
             <div className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline" className="text-xs border-dashed">
-                  {emptySlot.sample ? "Sample" : "Your Spot"}
-                </Badge>
-              </div>
-              {!emptySlot.sample && <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>}
+              <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>
               <p className="text-sm text-muted-foreground">
                 {emptySlot.description}
               </p>
