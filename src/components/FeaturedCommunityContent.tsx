@@ -2,14 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Upload, ExternalLink, Users } from "lucide-react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
+import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
+import sampleAnimeMeme from "@/assets/sample-anime-meme.jpg";
 
 const emptySlots = [
   { 
-    placeholder: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png",
-    overlay: "Sample Post",
-    cta: "Example: a strong X post that got great engagement.",
+    placeholder: sampleTwitterPost,
+    overlay: "Viral X Post",
+    cta: "This post got 10K+ engagements!",
     type: "post",
     sample: true,
+    title: "@CryptoSamurai_",
+    description: "Shared their $ANIME journey and got massive community love!"
   },
   { 
     placeholder: communityPlaceholder,
@@ -17,13 +21,17 @@ const emptySlots = [
     cta: "Submit your work to be featured!",
     type: "art",
     sample: false,
+    title: "Your Spot",
+    description: "Submit your amazing art to be featured here!"
   },
   { 
-    placeholder: "/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png",
-    overlay: "Sample Meme",
-    cta: "Anime meme example that made people laugh!",
+    placeholder: sampleAnimeMeme,
+    overlay: "Top Community Meme",
+    cta: "Made everyone laugh for days!",
     type: "meme",
     sample: true,
+    title: "@MemeLord_Otaku",
+    description: "Created the funniest $ANIME meme that went viral!"
   }
 ];
 
@@ -100,8 +108,9 @@ export function FeaturedCommunityContent() {
                   {emptySlot.sample ? "Sample" : "Your Spot"}
                 </Badge>
               </div>
+              <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>
               <p className="text-sm text-muted-foreground">
-                Submit your amazing art to be featured here!
+                {emptySlot.description}
               </p>
             </div>
           </div>
