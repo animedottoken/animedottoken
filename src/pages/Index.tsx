@@ -1,18 +1,20 @@
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import JSZip from "jszip";
 import heroOptimized from "@/assets/hero-optimized.webp";
+
+// Lazy load heavy components  
+const NFTGallery = lazy(() => import("@/components/NFTGallery").then(m => ({ default: m.NFTGallery })));
+const MarketCapChart = lazy(() => import("@/components/MarketCapChart").then(m => ({ default: m.MarketCapChart })));
+const FeaturedCommunityContent = lazy(() => import("@/components/FeaturedCommunityContent").then(m => ({ default: m.FeaturedCommunityContent })));
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
-import { MarketCapChart } from "@/components/MarketCapChart";
 import { NFTSupporterSection } from "@/components/NFTSupporterSection";
 import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { LiveStatsCounter } from "@/components/LiveStatsCounter";
-import { FeaturedCommunityContent } from "@/components/FeaturedCommunityContent";
-import { NFTGallery } from "@/components/NFTGallery";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 // Social media icons and chevron for collapsibles
@@ -238,7 +240,9 @@ const Index = () => {
         </div>
       </div>
 
-      <FeaturedCommunityContent />
+      <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-32"></div>}>
+        <FeaturedCommunityContent />
+      </Suspense>
 
       {/* Prominent How to Buy Button */}
       <section className="mx-auto mt-12 mb-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -281,7 +285,9 @@ const Index = () => {
         </div>
         
         <div className="mt-8 market-cap-chart">
-          <MarketCapChart />
+          <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-64"></div>}>
+            <MarketCapChart />
+          </Suspense>
         </div>
       </section>
 
@@ -591,7 +597,9 @@ const Index = () => {
       <NFTSupporterSection />
 
       <div className="nft-gallery">
-        <NFTGallery />
+        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-48"></div>}>
+          <NFTGallery />
+        </Suspense>
       </div>
 
       <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">

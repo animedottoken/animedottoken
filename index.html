@@ -12,6 +12,15 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Performance optimizations -->
+    <link rel="preload" href="/src/assets/hero-optimized.webp" as="image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    
+    <!-- Critical CSS hint -->
+    <link rel="preload" href="/src/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
     <meta name="description" content="Join the ANIME token community on Solana! Learn how to earn with our live NFT marketplace. How to join Discord, Telegram, X, TikTok. 100% LP burned." />
     <meta name="author" content="ANIME Token" />
