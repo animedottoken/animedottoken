@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useState, lazy, Suspense, useMemo } from "react";
+import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import heroOptimized from "@/assets/hero-optimized.webp";
@@ -111,6 +111,28 @@ const Index = () => {
       },
     });
   };
+
+  // Optimize images with intersection observer for better mobile performance
+  useEffect(() => {
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            img.src = img.dataset.src || img.src;
+            img.classList.remove('lazy');
+            imageObserver.unobserve(img);
+          }
+        });
+      }, { rootMargin: '50px 0px' });
+
+      images.forEach((img) => imageObserver.observe(img));
+      
+      return () => imageObserver.disconnect();
+    }
+  }, []);
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
