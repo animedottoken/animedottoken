@@ -798,178 +798,179 @@ export function NFTGallery() {
             )}
             
             {selectedNFT && (
-              <div className="grid md:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden min-h-0 items-start">{/* This container will scroll internally if needed */}
-              {/* Image Section - takes 2 columns for more space */}
-              <div className="md:col-span-2 space-y-3">
-                <div className="group relative mx-auto h-[70vh] w-full">
-                  <div 
-                    className="h-full overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
-                    onClick={() => setIsMediaOverlayOpen(true)}
-                  >
-                    {selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/') ? (
-                      <video 
-                        src={selectedNFT.image}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                        muted
-                        loop
-                        autoPlay
-                      />
-                    ) : (
-                      <img 
-                        src={selectedNFT.image}
-                        alt={selectedNFT.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                      />
-                    )}
-                  </div>
-                  
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex gap-2 max-w-lg mx-auto">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      // Check if this is a sample NFT (has example URL)
-                      if (selectedNFT.metadataUrl && selectedNFT.metadataUrl.includes("example")) {
-                        toast.info("Sample NFT", {
-                          description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
-                        });
-                      } else if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
-                        window.open(selectedNFT.metadataUrl, '_blank');
-                      } else {
-                        toast.error("No Solscan link available", {
-                          description: "This NFT doesn't have a verified address for Solscan viewing",
-                        });
-                      }
-                    }}
-                    className="flex-1"
-                    disabled={false}
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View on Solscan
-                  </Button>
-                  
-                  <Button
-                    variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
-                    className="flex items-center gap-2"
-                  >
-                     <Heart 
-                       className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
-                     />
-                     Like
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => {
-                      const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
-                      const shareUrl = `${window.location.origin}/share/nft/${selectedNFT.id}`;
-                      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-                      window.open(twitterUrl, '_blank');
-                    }}
-                  >
-                    <Share className="w-4 h-4 mr-2" />
-                    Share
-                  </Button>
-                </div>
-              </div>
-
-              {/* Details Section - takes 1 column, more narrow */}
-              <div className="space-y-2.5 max-h-[70vh] flex flex-col pr-2">
-                {/* Scrollable content area */}
-                <div className="flex-1 overflow-auto space-y-2.5 min-h-0">
-                  {/* Name, Description, Creator Group */}
-                  <div className="space-y-2">
-                    <h2 className="text-xl font-bold">{selectedNFT.name}</h2>
-                    <p className="text-muted-foreground text-sm line-clamp-3">{selectedNFT.description}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Created by</span>
-                      <span className="font-medium text-sm">{selectedNFT.creator}</span>
-                    </div>
-                  </div>
-
-                  {/* Max Supply and Likes Group */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="text-center p-2 bg-secondary/20 rounded-md">
-                      <span className="text-xs text-muted-foreground block">Max supply</span>
-                      <p className="text-lg font-bold text-primary">{selectedNFT.maxSupply}</p>
-                    </div>
-                    <div className="text-center p-2 bg-secondary/20 rounded-md">
-                      <span className="text-xs text-muted-foreground block">Likes</span>
-                      <div className="flex items-center justify-center gap-1">
-                        <Heart className="w-3 h-3 text-red-500 fill-current" />
-                        <span className="text-lg font-bold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tags */}
-                  <div>
-                    <span className="text-xs text-muted-foreground block mb-1">Tags</span>
-                    <div className="flex flex-wrap gap-1">
-                       <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-                         {selectedNFT.mandatoryTag}
-                       </Badge>
-                      {selectedNFT.optionalTags?.map((tag: string, idx: number) => (
-                        <Badge key={idx} variant="outline" className="text-xs px-1.5 py-0.5">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Additional Info for Community Uploads */}
-                  {(selectedNFT as any).authorBio && (
-                    <div>
-                      <span className="text-xs text-muted-foreground block mb-1">Artist Bio</span>
-                      <p className="text-xs bg-muted p-2 rounded-md line-clamp-2">{(selectedNFT as any).authorBio}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Fixed bottom section - Price and Purchase */}
-                <div className="space-y-2 flex-shrink-0">
-                  <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-3">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
-                      {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
-                        <p className="text-xs text-muted-foreground">≈ {(selectedNFT as any).priceANIME}</p>
+              <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 p-6 flex-1 overflow-auto">
+                {/* Image Section */}
+                <div className="lg:col-span-2 space-y-3">
+                  <div className="group relative mx-auto h-[50vh] lg:h-[70vh] w-full">
+                    <div 
+                      className="h-full overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
+                      onClick={() => setIsMediaOverlayOpen(true)}
+                    >
+                      {selectedNFT.image.includes('video') || selectedNFT.image.startsWith('data:video/') ? (
+                        <video 
+                          src={selectedNFT.image}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          muted
+                          loop
+                          autoPlay
+                        />
+                      ) : (
+                        <img 
+                          src={selectedNFT.image}
+                          alt={selectedNFT.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        />
                       )}
                     </div>
                   </div>
-
-                  <Button 
-                    className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2 py-2.5"
-                    onClick={() => {
-                      const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
-                      
-                      navigator.clipboard.writeText(purchaseMessage).then(() => {
-                        setShowPurchasePopup(true);
-                      }).catch(() => {
-                        // Fallback if clipboard API fails
-                        setShowPurchasePopup(true);
-                        toast.error("Could not copy to clipboard", {
-                          description: "Please manually type your purchase request in Discord"
-                        });
-                      });
-                    }}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Start Purchase on Discord
-                  </Button>
                   
-                  <p className="text-xs text-muted-foreground text-center leading-tight">
-                    To ensure security, all purchases are handled manually by our official Escrow service on Discord.
-                  </p>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 max-w-lg mx-auto">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Check if this is a sample NFT (has example URL)
+                        if (selectedNFT.metadataUrl && selectedNFT.metadataUrl.includes("example")) {
+                          toast.info("Sample NFT", {
+                            description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
+                          });
+                        } else if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
+                          window.open(selectedNFT.metadataUrl, '_blank');
+                        } else {
+                          toast.error("No Solscan link available", {
+                            description: "This NFT doesn't have a verified address for Solscan viewing",
+                          });
+                        }
+                      }}
+                      className="flex-1"
+                      disabled={false}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View on Solscan
+                    </Button>
+                    
+                    <Button
+                      variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                      className="flex items-center gap-2"
+                    >
+                       <Heart 
+                         className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
+                       />
+                       Like
+                    </Button>
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => {
+                        const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
+                        const shareUrl = `${window.location.origin}/share/nft/${selectedNFT.id}`;
+                        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+                        window.open(twitterUrl, '_blank');
+                      }}
+                    >
+                      <Share className="w-4 h-4 mr-2" />
+                      Share
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Details Section - Always visible */}
+                <div className="space-y-4 lg:max-h-[70vh] flex flex-col">
+                  {/* Scrollable content area */}
+                  <div className="flex-1 lg:overflow-auto space-y-4">
+                    {/* Name, Description, Creator Group */}
+                    <div className="space-y-3">
+                      <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
+                      <p className="text-muted-foreground">{selectedNFT.description}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Created by</span>
+                        <span className="font-semibold text-primary">{selectedNFT.creator}</span>
+                      </div>
+                    </div>
+
+                    {/* Price Section - Prominent Display */}
+                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
+                      <div className="text-center">
+                        <span className="text-sm text-muted-foreground block mb-1">Price</span>
+                        <p className="text-3xl font-bold text-primary">{(selectedNFT as any).priceUSDC || selectedNFT.price}</p>
+                        {(selectedNFT as any).priceANIME && (selectedNFT as any).priceANIME !== (selectedNFT as any).priceUSDC && (
+                          <p className="text-sm text-muted-foreground mt-1">≈ {(selectedNFT as any).priceANIME}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Max Supply and Likes */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center p-3 bg-secondary/20 rounded-lg">
+                        <span className="text-sm text-muted-foreground block mb-1">Max Supply</span>
+                        <p className="text-xl font-bold text-primary">{selectedNFT.maxSupply}</p>
+                      </div>
+                      <div className="text-center p-3 bg-secondary/20 rounded-lg">
+                        <span className="text-sm text-muted-foreground block mb-1">Likes</span>
+                        <div className="flex items-center justify-center gap-1">
+                          <Heart className="w-4 h-4 text-red-500 fill-current" />
+                          <span className="text-xl font-bold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div>
+                      <span className="text-sm text-muted-foreground block mb-2">Tags</span>
+                      <div className="flex flex-wrap gap-2">
+                         <Badge variant="secondary" className="text-sm px-2 py-1">
+                           {selectedNFT.mandatoryTag}
+                         </Badge>
+                        {selectedNFT.optionalTags?.map((tag: string, idx: number) => (
+                          <Badge key={idx} variant="outline" className="text-sm px-2 py-1">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Additional Info for Community Uploads */}
+                    {(selectedNFT as any).authorBio && (
+                      <div>
+                        <span className="text-sm text-muted-foreground block mb-2">Artist Bio</span>
+                        <p className="text-sm bg-muted p-3 rounded-lg">{(selectedNFT as any).authorBio}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Purchase Button */}
+                  <div className="space-y-3 flex-shrink-0">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2 py-3"
+                      onClick={() => {
+                        const purchaseMessage = `Hi! I'm interested in purchasing the "${selectedNFT.name}" NFT by ${selectedNFT.creator}. Price: ${(selectedNFT as any).priceUSDC || selectedNFT.price}. Please guide me through the secure purchase process. Thanks!`;
+                        
+                        navigator.clipboard.writeText(purchaseMessage).then(() => {
+                          setShowPurchasePopup(true);
+                        }).catch(() => {
+                          // Fallback if clipboard API fails
+                          setShowPurchasePopup(true);
+                          toast.error("Could not copy to clipboard", {
+                            description: "Please manually type your purchase request in Discord"
+                          });
+                        });
+                      }}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      Start Purchase on Discord
+                    </Button>
+                    
+                    <p className="text-xs text-muted-foreground text-center leading-tight">
+                      To ensure security, all purchases are handled manually by our official Escrow service on Discord.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
             )}
 
             {isMediaOverlayOpen && selectedNFT && (
