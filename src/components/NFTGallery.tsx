@@ -798,7 +798,7 @@ export function NFTGallery() {
             )}
             
             {selectedNFT && (
-              <div className="flex flex-col lg:flex-row gap-6 p-6 h-full">
+              <div className="flex flex-col lg:flex-row gap-6 p-6 h-full min-h-0">
                 {/* Image Section */}
                 <div className="lg:flex-1 space-y-3">
                   <div className="group relative mx-auto h-[40vh] lg:h-[60vh] w-full">
@@ -879,42 +879,41 @@ export function NFTGallery() {
                   </div>
                 </div>
 
-                {/* Details Section - Fixed width, scrollable */}
-                <div className="lg:w-80 flex flex-col h-full">
-                  {/* Always visible header info */}
-                  <div className="flex-shrink-0 space-y-3 pb-4 border-b border-border/50">
-                    <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
-                    <p className="text-muted-foreground">{selectedNFT.description}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Created by</span>
-                      <span className="font-semibold text-primary">{selectedNFT.creator}</span>
-                    </div>
-
-                    {/* Max Supply and Likes */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="text-center p-3 bg-secondary/20 rounded-lg">
-                        <span className="text-sm text-muted-foreground block mb-1">Max Supply</span>
-                        <p className="text-xl font-bold text-primary">{selectedNFT.maxSupply}</p>
+                {/* Details Section - Scrollable below buttons */}
+                <div className="lg:w-80 flex-1 flex flex-col min-h-0">
+                  <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+                    {/* Name and description */}
+                    <div className="space-y-3 pb-4 border-b border-border/50">
+                      <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
+                      <p className="text-muted-foreground">{selectedNFT.description}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Created by</span>
+                        <span className="font-semibold text-primary">{selectedNFT.creator}</span>
                       </div>
-                      <div className="text-center p-3 bg-secondary/20 rounded-lg">
-                        <span className="text-sm text-muted-foreground block mb-1">Likes</span>
-                        <div className="flex items-center justify-center gap-1">
-                          <Heart className="w-4 h-4 text-red-500 fill-current" />
-                          <span className="text-xl font-bold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
+
+                      {/* Max Supply and Likes */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center p-3 bg-secondary/20 rounded-lg">
+                          <span className="text-sm text-muted-foreground block mb-1">Max Supply</span>
+                          <p className="text-xl font-bold text-primary">{selectedNFT.maxSupply}</p>
+                        </div>
+                        <div className="text-center p-3 bg-secondary/20 rounded-lg">
+                          <span className="text-sm text-muted-foreground block mb-1">Likes</span>
+                          <div className="flex items-center justify-center gap-1">
+                            <Heart className="w-4 h-4 text-red-500 fill-current" />
+                            <span className="text-xl font-bold">{formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Scrollable content area */}
-                  <div className="flex-1 overflow-y-auto space-y-4 pt-4">
                     {/* Tags */}
                     <div>
                       <span className="text-sm text-muted-foreground block mb-2">Tags</span>
                       <div className="flex flex-wrap gap-2">
-                         <Badge variant="secondary" className="text-sm px-2 py-1">
-                           {selectedNFT.mandatoryTag}
-                         </Badge>
+                        <Badge variant="secondary" className="text-sm px-2 py-1">
+                          {selectedNFT.mandatoryTag}
+                        </Badge>
                         {selectedNFT.optionalTags?.map((tag: string, idx: number) => (
                           <Badge key={idx} variant="outline" className="text-sm px-2 py-1">
                             {tag}
@@ -922,7 +921,7 @@ export function NFTGallery() {
                         ))}
                       </div>
                     </div>
-                    
+
                     {/* Additional Info for Community Uploads */}
                     {(selectedNFT as any).authorBio && (
                       <div>
@@ -931,7 +930,7 @@ export function NFTGallery() {
                       </div>
                     )}
 
-                    {/* Price Section - Now in scrollable area */}
+                    {/* Price Section */}
                     <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg p-4">
                       <div className="text-center">
                         <span className="text-sm text-muted-foreground block mb-1">Price</span>
