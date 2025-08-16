@@ -833,10 +833,10 @@ export function NFTGallery() {
                     onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
                     className="flex items-center gap-2"
                   >
-                    <Heart 
-                      className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
-                    />
-                    Like ({formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))})
+                     <Heart 
+                       className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
+                     />
+                     Like
                   </Button>
                   
                   <Button 
