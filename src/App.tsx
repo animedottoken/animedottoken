@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
@@ -30,7 +29,7 @@ function ErrorFallback({ error }: { error: Error }) {
 const App = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <HelmetProvider>
-      <TooltipProvider>
+      
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -48,7 +47,7 @@ const App = () => (
             </main>
           </div>
         </BrowserRouter>
-      </TooltipProvider>
+      
     </HelmetProvider>
   </ErrorBoundary>
 );
