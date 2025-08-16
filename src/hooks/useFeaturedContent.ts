@@ -15,14 +15,19 @@ export const useFeaturedContent = () => {
   return useQuery({
     queryKey: ['featured-content'],
     queryFn: async (): Promise<FeaturedSubmission[]> => {
-      const { data, error } = await supabase.functions.invoke('get-featured-content');
-      
-      if (error) {
-        console.error('Error fetching featured content:', error);
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase.functions.invoke('get-featured-content');
+        
+        if (error) {
+          console.error('Error fetching featured content:', error);
+          throw new Error(error.message);
+        }
+        
+        return data || [];
+      } catch (err) {
+        console.error('Failed to fetch featured content:', err);
+        throw err;
       }
-      
-      return data || [];
     },
     refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 20000, // Consider data stale after 20 seconds
