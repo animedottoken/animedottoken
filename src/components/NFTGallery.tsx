@@ -968,7 +968,7 @@ export function NFTGallery() {
               size="lg"
               className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
               onClick={() => {
-                window.open('https://discord.gg/HmSJdT5MRX', '_blank');
+                window.open('https://discord.gg/mpf4EXWsG9', '_blank');
                 setShowPurchasePopup(false);
               }}
             >
