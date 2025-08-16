@@ -108,7 +108,7 @@ export function FeaturedCommunityContent() {
                   {emptySlot.sample ? "Sample" : "Your Spot"}
                 </Badge>
               </div>
-              <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>
+              {!emptySlot.sample && <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>}
               <p className="text-sm text-muted-foreground">
                 {emptySlot.description}
               </p>
