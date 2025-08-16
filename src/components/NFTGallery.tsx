@@ -469,38 +469,38 @@ export function NFTGallery() {
     document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Navigation between NFTs - respects current filters and excludes Community Favorites when filters are active
-  const getFilteredNFTs = () => {
-    const filterActive = selectedMandatoryTags.size > 0 || selectedOptionalTags.size > 0 || showMyFavorites;
-    if (filterActive) {
-      // When filtering, only navigate through filtered additional artworks (exclude Community Favorites)
-      return filteredAdditionalArtworks;
+  // Navigation: Community Favourites have their own independent flow; Additional Artworks have theirs (respect filters)
+  const getNavList = () => {
+    const isCommunityFavorite = selectedNFT ? communityFavorites.some(n => n.id === selectedNFT.id) : false;
+    if (isCommunityFavorite) {
+      // When viewing a Community Favourite, arrows cycle only within these 4
+      return communityFavorites;
     }
-    // No filters: navigate through everything
-    return [...communityFavorites, ...allAdditionalArtworks];
+    // Otherwise, navigate through Additional Artworks, respecting filters when active
+    const filterActive = selectedMandatoryTags.size > 0 || selectedOptionalTags.size > 0 || showMyFavorites;
+    return filterActive ? filteredAdditionalArtworks : allAdditionalArtworks;
   };
   
   const navigateToNFT = (direction: 'prev' | 'next') => {
     if (!selectedNFT) return;
     
-    const filteredNFTs = getFilteredNFTs();
-    if (filteredNFTs.length === 0) return;
-    const currentIndex = filteredNFTs.findIndex(nft => nft.id === selectedNFT.id);
-    
-    // If current selection isn't part of the filtered list (e.g., Community Favorite while filters active), jump into the filtered stream
+    const navList = getNavList();
+    if (navList.length === 0) return;
+    const currentIndex = navList.findIndex(nft => nft.id === selectedNFT.id);
+
     if (currentIndex === -1) {
-      setSelectedNFT(direction === 'next' ? filteredNFTs[0] : filteredNFTs[filteredNFTs.length - 1]);
+      setSelectedNFT(direction === 'next' ? navList[0] : navList[navList.length - 1]);
       return;
     }
     
     let newIndex;
     if (direction === 'prev') {
-      newIndex = currentIndex > 0 ? currentIndex - 1 : filteredNFTs.length - 1;
+      newIndex = currentIndex > 0 ? currentIndex - 1 : navList.length - 1;
     } else {
-      newIndex = currentIndex < filteredNFTs.length - 1 ? currentIndex + 1 : 0;
+      newIndex = currentIndex < navList.length - 1 ? currentIndex + 1 : 0;
     }
     
-    setSelectedNFT(filteredNFTs[newIndex]);
+    setSelectedNFT(navList[newIndex]);
   };
 
   // Keyboard navigation
