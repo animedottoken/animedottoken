@@ -5,7 +5,7 @@ import {
   Shield, 
   Calculator, 
   TrendingUp, 
-  ImageIcon, 
+  Store, 
   HelpCircle,
   Share2,
   Trophy
@@ -56,7 +56,7 @@ const navigationItems = [
   },
   { 
     title: "NFT Marketplace", 
-    icon: ImageIcon,
+    icon: Store,
     onClick: () => document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' })
   },
   { 
