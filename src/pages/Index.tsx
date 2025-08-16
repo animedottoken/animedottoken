@@ -524,12 +524,12 @@ const Index = () => {
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                 {memoizedPromoImages.map((img) => (
                   <article key={img.src} className="rounded-md border bg-card/50 p-3">
-                    <img 
+                    <ImageLazyLoad
                       src={img.src} 
                       alt={img.alt} 
-                      loading="lazy" 
-                      decoding="async" 
-                      className="w-full h-auto rounded" 
+                      className="w-full h-auto rounded"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="mt-2 flex justify-center">
                       <Button asChild variant="hero">
