@@ -776,26 +776,6 @@ export function NFTGallery() {
             </DialogHeader>
             
             {/* Navigation Arrows */}
-            {selectedNFT && (
-              <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigateToNFT('prev')}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigateToNFT('next')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/95 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-12 h-12"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </Button>
-              </>
-            )}
             
             {selectedNFT && (
               <div className="flex flex-col lg:flex-row gap-6 p-6 h-full min-h-0">
@@ -822,6 +802,23 @@ export function NFTGallery() {
                         />
                       )}
                     </div>
+                    {/* Scoped Navigation Arrows over media only */}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => navigateToNFT('prev')}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => navigateToNFT('next')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-background/90 hover:bg-background border-2 border-primary/20 hover:border-primary/40 shadow-lg w-10 h-10"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </Button>
                   </div>
                   
                   {/* Action Buttons */}
