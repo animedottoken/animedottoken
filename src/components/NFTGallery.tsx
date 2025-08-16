@@ -839,22 +839,29 @@ export function NFTGallery() {
                         document.removeEventListener('keydown', handleKeyDown);
                       };
                       
-                      // Close on click (but not on media element)
-                      overlay.onclick = (e) => {
-                        if (e.target === overlay) closeOverlay();
-                      };
+                       // Close on click (but not on media element)
+                       overlay.onclick = (e) => {
+                         e.stopPropagation();
+                         if (e.target === overlay) {
+                           closeOverlay();
+                         }
+                       };
                       
-                      // Close button handler
-                      closeBtn.onclick = closeOverlay;
+                       // Close button handler - fix event propagation
+                       closeBtn.onclick = (e) => {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         closeOverlay();
+                       };
                       
-                      // Close on Escape key
-                      const handleKeyDown = (e) => {
-                        if (e.key === 'Escape') {
-                          closeOverlay();
-                          document.removeEventListener('keydown', handleKeyDown);
-                        }
-                      };
-                      document.addEventListener('keydown', handleKeyDown);
+                       // Close on Escape key
+                       const handleKeyDown = (e) => {
+                         if (e.key === 'Escape') {
+                           e.preventDefault();
+                           closeOverlay();
+                         }
+                       };
+                       document.addEventListener('keydown', handleKeyDown);
                       
                       document.body.appendChild(overlay);
                     }}
