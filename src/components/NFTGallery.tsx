@@ -770,7 +770,7 @@ export function NFTGallery() {
       {/* NFT Details Modal */}
       <Dialog open={!!selectedNFT} onOpenChange={() => setSelectedNFT(null)}>
         <DialogContent className="max-w-6xl h-[95vh] p-0">
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full min-h-0">
             <DialogHeader className="flex-shrink-0 p-6 pb-0">
               <DialogTitle className="sr-only">NFT Details - {selectedNFT?.name}</DialogTitle>
             </DialogHeader>
