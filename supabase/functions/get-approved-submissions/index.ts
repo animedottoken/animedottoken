@@ -19,27 +19,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Get approved submissions directly from community_submissions table
+    // Get approved submissions from the secure public view (excludes contact info)
     const { data: submissions, error } = await supabase
-      .from('community_submissions')
-      .select(`
-        id,
-        image_url,
-        name,
-        caption, 
-        author,
-        type,
-        status,
-        submission_source,
-        created_at,
-        updated_at,
-        edition_type,
-        theme,
-        nft_address,
-        tags,
-        author_bio
-      `)
-      .eq('status', 'approved')
+      .from('public_submissions')
+      .select('*')
       .order('created_at', { ascending: false })
 
     if (error) {
