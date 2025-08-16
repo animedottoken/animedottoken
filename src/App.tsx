@@ -19,7 +19,7 @@ const App = () => (
         <SidebarProvider>
           <div className="min-h-screen flex w-full">
             {/* Global trigger that is ALWAYS visible */}
-            <header className="fixed top-4 right-4 z-50">
+            <header className="fixed top-4 left-4 z-50">
               <SidebarTrigger className="bg-background/80 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-200" />
             </header>
 
