@@ -524,7 +524,7 @@ export function NFTGallery() {
           {/* Filter Controls */}
           <div className="mb-6 space-y-4">
             {/* My Favorites Toggle - Top Position with Heart */}
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-2">
               <Button
                 variant={showMyFavorites ? "default" : "outline"}
                 size="sm"
@@ -540,26 +540,24 @@ export function NFTGallery() {
                 <Heart className={`w-4 h-4 ${showMyFavorites ? 'fill-current' : ''}`} />
                 My Favorites {likedNFTs.size > 0 && `(${likedNFTs.size})`}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setActiveMandatoryTag("");
+                  setSelectedOptionalTags(new Set());
+                  setShowMyFavorites(false);
+                }}
+                className="transition-all duration-200"
+              >
+                Delete filters
+              </Button>
             </div>
 
             {/* Primary Tags */}
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag (max 1)</h4>
               <div className="flex flex-wrap justify-center gap-2">
-                <Button
-                  variant={!activeMandatoryTag ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveMandatoryTag("")}
-                  className={`
-                    transition-all duration-200 
-                    ${!activeMandatoryTag 
-                      ? 'bg-primary text-primary-foreground shadow-md' 
-                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 hover:text-primary border-border/50'
-                    }
-                  `}
-                >
-                  All
-                </Button>
                 {mandatoryTags.map((tag) => (
                   <Button
                     key={tag}
