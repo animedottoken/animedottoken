@@ -14,7 +14,7 @@ import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c8502
 const communityFavorites = [
   {
     id: "early-supporter",
-    name: "SAMPLE - First 100 Early Supporter",
+    name: "First 100 Early Supporter",
     creator: "AnimeTeam",
     image: earlySupporterBadge,
     description: "Legacy badge for early adopters.",
@@ -33,7 +33,7 @@ const communityFavorites = [
   },
   {
     id: "founder", 
-    name: "SAMPLE - Founder",
+    name: "Founder",
     creator: "CryptoSamurai",
     image: foundersNFT,
     description: "For strategic leaders.",
@@ -52,7 +52,7 @@ const communityFavorites = [
   },
   {
     id: "ambassador",
-    name: "SAMPLE - Ambassador", 
+    name: "Ambassador", 
     creator: "DigitalArtist",
     image: ambassadorsNFT,
     description: "For community builders.",
@@ -71,7 +71,7 @@ const communityFavorites = [
   },
   {
     id: "hodler",
-    name: "SAMPLE - Hodler",
+    name: "Hodler",
     creator: "GoldMiner",
     image: hodlersNFT,
     description: "For long-term holders.",
@@ -93,7 +93,7 @@ const communityFavorites = [
 const additionalArtworks = [
   {
     id: "cyber-samurai",
-    name: "SAMPLE - Cyber Samurai",
+    name: "Cyber Samurai",
     creator: "tommo8",
     image: "/lovable-uploads/15118b9e-f73d-49b8-9ea3-a8672e651d76.png",
     description: "Futuristic samurai warrior.",
@@ -112,7 +112,7 @@ const additionalArtworks = [
   },
   {
     id: "neon-girl",
-    name: "SAMPLE - Neon Girl",
+    name: "Neon Girl",
     creator: "NeonDreamer",
     image: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png",
     description: "Cyberpunk anime character.",
@@ -131,7 +131,7 @@ const additionalArtworks = [
   },
   {
     id: "mecha-pilot",
-    name: "SAMPLE - Mecha Pilot",
+    name: "Mecha Pilot",
     creator: "RobotMaster",
     image: "/lovable-uploads/179894ec-bb13-4a92-94d4-451cdeb9163b.png",
     description: "Elite mecha pilot design.",
@@ -150,7 +150,7 @@ const additionalArtworks = [
   },
   {
     id: "dragon-spirit",
-    name: "SAMPLE - Dragon Spirit",
+    name: "Dragon Spirit",
     creator: "MysticDragon",
     image: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png",
     description: "Mystical dragon companion.",
@@ -169,7 +169,7 @@ const additionalArtworks = [
   },
   {
     id: "pixel-hero",
-    name: "SAMPLE - Pixel Hero",
+    name: "Pixel Hero",
     creator: "PixelWizard",
     image: "/lovable-uploads/276547fc-2c14-4f52-bb43-12179e90c7c5.png",
     description: "Retro pixel art character.",
@@ -188,7 +188,7 @@ const additionalArtworks = [
   },
   {
     id: "ai-waifu",
-    name: "SAMPLE - AI Waifu",
+    name: "AI Waifu",
     creator: "AIArtist",
     image: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png",
     description: "AI-generated anime character.",
@@ -207,7 +207,7 @@ const additionalArtworks = [
   },
   {
     id: "space-girl",
-    name: "SAMPLE - Space Girl",
+    name: "Space Girl",
     creator: "CosmicArt",
     image: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png",
     description: "Cosmic anime explorer.",
@@ -226,7 +226,7 @@ const additionalArtworks = [
   },
   {
     id: "meme-cat",
-    name: "SAMPLE - Meme Cat",
+    name: "Meme Cat",
     creator: "MemeLord",
     image: "/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png",
     description: "Popular anime meme cat.",
@@ -245,7 +245,7 @@ const additionalArtworks = [
   },
   {
     id: "warrior-princess",
-    name: "SAMPLE - Warrior Princess",
+    name: "Warrior Princess",
     creator: "WarriorArt",
     image: "/lovable-uploads/4635f823-47d8-4ddb-a3f7-12870888c162.png",
     description: "Fierce anime warrior maiden.",
@@ -264,7 +264,7 @@ const additionalArtworks = [
   },
   {
     id: "digital-ninja",
-    name: "SAMPLE - Digital Ninja",
+    name: "Digital Ninja",
     creator: "ShadowNinja",
     image: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png",
     description: "Stealth cyber ninja.",
@@ -726,8 +726,8 @@ useEffect(() => {
                     variant="outline" 
                     size="sm"
                     onClick={() => {
-                      // Check if this is a sample NFT (contains "SAMPLE" in name)
-                      if (selectedNFT.name.includes("SAMPLE")) {
+                      // Check if this is a sample NFT (has example URL)
+                      if (selectedNFT.metadataUrl && selectedNFT.metadataUrl.includes("example")) {
                         toast.info("Sample NFT", {
                           description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
                         });
