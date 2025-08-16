@@ -823,66 +823,12 @@ export function NFTGallery() {
                       )}
                     </div>
                   </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 max-w-lg mx-auto">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        // Check if this is a sample NFT (has example URL)
-                        if (selectedNFT.metadataUrl && selectedNFT.metadataUrl.includes("example")) {
-                          toast.info("Sample NFT", {
-                            description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
-                          });
-                        } else if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
-                          window.open(selectedNFT.metadataUrl, '_blank');
-                        } else {
-                          toast.error("No Solscan link available", {
-                            description: "This NFT doesn't have a verified address for Solscan viewing",
-                          });
-                        }
-                      }}
-                      className="flex-1"
-                      disabled={false}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      View on Solscan
-                    </Button>
-                    
-                    <Button
-                      variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
-                      className="flex items-center gap-2"
-                    >
-                       <Heart 
-                         className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
-                       />
-                       Like
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={() => {
-                        const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
-                        const shareUrl = `${window.location.origin}/share/nft/${selectedNFT.id}`;
-                        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-                        window.open(twitterUrl, '_blank');
-                      }}
-                    >
-                      <Share className="w-4 h-4 mr-2" />
-                      Share
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Details Section */}
                 <div className="flex flex-col h-full max-h-[70vh]">
                   {/* Always Visible Info */}
-                  <div className="flex-shrink-0 space-y-3 pb-4 border-b border-border/50">
+                  <div className="flex-shrink-0 space-y-3">
                     <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
                     <p className="text-muted-foreground">{selectedNFT.description}</p>
                     <div className="flex items-center gap-2">
@@ -904,10 +850,64 @@ export function NFTGallery() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Action Buttons - Always Visible */}
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          // Check if this is a sample NFT (has example URL)
+                          if (selectedNFT.metadataUrl && selectedNFT.metadataUrl.includes("example")) {
+                            toast.info("Sample NFT", {
+                              description: "This is just a sample. Real NFTs will be linked to Solscan. As new real NFTs are uploaded, we will replace these samples with authentic NFTs.",
+                            });
+                          } else if (selectedNFT.metadataUrl && selectedNFT.metadataUrl !== "#") {
+                            window.open(selectedNFT.metadataUrl, '_blank');
+                          } else {
+                            toast.error("No Solscan link available", {
+                              description: "This NFT doesn't have a verified address for Solscan viewing",
+                            });
+                          }
+                        }}
+                        className="flex-1"
+                        disabled={false}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        View on Solscan
+                      </Button>
+                      
+                      <Button
+                        variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                        className="flex items-center gap-2"
+                      >
+                         <Heart 
+                           className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
+                         />
+                         Like
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          const text = `Check out this amazing NFT: ${selectedNFT.name} by ${selectedNFT.creator}`;
+                          const shareUrl = `${window.location.origin}/share/nft/${selectedNFT.id}`;
+                          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+                          window.open(twitterUrl, '_blank');
+                        }}
+                      >
+                        <Share className="w-4 h-4 mr-2" />
+                        Share
+                      </Button>
+                    </div>
                   </div>
 
-                  {/* Scrollable content area */}
-                  <div className="flex-1 overflow-auto space-y-4 pt-4 pr-2">
+                  {/* Scrollable content area - starts after action buttons */}
+                  <div className="flex-1 overflow-auto space-y-4 pt-4 pr-2 border-t border-border/50 mt-4">
                     {/* Tags */}
                     <div>
                       <span className="text-sm text-muted-foreground block mb-2">Tags</span>
