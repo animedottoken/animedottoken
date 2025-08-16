@@ -43,7 +43,7 @@ const Index = () => {
     toast.success("Contract address copied");
   };
 
-  const shareBase = "https://animedottoken.lovable.app";
+  const shareBase = typeof window !== 'undefined' ? window.location.origin : 'https://animedottoken.com';
   const pageUrl = shareBase;
   const sharePageUrl = `${shareBase}/share-army.html?v=12`;
   const shareImage = `${shareBase}/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png`;
