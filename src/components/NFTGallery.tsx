@@ -525,7 +525,7 @@ export function NFTGallery() {
           <div className="mb-6 space-y-4">
             {/* Mandatory Tags */}
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Tags</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2 text-center">Primary Tag (max 1)</h4>
               <div className="flex flex-wrap justify-center gap-2">
                 {mandatoryTags.map((tag) => (
                   <Button
