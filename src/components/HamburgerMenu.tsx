@@ -26,7 +26,7 @@ const navigationItems = [
     onClick: () => document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' })
   },
   { 
-    title: "How to Buy", 
+    title: "How to Buy ANIME", 
     icon: ShoppingCart,
     onClick: () => document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' })
   },
