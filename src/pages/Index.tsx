@@ -24,9 +24,10 @@ import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy } from "lucide-react";
+import { ChevronDown, Copy, Share } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -464,58 +465,61 @@ const Index = () => {
           </picture>
           </div>
           <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                <Button asChild variant="glass">
-                  <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                    <SiX className="h-4 w-4" aria-hidden="true" />
-                    Share on X/Twitter
-                  </a>
-                </Button>
+          <div className="mt-5 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Main platforms */}
+            <Button asChild variant="glass" size="lg">
+              <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                <SiX className="h-5 w-5" />
+                Share on Twitter
+              </a>
+            </Button>
+            
+            <Button onClick={copyForDiscord} variant="glass" size="lg" className="inline-flex items-center gap-2">
+              <SiDiscord className="h-5 w-5" />
+              Copy for Discord
+            </Button>
 
-                <Button onClick={copyShare} variant="glass" className="inline-flex items-center gap-2">
-                  <Copy className="h-4 w-4" aria-hidden="true" />
-                  Copy Share Text
+            {/* More options dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="inline-flex items-center gap-2">
+                  <Share className="h-4 w-4" />
+                  More platforms
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
-
-                <Button asChild variant="glass">
-                  <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                    <SiTelegram className="h-4 w-4" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-card border shadow-lg">
+                <DropdownMenuItem asChild>
+                  <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
+                    <SiTelegram className="h-4 w-4" />
                     Share on Telegram
                   </a>
-                </Button>
-
-                <Button asChild variant="glass">
-                  <a href={shareUrls.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                    <SiFacebook className="h-4 w-4" aria-hidden="true" />
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href={shareUrls.facebook} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
+                    <SiFacebook className="h-4 w-4" />
                     Share on Facebook
                   </a>
-                </Button>
-
-                <Button onClick={copyForDiscord} variant="glass" className="inline-flex items-center gap-2">
-                  <SiDiscord className="h-4 w-4" aria-hidden="true" />
-                  Copy for Discord
-                </Button>
-
-                <Button onClick={copyForTikTok} variant="glass" className="inline-flex items-center gap-2">
-                  <SiTiktok className="h-4 w-4" aria-hidden="true" />
-                  Copy for TikTok
-                </Button>
-
-                <Button onClick={copyForInstagram} variant="glass" className="inline-flex items-center gap-2">
-                  <SiInstagram className="h-4 w-4" aria-hidden="true" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={copyForInstagram} className="inline-flex items-center gap-2">
+                  <SiInstagram className="h-4 w-4" />
                   Copy for Instagram
-                </Button>
-
-                <Button onClick={copyForFacebook} variant="glass" className="inline-flex items-center gap-2">
-                  <SiFacebook className="h-4 w-4" aria-hidden="true" />
-                  Copy for Facebook
-                </Button>
-
-                <Button onClick={copyForYouTube} variant="glass" className="inline-flex items-center gap-2">
-                  <SiYoutube className="h-4 w-4" aria-hidden="true" />
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={copyForTikTok} className="inline-flex items-center gap-2">
+                  <SiTiktok className="h-4 w-4" />
+                  Copy for TikTok
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={copyForYouTube} className="inline-flex items-center gap-2">
+                  <SiYoutube className="h-4 w-4" />
                   Copy for YouTube
-                </Button>
-              </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
+                  <Copy className="h-4 w-4" />
+                  Copy share text
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
