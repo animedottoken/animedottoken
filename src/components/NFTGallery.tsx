@@ -1059,17 +1059,6 @@ export function NFTGallery() {
         </div>
       </div>
 
-      {/* Marketplace Teaser */}
-      <div className="text-center">
-        <div className="bg-gradient-to-r from-muted/30 to-muted/10 border border-muted/30 rounded-lg p-4 max-w-2xl mx-auto">
-          <h4 className="font-semibold mb-2 text-muted-foreground">
-            🔮 Coming Soon: NFT Marketplace
-          </h4>
-          <p className="text-sm text-muted-foreground">
-            NFT trading and marketplace coming soon—build your reputation now!
-          </p>
-        </div>
-      </div>
     </section>
   );
 }
