@@ -13,13 +13,13 @@ serve(async (req) => {
   }
 
   try {
+    // Use service role key to access featured content and public submissions
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     // Get featured content with submission details
-    // We'll join manually since the view relationship might not work as expected
     const { data: featuredContent, error } = await supabaseClient
       .from('featured_content')
       .select('position, featured_at, submission_id')
@@ -33,13 +33,12 @@ serve(async (req) => {
       })
     }
 
-    // Get submission details directly from community_submissions (approved only)
+    // Get submission details from public_submissions view (secure, no contact info)
     const submissionIds = featuredContent?.map(item => item.submission_id) || []
     const { data: submissions, error: submissionsError } = await supabaseClient
-      .from('community_submissions')
+      .from('public_submissions')
       .select('id, image_url, caption, author, type, created_at')
       .in('id', submissionIds)
-      .eq('status', 'approved')
 
     if (submissionsError) {
       console.error('Error fetching submissions:', submissionsError)

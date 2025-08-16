@@ -13,7 +13,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.admin-list-submissions]
-verify_jwt = false
+verify_jwt = true
 
 [functions.admin-update-submission]
-verify_jwt = false
+verify_jwt = true
