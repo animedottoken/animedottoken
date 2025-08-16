@@ -17,7 +17,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   const rugCheckUrl = `https://rugcheck.xyz/tokens/${tokenAddress}`;
   const goPlusUrl = `https://gopluslabs.io/token-security/solana/${tokenAddress}`;
   const revivalWalletAddress = "7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8";
-  const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}`;
+  const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}#portfolio`;
   const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [treasuryDetailsOpen, setTreasuryDetailsOpen] = useState(false);
