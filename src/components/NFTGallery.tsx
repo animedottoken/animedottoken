@@ -798,10 +798,10 @@ export function NFTGallery() {
             )}
             
             {selectedNFT && (
-              <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden min-h-0">
+              <div className="flex flex-col lg:flex-row gap-6 p-6 h-full">
                 {/* Image Section */}
-                <div className="lg:col-span-2 space-y-3">
-                  <div className="group relative mx-auto h-[50vh] lg:h-[70vh] w-full">
+                <div className="lg:flex-1 space-y-3">
+                  <div className="group relative mx-auto h-[40vh] lg:h-[60vh] w-full">
                     <div 
                       className="h-full overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-primary/20 transition-all"
                       onClick={() => setIsMediaOverlayOpen(true)}
@@ -879,9 +879,9 @@ export function NFTGallery() {
                   </div>
                 </div>
 
-                {/* Details Section */}
-                <div className="flex flex-col h-full max-h-[70vh] min-h-0 overflow-hidden">
-                  {/* Always Visible Info */}
+                {/* Details Section - Fixed width, scrollable */}
+                <div className="lg:w-80 flex flex-col h-full">
+                  {/* Always visible header info */}
                   <div className="flex-shrink-0 space-y-3 pb-4 border-b border-border/50">
                     <h2 className="text-2xl font-bold">{selectedNFT.name}</h2>
                     <p className="text-muted-foreground">{selectedNFT.description}</p>
@@ -907,7 +907,7 @@ export function NFTGallery() {
                   </div>
 
                   {/* Scrollable content area */}
-                  <div className="flex-1 overflow-auto space-y-4 pt-4 pr-2">
+                  <div className="flex-1 overflow-y-auto space-y-4 pt-4">
                     {/* Tags */}
                     <div>
                       <span className="text-sm text-muted-foreground block mb-2">Tags</span>
@@ -968,6 +968,9 @@ export function NFTGallery() {
                         To ensure security, all purchases are handled manually by our official Escrow service on Discord.
                       </p>
                     </div>
+
+                    {/* Extra padding at bottom */}
+                    <div className="h-8"></div>
                   </div>
                 </div>
               </div>
