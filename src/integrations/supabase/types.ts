@@ -139,14 +139,12 @@ export type Database = {
       public_submissions: {
         Row: {
           author: string | null
-          author_bio: string | null
           caption: string | null
           created_at: string | null
           edition_type: Database["public"]["Enums"]["edition_type"] | null
           id: string | null
           image_url: string | null
           name: string | null
-          nft_address: string | null
           status: Database["public"]["Enums"]["submission_status"] | null
           submission_source:
             | Database["public"]["Enums"]["submission_source"]
@@ -158,14 +156,12 @@ export type Database = {
         }
         Insert: {
           author?: string | null
-          author_bio?: string | null
           caption?: string | null
           created_at?: string | null
           edition_type?: Database["public"]["Enums"]["edition_type"] | null
           id?: string | null
           image_url?: string | null
           name?: string | null
-          nft_address?: string | null
           status?: Database["public"]["Enums"]["submission_status"] | null
           submission_source?:
             | Database["public"]["Enums"]["submission_source"]
@@ -177,14 +173,12 @@ export type Database = {
         }
         Update: {
           author?: string | null
-          author_bio?: string | null
           caption?: string | null
           created_at?: string | null
           edition_type?: Database["public"]["Enums"]["edition_type"] | null
           id?: string | null
           image_url?: string | null
           name?: string | null
-          nft_address?: string | null
           status?: Database["public"]["Enums"]["submission_status"] | null
           submission_source?:
             | Database["public"]["Enums"]["submission_source"]
