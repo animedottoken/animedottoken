@@ -342,8 +342,6 @@ export function NFTGallery() {
   
   // Filter logic for additional artworks
   const filteredAdditionalArtworks = allAdditionalArtworks.filter(nft => {
-    console.log('Filtering NFT:', nft.id, 'selectedMandatoryTags:', selectedMandatoryTags.size);
-    
     // Check mandatory tag filter (if none selected, show all)
     const matchesMandatory = selectedMandatoryTags.size === 0 || selectedMandatoryTags.has(nft.mandatoryTag);
     
@@ -827,6 +825,19 @@ export function NFTGallery() {
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View on Solscan
                   </Button>
+                  
+                  <Button
+                    variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                    className="flex items-center gap-2"
+                  >
+                    <Heart 
+                      className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
+                    />
+                    Like ({formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))})
+                  </Button>
+                  
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -886,21 +897,6 @@ export function NFTGallery() {
                   </div>
                 </div>
                 
-                {/* Like Button in Modal */}
-                <div className="flex justify-center pt-4">
-                  <Button
-                    variant={likedNFTs.has(selectedNFT.id) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleLike(selectedNFT.id, { stopPropagation: () => {} } as React.MouseEvent)}
-                    className="flex items-center gap-2"
-                  >
-                    <Heart 
-                      className={`w-4 h-4 ${likedNFTs.has(selectedNFT.id) ? 'fill-red-500 text-red-500' : ''}`}
-                    />
-                    {likedNFTs.has(selectedNFT.id) ? 'Liked' : 'Like'} ({formatLikes(selectedNFT.likes + (likedNFTs.has(selectedNFT.id) ? 1 : 0))})
-                  </Button>
-                </div>
-
                 {/* Additional Info for Community Uploads */}
                 {(selectedNFT as any).authorBio && (
                   <div>
