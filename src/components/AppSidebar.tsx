@@ -35,21 +35,12 @@ const navigationItems = [
     }
   },
   { 
-    title: "NFT Program", 
-    icon: Trophy,
-    hash: "nft-supporter-section",
+    title: "Community Showcase", 
+    icon: Users,
+    hash: "featured-community-content",
     onClick: () => {
-      window.history.pushState(null, "", "/#nft-supporter-section");
-      document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  },
-  { 
-    title: "How to Buy ANIME", 
-    icon: ShoppingCart,
-    hash: "how-to-buy",
-    onClick: () => {
-      window.history.pushState(null, "", "/#how-to-buy");
-      document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, "", "/#featured-community-content");
+      document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
     }
   },
   { 
@@ -80,21 +71,12 @@ const navigationItems = [
     }
   },
   { 
-    title: "Community Showcase", 
-    icon: Users,
-    hash: "featured-community-content",
+    title: "How to Buy ANIME", 
+    icon: ShoppingCart,
+    hash: "how-to-buy",
     onClick: () => {
-      window.history.pushState(null, "", "/#featured-community-content");
-      document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  },
-  { 
-    title: "NFT Marketplace", 
-    icon: ShoppingBag,
-    hash: "nft-gallery",
-    onClick: () => {
-      window.history.pushState(null, "", "/#nft-gallery");
-      document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' });
+      window.history.pushState(null, "", "/#how-to-buy");
+      document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
     }
   },
   { 
@@ -104,6 +86,24 @@ const navigationItems = [
     onClick: () => {
       window.history.pushState(null, "", "/#faq-section");
       document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+  { 
+    title: "NFT Program", 
+    icon: Trophy,
+    hash: "nft-supporter-section",
+    onClick: () => {
+      window.history.pushState(null, "", "/#nft-supporter-section");
+      document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+  { 
+    title: "NFT Marketplace", 
+    icon: ShoppingBag,
+    hash: "nft-gallery",
+    onClick: () => {
+      window.history.pushState(null, "", "/#nft-gallery");
+      document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' });
     }
   },
   { 
