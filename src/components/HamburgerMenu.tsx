@@ -79,7 +79,7 @@ const navigationItems = [
     }
   },
   { 
-    title: "NFT Program", 
+    title: "ANIME ARMY", 
     icon: Trophy,
     hash: "nft-supporter-section",
     onClick: () => {

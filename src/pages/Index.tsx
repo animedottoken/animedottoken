@@ -213,8 +213,8 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <span className="text-2xl">🎖</span>
               <div>
-                <h3 className="font-semibold text-foreground">ANIME.TOKEN NFT Program</h3>
-                <p className="text-sm text-muted-foreground">Free NFTs for supporters</p>
+                <h3 className="font-semibold text-foreground">Join the ANIME ARMY</h3>
+                <p className="text-sm text-muted-foreground">Earn your rank on-chain</p>
               </div>
             </div>
             <Button variant="outline" size="sm">
