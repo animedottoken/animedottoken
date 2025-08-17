@@ -1034,7 +1034,7 @@ export function NFTGallery() {
               size="lg"
               className="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
               onClick={() => {
-                window.open('https://discord.gg/HmSJdT5MRX', '_blank');
+                window.open('https://discord.gg/YqzRX2jJNx', '_blank');
                 setShowPurchasePopup(false);
               }}
             >
@@ -1058,7 +1058,7 @@ export function NFTGallery() {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold gap-2"
-              onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
+              onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
             >
               <SiDiscord className="h-4 w-4" />
               Submit on Discord

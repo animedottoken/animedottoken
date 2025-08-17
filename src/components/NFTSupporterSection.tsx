@@ -254,7 +254,7 @@ export function NFTSupporterSection() {
                             <Button 
                               size="sm"
                               variant="outline"
-                              onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
+                              onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
                               className="flex-1"
                             >
                               Join Discord
@@ -290,7 +290,7 @@ export function NFTSupporterSection() {
               <Button 
                 variant="outline"
                 size="lg" 
-                onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
+                onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
               >
                 Contact us on Discord
               </Button>
