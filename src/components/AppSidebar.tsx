@@ -28,52 +28,92 @@ const navigationItems = [
   { 
     title: "Home", 
     icon: Home,
-    onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' })
+    hash: "",
+    onClick: () => {
+      window.history.pushState(null, "", "/");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   },
   { 
     title: "NFT Program", 
     icon: Trophy,
-    onClick: () => document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "nft-supporter-section",
+    onClick: () => {
+      window.history.pushState(null, "", "/#nft-supporter-section");
+      document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "How to Buy ANIME", 
     icon: ShoppingCart,
-    onClick: () => document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "how-to-buy",
+    onClick: () => {
+      window.history.pushState(null, "", "/#how-to-buy");
+      document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "Trust & Security", 
     icon: Shield,
-    onClick: () => document.querySelector('.trust-security-section')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "trust-security-section",
+    onClick: () => {
+      window.history.pushState(null, "", "/#trust-security-section");
+      document.querySelector('.trust-security-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "Ownership Calculator", 
     icon: Calculator,
-    onClick: () => document.querySelector('.ownership-calculator')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "ownership-calculator",
+    onClick: () => {
+      window.history.pushState(null, "", "/#ownership-calculator");
+      document.querySelector('.ownership-calculator')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "Market Chart", 
     icon: TrendingUp,
-    onClick: () => document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "market-cap-chart",
+    onClick: () => {
+      window.history.pushState(null, "", "/#market-cap-chart");
+      document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "Community Showcase", 
     icon: Users,
-    onClick: () => document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "featured-community-content",
+    onClick: () => {
+      window.history.pushState(null, "", "/#featured-community-content");
+      document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "NFT Marketplace", 
     icon: ShoppingBag,
-    onClick: () => document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "nft-gallery",
+    onClick: () => {
+      window.history.pushState(null, "", "/#nft-gallery");
+      document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "FAQ", 
     icon: HelpCircle,
-    onClick: () => document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "faq-section",
+    onClick: () => {
+      window.history.pushState(null, "", "/#faq-section");
+      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   },
   { 
     title: "Share & Promote", 
     icon: Share2,
-    onClick: () => document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' })
+    hash: "share-promote-section",
+    onClick: () => {
+      window.history.pushState(null, "", "/#share-promote-section");
+      document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 ];
 

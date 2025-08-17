@@ -81,36 +81,6 @@ const Index = () => {
     });
   };
 
-
-  // Optimize images with intersection observer for better mobile performance
-  useEffect(() => {
-    const images = document.querySelectorAll('img[loading="lazy"]');
-    
-    if ('IntersectionObserver' in window) {
-      const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            img.src = img.dataset.src || img.src;
-            img.classList.remove('lazy');
-            imageObserver.unobserve(img);
-          }
-        });
-      }, { rootMargin: '50px 0px' });
-
-      images.forEach((img) => imageObserver.observe(img));
-      
-      return () => imageObserver.disconnect();
-    }
-  }, []);
-
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [promoOpen, setPromoOpen] = useState(false);
-  const [step1Open, setStep1Open] = useState(false);
-  const [step2Open, setStep2Open] = useState(false);
-  const [step3Open, setStep3Open] = useState(false);
-  const [step4Open, setStep4Open] = useState(false);
-  const [faqOpen, setFaqOpen] = useState(false);
   // Promo images for social sharing (downloads use SEO-friendly filenames)
   const promoImages = [
     { src: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png", filename: "anime-token-characters-logo-banner.png", alt: "ANIME Token characters banner with logo" },
@@ -135,33 +105,74 @@ const Index = () => {
   ];
 
   const memoizedPromoImages = useMemo(() => promoImages, []);
-  
+
   const downloadAllPromo = async () => {
-    try {
-      toast.message("Preparing download...", { description: "Packing images..." });
-      const zip = new JSZip();
-      const folder = zip.folder("anime-token-promo")!;
-      await Promise.all(promoImages.map(async (img) => {
-        const res = await fetch(img.src);
-        if (!res.ok) throw new Error(`Failed to fetch ${img.src}`);
-        const blob = await res.blob();
-        folder.file(img.filename, blob);
-      }));
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "anime-token-promo-pack.zip";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-      toast.success("Promo pack downloaded");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to download all images");
-    }
+    const zip = new JSZip();
+    const promises = memoizedPromoImages.map(async (img) => {
+      try {
+        const response = await fetch(img.src);
+        const blob = await response.blob();
+        zip.file(img.filename, blob);
+      } catch (error) {
+        console.error(`Failed to fetch ${img.src}:`, error);
+      }
+    });
+    
+    await Promise.all(promises);
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "anime-token-promo-pack.zip";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Promo pack downloaded!");
   };
+
+  // Optimize images with intersection observer for better mobile performance
+  useEffect(() => {
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            img.src = img.dataset.src || img.src;
+            img.classList.remove('lazy');
+            imageObserver.unobserve(img);
+          }
+        });
+      }, { rootMargin: '50px 0px' });
+
+      images.forEach((img) => imageObserver.observe(img));
+      
+      return () => imageObserver.disconnect();
+    }
+  }, []);
+
+  // Handle deep-linking on initial load
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash) || document.querySelector(`.${hash}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, []);
+
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [step1Open, setStep1Open] = useState(false);
+  const [step2Open, setStep2Open] = useState(false);
+  const [step3Open, setStep3Open] = useState(false);
+  const [step4Open, setStep4Open] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
 
   return (
     <main className="min-h-screen py-12 md:py-20 container">
@@ -247,9 +258,11 @@ const Index = () => {
         </div>
       </div>
 
-      <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-32"></div>}>
-        <FeaturedCommunityContent />
-      </Suspense>
+      <div className="featured-community-content scroll-mt-20">
+        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-32"></div>}>
+          <FeaturedCommunityContent />
+        </Suspense>
+      </div>
 
       {/* Prominent How to Buy Button */}
       <section className="mx-auto mt-12 mb-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -262,11 +275,11 @@ const Index = () => {
         </Button>
       </section>
 
-      <div className="trust-security-section">
+      <div className="trust-security-section scroll-mt-20">
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
       </div>
 
-      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator">
+      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold">
             <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">📊</span>
@@ -291,19 +304,20 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="mt-8 market-cap-chart">
+        <div className="mt-8 market-cap-chart scroll-mt-20">
           <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-64"></div>}>
             <MarketCapChart />
           </Suspense>
         </div>
       </section>
 
-      <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-center text-2xl md:text-3xl font-bold">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🛒</span>
           How to Join the Era: Buying $ANIME
         </h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a part of this great movement is easier than ever. Follow these 4 simple steps:</p>
+        
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
@@ -527,7 +541,7 @@ const Index = () => {
           </Collapsible>
         </section>
 
-        <section id="faq-section" className="mt-8">
+        <section id="faq-section" className="mt-8 scroll-mt-20">
           <h3 className="text-lg font-semibold">
             <span className="text-xl mr-2 leading-[1.2] align-middle pb-1">❓</span>
             <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
@@ -575,33 +589,38 @@ const Index = () => {
           </Collapsible>
         </section>
 
-        <script type="application/ld+json">{JSON.stringify({
-          "@context":"https://schema.org",
-          "@type":"FAQPage",
-          "mainEntity":[
-            { "@type":"Question", "name":"What is the official $ANIME contract address?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
-            { "@type":"Question", "name":"I can't find $ANIME in my wallet's swap search. What do I do?", "acceptedAnswer":{ "@type":"Answer", "text":"Some wallet apps may not list new tokens immediately. To find it, simply copy the official contract address above and paste it directly into the token selection field in your wallet's swap interface." } },
-            { "@type":"Question", "name":"What is the utility of the $ANIME token?", "acceptedAnswer":{ "@type":"Answer", "text":"Currently, the $ANIME token is the core of our community-owned ecosystem. Our roadmap includes developing further utility such as a dedicated marketplace for anime-related goods and services, and staking rewards for NFT holders. This will establish $ANIME as the central currency of our platform." } },
-            { "@type":"Question", "name":"Who is leading The ANIME Project?", "acceptedAnswer":{ "@type":"Answer", "text":"The ANIME Project is a decentralized movement led by a dedicated, global community of core contributors. Our reputation is built on public, on-chain actions like the burned LP and the transparent Revival Wallet. As the project hits significant milestones, the core contributors are prepared to attach their public profiles to the project to further strengthen trust." } },
-            { "@type":"Question", "name":"What slippage should I use when buying?", "acceptedAnswer":{ "@type":"Answer", "text":"Start with a slippage setting of 1-3%. If a transaction fails due to price movement, you may need to increase it slightly and try again." } },
-            { "@type":"Question", "name":"I have more questions. Where can I ask?", "acceptedAnswer":{ "@type":"Answer", "text":"Our community is always active and ready to help. The best place to ask questions is in our official Telegram or Discord channels." } }
-          ]
-        })}</script>
+        <script 
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context":"https://schema.org",
+              "@type":"FAQPage",
+              "mainEntity":[
+                { "@type":"Question", "name":"What is the official $ANIME contract address?", "acceptedAnswer":{ "@type":"Answer", "text": CONTRACT } },
+                { "@type":"Question", "name":"I can't find $ANIME in my wallet's swap search. What do I do?", "acceptedAnswer":{ "@type":"Answer", "text":"Some wallet apps may not list new tokens immediately. To find it, simply copy the official contract address above and paste it directly into the token selection field in your wallet's swap interface." } },
+                { "@type":"Question", "name":"What is the utility of the $ANIME token?", "acceptedAnswer":{ "@type":"Answer", "text":"Currently, the $ANIME token is the core of our community-owned ecosystem. Our roadmap includes developing further utility such as a dedicated marketplace for anime-related goods and services, and staking rewards for NFT holders. This will establish $ANIME as the central currency of our platform." } },
+                { "@type":"Question", "name":"Who is leading The ANIME Project?", "acceptedAnswer":{ "@type":"Answer", "text":"The ANIME Project is a decentralized movement led by a dedicated, global community of core contributors. Our reputation is built on public, on-chain actions like the burned LP and the transparent Revival Wallet. As the project hits significant milestones, the core contributors are prepared to attach their public profiles to the project to further strengthen trust." } },
+                { "@type":"Question", "name":"What slippage should I use when buying?", "acceptedAnswer":{ "@type":"Answer", "text":"Start with a slippage setting of 1-3%. If a transaction fails due to price movement, you may need to increase it slightly and try again." } },
+                { "@type":"Question", "name":"I have more questions. Where can I ask?", "acceptedAnswer":{ "@type":"Answer", "text":"Our community is always active and ready to help. The best place to ask questions is in our official Telegram or Discord channels." } }
+              ]
+            })
+          }}
+        />
 
       </section>
 
-
-
       {/* NFT Supporter Program Section */}
-      <NFTSupporterSection />
+      <div id="nft-supporter-section" className="scroll-mt-20">
+        <NFTSupporterSection />
+      </div>
 
-      <div className="nft-gallery">
+      <div className="nft-gallery scroll-mt-20">
         <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-48"></div>}>
           <NFTGallery />
         </Suspense>
       </div>
 
-      <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+      <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-bold">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🔗</span>
           The Conversation is Happening Now. Join Us.
@@ -643,17 +662,22 @@ const Index = () => {
         <p className="mt-2">Website created with <a href="https://lovable.dev/invite/f59fc72f-7a4c-44ba-9735-226d9f24e4b0" target="_blank" rel="noopener noreferrer sponsored" className="underline underline-offset-4">Lovable</a>.</p>
       </footer>
 
-      <script type="application/ld+json">{JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'ANIME Token',
-        url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080',
-        sameAs: [
-          'https://x.com/AnimeDotToken',
-          'https://t.me/AnimeDotTokenCommunity',
-          'https://discord.gg/HmSJdT5MRX'
-        ]
-      })}</script>
+      <script 
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'ANIME Token',
+            url: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080',
+            sameAs: [
+              'https://x.com/AnimeDotToken',
+              'https://t.me/AnimeDotTokenCommunity',
+              'https://discord.gg/HmSJdT5MRX'
+            ]
+          })
+        }}
+      />
     </main>
   );
 };
