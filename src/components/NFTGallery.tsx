@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
-import earlySupporterBadge from "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c85026ca6ea.png";
+import earlySupporterBadge from "/lovable-uploads/32d40dad-83cd-4e15-a7bf-fb41d7b22689.png";
 import nftDigitalArt from "@/assets/nft-digital-painting.jpg";
 import nftAIArt from "@/assets/nft-ai-generated.jpg";
 import nftMeme from "@/assets/nft-meme.jpg";

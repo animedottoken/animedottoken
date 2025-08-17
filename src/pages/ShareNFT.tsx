@@ -77,7 +77,7 @@ const allNFTs = [
     id: "early-supporter",
     name: "First 100 Early Supporter",
     creator: "AnimeTeam",
-    image: "/lovable-uploads/69c67ce3-67c9-49e6-8975-7c85026ca6ea.png",
+    image: "/lovable-uploads/32d40dad-83cd-4e15-a7bf-fb41d7b22689.png",
     description: "Legacy badge for early adopters.",
   },
   {
