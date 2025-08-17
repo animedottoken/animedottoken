@@ -28,86 +28,86 @@ const communityFavorites = [
   {
     id: "early-supporter",
     name: "First 100 Early Supporter",
-    creator: "AnimeTeam",
+    creator: "DotANIME",
     image: earlySupporterBadge,
     description: "Legacy badge for early adopters.",
     category: "AI Art",
     editionRemaining: "100",
-    price: "Free",
-    priceUSDC: "0.00 USDC",
-    priceANIME: "0 ANIME",
-    metadataUrl: "https://solscan.io/account/example1",
+    price: "Earned (cannot be bought)",
+    priceUSDC: "Earned (cannot be bought)",
+    priceANIME: "Earned (cannot be bought)",
+    metadataUrl: "https://solscan.io/account/4Lk23EG16eRmVHtU51ZcmX9eNA7cehig6KD27MVDk6gu",
     status: "100 Available",
     statusType: "available" as const,
     isLimited: true,
     isExclusive: true,
     maxSupply: "100",
     likes: 2847,
-    mandatoryTag: "Image",
+    mandatoryTag: "Animation",
     optionalTags: ["AI Art", "Digital Art", "Limited"]
   },
   {
     id: "founder", 
     name: "Founder",
-    creator: "CryptoSamurai",
+    creator: "DotANIME",
     image: foundersNFT,
     description: "For strategic leaders.",
     category: "Digital Art",
     editionRemaining: "100",
-    price: "Invitation Only",
-    priceUSDC: "Invitation Only",
-    priceANIME: "Invitation Only",
-    metadataUrl: "https://solscan.io/account/example2",
+    price: "Earned (cannot be bought)",
+    priceUSDC: "Earned (cannot be bought)",
+    priceANIME: "Earned (cannot be bought)",
+    metadataUrl: "https://solscan.io/account/CQpLoPgZJJAGKbA7MJHc9Km9UNsipKtxrE9vjufGyTr2",
     status: "Special Edition",
     statusType: "special" as const,
     isLimited: true,
     isExclusive: true,
     maxSupply: "100",
     likes: 1923,
-    mandatoryTag: "Image",
+    mandatoryTag: "Animation",
     optionalTags: ["Digital Art", "Limited"]
   },
   {
     id: "ambassador",
     name: "Ambassador", 
-    creator: "DigitalArtist",
+    creator: "DotANIME",
     image: ambassadorsNFT,
     description: "For community builders.",
     category: "Others",
     editionRemaining: "1,000",
-    price: "Earned",
-    priceUSDC: "Earned",
-    priceANIME: "Earned",
-    metadataUrl: "https://solscan.io/account/example3",
+    price: "Earned (cannot be bought)",
+    priceUSDC: "Earned (cannot be bought)",
+    priceANIME: "Earned (cannot be bought)",
+    metadataUrl: "https://solscan.io/account/AjrkssYzmv9JUbxhGhe7C9UK5zzzphXBwn8sXhDWmp5Y",
     status: "Limited",
     statusType: "limited" as const,
     isLimited: true,
     isExclusive: false,
     maxSupply: "1,000",
     likes: 1456,
-    mandatoryTag: "Image",
+    mandatoryTag: "Animation",
     optionalTags: ["Others", "Digital Art", "Limited"]
   },
   {
     id: "hodler",
     name: "Hodler",
-    creator: "GoldMiner",
+    creator: "DotANIME",
     image: hodlersNFT,
     description: "For long-term holders.",
     category: "Meme",
     editionRemaining: "Unlimited",
-    price: "Hold ANIME",
-    priceUSDC: "Hold ANIME",
-    priceANIME: "Hold ANIME",
-    metadataUrl: "https://solscan.io/account/example4",
-    status: "Always Available",
+    price: "Not minted yet",
+    priceUSDC: "Not minted yet",
+    priceANIME: "Not minted yet",
+    metadataUrl: "https://solscan.io/account/coming-soon",
+    status: "UNLIMITED",
     statusType: "unlimited" as const,
-    isLimited: true,
+    isLimited: false,
     isExclusive: false,
     maxSupply: "Unlimited",
     likes: 998,
     mandatoryTag: "Image",
-    optionalTags: ["Meme", "Digital Art", "Limited"]
+    optionalTags: ["Meme", "Digital Art", "Unlimited"]
   }
 ];
 
@@ -407,7 +407,7 @@ export function NFTGallery() {
 
   // Tag definitions
   const mandatoryTags = ["Image", "Video", "Animation", "Music", "Other"];
-  const optionalTags = ["Digital Art", "AI Art", "Meme", "Pixel Art", "Others", "Limited"];
+  const optionalTags = ["Digital Art", "AI Art", "Meme", "Pixel Art", "Others", "Limited", "Unlimited"];
 
   // Community Favorites always show all items (no filtering)
   // Combine additional artworks with approved community submissions, sorted by date
@@ -423,12 +423,13 @@ export function NFTGallery() {
     // Check mandatory tag filter (if none selected, show all)
     const matchesMandatory = selectedMandatoryTags.size === 0 || selectedMandatoryTags.has(nft.mandatoryTag);
     
-    // Check optional tag filters (must match ALL selected)
-    const matchesOptional = selectedOptionalTags.size === 0 || 
-      Array.from(selectedOptionalTags).every(tag => {
-        if (tag === "Limited") return nft.isLimited;
-        return nft.optionalTags?.includes(tag);
-      });
+                     // Check optional tag filters (must match ALL selected)
+                     const matchesOptional = selectedOptionalTags.size === 0 || 
+                       Array.from(selectedOptionalTags).every(tag => {
+                         if (tag === "Limited") return nft.isLimited;
+                         if (tag === "Unlimited") return !nft.isLimited;
+                         return nft.optionalTags?.includes(tag);
+                       });
     
     // Check My Favorites filter
     const matchesFavorites = !showMyFavorites || likedNFTs.has(nft.id);
@@ -563,15 +564,22 @@ export function NFTGallery() {
                       </div>
                     </div>
                      <div className="absolute top-2 right-2 flex flex-col gap-1">
-                       <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
-                         Sample
-                       </Badge>
+                       {nft.id !== "early-supporter" && nft.id !== "founder" && nft.id !== "ambassador" && (
+                         <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                           Sample
+                         </Badge>
+                       )}
                        <Badge variant="outline" className="bg-background/90 text-primary border-primary/30 text-xs">
                          {nft.mandatoryTag}
                        </Badge>
                        {nft.isLimited && (
                          <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                            Limited
+                         </Badge>
+                       )}
+                       {!nft.isLimited && (
+                         <Badge variant="secondary" className="bg-accent/20 text-accent border-accent/30 text-xs">
+                           Unlimited
                          </Badge>
                        )}
                      </div>
