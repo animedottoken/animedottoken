@@ -26,12 +26,12 @@ import { MintingInterface } from "@/components/MintingInterface";
 export default function Collections() {
   const { connected } = useSolanaWallet();
   const { collections, loading, updateCollectionStatus } = useCollections();
-  const [selectedTab, setSelectedTab] = useState<'browse' | 'create' | 'manage'>('browse');
+  const [selectedTab, setSelectedTab] = useState<'create' | 'mint' | 'manage'>('create');
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
 
   const handleCollectionCreated = (collectionId: string) => {
     setSelectedCollection(collectionId);
-    setSelectedTab('manage');
+    setSelectedTab('mint');
   };
 
   const toggleCollectionLive = async (collectionId: string, isLive: boolean) => {
@@ -90,13 +90,57 @@ export default function Collections() {
           {/* Tabs */}
           <Tabs value={selectedTab} onValueChange={(v) => setSelectedTab(v as any)} className="w-full">
             <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto">
-              <TabsTrigger value="browse">My Collections</TabsTrigger>
-              <TabsTrigger value="create">Create New</TabsTrigger>
-              <TabsTrigger value="manage">Mint</TabsTrigger>
+              <TabsTrigger value="create">1. Create New</TabsTrigger>
+              <TabsTrigger value="mint">2. Mint NFTs</TabsTrigger>
+              <TabsTrigger value="manage">3. My Collections</TabsTrigger>
             </TabsList>
 
-            {/* Browse Collections */}
-            <TabsContent value="browse" className="mt-8">
+            {/* Create Collection */}
+            <TabsContent value="create" className="mt-8">
+              <div className="flex justify-center">
+                <CollectionCreator onCollectionCreated={handleCollectionCreated} />
+              </div>
+            </TabsContent>
+
+            {/* Mint NFTs */}
+            <TabsContent value="mint" className="mt-8">
+              {selectedCollection ? (
+                <div className="flex justify-center">
+                  <MintingInterface collectionId={selectedCollection} />
+                </div>
+              ) : collections.length > 0 ? (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Coins className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-2xl font-semibold mb-2">Select a Collection to Mint</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Choose one of your created collections to start minting NFTs.
+                    </p>
+                    <Button onClick={() => setSelectedTab('manage')}>
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Browse My Collections
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Plus className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-2xl font-semibold mb-2">Create a Collection First</h3>
+                    <p className="text-muted-foreground mb-6">
+                      You need to create a collection before you can mint NFTs.
+                    </p>
+                    <Button onClick={() => setSelectedTab('create')}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Collection
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Manage Collections */}
+            <TabsContent value="manage" className="mt-8">
               <div className="space-y-6">
                 {loading ? (
                   <div className="text-center py-12">
@@ -177,11 +221,12 @@ export default function Collections() {
                               size="sm"
                               onClick={() => toggleCollectionLive(collection.id, collection.is_live)}
                               className="flex-1"
+                              title={collection.is_live ? "Pause public minting" : "Make collection available for public minting"}
                             >
                               {collection.is_live ? (
                                 <>
                                   <Pause className="h-3 w-3 mr-1" />
-                                  Pause
+                                  Pause Minting
                                 </>
                               ) : (
                                 <>
@@ -196,12 +241,12 @@ export default function Collections() {
                               size="sm"
                               onClick={() => {
                                 setSelectedCollection(collection.id);
-                                setSelectedTab('manage');
+                                setSelectedTab('mint');
                               }}
                               className="flex-1"
                             >
-                              <Settings className="h-3 w-3 mr-1" />
-                              Manage
+                              <Coins className="h-3 w-3 mr-1" />
+                              Mint NFTs
                             </Button>
                           </div>
                         </CardContent>
@@ -212,35 +257,6 @@ export default function Collections() {
               </div>
             </TabsContent>
 
-            {/* Create Collection */}
-            <TabsContent value="create" className="mt-8">
-              <div className="flex justify-center">
-                <CollectionCreator onCollectionCreated={handleCollectionCreated} />
-              </div>
-            </TabsContent>
-
-            {/* Manage/Mint */}
-            <TabsContent value="manage" className="mt-8">
-              {selectedCollection ? (
-                <div className="flex justify-center">
-                  <MintingInterface collectionId={selectedCollection} />
-                </div>
-              ) : (
-                <Card>
-                  <CardContent className="p-12 text-center">
-                    <Settings className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-2xl font-semibold mb-2">Select a Collection</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Choose a collection from your "My Collections" tab to manage and mint NFTs.
-                    </p>
-                    <Button onClick={() => setSelectedTab('browse')}>
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      Browse Collections
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
           </Tabs>
         </div>
       </main>
