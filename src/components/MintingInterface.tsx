@@ -34,7 +34,7 @@ interface MintingInterfaceProps {
   collectionId?: string;
 }
 
-export const MintingInterface = ({ collectionId = 'sample-collection' }: MintingInterfaceProps) => {
+export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000' }: MintingInterfaceProps) => {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -75,6 +75,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
     try {
       console.log('Creating sample collection...');
       const sampleCollection = {
+        id: collectionId,
         name: 'ANIME ARMY Genesis',
         symbol: 'AAGEN',
         description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
@@ -93,7 +94,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
 
       const { data, error } = await supabase
         .from('collections')
-        .insert(sampleCollection)
+        .upsert(sampleCollection, { onConflict: 'id' })
         .select()
         .single();
 
