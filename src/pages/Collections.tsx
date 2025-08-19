@@ -12,15 +12,18 @@ import {
   ExternalLink,
   Eye,
   Verified,
-  Settings
+  Settings,
+  Heart
 } from "lucide-react";
 import { useCollections } from "@/hooks/useCollections";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Collections() {
   const { connected } = useSolanaWallet();
   const { collections, loading } = useCollections();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   const getCategoryColor = (category?: string) => {
     const colors: Record<string, string> = {
@@ -78,6 +81,11 @@ export default function Collections() {
             <p className="text-xl text-muted-foreground max-w-2xl">
               Organize and showcase your NFTs in themed collections. Collections help users discover and browse your work.
             </p>
+            <div className="mt-4 flex gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <a href="/profile">Go to My Profile</a>
+              </Button>
+            </div>
           </div>
 
           {loading ? (
@@ -124,6 +132,26 @@ export default function Collections() {
                         </div>
                       )}
                     </AspectRatio>
+
+                    {/* Favorite Toggle */}
+                    <div className="absolute top-2 left-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (isFavorite(collection.id)) {
+                            removeFromFavorites(collection.id);
+                          } else {
+                            addToFavorites({ id: collection.id, name: collection.name, image_url: collection.image_url, type: 'collection' });
+                          }
+                        }}
+                        aria-label={isFavorite(collection.id) ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        <Heart className={`w-4 h-4 ${isFavorite(collection.id) ? 'fill-current text-primary' : 'text-muted-foreground'}`} />
+                      </Button>
+                    </div>
                     
                     {/* Square NFT Avatar Overlay */}
                     <div className="absolute -bottom-6 left-4">
@@ -243,35 +271,37 @@ export default function Collections() {
                       </Button>
                     </div>
 
-                    {/* Minted Items Count */}
-                    <div className="text-xs text-muted-foreground pt-2 border-t">
-                      <div className="flex justify-between">
-                        <span>Minted Items:</span>
-                        <span className="font-medium">{collection.items_redeemed || 0}</span>
-                      </div>
-                      <div className="text-xs">
-                        Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}
-                      </div>
+                    {/* Minted and Created - inline */}
+                    <div className="text-xs text-muted-foreground pt-2">
+                      <span>Minted: {collection.items_redeemed || 0}</span>
+                      <span className="mx-2">•</span>
+                      <span>Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}</span>
                     </div>
                   </CardHeader>
                 </Card>
               ))}
+
+              {/* Create Another Collection tile */}
+              <Card key="create-new" className="group hover:shadow-lg transition-shadow overflow-hidden border-dashed">
+                <CardHeader className="flex items-center justify-center text-center h-full min-h-[240px]">
+                  <div>
+                    <div className="text-4xl mb-3">➕</div>
+                    <h3 className="text-lg font-semibold mb-2">Create Another Collection</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Organize your NFTs by theme, style, or project
+                    </p>
+                    <Button asChild variant="outline">
+                      <a href="/mint">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create New Collection
+                      </a>
+                    </Button>
+                  </div>
+                </CardHeader>
+              </Card>
             </div>
           )}
 
-          {/* Create New Collection CTA */}
-          {collections.length > 0 && (
-            <Card className="mt-8 text-center p-8 border-dashed">
-              <div className="text-4xl mb-4">➕</div>
-              <h3 className="text-xl font-semibold mb-2">Create Another Collection</h3>
-              <p className="text-muted-foreground mb-4">
-                Organize your NFTs by theme, style, or project
-              </p>
-              <Button asChild variant="outline">
-                <a href="/mint">Create New Collection</a>
-              </Button>
-            </Card>
-          )}
         </div>
       </main>
     </>

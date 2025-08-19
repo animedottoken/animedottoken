@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react';
 
 interface SolanaWalletContextType {
   connected: boolean;
@@ -32,6 +32,37 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [publicKey, setPublicKey] = useState<string | null>(null);
+
+  // Auto-connect Phantom if already trusted and keep state in sync
+  useEffect(() => {
+    const { solana } = window as any;
+    if (!solana || !solana.isPhantom) return;
+
+    const handleConnect = (pk: any) => {
+      const key = (pk?.publicKey?.toString?.() ?? pk?.toString?.()) || null;
+      if (key) {
+        setPublicKey(key);
+        setConnected(true);
+      }
+    };
+    const handleDisconnect = () => {
+      setConnected(false);
+      setPublicKey(null);
+    };
+
+    solana.connect({ onlyIfTrusted: true }).then(handleConnect).catch(() => {});
+    try {
+      solana.on('connect', handleConnect);
+      solana.on('disconnect', handleDisconnect);
+    } catch {}
+
+    return () => {
+      try {
+        solana.off?.('connect', handleConnect);
+        solana.off?.('disconnect', handleDisconnect);
+      } catch {}
+    };
+  }, []);
 
   const connect = useCallback(async () => {
     if (connecting) return;

@@ -202,7 +202,7 @@ export default function Profile() {
                       {collections.map((collection) => (
                         <Card key={collection.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
                           <div className="relative">
-                            <AspectRatio ratio={16/9}>
+                            <AspectRatio ratio={3/1}>
                               {collection.banner_image_url ? (
                                 <img
                                   src={collection.banner_image_url}
@@ -217,12 +217,19 @@ export default function Profile() {
                             </AspectRatio>
                             
                             <div className="absolute -bottom-6 left-4">
-                              <Avatar className="w-12 h-12 border-4 border-background">
-                                <AvatarImage src={collection.image_url || undefined} />
-                                <AvatarFallback className="text-xs">
-                                  {collection.name.slice(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
+                              <div className="w-12 h-12 border-4 border-background rounded-lg overflow-hidden">
+                                {collection.image_url ? (
+                                  <img
+                                    src={collection.image_url}
+                                    alt={`${collection.name} avatar`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-muted flex items-center justify-center text-xs font-semibold">
+                                    {collection.name.slice(0, 2).toUpperCase()}
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             <div className="absolute top-2 right-2 flex gap-2">
@@ -261,13 +268,13 @@ export default function Profile() {
                               <Button variant="outline" size="sm" className="flex-1" asChild>
                                 <a href={`/collection/${collection.id}`}>
                                   <Eye className="w-4 h-4 mr-1" />
-                                  View
+                                  View Details
                                 </a>
                               </Button>
                               <Button size="sm" className="flex-1" asChild>
                                 <a href={`/mint?collection=${collection.slug || collection.id}`}>
                                   <Plus className="w-4 h-4 mr-1" />
-                                  Mint
+                                  Create NFT
                                 </a>
                               </Button>
                             </div>

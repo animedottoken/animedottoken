@@ -16,11 +16,13 @@ import {
   Calendar,
   Coins,
   Users,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Heart
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import { formatDistanceToNow } from "date-fns";
 
 export default function CollectionDetail() {
@@ -29,6 +31,7 @@ export default function CollectionDetail() {
   const { connected } = useSolanaWallet();
   const { collection, loading: collectionLoading } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   if (collectionLoading) {
     return (
@@ -82,6 +85,9 @@ export default function CollectionDetail() {
             <Button variant="ghost" size="sm" onClick={() => navigate('/collections')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Collections
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <a href="/profile">My Profile</a>
             </Button>
           </div>
 
@@ -145,6 +151,20 @@ export default function CollectionDetail() {
                         {collection.symbol}
                       </Badge>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (isFavorite(collection.id)) {
+                          removeFromFavorites(collection.id);
+                        } else {
+                          addToFavorites({ id: collection.id, name: collection.name, image_url: collection.image_url, type: 'collection' });
+                        }
+                      }}
+                      aria-label={isFavorite(collection.id) ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Heart className={`w-5 h-5 ${isFavorite(collection.id) ? 'fill-current text-primary' : 'text-muted-foreground'}`} />
+                    </Button>
                   </div>
                   
                   {collection.description && (

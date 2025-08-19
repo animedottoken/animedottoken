@@ -1,9 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { Zap, Coins, Users } from "lucide-react";
+import { Zap, Coins, Users, ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { Button } from "@/components/ui/button";
 export default function Mint() {
   return (
     <>
@@ -15,8 +15,18 @@ export default function Mint() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
+          {/* Back */}
+          <div className="mb-4">
+            <Button variant="ghost" size="sm" asChild>
+              <a href="/collections">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Collections
+              </a>
+            </Button>
+          </div>
+
           {/* Header */}
-          <div className="text-center mb-12 pt-8">
+          <div className="text-center mb-12 pt-4">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
               Mint NFTs & Collections
             </h1>
