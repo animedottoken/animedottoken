@@ -131,14 +131,6 @@ const navigationItems = [
     }
   },
   { 
-    title: "My Collections", 
-    icon: ShoppingBag,
-    hash: "collections", 
-    onClick: () => {
-      window.location.href = '/collections';
-    }
-  },
-  { 
     title: "Mint NFTs", 
     icon: Coins,
     hash: "mint",

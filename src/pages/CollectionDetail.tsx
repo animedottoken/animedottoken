@@ -61,8 +61,8 @@ export default function CollectionDetail() {
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               The collection you're looking for doesn't exist or you don't have access to it.
             </p>
-            <Button onClick={() => navigate('/collections')}>
-              Back to Collections
+            <Button onClick={() => navigate('/profile')}>
+              Back to Profile
             </Button>
           </div>
         </div>
@@ -82,9 +82,9 @@ export default function CollectionDetail() {
           
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/collections')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Collections
+              Back to Profile
             </Button>
             <Button variant="outline" size="sm" asChild>
               <a href="/profile">My Profile</a>
@@ -219,13 +219,7 @@ export default function CollectionDetail() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 min-w-[200px]">
-                  <Button size="lg" asChild>
-                    <a href={`/mint?collection=${collection.slug || collection.id}`}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create NFT
-                    </a>
-                  </Button>
-                  {connected && (
+                  {connected && mints.length === 0 && (
                     <Button variant="outline" size="lg" asChild>
                       <a href={`/mint?edit=${collection.id}`}>
                         <Settings className="w-4 h-4 mr-2" />

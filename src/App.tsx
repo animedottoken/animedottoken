@@ -9,7 +9,6 @@ import NotFound from "./pages/NotFound";
 import Reports from "./pages/Reports";
 import ShareNFT from "./pages/ShareNFT";
 import Mint from "./pages/Mint";
-import Collections from "./pages/Collections";
 import CollectionDetail from "./pages/CollectionDetail";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
@@ -48,7 +47,7 @@ const App = () => (
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/share/nft/:nftId" element={<ShareNFT />} />
                 <Route path="/mint" element={<Mint />} />
-                <Route path="/collections" element={<Collections />} />
+                
                 <Route path="/collection/:collectionId" element={<CollectionDetail />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/profile" element={<Profile />} />

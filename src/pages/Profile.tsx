@@ -198,89 +198,128 @@ export default function Profile() {
                       </CardContent>
                     </Card>
                   ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {collections.map((collection) => (
-                        <Card key={collection.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
-                          <div className="relative">
-                            <AspectRatio ratio={3/1}>
-                              {collection.banner_image_url ? (
-                                <img
-                                  src={collection.banner_image_url}
-                                  alt={`${collection.name} banner`}
-                                  className="object-cover w-full h-full"
-                                />
-                              ) : (
-                                <div className="bg-gradient-to-br from-primary/10 to-purple-500/10 w-full h-full flex items-center justify-center">
-                                  <div className="text-4xl opacity-50">🎨</div>
-                                </div>
-                              )}
-                            </AspectRatio>
-                            
-                            <div className="absolute -bottom-6 left-4">
-                              <div className="w-12 h-12 border-4 border-background rounded-lg overflow-hidden">
-                                {collection.image_url ? (
+                        <Card key={collection.id} className="group hover:shadow-lg transition-shadow">
+                          <CardContent className="p-0">
+                            <div className="relative">
+                              <AspectRatio ratio={3/1}>
+                                {collection.banner_image_url ? (
                                   <img
-                                    src={collection.image_url}
-                                    alt={`${collection.name} avatar`}
-                                    className="w-full h-full object-cover"
+                                    src={collection.banner_image_url}
+                                    alt={`${collection.name} banner`}
+                                    className="object-cover w-full h-full rounded-t-lg"
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-muted flex items-center justify-center text-xs font-semibold">
-                                    {collection.name.slice(0, 2).toUpperCase()}
+                                  <div className="bg-gradient-to-br from-primary/20 to-purple-500/20 w-full h-full rounded-t-lg flex items-center justify-center">
+                                    <div className="text-4xl opacity-50">🎨</div>
                                   </div>
                                 )}
+                              </AspectRatio>
+                              
+                              {/* Square Collection Avatar */}
+                              <div className="absolute -bottom-6 left-4">
+                                <div className="w-12 h-12 border-2 border-background rounded-lg overflow-hidden">
+                                  {collection.image_url ? (
+                                    <img
+                                      src={collection.image_url}
+                                      alt={`${collection.name} avatar`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-muted flex items-center justify-center text-xs font-semibold">
+                                      {collection.name.slice(0, 2).toUpperCase()}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="absolute top-2 right-2 flex gap-2">
-                              {collection.is_live && (
-                                <Badge variant="secondary" className="bg-green-500 text-white">
-                                  Live
-                                </Badge>
-                              )}
+                              {/* Favorite Button */}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-2 right-2 bg-black/20 hover:bg-black/40 text-white"
+                                onClick={() => {
+                                  // Add favorite functionality here if needed
+                                }}
+                              >
+                                <Heart className="w-4 h-4" />
+                              </Button>
                             </div>
-                          </div>
-
-                          <CardContent className="pt-8">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-lg truncate">{collection.name}</h3>
-                                {collection.description && (
-                                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                                    {collection.description}
-                                  </p>
+                            
+                            <div className="p-4 pt-8">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold line-clamp-1">{collection.name}</h3>
+                                {collection.symbol && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {collection.symbol}
+                                  </Badge>
                                 )}
                               </div>
-                            </div>
-
-                            {collection.category && (
-                              <Badge variant="outline" className={`w-fit mb-2 ${getCategoryColor(collection.category)}`}>
-                                {collection.category.charAt(0).toUpperCase() + collection.category.slice(1)}
-                              </Badge>
-                            )}
-
-                            <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                              <div>Minted: {collection.items_redeemed || 0}</div>
-                              <div>Price: {collection.mint_price || 0} SOL</div>
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Button variant="outline" size="sm" className="flex-1" asChild>
-                                <a href={`/collection/${collection.id}`}>
-                                  <Eye className="w-4 h-4 mr-1" />
-                                  View Details
-                                </a>
-                              </Button>
-                              <Button size="sm" className="flex-1" asChild>
-                                <a href={`/mint?collection=${collection.slug || collection.id}`}>
-                                  <Plus className="w-4 h-4 mr-1" />
-                                  Create NFT
-                                </a>
-                              </Button>
+                              
+                              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                                {collection.description || "No description available"}
+                              </p>
+                              
+                              <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground mb-3">
+                                <div className="text-center">
+                                  <div className="font-medium text-foreground">0</div>
+                                  <div>Minted</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="font-medium text-foreground">{collection.max_supply || '∞'}</div>
+                                  <div>Supply</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="font-medium text-foreground">{collection.mint_price || 0}</div>
+                                  <div>Price</div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" asChild className="flex-1">
+                                  <a href={`/collection/${collection.id}`}>
+                                    <Eye className="w-3 h-3 mr-1" />
+                                    View Details
+                                  </a>
+                                </Button>
+                                <Button size="sm" asChild className="flex-1">
+                                  <a href={`/mint?collection=${collection.slug || collection.id}`}>
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Create NFT
+                                  </a>
+                                </Button>
+                              </div>
+                              
+                              <div className="text-xs text-muted-foreground mt-2">
+                                Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
                       ))}
+
+                      {/* Create New Collection Tile */}
+                      <Card className="group hover:shadow-lg transition-shadow border-dashed border-2 hover:border-primary/50">
+                        <CardContent className="p-0">
+                          <div className="aspect-[3/1] bg-gradient-to-br from-primary/5 to-accent/5 rounded-t-lg flex items-center justify-center">
+                            <div className="text-4xl opacity-50">➕</div>
+                          </div>
+                          
+                          <div className="p-4 pt-8 text-center">
+                            <h3 className="font-semibold mb-2">Create Another Collection</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Organize your NFTs in themed collections
+                            </p>
+                            <Button asChild size="sm" className="w-full">
+                              <a href="/mint">
+                                <Plus className="w-3 h-3 mr-2" />
+                                Create New Collection
+                              </a>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
                   )}
                 </TabsContent>
