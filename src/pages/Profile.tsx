@@ -5,16 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Copy, Wallet, TrendingUp, Activity, LogOut, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Copy, Wallet, Activity, LogOut, ExternalLink, Plus, Eye, Heart, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useNFTs } from "@/hooks/useNFTs";
 import { useCollections } from "@/hooks/useCollections";
+import { useUserActivity } from "@/hooks/useUserActivity";
+import { useFavorites } from "@/hooks/useFavorites";
+import { formatDistanceToNow } from "date-fns";
 
 export default function Profile() {
   const { connected, publicKey, disconnect } = useSolanaWallet();
-  const { nfts, loading: nftsLoading } = useNFTs();
-  const { collections } = useCollections();
+  const { collections, loading: collectionsLoading } = useCollections();
+  const { activities, loading: activitiesLoading } = useUserActivity();
+  const { favorites, removeFromFavorites } = useFavorites();
 
   const displayName = 'ANIME Collector';
   const getInitials = (name: string) => {
@@ -35,12 +39,45 @@ export default function Profile() {
     }
   };
 
-
+  // Calculate real stats
   const userStats = {
-    nftsOwned: nfts.length,
-    totalValue: nfts.reduce((sum, nft) => sum + (nft.price || 0), 0).toFixed(2) + " SOL",
-    totalSales: "0 SOL", // This would need transaction history
+    nftsOwned: 0, // No NFTs minted yet
+    totalValue: "0 SOL",
+    totalSales: "0 SOL", 
     collections: collections.length,
+  };
+
+  const getCategoryColor = (category?: string) => {
+    const colors: Record<string, string> = {
+      art: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+      photography: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+      music: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+      gaming: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+      pfp: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+      utility: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400',
+      other: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+    };
+    return colors[category || 'other'] || colors.other;
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'collection_created': return '🎨';
+      case 'mint_job_created': return '⚡';
+      case 'mint_completed': return '✅';
+      case 'mint_failed': return '❌';
+      default: return '📝';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-500 text-white';
+      case 'failed': return 'bg-red-500 text-white';
+      case 'processing': return 'bg-blue-500 text-white';
+      case 'pending': return 'bg-yellow-500 text-black';
+      default: return 'bg-gray-500 text-white';
+    }
   };
 
   return (
@@ -57,7 +94,6 @@ export default function Profile() {
             <>
               {/* Profile Header */}
               <div className="relative mb-8">
-                {/* Compact Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/5 rounded-lg border">
                   <Avatar className="w-20 h-20 border-2 border-primary/20">
                     <AvatarFallback className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -126,88 +162,113 @@ export default function Profile() {
               </div>
 
               {/* Tabs */}
-              <Tabs defaultValue="collection" className="mb-8">
+              <Tabs defaultValue="collections" className="mb-8">
                 <TabsList className="grid w-full grid-cols-4 lg:w-96">
-                  <TabsTrigger value="collection">Collection</TabsTrigger>
+                  <TabsTrigger value="collections">Collections</TabsTrigger>
                   <TabsTrigger value="activity">Activity</TabsTrigger>
-                  <TabsTrigger value="offers">Offers</TabsTrigger>
                   <TabsTrigger value="favorites">Favorites</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="collection" className="mt-6">
-                  {nftsLoading ? (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {[...Array(8)].map((_, i) => (
+                {/* Collections Tab - Show user's created collections */}
+                <TabsContent value="collections" className="mt-6">
+                  {collectionsLoading ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[...Array(6)].map((_, i) => (
                         <Card key={i} className="animate-pulse">
-                          <CardContent className="p-0">
-                            <div className="aspect-square bg-muted rounded-t-lg" />
-                            <div className="p-4 space-y-2">
-                              <div className="h-4 bg-muted rounded w-3/4" />
-                              <div className="h-3 bg-muted rounded w-1/2" />
-                            </div>
-                          </CardContent>
+                          <CardHeader>
+                            <div className="w-full h-48 bg-muted rounded-lg" />
+                            <div className="h-6 bg-muted rounded w-3/4" />
+                            <div className="h-4 bg-muted rounded w-1/2" />
+                          </CardHeader>
                         </Card>
                       ))}
                     </div>
-                  ) : nfts.length === 0 ? (
-                    <Card className="text-center py-12">
+                  ) : collections.length === 0 ? (
+                    <Card className="text-center py-16">
                       <CardContent>
-                        <div className="text-6xl mb-4">🖼️</div>
-                        <h3 className="text-2xl font-semibold mb-4">No NFTs Yet</h3>
-                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                          Start building your collection by minting your first NFT or purchasing from the marketplace.
+                        <div className="text-6xl mb-4">📁</div>
+                        <h3 className="text-2xl font-semibold mb-4">No Collections Created</h3>
+                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                          Create your first collection to organize and showcase your NFTs.
                         </p>
-                        <div className="flex gap-2 justify-center">
-                          <Button asChild>
-                            <a href="/mint">Mint NFT</a>
-                          </Button>
-                          <Button variant="outline" asChild>
-                            <a href="/marketplace">Browse Marketplace</a>
-                          </Button>
-                        </div>
+                        <Button asChild size="lg">
+                          <a href="/mint">Create First Collection</a>
+                        </Button>
                       </CardContent>
                     </Card>
                   ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {nfts.map((nft, i) => (
-                        <Card key={nft.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
-                          <CardContent className="p-0">
-                            <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
-                              {nft.image_url ? (
-                                <img 
-                                  src={nft.image_url} 
-                                  alt={nft.name}
-                                  className="w-full h-full object-cover"
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {collections.map((collection) => (
+                        <Card key={collection.id} className="group hover:shadow-lg transition-shadow overflow-hidden">
+                          <div className="relative">
+                            <AspectRatio ratio={16/9}>
+                              {collection.banner_image_url ? (
+                                <img
+                                  src={collection.banner_image_url}
+                                  alt={`${collection.name} banner`}
+                                  className="object-cover w-full h-full"
                                 />
                               ) : (
-                                <ImageIcon className="w-16 h-16 text-muted-foreground" />
+                                <div className="bg-gradient-to-br from-primary/10 to-purple-500/10 w-full h-full flex items-center justify-center">
+                                  <div className="text-4xl opacity-50">🎨</div>
+                                </div>
+                              )}
+                            </AspectRatio>
+                            
+                            <div className="absolute -bottom-6 left-4">
+                              <Avatar className="w-12 h-12 border-4 border-background">
+                                <AvatarImage src={collection.image_url || undefined} />
+                                <AvatarFallback className="text-xs">
+                                  {collection.name.slice(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+
+                            <div className="absolute top-2 right-2 flex gap-2">
+                              {collection.is_live && (
+                                <Badge variant="secondary" className="bg-green-500 text-white">
+                                  Live
+                                </Badge>
                               )}
                             </div>
-                            <div className="p-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <h3 className="font-semibold line-clamp-1">{nft.name}</h3>
-                                  <p className="text-sm text-muted-foreground">
-                                    {(nft as any).collections?.name || 'No Collection'}
+                          </div>
+
+                          <CardContent className="pt-8">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-lg truncate">{collection.name}</h3>
+                                {collection.description && (
+                                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                                    {collection.description}
                                   </p>
-                                </div>
-                                <Badge variant="secondary">Owned</Badge>
+                                )}
                               </div>
-                              {nft.price && (
-                                <div className="flex justify-between items-center mb-3">
-                                  <div>
-                                    <div className="text-sm text-muted-foreground">Price</div>
-                                    <div className="font-bold">{nft.price} {nft.currency || 'SOL'}</div>
-                                  </div>
-                                  {nft.is_listed && (
-                                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                                      Listed
-                                    </Badge>
-                                  )}
-                                </div>
-                              )}
-                              <Button className="w-full" variant="outline">
-                                {nft.is_listed ? 'Update Listing' : 'List for Sale'}
+                            </div>
+
+                            {collection.category && (
+                              <Badge variant="outline" className={`w-fit mb-2 ${getCategoryColor(collection.category)}`}>
+                                {collection.category.charAt(0).toUpperCase() + collection.category.slice(1)}
+                              </Badge>
+                            )}
+
+                            <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                              <div>Minted: {collection.items_redeemed || 0}</div>
+                              <div>Price: {collection.mint_price || 0} SOL</div>
+                            </div>
+
+                            <div className="flex gap-2">
+                              <Button variant="outline" size="sm" className="flex-1" asChild>
+                                <a href={`/collection/${collection.id}`}>
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                              <Button size="sm" className="flex-1" asChild>
+                                <a href={`/mint?collection=${collection.slug || collection.id}`}>
+                                  <Plus className="w-4 h-4 mr-1" />
+                                  Mint
+                                </a>
                               </Button>
                             </div>
                           </CardContent>
@@ -217,6 +278,7 @@ export default function Profile() {
                   )}
                 </TabsContent>
 
+                {/* Activity Tab - Show user's activities */}
                 <TabsContent value="activity" className="mt-6">
                   <Card>
                     <CardHeader>
@@ -227,55 +289,150 @@ export default function Profile() {
                       <CardDescription>Your latest transactions and activities</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
-                        {[
-                          { type: "Minted", item: "Sakura Warrior #1234", price: "0.1 SOL", time: "2 hours ago" },
-                          { type: "Listed", item: "Cyber Ninja #5678", price: "2.5 SOL", time: "1 day ago" },
-                          { type: "Sold", item: "Magic Girl #9012", price: "1.8 SOL", time: "3 days ago" },
-                          { type: "Bought", item: "Dragon Master #3456", price: "3.2 SOL", time: "1 week ago" },
-                        ].map((activity, i) => (
-                          <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                {activity.type === "Minted" && "🎨"}
-                                {activity.type === "Listed" && "🏷️"}
-                                {activity.type === "Sold" && "💰"}
-                                {activity.type === "Bought" && "🛒"}
-                              </div>
-                              <div>
-                                <div className="font-medium">{activity.type} {activity.item}</div>
-                                <div className="text-sm text-muted-foreground">{activity.time}</div>
+                      {activitiesLoading ? (
+                        <div className="space-y-4">
+                          {[...Array(5)].map((_, i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border rounded-lg animate-pulse">
+                              <div className="w-10 h-10 bg-muted rounded-full" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-muted rounded w-3/4" />
+                                <div className="h-3 bg-muted rounded w-1/2" />
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className="font-bold">{activity.price}</div>
-                              <Badge variant={activity.type === "Sold" ? "default" : "secondary"} className="text-xs">
-                                {activity.type}
-                              </Badge>
+                          ))}
+                        </div>
+                      ) : activities.length === 0 ? (
+                        <div className="text-center py-8">
+                          <div className="text-4xl mb-4">📝</div>
+                          <h3 className="text-xl font-semibold mb-2">No Activity Yet</h3>
+                          <p className="text-muted-foreground">
+                            Your collection creation and minting activities will appear here
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {activities.map((activity) => (
+                            <div key={activity.id} className="flex items-center justify-between p-4 border rounded-lg">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+                                  {getActivityIcon(activity.type)}
+                                </div>
+                                <div>
+                                  <div className="font-medium">{activity.title}</div>
+                                  <div className="text-sm text-muted-foreground">{activity.description}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                {activity.status && (
+                                  <Badge className={`text-xs ${getStatusColor(activity.status)}`}>
+                                    {activity.status}
+                                  </Badge>
+                                )}
+                                {activity.price !== undefined && (
+                                  <div className="text-sm font-medium mt-1">{activity.price} SOL</div>
+                                )}
+                                {activity.quantity && (
+                                  <div className="text-xs text-muted-foreground">Qty: {activity.quantity}</div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
 
-                <TabsContent value="offers" className="mt-6">
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4">💼</div>
-                    <h3 className="text-xl font-semibold mb-2">No Active Offers</h3>
-                    <p className="text-muted-foreground">
-                      Offers made and received will appear here
-                    </p>
-                  </div>
+                {/* Favorites Tab */}
+                <TabsContent value="favorites" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Heart className="h-5 w-5" />
+                        Favorites ({favorites.length})
+                      </CardTitle>
+                      <CardDescription>
+                        NFTs and collections you've favorited. 
+                        <span className="block text-xs mt-1">
+                          💡 Tip: Visit marketplace or collections and click the heart icon to add favorites
+                        </span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {favorites.length === 0 ? (
+                        <div className="text-center py-12">
+                          <div className="text-6xl mb-4">❤️</div>
+                          <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Browse collections and NFTs to add them to your favorites
+                          </p>
+                          <div className="flex gap-2 justify-center">
+                            <Button asChild variant="outline">
+                              <a href="/collections">Browse Collections</a>
+                            </Button>
+                            <Button asChild>
+                              <a href="/marketplace">Visit Marketplace</a>
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                          {favorites.map((favorite) => (
+                            <Card key={favorite.id} className="group hover:shadow-lg transition-shadow">
+                              <CardContent className="p-0">
+                                <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center overflow-hidden">
+                                  {favorite.image_url ? (
+                                    <img 
+                                      src={favorite.image_url} 
+                                      alt={favorite.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="text-4xl">
+                                      {favorite.type === 'collection' ? '📁' : '🖼️'}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <div className="flex-1 min-w-0">
+                                      <h3 className="font-semibold line-clamp-1">{favorite.name}</h3>
+                                      {favorite.collection_name && (
+                                        <p className="text-sm text-muted-foreground">{favorite.collection_name}</p>
+                                      )}
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeFromFavorites(favorite.id)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {favorite.type === 'collection' ? 'Collection' : 'NFT'}
+                                  </Badge>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
-                <TabsContent value="favorites" className="mt-6">
+                {/* Settings Tab */}
+                <TabsContent value="settings" className="mt-6">
                   <div className="text-center py-12">
-                    <div className="text-4xl mb-4">❤️</div>
-                    <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
+                    <div className="text-4xl mb-4">⚙️</div>
+                    <h3 className="text-xl font-semibold mb-2">Profile Settings</h3>
                     <p className="text-muted-foreground">
-                      NFTs you like will be saved here
+                      Profile customization and preferences will be available here soon
                     </p>
                   </div>
                 </TabsContent>
