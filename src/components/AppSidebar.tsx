@@ -100,10 +100,9 @@ const navigationItems = [
   { 
     title: "NFT Marketplace", 
     icon: ShoppingBag,
-    hash: "nft-gallery",
+    hash: "marketplace",
     onClick: () => {
-      window.history.pushState(null, "", "/#nft-gallery");
-      document.querySelector('.nft-gallery')?.scrollIntoView({ behavior: 'smooth' });
+      window.location.href = '/marketplace';
     }
   },
   { 

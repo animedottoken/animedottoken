@@ -112,11 +112,46 @@ export class SolanaService {
         price: collection.mint_price
       });
 
-      // In a real implementation, you would:
-      // 1. Create the actual NFT transaction on Solana
-      // 2. Update database records
-      // 3. Handle whitelist checks
-      // For now, we'll simulate success
+      // Store NFT in database
+      try {
+        const { data: nft, error: nftError } = await supabase
+          .from('nfts')
+          .insert({
+            name: nftName,
+            symbol: nftSymbol,
+            description: `${collection.description} - Unique NFT #${nftNumber}`,
+            mint_address: mockMintAddress,
+            owner_address: walletAddress,
+            creator_address: collection.creator_address,
+            collection_id: collectionId,
+            image_url: collection.image_url || '/images/og-anime.jpg',
+            metadata_uri: `https://metadata.example.com/${mockMintAddress}.json`,
+            attributes: {
+              rarity: this.generateRarity(),
+              number: nftNumber,
+              collection: collection.name,
+              minted_at: new Date().toISOString()
+            },
+            is_listed: false,
+            price: null
+          })
+          .select()
+          .single();
+
+        if (nftError) {
+          console.error('Failed to store NFT in database:', nftError);
+        } else {
+          console.log('NFT stored in database:', nft);
+          
+          // Update collection items_redeemed count
+          await supabase
+            .from('collections')
+            .update({ items_redeemed: (collection.items_redeemed || 0) + 1 })
+            .eq('id', collectionId);
+        }
+      } catch (dbError) {
+        console.error('Database error during NFT creation:', dbError);
+      }
 
       return { 
         success: true, 

@@ -5,9 +5,6 @@ import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import heroOptimized from "@/assets/hero-optimized.webp";
 
 // Lazy load heavy components with higher priority for desktop
-const NFTGallery = lazy(() => 
-  import("@/components/NFTGallery").then(m => ({ default: m.NFTGallery }))
-);
 const MarketCapChart = lazy(() => 
   import("@/components/MarketCapChart").then(m => ({ default: m.MarketCapChart }))
 );
@@ -612,12 +609,6 @@ const Index = () => {
       {/* NFT Supporter Program Section */}
       <div id="nft-supporter-section" className="scroll-mt-20">
         <NFTSupporterSection />
-      </div>
-
-      <div className="nft-gallery scroll-mt-20">
-        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-48"></div>}>
-          <NFTGallery />
-        </Suspense>
       </div>
 
       <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
