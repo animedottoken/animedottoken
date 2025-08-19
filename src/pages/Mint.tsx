@@ -1,13 +1,9 @@
 import { Helmet } from "react-helmet-async";
-import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
-import { MintingInterface } from "@/components/MintingInterface";
+import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { Zap, Coins, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Mint() {
-  const { connected } = useSolanaWallet();
-
   return (
     <>
       <Helmet>
@@ -21,31 +17,17 @@ export default function Mint() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-              Mint Anime NFTs
+              Mint NFT
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Create exclusive digital collectibles on the Solana blockchain with lightning-fast transactions and minimal fees.
+              Create collections and mint exclusive digital collectibles on Solana with lightning-fast transactions and minimal fees.
             </p>
-            <div className="flex justify-center">
-              <SolanaWalletButton />
-            </div>
           </div>
 
-          {connected ? (
-            <div className="flex justify-center mb-12">
-              <MintingInterface collectionId="123e4567-e89b-12d3-a456-426614174000" />
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="mb-8">
-                <div className="text-6xl mb-4">🔒</div>
-                <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Connect your Solana wallet to start minting exclusive anime NFTs and join our community.
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Unified Mint Interface */}
+          <div className="flex justify-center mb-12">
+            <UnifiedMintInterface />
+          </div>
 
           {/* Features Grid */}
           <div className="grid md:grid-cols-3 gap-8">
