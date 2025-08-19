@@ -1,31 +1,19 @@
-import { createContext, useContext, ReactNode, useMemo } from 'react';
-import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { 
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
+import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
 
-// Import wallet adapter CSS
-import '@solana/wallet-adapter-react-ui/styles.css';
-
-const SolanaWalletContext = createContext<{
+interface SolanaWalletContextType {
   connected: boolean;
   connecting: boolean;
   publicKey: string | null;
-  connect: () => void;
+  connect: () => Promise<void>;
   disconnect: () => void;
-  signTransaction: any;
-  signAllTransactions: any;
-}>({
+}
+
+const SolanaWalletContext = createContext<SolanaWalletContextType>({
   connected: false,
   connecting: false,
   publicKey: null,
-  connect: () => {},
+  connect: async () => {},
   disconnect: () => {},
-  signTransaction: null,
-  signAllTransactions: null,
 });
 
 export const useSolanaWallet = () => {
@@ -40,47 +28,58 @@ interface SolanaWalletProviderProps {
   children: ReactNode;
 }
 
-const WalletContextProvider = ({ children }: { children: ReactNode }) => {
-  const { connected, connecting, publicKey, connect, disconnect, signTransaction, signAllTransactions } = useWallet();
-  
+export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) => {
+  const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+
+  const connect = useCallback(async () => {
+    if (connecting) return;
+    
+    try {
+      setConnecting(true);
+      
+      // Check if Phantom wallet is available
+      const { solana } = window as any;
+      
+      if (!solana || !solana.isPhantom) {
+        alert('Phantom wallet not found! Please install Phantom wallet from https://phantom.app/');
+        return;
+      }
+
+      // Request connection to wallet
+      const response = await solana.connect();
+      setPublicKey(response.publicKey.toString());
+      setConnected(true);
+      
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+      alert('Failed to connect to wallet. Please try again.');
+    } finally {
+      setConnecting(false);
+    }
+  }, [connecting]);
+
+  const disconnect = useCallback(() => {
+    const { solana } = window as any;
+    if (solana) {
+      solana.disconnect();
+    }
+    setConnected(false);
+    setPublicKey(null);
+  }, []);
+
   return (
     <SolanaWalletContext.Provider 
       value={{
         connected,
         connecting,
-        publicKey: publicKey?.toString() || null,
+        publicKey,
         connect,
         disconnect,
-        signTransaction,
-        signAllTransactions,
       }}
     >
       {children}
     </SolanaWalletContext.Provider>
-  );
-};
-
-export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) => {
-  const network = 'devnet'; // Use devnet for testing
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
-    [network]
-  );
-
-  return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <WalletContextProvider>
-            {children}
-          </WalletContextProvider>
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
   );
 };
