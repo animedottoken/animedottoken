@@ -11,7 +11,10 @@ import {
   Trophy,
   Menu,
   X,
-  Users
+  Users,
+  Coins,
+  Store,
+  User
 } from "lucide-react";
 
 const navigationItems = [
@@ -103,6 +106,30 @@ const navigationItems = [
     onClick: () => {
       window.history.pushState(null, "", "/#share-promote-section");
       document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+  { 
+    title: "Mint NFTs", 
+    icon: Coins,
+    hash: "",
+    onClick: () => {
+      window.location.href = "/mint";
+    }
+  },
+  { 
+    title: "NFT Marketplace", 
+    icon: Store,
+    hash: "",
+    onClick: () => {
+      window.location.href = "/marketplace";
+    }
+  },
+  { 
+    title: "My Profile", 
+    icon: User,
+    hash: "",
+    onClick: () => {
+      window.location.href = "/profile";
     }
   }
 ];
