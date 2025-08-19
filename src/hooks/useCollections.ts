@@ -162,7 +162,7 @@ export const useCollections = () => {
         category: collectionData.category || null,
         explicit_content: collectionData.explicit_content || false,
         is_active: true,
-        is_live: false,
+        is_live: true,
         verified: false,
         // Only set primary sales fields if enabled
         ...(collectionData.enable_primary_sales && {

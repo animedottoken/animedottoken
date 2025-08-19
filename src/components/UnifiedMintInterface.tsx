@@ -85,6 +85,33 @@ export const UnifiedMintInterface = () => {
     }
   };
 
+  const handleSocialLinkChange = (type: string, url: string) => {
+    const currentLinks = formData.external_links || [];
+    const existingIndex = currentLinks.findIndex(link => link.type === type);
+    
+    if (url.trim() === '') {
+      // Remove the link if URL is empty
+      const updatedLinks = currentLinks.filter(link => link.type !== type);
+      setFormData({
+        ...formData,
+        external_links: updatedLinks
+      });
+    } else {
+      // Add or update the link
+      let updatedLinks;
+      if (existingIndex >= 0) {
+        updatedLinks = [...currentLinks];
+        updatedLinks[existingIndex] = { type, url };
+      } else {
+        updatedLinks = [...currentLinks, { type, url }];
+      }
+      setFormData({
+        ...formData,
+        external_links: updatedLinks
+      });
+    }
+  };
+
   const handleAddLink = () => {
     setFormData(prev => ({
       ...prev,
@@ -112,6 +139,38 @@ export const UnifiedMintInterface = () => {
     e.preventDefault();
     
     if (!connected) {
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast({
+        title: 'Collection name is required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.name.trim().length < 3) {
+      toast({
+        title: 'Collection name must be at least 3 characters',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.name.trim().length > 20) {
+      toast({
+        title: 'Collection name must be 20 characters or less',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.description && formData.description.length > 1500) {
+      toast({
+        title: 'Description must be 1500 characters or less',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -306,8 +365,13 @@ export const UnifiedMintInterface = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         placeholder="e.g., My Art Series"
+                        minLength={3}
+                        maxLength={20}
                         required
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {(formData.name || '').length}/20 characters (min: 3)
+                      </p>
                     </div>
                     
                     <div>
@@ -331,9 +395,10 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                       placeholder="Describe your collection..."
                       className="h-24"
+                      maxLength={1500}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      {(formData.description || '').length}/500 characters
+                      {(formData.description || '').length}/1500 characters
                     </p>
                   </div>
 
@@ -359,46 +424,49 @@ export const UnifiedMintInterface = () => {
 
                 {/* External Links */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold">External Links (Optional)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAddLink}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Link
-                    </Button>
-                  </div>
+                  <Label className="text-base font-semibold">External Links (Optional)</Label>
                   
-                  {formData.external_links?.map((link, index) => (
-                    <div key={index} className="flex gap-2">
-                      <Select 
-                        value={link.type} 
-                        onValueChange={(value) => handleLinkChange(index, 'type', value)}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="website">Website</SelectItem>
-                          <SelectItem value="twitter">Twitter</SelectItem>
-                          <SelectItem value="discord">Discord</SelectItem>
-                          <SelectItem value="instagram">Instagram</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="website">Website</Label>
                       <Input
-                        placeholder="https://..."
-                        value={link.url}
-                        onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
-                        className="flex-1"
+                        id="website"
+                        placeholder="https://yourwebsite.com"
+                        value={formData.external_links?.find(l => l.type === 'website')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('website', e.target.value)}
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleRemoveLink(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
-                  ))}
+                    
+                    <div>
+                      <Label htmlFor="twitter">Twitter</Label>
+                      <Input
+                        id="twitter"
+                        placeholder="https://twitter.com/username"
+                        value={formData.external_links?.find(l => l.type === 'twitter')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="discord">Discord</Label>
+                      <Input
+                        id="discord"
+                        placeholder="https://discord.gg/invite"
+                        value={formData.external_links?.find(l => l.type === 'discord')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('discord', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="instagram">Instagram</Label>
+                      <Input
+                        id="instagram"
+                        placeholder="https://instagram.com/username"
+                        value={formData.external_links?.find(l => l.type === 'instagram')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Advanced Settings */}
