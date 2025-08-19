@@ -17,6 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { NFTSupporterSection } from "@/components/NFTSupporterSection";
+import { NFTPreviewSection } from "@/components/NFTPreviewSection";
 import { OwnershipCalculator } from "@/components/OwnershipCalculator";
 import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -609,6 +610,11 @@ const Index = () => {
       {/* NFT Supporter Program Section */}
       <div id="nft-supporter-section" className="scroll-mt-20">
         <NFTSupporterSection />
+      </div>
+
+      {/* NFT Preview Section */}
+      <div className="scroll-mt-20">
+        <NFTPreviewSection />
       </div>
 
       <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">

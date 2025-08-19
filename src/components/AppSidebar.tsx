@@ -9,7 +9,8 @@ import {
   HelpCircle,
   Share2,
   Trophy,
-  Users
+  Users,
+  Coins
 } from "lucide-react";
 
 import {
@@ -119,6 +120,14 @@ const navigationItems = [
       } else {
         document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
       }
+    }
+  },
+  { 
+    title: "Mint NFTs", 
+    icon: Coins,
+    hash: "mint",
+    onClick: () => {
+      window.location.href = '/mint';
     }
   },
   { 

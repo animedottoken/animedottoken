@@ -115,6 +115,14 @@ const navigationItems = [
     }
   },
   { 
+    title: "Mint NFTs", 
+    icon: Coins,
+    hash: "mint",
+    onClick: () => {
+      window.location.href = '/mint';
+    }
+  },
+  { 
     title: "NFT Marketplace", 
     icon: ShoppingBag,
     hash: "marketplace",
@@ -132,14 +140,6 @@ const navigationItems = [
       } else {
         document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
       }
-    }
-  },
-  { 
-    title: "Mint NFTs", 
-    icon: Coins,
-    hash: "",
-    onClick: () => {
-      window.location.href = "/mint";
     }
   },
   { 
