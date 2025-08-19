@@ -14,7 +14,280 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      collection_whitelist: {
+        Row: {
+          collection_id: string | null
+          created_at: string
+          id: string
+          max_mint_count: number
+          minted_count: number
+          wallet_address: string
+        }
+        Insert: {
+          collection_id?: string | null
+          created_at?: string
+          id?: string
+          max_mint_count?: number
+          minted_count?: number
+          wallet_address: string
+        }
+        Update: {
+          collection_id?: string | null
+          created_at?: string
+          id?: string
+          max_mint_count?: number
+          minted_count?: number
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_whitelist_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          candy_machine_id: string | null
+          created_at: string
+          creator_address: string
+          description: string | null
+          go_live_date: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_live: boolean
+          items_available: number
+          items_redeemed: number
+          max_supply: number
+          mint_price: number
+          name: string
+          royalty_percentage: number
+          symbol: string
+          treasury_wallet: string
+          updated_at: string
+          whitelist_enabled: boolean
+        }
+        Insert: {
+          candy_machine_id?: string | null
+          created_at?: string
+          creator_address: string
+          description?: string | null
+          go_live_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_live?: boolean
+          items_available?: number
+          items_redeemed?: number
+          max_supply?: number
+          mint_price?: number
+          name: string
+          royalty_percentage?: number
+          symbol: string
+          treasury_wallet: string
+          updated_at?: string
+          whitelist_enabled?: boolean
+        }
+        Update: {
+          candy_machine_id?: string | null
+          created_at?: string
+          creator_address?: string
+          description?: string | null
+          go_live_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_live?: boolean
+          items_available?: number
+          items_redeemed?: number
+          max_supply?: number
+          mint_price?: number
+          name?: string
+          royalty_percentage?: number
+          symbol?: string
+          treasury_wallet?: string
+          updated_at?: string
+          whitelist_enabled?: boolean
+        }
+        Relationships: []
+      }
+      marketplace_activities: {
+        Row: {
+          activity_type: string
+          block_time: string | null
+          collection_id: string | null
+          created_at: string
+          currency: string | null
+          from_address: string | null
+          id: string
+          nft_id: string | null
+          price: number | null
+          to_address: string | null
+          transaction_signature: string | null
+        }
+        Insert: {
+          activity_type: string
+          block_time?: string | null
+          collection_id?: string | null
+          created_at?: string
+          currency?: string | null
+          from_address?: string | null
+          id?: string
+          nft_id?: string | null
+          price?: number | null
+          to_address?: string | null
+          transaction_signature?: string | null
+        }
+        Update: {
+          activity_type?: string
+          block_time?: string | null
+          collection_id?: string | null
+          created_at?: string
+          currency?: string | null
+          from_address?: string | null
+          id?: string
+          nft_id?: string | null
+          price?: number | null
+          to_address?: string | null
+          transaction_signature?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_activities_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_activities_nft_id_fkey"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nfts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nfts: {
+        Row: {
+          attributes: Json | null
+          auction_house_address: string | null
+          collection_id: string | null
+          created_at: string
+          creator_address: string
+          currency: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_listed: boolean
+          listing_receipt: string | null
+          metadata_uri: string | null
+          mint_address: string
+          name: string
+          owner_address: string
+          price: number | null
+          symbol: string | null
+          updated_at: string
+        }
+        Insert: {
+          attributes?: Json | null
+          auction_house_address?: string | null
+          collection_id?: string | null
+          created_at?: string
+          creator_address: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_listed?: boolean
+          listing_receipt?: string | null
+          metadata_uri?: string | null
+          mint_address: string
+          name: string
+          owner_address: string
+          price?: number | null
+          symbol?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attributes?: Json | null
+          auction_house_address?: string | null
+          collection_id?: string | null
+          created_at?: string
+          creator_address?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_listed?: boolean
+          listing_receipt?: string | null
+          metadata_uri?: string | null
+          mint_address?: string
+          name?: string
+          owner_address?: string
+          price?: number | null
+          symbol?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nfts_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          banner_image_url: string | null
+          bio: string | null
+          created_at: string
+          discord_handle: string | null
+          display_name: string | null
+          id: string
+          profile_image_url: string | null
+          twitter_handle: string | null
+          updated_at: string
+          verified: boolean
+          wallet_address: string
+          website_url: string | null
+        }
+        Insert: {
+          banner_image_url?: string | null
+          bio?: string | null
+          created_at?: string
+          discord_handle?: string | null
+          display_name?: string | null
+          id?: string
+          profile_image_url?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          verified?: boolean
+          wallet_address: string
+          website_url?: string | null
+        }
+        Update: {
+          banner_image_url?: string | null
+          bio?: string | null
+          created_at?: string
+          discord_handle?: string | null
+          display_name?: string | null
+          id?: string
+          profile_image_url?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          verified?: boolean
+          wallet_address?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
