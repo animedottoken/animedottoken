@@ -19,6 +19,12 @@ interface Collection {
   is_live: boolean;
   go_live_date: string | null;
   whitelist_enabled: boolean;
+  symbol?: string;
+  items_available?: number;
+  is_active?: boolean;
+  creator_address?: string;
+  treasury_wallet?: string;
+  royalty_percentage?: number;
 }
 
 interface MintingInterfaceProps {
@@ -58,32 +64,65 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
   };
 
   const createSampleCollection = async () => {
-    const sampleCollection = {
-      id: 'sample-collection',
-      name: 'ANIME ARMY Genesis',
-      symbol: 'AAGEN',
-      description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
-      image_url: '/images/og-anime.jpg',
-      max_supply: 10000,
-      items_available: 10000,
-      items_redeemed: 2847,
-      mint_price: 0.1,
-      creator_address: 'ANiMeArMyCreator1234567890',
-      treasury_wallet: 'ANiMeArMyTreasury1234567890',
-      royalty_percentage: 5,
-      is_active: true,
-      is_live: true,
-      whitelist_enabled: false
-    };
+    try {
+      console.log('Creating sample collection...');
+      const sampleCollection = {
+        name: 'ANIME ARMY Genesis',
+        symbol: 'AAGEN',
+        description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
+        image_url: '/images/og-anime.jpg',
+        max_supply: 10000,
+        items_available: 10000,
+        items_redeemed: 2847,
+        mint_price: 0.1,
+        creator_address: 'ANiMeArMyCreator1234567890',
+        treasury_wallet: 'ANiMeArMyTreasury1234567890',
+        royalty_percentage: 5,
+        is_active: true,
+        is_live: true,
+        whitelist_enabled: false
+      };
 
-    const { data } = await supabase
-      .from('collections')
-      .upsert(sampleCollection, { onConflict: 'id' })
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('collections')
+        .insert(sampleCollection)
+        .select()
+        .single();
 
-    if (data) {
-      setCollection(data);
+      console.log('Sample collection result:', { data, error });
+
+      if (error) {
+        console.error('Failed to create sample collection:', error);
+        // Try to create a fallback collection in state
+        setCollection({
+          id: 'fallback-collection',
+          ...sampleCollection,
+          go_live_date: null
+        });
+      } else if (data) {
+        setCollection(data);
+      }
+    } catch (error) {
+      console.error('Error in createSampleCollection:', error);
+      // Set fallback collection for demo purposes
+      setCollection({
+        id: 'fallback-collection',
+        name: 'ANIME ARMY Genesis',
+        symbol: 'AAGEN',
+        description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
+        image_url: '/images/og-anime.jpg',
+        max_supply: 10000,
+        items_available: 10000,
+        items_redeemed: 2847,
+        mint_price: 0.1,
+        creator_address: 'ANiMeArMyCreator1234567890',
+        treasury_wallet: 'ANiMeArMyTreasury1234567890',
+        royalty_percentage: 5,
+        is_active: true,
+        is_live: true,
+        whitelist_enabled: false,
+        go_live_date: null
+      });
     }
   };
 
