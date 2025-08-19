@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { Upload, Image as ImageIcon, Loader2, Plus, Palette, Settings, Coins } from 'lucide-react';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -87,9 +88,10 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
           <div className="mb-6">
             <div className="text-6xl mb-4">🔒</div>
             <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-6">
               Connect your Solana wallet to start creating NFT collections.
             </p>
+            <SolanaWalletButton />
           </div>
         </CardContent>
       </Card>

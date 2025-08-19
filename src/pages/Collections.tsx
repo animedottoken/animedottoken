@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { 
   Plus, 
   Image as ImageIcon, 
@@ -54,9 +55,10 @@ export default function Collections() {
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔒</div>
               <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
                 Connect your Solana wallet to create and manage NFT collections.
               </p>
+              <SolanaWalletButton />
             </div>
           </div>
         </main>
