@@ -222,9 +222,11 @@ export default function Collections() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2 pt-4">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Settings className="w-4 h-4 mr-1" />
-                        Manage
+                      <Button variant="outline" size="sm" className="flex-1" asChild>
+                        <a href={`/collection/${collection.id}`}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Details
+                        </a>
                       </Button>
                       <Button size="sm" className="flex-1" asChild>
                         <a href={`/mint?collection=${collection.slug || collection.id}`}>
@@ -234,9 +236,15 @@ export default function Collections() {
                       </Button>
                     </div>
 
-                    {/* Creation Date */}
-                    <div className="text-xs text-muted-foreground pt-2">
-                      Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}
+                    {/* Minted Items Count */}
+                    <div className="text-xs text-muted-foreground pt-2 border-t">
+                      <div className="flex justify-between">
+                        <span>Minted Items:</span>
+                        <span className="font-medium">{collection.items_redeemed || 0}</span>
+                      </div>
+                      <div className="text-xs">
+                        Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}
+                      </div>
                     </div>
                   </CardHeader>
                 </Card>

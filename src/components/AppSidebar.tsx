@@ -133,7 +133,7 @@ const navigationItems = [
   { 
     title: "My Collections", 
     icon: ShoppingBag,
-    hash: "collections",
+    hash: "collections", 
     onClick: () => {
       window.location.href = '/collections';
     }
