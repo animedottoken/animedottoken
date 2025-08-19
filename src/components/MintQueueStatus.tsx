@@ -5,15 +5,17 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, CheckCircle, XCircle, Loader2, ExternalLink } from 'lucide-react';
-import { useMintQueue, type MintJob } from '@/hooks/useMintQueue';
+import type { MintJob } from '@/hooks/useMintQueue';
 import { formatDistanceToNow } from 'date-fns';
 
 interface MintQueueStatusProps {
   className?: string;
+  jobs: MintJob[];
+  loading: boolean;
+  getJobProgress: (jobId: string) => ReturnType<any>;
 }
 
-export const MintQueueStatus = ({ className }: MintQueueStatusProps) => {
-  const { jobs, loading, getJobProgress } = useMintQueue();
+export const MintQueueStatus = ({ className, jobs, loading, getJobProgress }: MintQueueStatusProps) => {
   const [selectedTab, setSelectedTab] = useState<'active' | 'completed' | 'all'>('active');
 
   const getStatusIcon = (status: MintJob['status']) => {

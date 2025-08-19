@@ -36,9 +36,9 @@ interface MintingInterfaceProps {
 
 export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000' }: MintingInterfaceProps) => {
   const [collection, setCollection] = useState<Collection | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [collectionLoading, setCollectionLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const { createMintJob, creating } = useMintQueue();
+  const { createMintJob, creating, jobs, loading: queueLoading, getJobProgress } = useMintQueue();
   const { connected } = useSolanaWallet();
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
       console.error('Error loading collection:', error);
       await createSampleCollection();
     } finally {
-      setLoading(false);
+      setCollectionLoading(false);
     }
   };
 
@@ -164,7 +164,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const totalCost = collection ? collection.mint_price * quantity : 0;
   const maxPerJob = Math.min(1000, remainingSupply);
 
-  if (loading) {
+  if (collectionLoading) {
     return (
       <Card className="w-full max-w-2xl">
         <CardContent className="p-8 text-center">
@@ -330,7 +330,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
       </Card>
 
       {/* Queue Status */}
-      <MintQueueStatus />
+      <MintQueueStatus jobs={jobs} loading={queueLoading} getJobProgress={getJobProgress} />
 
       <Card>
         <CardHeader>
