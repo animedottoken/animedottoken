@@ -15,12 +15,8 @@ export default function Mint() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header - aligned with hamburger menu and add wallet status */}
-          <div className="text-center mb-12 pt-8 relative">
-            {/* Wallet connection status in top right */}
-            <div className="absolute top-0 right-0 pr-16">
-              <SolanaWalletButton />
-            </div>
+          {/* Header */}
+          <div className="text-center mb-12 pt-8">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
               Mint NFTs & Collections
             </h1>
