@@ -74,7 +74,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
         max_supply: 10000,
         items_available: 10000,
         items_redeemed: 2847,
-        mint_price: 0.1,
+        mint_price: 0,
         creator_address: 'ANiMeArMyCreator1234567890',
         treasury_wallet: 'ANiMeArMyTreasury1234567890',
         royalty_percentage: 5,
@@ -114,7 +114,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
         max_supply: 10000,
         items_available: 10000,
         items_redeemed: 2847,
-        mint_price: 0.1,
+        mint_price: 0,
         creator_address: 'ANiMeArMyCreator1234567890',
         treasury_wallet: 'ANiMeArMyTreasury1234567890',
         royalty_percentage: 5,
@@ -182,7 +182,12 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Price:</span>
-                  <div className="font-bold text-lg">{collection.mint_price} SOL</div>
+                  <div className="font-bold text-lg text-green-600">
+                    {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
+                  </div>
+                  {collection.mint_price === 0 && (
+                    <div className="text-xs text-muted-foreground">+ gas fees (~$0.01)</div>
+                  )}
                 </div>
                 <div>
                   <span className="text-muted-foreground">Supply:</span>
@@ -242,7 +247,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
                 ) : !connected ? (
                   'Connect Wallet to Mint'
                 ) : (
-                  `Mint for ${collection.mint_price} SOL`
+                  collection.mint_price === 0 ? 'Mint FREE (Gas Only)' : `Mint for ${collection.mint_price} SOL`
                 )}
               </Button>
             </div>
