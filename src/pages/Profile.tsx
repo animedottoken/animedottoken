@@ -25,7 +25,8 @@ export default function Profile() {
 
   const handleViewOnExplorer = () => {
     if (publicKey) {
-      window.open(`https://solscan.io/account/${publicKey}`, '_blank');
+      const url = `https://solscan.io/account/${publicKey}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
