@@ -30,29 +30,6 @@ export default function CollectionDetail() {
   const { collection, loading: collectionLoading } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
 
-  if (!connected) {
-    return (
-      <>
-        <Helmet>
-          <title>Collection Details - Connect Wallet</title>
-        </Helmet>
-        
-        <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
-          <div className="container mx-auto px-4 py-8 max-w-7xl">
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🔒</div>
-              <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                Connect your Solana wallet to view collection details.
-              </p>
-              <SolanaWalletButton />
-            </div>
-          </div>
-        </main>
-      </>
-    );
-  }
-
   if (collectionLoading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
@@ -111,7 +88,7 @@ export default function CollectionDetail() {
           {/* Collection Banner */}
           <Card className="mb-8 overflow-hidden">
             <div className="relative">
-              <AspectRatio ratio={16/6}>
+              <AspectRatio ratio={3/1}>
                 {collection.banner_image_url ? (
                   <img
                     src={collection.banner_image_url}
@@ -125,14 +102,21 @@ export default function CollectionDetail() {
                 )}
               </AspectRatio>
               
-              {/* Avatar Overlay */}
+              {/* Square NFT Avatar Overlay */}
               <div className="absolute -bottom-12 left-8">
-                <Avatar className="w-24 h-24 border-4 border-background">
-                  <AvatarImage src={collection.image_url || undefined} />
-                  <AvatarFallback className="text-2xl">
-                    {collection.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-24 h-24 border-4 border-background rounded-lg overflow-hidden">
+                  {collection.image_url ? (
+                    <img
+                      src={collection.image_url}
+                      alt={`${collection.name} avatar`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center text-2xl font-semibold">
+                      {collection.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Status Badges */}
@@ -200,7 +184,7 @@ export default function CollectionDetail() {
                           asChild
                         >
                           <a
-                            href={link.url}
+                            href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -218,13 +202,17 @@ export default function CollectionDetail() {
                   <Button size="lg" asChild>
                     <a href={`/mint?collection=${collection.slug || collection.id}`}>
                       <Plus className="w-4 h-4 mr-2" />
-                      Mint from Collection
+                      Create NFT
                     </a>
                   </Button>
-                  <Button variant="outline" size="lg">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Manage Collection
-                  </Button>
+                  {connected && (
+                    <Button variant="outline" size="lg" asChild>
+                      <a href={`/mint?edit=${collection.id}`}>
+                        <Settings className="w-4 h-4 mr-2" />
+                        Edit Collection
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -263,7 +251,7 @@ export default function CollectionDetail() {
                   <Button asChild>
                     <a href={`/mint?collection=${collection.slug || collection.id}`}>
                       <Plus className="w-4 h-4 mr-2" />
-                      Mint First NFT
+                      Create First NFT
                     </a>
                   </Button>
                 </div>
