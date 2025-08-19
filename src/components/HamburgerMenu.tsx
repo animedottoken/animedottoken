@@ -23,8 +23,11 @@ const navigationItems = [
     icon: Home,
     hash: "",
     onClick: () => {
-      window.history.pushState(null, "", "/");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -32,8 +35,11 @@ const navigationItems = [
     icon: Users,
     hash: "featured-community-content",
     onClick: () => {
-      window.history.pushState(null, "", "/#featured-community-content");
-      document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#featured-community-content';
+      } else {
+        document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -41,8 +47,11 @@ const navigationItems = [
     icon: Shield,
     hash: "trust-security-section",
     onClick: () => {
-      window.history.pushState(null, "", "/#trust-security-section");
-      document.querySelector('.trust-security-section')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#trust-security-section';
+      } else {
+        document.querySelector('.trust-security-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -50,8 +59,11 @@ const navigationItems = [
     icon: Calculator,
     hash: "ownership-calculator",
     onClick: () => {
-      window.history.pushState(null, "", "/#ownership-calculator");
-      document.querySelector('.ownership-calculator')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#ownership-calculator';
+      } else {
+        document.querySelector('.ownership-calculator')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -59,8 +71,11 @@ const navigationItems = [
     icon: TrendingUp,
     hash: "market-cap-chart",
     onClick: () => {
-      window.history.pushState(null, "", "/#market-cap-chart");
-      document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#market-cap-chart';
+      } else {
+        document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -68,8 +83,11 @@ const navigationItems = [
     icon: ShoppingCart,
     hash: "how-to-buy",
     onClick: () => {
-      window.history.pushState(null, "", "/#how-to-buy");
-      document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#how-to-buy';
+      } else {
+        document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -77,8 +95,11 @@ const navigationItems = [
     icon: HelpCircle,
     hash: "faq-section",
     onClick: () => {
-      window.history.pushState(null, "", "/#faq-section");
-      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#faq-section';
+      } else {
+        document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -86,8 +107,11 @@ const navigationItems = [
     icon: Trophy,
     hash: "nft-supporter-section",
     onClick: () => {
-      window.history.pushState(null, "", "/#nft-supporter-section");
-      document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#nft-supporter-section';
+      } else {
+        document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
@@ -103,8 +127,11 @@ const navigationItems = [
     icon: Share2,
     hash: "share-promote-section",
     onClick: () => {
-      window.history.pushState(null, "", "/#share-promote-section");
-      document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
+      if (window.location.pathname !== '/') {
+        window.location.href = '/#share-promote-section';
+      } else {
+        document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   },
   { 
