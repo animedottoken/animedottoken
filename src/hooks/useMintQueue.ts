@@ -138,8 +138,9 @@ export const useMintQueue = () => {
         };
       }
 
-      // Refresh jobs list
+      // Refresh jobs list immediately and after a short delay
       await loadJobs();
+      setTimeout(() => loadJobs(), 1000);
 
       toast.success(
         `Mint job created! ${data.totalQuantity} NFTs queued for minting.`,
