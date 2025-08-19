@@ -144,7 +144,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
   };
 
   const incrementQuantity = () => {
-    setQuantity(prev => Math.min(prev + 1, 50)); // Max 50 per job for UI simplicity
+    setQuantity(prev => Math.min(prev + 1, maxPerJob));
   };
 
   const decrementQuantity = () => {
@@ -153,7 +153,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value) || 1;
-    setQuantity(Math.min(Math.max(value, 1), 50));
+    setQuantity(Math.min(Math.max(value, 1), maxPerJob));
   };
 
   const mintProgress = collection ? (collection.items_redeemed / collection.max_supply) * 100 : 0;
@@ -161,6 +161,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
   const isSoldOut = collection ? collection.items_redeemed >= collection.max_supply : false;
   const remainingSupply = collection ? collection.max_supply - collection.items_redeemed : 0;
   const totalCost = collection ? collection.mint_price * quantity : 0;
+  const maxPerJob = Math.min(1000, remainingSupply);
 
   if (loading) {
     return (
@@ -260,7 +261,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
                     id="quantity"
                     type="number"
                     min="1"
-                    max="50"
+                    max={maxPerJob}
                     value={quantity}
                     onChange={handleQuantityChange}
                     className="w-20 text-center"
@@ -271,13 +272,13 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
                     variant="outline"
                     size="sm"
                     onClick={incrementQuantity}
-                    disabled={quantity >= 50 || quantity >= remainingSupply || creating}
+                    disabled={quantity >= maxPerJob || creating}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
                   
                   <div className="text-sm text-muted-foreground">
-                    Max: {Math.min(50, remainingSupply)}
+                    Max: {maxPerJob}
                   </div>
                 </div>
                 

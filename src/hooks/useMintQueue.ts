@@ -53,9 +53,31 @@ export const useMintQueue = () => {
   const [creating, setCreating] = useState(false);
   const { publicKey } = useSolanaWallet();
 
+  // Ensure we have a Supabase session (anonymous if needed)
+  const ensureSession = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) {
+          console.error('Anonymous sign-in failed:', error);
+          toast.error('Authentication failed. Please refresh and try again.');
+          return false;
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error('Error ensuring session:', err);
+      return false;
+    }
+  }, []);
+
   // Load user's mint jobs
   const loadJobs = useCallback(async () => {
     if (!publicKey) return;
+
+    const ok = await ensureSession();
+    if (!ok) return;
 
     setLoading(true);
     try {
@@ -102,7 +124,7 @@ export const useMintQueue = () => {
     } finally {
       setLoading(false);
     }
-  }, [publicKey]);
+  }, [publicKey, ensureSession]);
 
   // Create new mint job
   const createMintJob = async (
@@ -115,6 +137,10 @@ export const useMintQueue = () => {
 
     setCreating(true);
     try {
+      const ok = await ensureSession();
+      if (!ok) {
+        return { success: false, error: 'Authentication failed' };
+      }
       const { data, error } = await supabase.functions.invoke('create-mint-job', {
         body: {
           collectionId,

@@ -31,24 +31,15 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Get authenticated user
+    // Try to identify the user if an auth header is provided (optional)
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "No authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await authClient.auth.getUser(token);
-
-    if (authError || !user) {
-      console.error("Authentication error:", authError);
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    let userId: string | null = null;
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user }, error: authError } = await authClient.auth.getUser(token);
+      if (!authError && user) {
+        userId = user.id;
+      }
     }
 
     // Parse request body
@@ -110,7 +101,7 @@ serve(async (req) => {
     const { data: mintJob, error: jobError } = await serviceClient
       .from("mint_jobs")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         wallet_address: walletAddress,
         collection_id: collectionId,
         total_quantity: quantity,
