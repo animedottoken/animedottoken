@@ -105,23 +105,93 @@ export default function Collections() {
             {/* Mint NFTs */}
             <TabsContent value="mint" className="mt-8">
               {selectedCollection ? (
-                <div className="flex justify-center">
-                  <MintingInterface collectionId={selectedCollection} />
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedCollection(null)}
+                      className="mb-4"
+                    >
+                      ← Back to Collection Selection
+                    </Button>
+                  </div>
+                  <div className="flex justify-center">
+                    <MintingInterface collectionId={selectedCollection} />
+                  </div>
                 </div>
               ) : collections.length > 0 ? (
-                <Card>
-                  <CardContent className="p-12 text-center">
-                    <Coins className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-2xl font-semibold mb-2">Select a Collection to Mint</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Choose one of your created collections to start minting NFTs.
-                    </p>
-                    <Button onClick={() => setSelectedTab('manage')}>
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      Browse My Collections
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4">Select a Collection to Mint</h2>
+                    <p className="text-muted-foreground">Choose from your created collections to start minting NFTs</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {collections.filter(c => c.is_live).map((collection) => (
+                      <Card key={collection.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                            onClick={() => setSelectedCollection(collection.id)}>
+                        <div className="aspect-square overflow-hidden">
+                          <img
+                            src={collection.image_url}
+                            alt={collection.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg">{collection.name}</CardTitle>
+                            <Badge variant="default">Live</Badge>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{collection.symbol}</span>
+                            <span>•</span>
+                            <span>{collection.items_redeemed} / {collection.max_supply} minted</span>
+                          </div>
+                        </CardHeader>
+                        
+                        <CardContent>
+                          <div className="grid grid-cols-2 gap-4 text-xs mb-4">
+                            <div>
+                              <span className="text-muted-foreground">Price:</span>
+                              <div className="font-medium">
+                                {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Available:</span>
+                              <div className="font-medium">{collection.max_supply - collection.items_redeemed}</div>
+                            </div>
+                          </div>
+                          
+                          <Button className="w-full" onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCollection(collection.id);
+                          }}>
+                            <Coins className="h-4 w-4 mr-2" />
+                            Start Minting
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  {collections.filter(c => c.is_live).length === 0 && (
+                    <Card>
+                      <CardContent className="p-12 text-center">
+                        <Pause className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                        <h3 className="text-2xl font-semibold mb-2">No Live Collections</h3>
+                        <p className="text-muted-foreground mb-6">
+                          You need to make a collection "Live" before you can mint from it.
+                        </p>
+                        <Button onClick={() => setSelectedTab('manage')}>
+                          <Settings className="h-4 w-4 mr-2" />
+                          Manage Collections
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               ) : (
                 <Card>
                   <CardContent className="p-12 text-center">
