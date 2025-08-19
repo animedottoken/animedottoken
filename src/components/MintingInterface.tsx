@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Zap, Shield } from 'lucide-react';
-import { useMinting } from '@/hooks/useMinting';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Clock, Users, Zap, Shield, Plus, Minus } from 'lucide-react';
+import { useMintQueue } from '@/hooks/useMintQueue';
+import { MintQueueStatus } from '@/components/MintQueueStatus';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,7 +37,8 @@ interface MintingInterfaceProps {
 export const MintingInterface = ({ collectionId = 'sample-collection' }: MintingInterfaceProps) => {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isMinting, mintResult, mintNFT } = useMinting();
+  const [quantity, setQuantity] = useState(1);
+  const { createMintJob, creating } = useMintQueue();
   const { connected } = useSolanaWallet();
 
   useEffect(() => {
@@ -131,13 +135,32 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
   };
 
   const handleMint = async () => {
-    if (!collection) return;
-    await mintNFT(collection.id);
+    if (!collection || !connected) return;
+    
+    const result = await createMintJob(collection.id, quantity);
+    if (result.success) {
+      setQuantity(1); // Reset quantity after successful job creation
+    }
+  };
+
+  const incrementQuantity = () => {
+    setQuantity(prev => Math.min(prev + 1, 50)); // Max 50 per job for UI simplicity
+  };
+
+  const decrementQuantity = () => {
+    setQuantity(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    setQuantity(Math.min(Math.max(value, 1), 50));
   };
 
   const mintProgress = collection ? (collection.items_redeemed / collection.max_supply) * 100 : 0;
   const isLive = collection?.is_live && connected;
   const isSoldOut = collection ? collection.items_redeemed >= collection.max_supply : false;
+  const remainingSupply = collection ? collection.max_supply - collection.items_redeemed : 0;
+  const totalCost = collection ? collection.mint_price * quantity : 0;
 
   if (loading) {
     return (
@@ -161,12 +184,12 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
   }
 
   return (
-    <div className="w-full max-w-4xl space-y-6">
+    <div className="w-full max-w-6xl space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              🔥 Live Mint
+              🔥 Professional Mint Queue
             </CardTitle>
             <div className="flex gap-2">
               {isLive && <Badge className="bg-green-500 text-white">LIVE</Badge>}
@@ -175,7 +198,7 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
               <img 
                 src={collection.image_url} 
@@ -185,22 +208,23 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Price:</span>
+                  <span className="text-muted-foreground">Price per NFT:</span>
                   <div className="font-bold text-lg text-green-600">
                     {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
                   </div>
                   {collection.mint_price === 0 && (
-                    <div className="text-xs text-muted-foreground">+ gas fees (~$0.01)</div>
+                    <div className="text-xs text-muted-foreground">+ gas fees (~$0.01 each)</div>
                   )}
                 </div>
                 <div>
                   <span className="text-muted-foreground">Supply:</span>
                   <div className="font-bold">{collection.max_supply.toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">{remainingSupply.toLocaleString()} remaining</div>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
                 <h3 className="font-semibold mb-2">{collection.name}</h3>
                 <p className="text-muted-foreground text-sm">{collection.description}</p>
@@ -217,47 +241,94 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
                 </div>
               </div>
 
-              {mintResult && (
-                <div className={`p-4 rounded-lg border ${mintResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                  {mintResult.success ? (
-                    <div>
-                      <p className="font-semibold text-green-800">✅ Mint Successful!</p>
-                      <p className="text-sm text-green-600 mt-1">
-                        NFT Address: {mintResult.nftAddress?.slice(0, 8)}...
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="font-semibold text-red-800">❌ Mint Failed</p>
-                      <p className="text-sm text-red-600 mt-1">{mintResult.error}</p>
-                    </div>
-                  )}
+              {/* Quantity Selector */}
+              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                <Label htmlFor="quantity" className="text-sm font-medium">
+                  Quantity to Mint
+                </Label>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={decrementQuantity}
+                    disabled={quantity <= 1 || creating}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    className="w-20 text-center"
+                    disabled={creating}
+                  />
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={incrementQuantity}
+                    disabled={quantity >= 50 || quantity >= remainingSupply || creating}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    Max: {Math.min(50, remainingSupply)}
+                  </div>
                 </div>
-              )}
+                
+                {/* Total Cost */}
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <span className="font-medium">Total Cost:</span>
+                  <span className="font-bold text-lg">
+                    {totalCost === 0 ? 'FREE' : `${totalCost.toFixed(4)} SOL`}
+                  </span>
+                </div>
+              </div>
 
               <Button 
                 onClick={handleMint}
-                disabled={!isLive || isMinting || isSoldOut}
+                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply}
                 className="w-full py-6 text-lg font-semibold"
                 size="lg"
               >
-                {isMinting ? (
+                {creating ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Minting...
+                    Creating Job...
                   </>
                 ) : isSoldOut ? (
                   'SOLD OUT'
                 ) : !connected ? (
                   'Connect Wallet to Mint'
+                ) : quantity > remainingSupply ? (
+                  `Only ${remainingSupply} Left`
                 ) : (
-                  collection.mint_price === 0 ? 'Mint FREE (Gas Only)' : `Mint for ${collection.mint_price} SOL`
+                  `Queue ${quantity} NFT${quantity > 1 ? 's' : ''} for Minting`
                 )}
               </Button>
+
+              {/* Professional Queue Info */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">Professional Queue System</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>✅ Guaranteed completion - jobs persist through network issues</li>
+                  <li>✅ Real-time progress tracking with live updates</li>
+                  <li>✅ Automatic retries for failed transactions</li>
+                  <li>✅ Batch processing optimized for Solana</li>
+                </ul>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Queue Status */}
+      <MintQueueStatus />
 
       <Card>
         <CardHeader>
@@ -273,12 +344,12 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
               <div className="font-bold">Live Now</div>
-              <div className="text-sm text-muted-foreground">Go Live</div>
+              <div className="text-sm text-muted-foreground">Mint Status</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">Instant</div>
-              <div className="text-sm text-muted-foreground">Reveal</div>
+              <div className="font-bold">Queue System</div>
+              <div className="text-sm text-muted-foreground">Professional</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
@@ -294,6 +365,8 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
               <Badge variant="secondary" className="justify-start p-2">🎮 Gaming Integration</Badge>
               <Badge variant="secondary" className="justify-start p-2">💎 Rare Traits</Badge>
               <Badge variant="secondary" className="justify-start p-2">🏆 Community Access</Badge>
+              <Badge variant="secondary" className="justify-start p-2">⚡ Queue Processing</Badge>
+              <Badge variant="secondary" className="justify-start p-2">🔄 Auto Retry Logic</Badge>
             </div>
           </div>
         </CardContent>

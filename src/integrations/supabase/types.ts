@@ -172,6 +172,118 @@ export type Database = {
           },
         ]
       }
+      mint_job_items: {
+        Row: {
+          batch_number: number
+          created_at: string
+          error_message: string | null
+          id: string
+          max_retries: number
+          mint_job_id: string
+          nft_mint_address: string | null
+          processed_at: string | null
+          retry_count: number
+          status: string
+          transaction_signature: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_number: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          mint_job_id: string
+          nft_mint_address?: string | null
+          processed_at?: string | null
+          retry_count?: number
+          status?: string
+          transaction_signature?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_number?: number
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_retries?: number
+          mint_job_id?: string
+          nft_mint_address?: string | null
+          processed_at?: string | null
+          retry_count?: number
+          status?: string
+          transaction_signature?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mint_job_items_mint_job_id_fkey"
+            columns: ["mint_job_id"]
+            isOneToOne: false
+            referencedRelation: "mint_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mint_jobs: {
+        Row: {
+          collection_id: string | null
+          completed_at: string | null
+          completed_quantity: number
+          created_at: string
+          error_message: string | null
+          failed_quantity: number
+          id: string
+          started_at: string | null
+          status: string
+          total_cost: number
+          total_quantity: number
+          updated_at: string
+          user_id: string | null
+          wallet_address: string
+        }
+        Insert: {
+          collection_id?: string | null
+          completed_at?: string | null
+          completed_quantity?: number
+          created_at?: string
+          error_message?: string | null
+          failed_quantity?: number
+          id?: string
+          started_at?: string | null
+          status?: string
+          total_cost?: number
+          total_quantity: number
+          updated_at?: string
+          user_id?: string | null
+          wallet_address: string
+        }
+        Update: {
+          collection_id?: string | null
+          completed_at?: string | null
+          completed_quantity?: number
+          created_at?: string
+          error_message?: string | null
+          failed_quantity?: number
+          id?: string
+          started_at?: string | null
+          status?: string
+          total_cost?: number
+          total_quantity?: number
+          updated_at?: string
+          user_id?: string | null
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mint_jobs_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nfts: {
         Row: {
           attributes: Json | null
