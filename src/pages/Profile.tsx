@@ -8,27 +8,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, ExternalLink, Settings, Wallet, TrendingUp, Activity, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import avatar1 from "@/assets/nft-ai-portrait-alt.jpg";
+import avatar2 from "@/assets/nft-dragon-spirit.jpg";
+import avatar3 from "@/assets/nft-mecha-pilot.jpg";
+import avatar4 from "@/assets/nft-pixel-warrior.jpg";
+import avatar5 from "@/assets/nft-space-explorer.jpg";
+import avatar6 from "@/assets/nft-digital-art.jpg";
+import avatar7 from "@/assets/nft-ai-generated.jpg";
+import avatar8 from "@/assets/nft-8bit-pixel.jpg";
 
 export default function Profile() {
   const { connected, publicKey, disconnect } = useSolanaWallet();
 
-  // Random anime-style avatars
-  const animeAvatars = [
+  // Emoji fallback avatars
+  const emojiAvatars = [
     "🧙‍♀️", "🥷", "👺", "🎌", "⚔️", "🌸", "✨", "🔥", 
     "🐉", "🦋", "🌙", "⭐", "💫", "🎭", "🎨", "🎪"
   ];
   
-  const getRandomAvatar = () => {
-    if (!publicKey) {
-      console.log('No publicKey available for avatar');
-      return "👤";
-    }
-    // Use wallet address to consistently pick same avatar
-    const index = parseInt(publicKey.slice(-2), 16) % animeAvatars.length;
-    const avatar = animeAvatars[index];
-    console.log('Avatar selected:', avatar, 'for publicKey:', publicKey);
-    return avatar;
+  const getEmojiAvatar = () => {
+    if (!publicKey) return "👤";
+    const index = parseInt(publicKey.slice(-2), 16) % emojiAvatars.length;
+    return emojiAvatars[index];
   };
+
+  // Anime image avatars (deterministic by wallet)
+  const animeImages = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
+  const avatarIndex = publicKey ? parseInt(publicKey.slice(-2), 16) % animeImages.length : 0;
 
   const handleCopyAddress = async () => {
     if (publicKey) {
@@ -42,23 +48,13 @@ export default function Profile() {
   };
 
   const handleViewOnExplorer = () => {
-    if (publicKey) {
-      const url = `https://solscan.io/account/${publicKey}`;
-      console.log('Opening Solscan URL:', url);
-      try {
-        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-        if (!newWindow) {
-          // Popup blocked, try another approach
-          console.log('Popup blocked, trying location.href');
-          window.location.href = url;
-        }
-      } catch (error) {
-        console.error('Failed to open Solscan:', error);
-        window.location.href = url;
-      }
-    } else {
-      console.log('No publicKey available for Solscan');
-    }
+    if (!publicKey) return;
+    const url = `https://solscan.io/account/${publicKey}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
   };
 
   const userStats = {
@@ -85,8 +81,9 @@ export default function Profile() {
                 {/* Compact Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/5 rounded-lg border">
                   <Avatar className="w-20 h-20 border-2 border-primary/20">
+                    <AvatarImage src={animeImages[avatarIndex]} alt="Anime avatar" className="object-cover" />
                     <AvatarFallback className="text-4xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                      {getRandomAvatar()}
+                      {getEmojiAvatar()}
                     </AvatarFallback>
                   </Avatar>
                   
