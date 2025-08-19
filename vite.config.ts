@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import viteImagemin from "vite-plugin-imagemin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,16 +13,6 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' &&
     componentTagger(),
-    mode === 'production' &&
-    viteImagemin({
-      gifsicle: { optimizationLevel: 7 },
-      mozjpeg: { quality: 80 },
-      pngquant: { 
-        quality: [0.6, 0.8],
-        speed: 4
-      },
-      webp: { quality: 80 }
-    })
   ].filter(Boolean),
   resolve: {
     alias: {
