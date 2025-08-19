@@ -201,7 +201,7 @@ export const useMintQueue = () => {
   useEffect(() => {
     if (!publicKey) return;
 
-    // Subscribe to mint_jobs changes
+    // Subscribe to mint_jobs changes for this wallet
     const jobsChannel = supabase
       .channel('mint-jobs-changes')
       .on(
@@ -219,7 +219,7 @@ export const useMintQueue = () => {
       )
       .subscribe();
 
-    // Subscribe to mint_job_items changes  
+    // Subscribe to mint_job_items changes (no filter needed since we filter by wallet in loadJobs)
     const itemsChannel = supabase
       .channel('mint-job-items-changes')
       .on(
