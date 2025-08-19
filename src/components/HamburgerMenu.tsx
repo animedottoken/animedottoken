@@ -116,19 +116,11 @@ const navigationItems = [
     }
   },
   { 
-    title: "Mint NFTs", 
+    title: "Mint NFTs & Collections", 
     icon: Coins,
     hash: "mint",
     onClick: () => {
       window.location.href = '/mint';
-    }
-  },
-  { 
-    title: "Create Collections", 
-    icon: Palette,
-    hash: "collections",
-    onClick: () => {
-      window.location.href = '/collections';
     }
   },
   { 
