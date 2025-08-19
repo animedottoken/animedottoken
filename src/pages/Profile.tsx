@@ -12,6 +12,24 @@ import { toast } from "sonner";
 export default function Profile() {
   const { connected, publicKey, disconnect } = useSolanaWallet();
 
+  // Random anime-style avatars
+  const animeAvatars = [
+    "🧙‍♀️", "🥷", "👺", "🎌", "⚔️", "🌸", "✨", "🔥", 
+    "🐉", "🦋", "🌙", "⭐", "💫", "🎭", "🎨", "🎪"
+  ];
+  
+  const getRandomAvatar = () => {
+    if (!publicKey) {
+      console.log('No publicKey available for avatar');
+      return "👤";
+    }
+    // Use wallet address to consistently pick same avatar
+    const index = parseInt(publicKey.slice(-2), 16) % animeAvatars.length;
+    const avatar = animeAvatars[index];
+    console.log('Avatar selected:', avatar, 'for publicKey:', publicKey);
+    return avatar;
+  };
+
   const handleCopyAddress = async () => {
     if (publicKey) {
       try {
@@ -26,21 +44,21 @@ export default function Profile() {
   const handleViewOnExplorer = () => {
     if (publicKey) {
       const url = `https://solscan.io/account/${publicKey}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
+      console.log('Opening Solscan URL:', url);
+      try {
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!newWindow) {
+          // Popup blocked, try another approach
+          console.log('Popup blocked, trying location.href');
+          window.location.href = url;
+        }
+      } catch (error) {
+        console.error('Failed to open Solscan:', error);
+        window.location.href = url;
+      }
+    } else {
+      console.log('No publicKey available for Solscan');
     }
-  };
-
-  // Random anime-style avatars
-  const animeAvatars = [
-    "🧙‍♀️", "🥷", "👺", "🎌", "⚔️", "🌸", "✨", "🔥", 
-    "🐉", "🦋", "🌙", "⭐", "💫", "🎭", "🎨", "🎪"
-  ];
-  
-  const getRandomAvatar = () => {
-    if (!publicKey) return "👤";
-    // Use wallet address to consistently pick same avatar
-    const index = parseInt(publicKey.slice(-2), 16) % animeAvatars.length;
-    return animeAvatars[index];
   };
 
   const userStats = {
@@ -67,7 +85,7 @@ export default function Profile() {
                 {/* Compact Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/5 rounded-lg border">
                   <Avatar className="w-20 h-20 border-2 border-primary/20">
-                    <AvatarFallback className="text-3xl bg-gradient-to-br from-primary/20 to-accent/20">
+                    <AvatarFallback className="text-4xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                       {getRandomAvatar()}
                     </AvatarFallback>
                   </Avatar>
