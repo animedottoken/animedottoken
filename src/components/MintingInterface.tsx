@@ -191,7 +191,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              🔥 Professional Mint Queue
+              🔥 {collection.name} - Collection NFTs
             </CardTitle>
             <div className="flex gap-2">
               {isLive && <Badge className="bg-green-500 text-white">LIVE</Badge>}
@@ -330,7 +330,12 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
       </Card>
 
       {/* Queue Status */}
-      <MintQueueStatus jobs={jobs} loading={queueLoading} getJobProgress={getJobProgress} />
+      <MintQueueStatus 
+        jobs={jobs} 
+        loading={queueLoading} 
+        getJobProgress={getJobProgress} 
+        collectionName={collection.name}
+      />
 
       <Card>
         <CardHeader>

@@ -13,9 +13,10 @@ interface MintQueueStatusProps {
   jobs: MintJob[];
   loading: boolean;
   getJobProgress: (jobId: string) => ReturnType<any>;
+  collectionName?: string;
 }
 
-export const MintQueueStatus = ({ className, jobs, loading, getJobProgress }: MintQueueStatusProps) => {
+export const MintQueueStatus = ({ className, jobs, loading, getJobProgress, collectionName }: MintQueueStatusProps) => {
   const [selectedTab, setSelectedTab] = useState<'active' | 'completed' | 'all'>('active');
 
   const getStatusIcon = (status: MintJob['status']) => {
@@ -145,10 +146,10 @@ export const MintQueueStatus = ({ className, jobs, loading, getJobProgress }: Mi
                         <div className="flex items-center gap-3">
                           <div>
                             <p className="font-semibold text-sm">
-                              {job.total_quantity} NFTs
+                              {job.total_quantity} NFT{job.total_quantity > 1 ? 's' : ''}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Job #{job.id.slice(0, 8)}...
+                              {collectionName ? `${collectionName} - ` : ''}Job #{job.id.slice(0, 8)}...
                             </p>
                           </div>
                         </div>
