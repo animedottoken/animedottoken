@@ -33,7 +33,7 @@ export default function Mint() {
 
           {connected ? (
             <div className="flex justify-center mb-12">
-              <MintingInterface collectionId="sample-collection" />
+              <MintingInterface collectionId="123e4567-e89b-12d3-a456-426614174000" />
             </div>
           ) : (
             <div className="text-center py-12">
