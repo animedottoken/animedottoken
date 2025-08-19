@@ -205,7 +205,7 @@ export const UnifiedMintInterface = () => {
                                 <div>
                                   <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
                                   <p className="text-sm font-medium">Avatar</p>
-                                  <p className="text-xs text-muted-foreground">500x500px, 2.5mb max</p>
+                                  <p className="text-xs text-muted-foreground">1000x1000px, 5mb max</p>
                                 </div>
                               </div>
                             )}
@@ -224,7 +224,7 @@ export const UnifiedMintInterface = () => {
                     <div className="space-y-3">
                       <h4 className="font-semibold">Image Guidelines:</h4>
                       <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• <strong>Avatar:</strong> 500x500px (square format)</li>
+                        <li>• <strong>Avatar:</strong> 1000x1000px (square format)</li>
                         <li>• <strong>Banner:</strong> 1440x460px (coming soon)</li>
                         <li>• File formats: JPG, PNG, GIF, WEBP</li>
                         <li>• Maximum file size: 5MB</li>
