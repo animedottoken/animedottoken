@@ -51,10 +51,15 @@ export type Database = {
       }
       collections: {
         Row: {
+          banner_image_url: string | null
           candy_machine_id: string | null
+          category: string | null
+          collection_mint_address: string | null
           created_at: string
           creator_address: string
           description: string | null
+          explicit_content: boolean | null
+          external_links: Json | null
           go_live_date: string | null
           id: string
           image_url: string | null
@@ -66,16 +71,23 @@ export type Database = {
           mint_price: number
           name: string
           royalty_percentage: number
+          slug: string | null
           symbol: string
           treasury_wallet: string
           updated_at: string
+          verified: boolean | null
           whitelist_enabled: boolean
         }
         Insert: {
+          banner_image_url?: string | null
           candy_machine_id?: string | null
+          category?: string | null
+          collection_mint_address?: string | null
           created_at?: string
           creator_address: string
           description?: string | null
+          explicit_content?: boolean | null
+          external_links?: Json | null
           go_live_date?: string | null
           id?: string
           image_url?: string | null
@@ -87,16 +99,23 @@ export type Database = {
           mint_price?: number
           name: string
           royalty_percentage?: number
+          slug?: string | null
           symbol: string
           treasury_wallet: string
           updated_at?: string
+          verified?: boolean | null
           whitelist_enabled?: boolean
         }
         Update: {
+          banner_image_url?: string | null
           candy_machine_id?: string | null
+          category?: string | null
+          collection_mint_address?: string | null
           created_at?: string
           creator_address?: string
           description?: string | null
+          explicit_content?: boolean | null
+          external_links?: Json | null
           go_live_date?: string | null
           id?: string
           image_url?: string | null
@@ -108,9 +127,11 @@ export type Database = {
           mint_price?: number
           name?: string
           royalty_percentage?: number
+          slug?: string | null
           symbol?: string
           treasury_wallet?: string
           updated_at?: string
+          verified?: boolean | null
           whitelist_enabled?: boolean
         }
         Relationships: []
@@ -405,7 +426,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_collection_slug: {
+        Args: { collection_name: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
