@@ -43,15 +43,19 @@ export const MintingInterface = ({ collectionId = 'sample-collection' }: Minting
 
   const loadCollection = async () => {
     try {
+      console.log('Loading collection:', collectionId);
       const { data, error } = await supabase
         .from('collections')
         .select('*')
         .eq('id', collectionId)
-        .single();
+        .maybeSingle();
+
+      console.log('Collection query result:', { data, error });
 
       if (data) {
         setCollection(data);
       } else {
+        console.log('No collection found, creating sample collection');
         // Create sample collection if none exists
         await createSampleCollection();
       }
