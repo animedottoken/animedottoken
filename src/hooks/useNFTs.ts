@@ -38,14 +38,7 @@ export const useNFTs = () => {
 
       const { data, error } = await supabase
         .from('nfts')
-        .select(`
-          *,
-          collections (
-            name,
-            symbol,
-            image_url
-          )
-        `)
+        .select('*')
         .eq('owner_address', publicKey)
         .order('created_at', { ascending: false });
 

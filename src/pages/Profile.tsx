@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Copy, Wallet, TrendingUp, Activity, LogOut, ExternalLink, ImageIcon } from "lucide-react";
+import { Copy, Wallet, TrendingUp, Activity, LogOut, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useNFTs } from "@/hooks/useNFTs";
 import { useCollections } from "@/hooks/useCollections";
