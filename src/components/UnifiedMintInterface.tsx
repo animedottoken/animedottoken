@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Upload, 
   Image as ImageIcon, 
@@ -15,13 +16,18 @@ import {
   Plus, 
   Palette,
   Zap,
-  FileImage
+  FileImage,
+  Settings,
+  ChevronDown,
+  ExternalLink,
+  Trash2
 } from 'lucide-react';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { MintingInterface } from '@/components/MintingInterface';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export const UnifiedMintInterface = () => {
   const { connected, publicKey } = useSolanaWallet();
@@ -30,12 +36,17 @@ export const UnifiedMintInterface = () => {
   
   const [activeTab, setActiveTab] = useState<'collection' | 'standalone'>('collection');
   const [createdCollectionId, setCreatedCollectionId] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
     symbol: '',
     description: '',
-    mint_price: 0,
+    external_links: [],
+    category: '',
+    explicit_content: false,
+    enable_primary_sales: false,
+    mint_price: 0.1,
     max_supply: 1000,
     royalty_percentage: 5,
     treasury_wallet: publicKey || '',
@@ -44,6 +55,8 @@ export const UnifiedMintInterface = () => {
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   // Update treasury wallet when wallet connects
   React.useEffect(() => {
@@ -62,6 +75,39 @@ export const UnifiedMintInterface = () => {
     }
   };
 
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setBannerPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddLink = () => {
+    setFormData(prev => ({
+      ...prev,
+      external_links: [...(prev.external_links || []), { type: 'website', url: '' }]
+    }));
+  };
+
+  const handleRemoveLink = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      external_links: prev.external_links?.filter((_, i) => i !== index) || []
+    }));
+  };
+
+  const handleLinkChange = (index: number, field: 'type' | 'url', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      external_links: prev.external_links?.map((link, i) => 
+        i === index ? { ...link, [field]: value } : link
+      ) || []
+    }));
+  };
+
   const handleCreateCollection = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -72,6 +118,7 @@ export const UnifiedMintInterface = () => {
     const result = await createCollection({
       ...formData,
       image_file: imageFile || undefined,
+      banner_file: bannerFile || undefined,
     });
 
     if (result && (result as any).success && (result as any).collection) {
@@ -97,7 +144,11 @@ export const UnifiedMintInterface = () => {
       name: '',
       symbol: '',
       description: '',
-      mint_price: 0,
+      external_links: [],
+      category: '',
+      explicit_content: false,
+      enable_primary_sales: false,
+      mint_price: 0.1,
       max_supply: 1000,
       royalty_percentage: 5,
       treasury_wallet: publicKey || '',
@@ -105,6 +156,9 @@ export const UnifiedMintInterface = () => {
     });
     setImageFile(null);
     setImagePreview(null);
+    setBannerFile(null);
+    setBannerPreview(null);
+    setShowAdvanced(false);
   };
 
   if (!connected) {
@@ -170,18 +224,18 @@ export const UnifiedMintInterface = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Plus className="h-6 w-6" />
-                Create Collection & Mint NFTs
+                Create Collection Series
                 <Badge variant="secondary" className="ml-2">Recommended</Badge>
               </CardTitle>
               <p className="text-muted-foreground">
-                Create a collection series and mint your first NFT. Perfect for launching a complete NFT project.
+                Create a collection to group and organize your NFTs. Collections are like folders that help users discover and browse your work.
               </p>
             </CardHeader>
             
             <CardContent className="space-y-8">
               <form onSubmit={handleCreateCollection} className="space-y-8">
                 
-                {/* Collection Banner & Avatar */}
+                {/* Collection Artwork */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-primary" />
@@ -204,8 +258,8 @@ export const UnifiedMintInterface = () => {
                               <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
                                 <div>
                                   <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                  <p className="text-sm font-medium">Avatar</p>
-                                  <p className="text-xs text-muted-foreground">1000x1000px, 5mb max</p>
+                                  <p className="text-sm font-medium">Avatar (Optional)</p>
+                                  <p className="text-xs text-muted-foreground">Square format recommended</p>
                                 </div>
                               </div>
                             )}
@@ -222,17 +276,17 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div className="space-y-3">
-                      <h4 className="font-semibold">Image Guidelines:</h4>
+                      <h4 className="font-semibold">Guidelines:</h4>
                       <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• <strong>Avatar:</strong> 1000x1000px (square format)</li>
-                        <li>• <strong>Banner:</strong> 1440x460px (coming soon)</li>
+                        <li>• <strong>Avatar:</strong> Square format (1:1 ratio)</li>
+                        <li>• <strong>Banner:</strong> Wide format (3:1 ratio) - Optional</li>
                         <li>• File formats: JPG, PNG, GIF, WEBP</li>
                         <li>• Maximum file size: 5MB</li>
-                        <li>• High quality for marketplace display</li>
+                        <li>• High quality for best display</li>
                       </ul>
                       <div className="p-3 bg-primary/10 rounded-md">
                         <p className="text-xs text-primary font-medium">
-                          💡 Tip: Square avatars work best across all marketplaces and social platforms
+                          💡 Collections are organizational containers - you don't need perfect artwork to start!
                         </p>
                       </div>
                     </div>
@@ -243,7 +297,7 @@ export const UnifiedMintInterface = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Palette className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Collection Details</Label>
+                    <Label className="text-lg font-semibold">Collection Information</Label>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,44 +307,198 @@ export const UnifiedMintInterface = () => {
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        placeholder="e.g., ANIME Community Series"
+                        placeholder="e.g., My Art Series"
                         required
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="symbol">Symbol *</Label>
+                      <Label htmlFor="symbol">Symbol (Optional)</Label>
                       <Input
                         id="symbol"
                         value={formData.symbol}
                         onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                        placeholder="e.g., ACS"
+                        placeholder="e.g., ART"
                         maxLength={10}
-                        required
                       />
+                      <p className="text-xs text-muted-foreground mt-1">Short identifier for your collection</p>
                     </div>
                   </div>
                   
                   <div>
-                    <Label htmlFor="description">Description *</Label>
+                    <Label htmlFor="description">Description (Optional)</Label>
                     <Textarea
                       id="description"
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      placeholder="Describe your NFT collection series..."
-                      className="h-32"
-                      required
+                      placeholder="Describe your collection..."
+                      className="h-24"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formData.description.length}/1000 characters
+                      {(formData.description || '').length}/500 characters
                     </p>
+                  </div>
+
+                  {/* Category */}
+                  <div>
+                    <Label htmlFor="category">Category (Optional)</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="art">Art</SelectItem>
+                        <SelectItem value="photography">Photography</SelectItem>
+                        <SelectItem value="music">Music</SelectItem>
+                        <SelectItem value="gaming">Gaming</SelectItem>
+                        <SelectItem value="pfp">Profile Pictures</SelectItem>
+                        <SelectItem value="utility">Utility</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
+                {/* External Links */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">External Links (Optional)</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddLink}>
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Link
+                    </Button>
+                  </div>
+                  
+                  {formData.external_links?.map((link, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Select 
+                        value={link.type} 
+                        onValueChange={(value) => handleLinkChange(index, 'type', value)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="website">Website</SelectItem>
+                          <SelectItem value="twitter">Twitter</SelectItem>
+                          <SelectItem value="discord">Discord</SelectItem>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="https://..."
+                        value={link.url}
+                        onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveLink(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Advanced Settings */}
+                <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+                  <CollapsibleTrigger asChild>
+                    <Button type="button" variant="ghost" className="w-full justify-between p-0 h-auto">
+                      <div className="flex items-center gap-2">
+                        <Settings className="h-5 w-5 text-primary" />
+                        <Label className="text-lg font-semibold cursor-pointer">Advanced Settings</Label>
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4 mt-4">
+                    {/* Primary Sales Toggle */}
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <Label htmlFor="enable-sales" className="font-medium">Enable Primary Sales</Label>
+                        <p className="text-sm text-muted-foreground">Configure minting price, supply, and royalties for selling NFTs</p>
+                      </div>
+                      <Switch 
+                        id="enable-sales"
+                        checked={formData.enable_primary_sales}
+                        onCheckedChange={(checked) => setFormData({...formData, enable_primary_sales: checked})}
+                      />
+                    </div>
+
+                    {/* Primary Sales Settings */}
+                    {formData.enable_primary_sales && (
+                      <div className="space-y-4 p-4 bg-muted/20 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="mint-price">Mint Price (SOL)</Label>
+                            <Input
+                              id="mint-price"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={formData.mint_price}
+                              onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="max-supply">Max Supply</Label>
+                            <Input
+                              id="max-supply"
+                              type="number"
+                              min="1"
+                              value={formData.max_supply}
+                              onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="royalties">Royalties (%)</Label>
+                            <Input
+                              id="royalties"
+                              type="number"
+                              min="0"
+                              max="50"
+                              step="0.1"
+                              value={formData.royalty_percentage}
+                              onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="treasury">Treasury Wallet</Label>
+                            <Input
+                              id="treasury"
+                              value={formData.treasury_wallet}
+                              onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
+                              placeholder="Wallet address for payments"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
+                            <p className="text-sm text-muted-foreground">Restrict minting to specific addresses</p>
+                          </div>
+                          <Switch 
+                            id="whitelist"
+                            checked={formData.whitelist_enabled}
+                            onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
+
                 <Button 
                   type="submit" 
-                  disabled={creating || !formData.name || !formData.symbol || !formData.description}
-                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:opacity-90 transition-opacity"
+                  disabled={creating || !formData.name}
+                  className="w-full h-12 text-lg font-semibold"
                 >
                   {creating ? (
                     <>
@@ -300,7 +508,7 @@ export const UnifiedMintInterface = () => {
                   ) : (
                     <>
                       <Plus className="mr-2 h-5 w-5" />
-                      Create Collection Series
+                      Create Collection
                     </>
                   )}
                 </Button>

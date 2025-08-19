@@ -4,20 +4,27 @@ import { supabase } from '@/integrations/supabase/client';
 interface Collection {
   id: string;
   name: string;
-  symbol: string;
-  description: string;
-  image_url: string;
-  mint_price: number;
-  max_supply: number;
-  items_available: number;
-  items_redeemed: number;
+  symbol?: string;
+  description?: string;
+  image_url?: string;
+  banner_image_url?: string;
+  mint_price?: number;
+  max_supply?: number;
+  items_available?: number;
+  items_redeemed?: number;
   is_active: boolean;
   is_live: boolean;
-  whitelist_enabled: boolean;
-  go_live_date: string | null;
-  royalty_percentage: number;
+  whitelist_enabled?: boolean;
+  go_live_date?: string | null;
+  royalty_percentage?: number;
   creator_address: string;
-  treasury_wallet: string;
+  treasury_wallet?: string;
+  slug?: string;
+  external_links?: any;
+  collection_mint_address?: string;
+  verified?: boolean;
+  category?: string;
+  explicit_content?: boolean;
 }
 
 export const useCollection = (collectionId: string) => {

@@ -6,35 +6,48 @@ import { toast } from 'sonner';
 export interface Collection {
   id: string;
   name: string;
-  symbol: string;
-  description: string;
-  image_url: string;
+  symbol?: string;
+  description?: string;
+  image_url?: string;
+  banner_image_url?: string;
   creator_address: string;
-  treasury_wallet: string;
-  mint_price: number;
-  max_supply: number;
-  items_available: number;
-  items_redeemed: number;
-  royalty_percentage: number;
+  treasury_wallet?: string;
+  mint_price?: number;
+  max_supply?: number;
+  items_available?: number;
+  items_redeemed?: number;
+  royalty_percentage?: number;
   is_active: boolean;
   is_live: boolean;
   whitelist_enabled: boolean;
-  go_live_date: string | null;
+  go_live_date?: string | null;
   created_at: string;
   updated_at: string;
   candy_machine_id?: string;
+  slug?: string;
+  external_links?: any;
+  collection_mint_address?: string;
+  verified?: boolean;
+  category?: string;
+  explicit_content?: boolean;
 }
 
 export interface CreateCollectionData {
   name: string;
-  symbol: string;
-  description: string;
+  symbol?: string;
+  description?: string;
   image_file?: File;
-  mint_price: number;
-  max_supply: number;
-  royalty_percentage: number;
-  treasury_wallet: string;
-  whitelist_enabled: boolean;
+  banner_file?: File;
+  external_links?: { type: string; url: string }[];
+  category?: string;
+  explicit_content?: boolean;
+  // Advanced settings (for primary sales)
+  enable_primary_sales?: boolean;
+  mint_price?: number;
+  max_supply?: number;
+  royalty_percentage?: number;
+  treasury_wallet?: string;
+  whitelist_enabled?: boolean;
   go_live_date?: string;
 }
 
@@ -71,11 +84,11 @@ export const useCollections = () => {
     }
   }, [publicKey]);
 
-  // Upload collection image to storage
-  const uploadCollectionImage = async (file: File, collectionId: string): Promise<string | null> => {
+  // Upload collection images to storage
+  const uploadCollectionImage = async (file: File, collectionId: string, type: 'avatar' | 'banner' = 'avatar'): Promise<string | null> => {
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${collectionId}.${fileExt}`;
+      const fileName = `${collectionId}-${type}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -114,16 +127,25 @@ export const useCollections = () => {
       // Generate collection ID
       const collectionId = crypto.randomUUID();
       
-      let imageUrl = '/images/og-anime.jpg'; // Default image
+      let imageUrl = null;
+      let bannerUrl = null;
 
-      // Upload image if provided
+      // Upload avatar if provided
       if (collectionData.image_file) {
-        const uploadedUrl = await uploadCollectionImage(collectionData.image_file, collectionId);
+        const uploadedUrl = await uploadCollectionImage(collectionData.image_file, collectionId, 'avatar');
         if (uploadedUrl) {
           imageUrl = uploadedUrl;
         } else {
-          toast.error('Failed to upload collection image');
+          toast.error('Failed to upload collection avatar');
           return { success: false };
+        }
+      }
+
+      // Upload banner if provided
+      if (collectionData.banner_file) {
+        const uploadedBannerUrl = await uploadCollectionImage(collectionData.banner_file, collectionId, 'banner');
+        if (uploadedBannerUrl) {
+          bannerUrl = uploadedBannerUrl;
         }
       }
 
@@ -131,20 +153,28 @@ export const useCollections = () => {
       const newCollection = {
         id: collectionId,
         name: collectionData.name,
-        symbol: collectionData.symbol,
-        description: collectionData.description,
+        symbol: collectionData.symbol || null,
+        description: collectionData.description || null,
         image_url: imageUrl,
+        banner_image_url: bannerUrl,
         creator_address: publicKey,
-        treasury_wallet: collectionData.treasury_wallet || publicKey,
-        mint_price: collectionData.mint_price,
-        max_supply: collectionData.max_supply,
-        items_available: collectionData.max_supply,
-        items_redeemed: 0,
-        royalty_percentage: collectionData.royalty_percentage,
+        external_links: collectionData.external_links || [],
+        category: collectionData.category || null,
+        explicit_content: collectionData.explicit_content || false,
         is_active: true,
-        is_live: false, // Collections start as not live
-        whitelist_enabled: collectionData.whitelist_enabled,
-        go_live_date: collectionData.go_live_date || null,
+        is_live: false,
+        verified: false,
+        // Only set primary sales fields if enabled
+        ...(collectionData.enable_primary_sales && {
+          treasury_wallet: collectionData.treasury_wallet || publicKey,
+          mint_price: collectionData.mint_price || 0,
+          max_supply: collectionData.max_supply || 1000,
+          items_available: collectionData.max_supply || 1000,
+          items_redeemed: 0,
+          royalty_percentage: collectionData.royalty_percentage || 0,
+          whitelist_enabled: collectionData.whitelist_enabled || false,
+          go_live_date: collectionData.go_live_date || null,
+        }),
       };
 
       const { data, error } = await supabase
