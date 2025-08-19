@@ -11,6 +11,19 @@ import { Copy, ExternalLink, Settings, Wallet, TrendingUp, Activity } from "luci
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
 
+  // Random anime-style avatars
+  const animeAvatars = [
+    "🧙‍♀️", "🥷", "👺", "🎌", "⚔️", "🌸", "✨", "🔥", 
+    "🐉", "🦋", "🌙", "⭐", "💫", "🎭", "🎨", "🎪"
+  ];
+  
+  const getRandomAvatar = () => {
+    if (!publicKey) return "👤";
+    // Use wallet address to consistently pick same avatar
+    const index = parseInt(publicKey.slice(-2), 16) % animeAvatars.length;
+    return animeAvatars[index];
+  };
+
   const userStats = {
     nftsOwned: 42,
     totalValue: "15.6 SOL",
@@ -32,22 +45,18 @@ export default function Profile() {
             <>
               {/* Profile Header */}
               <div className="relative mb-8">
-                {/* Banner */}
-                <div className="h-48 md:h-64 bg-gradient-to-r from-primary via-primary-glow to-accent rounded-lg mb-6"></div>
-                
-                {/* Profile Info */}
-                <div className="flex flex-col md:flex-row items-start md:items-end gap-6 -mt-20 relative z-10">
-                  <Avatar className="w-32 h-32 border-4 border-background">
-                    <AvatarImage src="" />
-                    <AvatarFallback className="text-2xl bg-card">
-                      {publicKey?.slice(0, 2).toUpperCase()}
+                {/* Compact Header */}
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/5 rounded-lg border">
+                  <Avatar className="w-20 h-20 border-2 border-primary/20">
+                    <AvatarFallback className="text-3xl bg-gradient-to-br from-primary/20 to-accent/20">
+                      {getRandomAvatar()}
                     </AvatarFallback>
                   </Avatar>
                   
-                  <div className="flex-1 md:mb-4">
+                  <div className="flex-1">
                     <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                       <div>
-                        <h1 className="text-3xl font-bold">Unnamed User</h1>
+                        <h1 className="text-2xl font-bold">ANIME Collector</h1>
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Wallet className="h-4 w-4" />
                           <span className="font-mono text-sm">
@@ -61,36 +70,32 @@ export default function Profile() {
                           </Button>
                         </div>
                       </div>
-                      <Button variant="outline" className="md:ml-auto">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </Button>
                     </div>
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <Card>
+                      <Card className="bg-background/50">
                         <CardContent className="text-center pt-4">
-                          <div className="text-2xl font-bold text-primary">{userStats.nftsOwned}</div>
-                          <div className="text-sm text-muted-foreground">NFTs Owned</div>
+                          <div className="text-xl font-bold text-primary">{userStats.nftsOwned}</div>
+                          <div className="text-xs text-muted-foreground">NFTs Owned</div>
                         </CardContent>
                       </Card>
-                      <Card>
+                      <Card className="bg-background/50">
                         <CardContent className="text-center pt-4">
-                          <div className="text-2xl font-bold text-primary">{userStats.totalValue}</div>
-                          <div className="text-sm text-muted-foreground">Portfolio Value</div>
+                          <div className="text-xl font-bold text-primary">{userStats.totalValue}</div>
+                          <div className="text-xs text-muted-foreground">Portfolio Value</div>
                         </CardContent>
                       </Card>
-                      <Card>
+                      <Card className="bg-background/50">
                         <CardContent className="text-center pt-4">
-                          <div className="text-2xl font-bold text-primary">{userStats.totalSales}</div>
-                          <div className="text-sm text-muted-foreground">Total Sales</div>
+                          <div className="text-xl font-bold text-primary">{userStats.totalSales}</div>
+                          <div className="text-xs text-muted-foreground">Total Sales</div>
                         </CardContent>
                       </Card>
-                      <Card>
+                      <Card className="bg-background/50">
                         <CardContent className="text-center pt-4">
-                          <div className="text-2xl font-bold text-primary">{userStats.collections}</div>
-                          <div className="text-sm text-muted-foreground">Collections</div>
+                          <div className="text-xl font-bold text-primary">{userStats.collections}</div>
+                          <div className="text-xs text-muted-foreground">Collections</div>
                         </CardContent>
                       </Card>
                     </div>
