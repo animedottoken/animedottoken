@@ -7,9 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Upload, Image as ImageIcon, Loader2, Plus, Palette, Settings, Coins } from 'lucide-react';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface CollectionCreatorProps {
   onCollectionCreated?: (collectionId: string) => void;
@@ -18,7 +20,8 @@ interface CollectionCreatorProps {
 export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProps) => {
   const { connected, publicKey } = useSolanaWallet();
   const { creating, createCollection } = useCollections();
-  
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
     symbol: '',
@@ -62,7 +65,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
       image_file: imageFile || undefined,
     });
 
-    if (result.success && result.collection) {
+    if (result && (result as any).success && (result as any).collection) {
       // Reset form
       setFormData({
         name: '',
@@ -76,8 +79,19 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
       });
       setImageFile(null);
       setImagePreview(null);
-      
-      onCollectionCreated?.(result.collection.id);
+
+      toast({
+        title: 'Collection created',
+        description: 'Your collection has been created successfully.',
+      });
+
+      onCollectionCreated?.((result as any).collection.id);
+    } else {
+      toast({
+        title: 'Failed to create collection',
+        description: ((result as any)?.error?.message) || 'Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -124,19 +138,23 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="image-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
-                    {imagePreview ? (
-                      <img 
-                        src={imagePreview} 
-                        alt="Collection preview" 
-                        className="w-full h-48 object-cover rounded-lg mb-4"
-                      />
-                    ) : (
-                      <div className="mb-4">
-                        <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">Click to upload collection image</p>
-                      </div>
-                    )}
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                    <AspectRatio ratio={1}>
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt="Collection artwork preview (square)"
+                          className="h-full w-full object-cover rounded-md"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-center">
+                          <div>
+                            <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">Click to upload square artwork</p>
+                          </div>
+                        </div>
+                      )}
+                    </AspectRatio>
                   </div>
                 </Label>
                 <Input
