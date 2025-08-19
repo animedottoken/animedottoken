@@ -123,6 +123,22 @@ const navigationItems = [
     }
   },
   { 
+    title: "My Profile", 
+    icon: Users,
+    hash: "profile",
+    onClick: () => {
+      window.location.href = '/profile';
+    }
+  },
+  { 
+    title: "My Collections", 
+    icon: ShoppingBag,
+    hash: "collections",
+    onClick: () => {
+      window.location.href = '/collections';
+    }
+  },
+  { 
     title: "Mint NFTs", 
     icon: Coins,
     hash: "mint",
