@@ -6,10 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Copy, ExternalLink, Settings, Wallet, TrendingUp, Activity } from "lucide-react";
+import { Copy, ExternalLink, Settings, Wallet, TrendingUp, Activity, LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Profile() {
-  const { connected, publicKey } = useSolanaWallet();
+  const { connected, publicKey, disconnect } = useSolanaWallet();
+
+  const handleCopyAddress = async () => {
+    if (publicKey) {
+      try {
+        await navigator.clipboard.writeText(publicKey);
+        toast.success("Wallet address copied!");
+      } catch (error) {
+        toast.error("Failed to copy address");
+      }
+    }
+  };
+
+  const handleViewOnExplorer = () => {
+    if (publicKey) {
+      window.open(`https://solscan.io/account/${publicKey}`, '_blank');
+    }
+  };
 
   // Random anime-style avatars
   const animeAvatars = [
@@ -54,7 +72,7 @@ export default function Profile() {
                   </Avatar>
                   
                   <div className="flex-1">
-                    <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                       <div>
                         <h1 className="text-2xl font-bold">ANIME Collector</h1>
                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -62,14 +80,32 @@ export default function Profile() {
                           <span className="font-mono text-sm">
                             {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
                           </span>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={handleCopyAddress}
+                            title="Copy wallet address"
+                          >
                             <Copy className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={handleViewOnExplorer}
+                            title="View on Solscan"
+                          >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
+                      <Button 
+                        variant="outline" 
+                        onClick={disconnect}
+                        className="flex items-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Disconnect Wallet
+                      </Button>
                     </div>
 
                     {/* Stats */}
