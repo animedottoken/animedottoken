@@ -171,9 +171,7 @@ export const UnifiedMintInterface = () => {
             <p className="text-muted-foreground mb-6">
               Connect your Solana wallet to start minting NFTs or creating collections.
             </p>
-            <div className="pr-16">
-              <SolanaWalletButton />
-            </div>
+            <SolanaWalletButton />
           </div>
         </CardContent>
       </Card>
