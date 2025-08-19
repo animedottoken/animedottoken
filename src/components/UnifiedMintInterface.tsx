@@ -13,9 +13,7 @@ import {
   Image as ImageIcon, 
   Loader2, 
   Plus, 
-  Palette, 
-  Settings, 
-  Coins,
+  Palette,
   Zap,
   FileImage
 } from 'lucide-react';
@@ -241,21 +239,21 @@ export const UnifiedMintInterface = () => {
                   </div>
                 </div>
 
-                {/* Series Information */}
+                {/* Collection Details */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Palette className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Series Information</Label>
+                    <Label className="text-lg font-semibold">Collection Details</Label>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Series Name *</Label>
+                      <Label htmlFor="name">Collection Name *</Label>
                       <Input
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        placeholder="e.g., ANIME Community Campaigns"
+                        placeholder="e.g., ANIME Community Series"
                         required
                       />
                     </div>
@@ -266,7 +264,7 @@ export const UnifiedMintInterface = () => {
                         id="symbol"
                         value={formData.symbol}
                         onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                        placeholder="e.g., ACC"
+                        placeholder="e.g., ACS"
                         maxLength={10}
                         required
                       />
@@ -279,7 +277,7 @@ export const UnifiedMintInterface = () => {
                       id="description"
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      placeholder="The ANIME Community Campaigns series immortalizes key moments and achievements from our community's journey..."
+                      placeholder="Describe your NFT collection series..."
                       className="h-32"
                       required
                     />
@@ -289,124 +287,23 @@ export const UnifiedMintInterface = () => {
                   </div>
                 </div>
 
-                {/* Minting Configuration */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Coins className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Minting Configuration</Label>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="mint_price">Mint Price (SOL)</Label>
-                      <Input
-                        id="mint_price"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={formData.mint_price}
-                        onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
-                        placeholder="0.1"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="max_supply">Max Supply *</Label>
-                      <Input
-                        id="max_supply"
-                        type="number"
-                        min="1"
-                        max="100000"
-                        value={formData.max_supply}
-                        onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 1})}
-                        placeholder="10000"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="royalty_percentage">Royalties (%)</Label>
-                      <Input
-                        id="royalty_percentage"
-                        type="number"
-                        min="0"
-                        max="20"
-                        step="0.5"
-                        value={formData.royalty_percentage}
-                        onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
-                        placeholder="5"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Advanced Settings */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Advanced Settings</Label>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="treasury_wallet">Treasury Wallet</Label>
-                      <Input
-                        id="treasury_wallet"
-                        value={formData.treasury_wallet}
-                        onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
-                        placeholder="Your connected wallet"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="go_live_date">Go Live Date (Optional)</Label>
-                      <Input
-                        id="go_live_date"
-                        type="datetime-local"
-                        value={formData.go_live_date || ''}
-                        onChange={(e) => setFormData({...formData, go_live_date: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <Label htmlFor="whitelist_enabled" className="font-medium">
-                        Enable Whitelist
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Restrict minting to approved addresses only
-                      </p>
-                    </div>
-                    <Switch
-                      id="whitelist_enabled"
-                      checked={formData.whitelist_enabled}
-                      onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
-                    />
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end pt-6 border-t">
-                  <Button 
-                    type="submit" 
-                    disabled={creating || !formData.name || !formData.symbol || !formData.description}
-                    className="px-8 py-3"
-                    size="lg"
-                  >
-                    {creating ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating Collection...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Collection & Start Minting
-                      </>
-                    )}
-                  </Button>
-                </div>
+                <Button 
+                  type="submit" 
+                  disabled={creating || !formData.name || !formData.symbol || !formData.description}
+                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:opacity-90 transition-opacity"
+                >
+                  {creating ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Creating Collection...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-5 w-5" />
+                      Create Collection Series
+                    </>
+                  )}
+                </Button>
               </form>
             </CardContent>
           </Card>

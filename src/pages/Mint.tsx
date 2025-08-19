@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
+import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { Zap, Coins, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -14,10 +15,14 @@ export default function Mint() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header - aligned with hamburger menu */}
-          <div className="text-center mb-12 pt-8">
+          {/* Header - aligned with hamburger menu and add wallet status */}
+          <div className="text-center mb-12 pt-8 relative">
+            {/* Wallet connection status in top right */}
+            <div className="absolute top-0 right-0 pr-16">
+              <SolanaWalletButton />
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-              Mint NFT
+              Mint NFTs & Collections
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Create collections and mint exclusive digital collectibles on Solana with lightning-fast transactions and minimal fees.

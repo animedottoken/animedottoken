@@ -87,8 +87,8 @@ export default function Marketplace() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+          {/* Header - add top padding to avoid hamburger menu overlap */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 pt-8">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
                 NFT Marketplace
@@ -97,7 +97,9 @@ export default function Marketplace() {
                 Discover, buy and sell exclusive anime NFTs
               </p>
             </div>
-            <SolanaWalletButton />
+            <div className="pr-16">
+              <SolanaWalletButton />
+            </div>
           </div>
 
           {/* Stats Bar */}
