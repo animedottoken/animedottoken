@@ -1,0 +1,40 @@
+-- Insert sample collection for demo purposes
+INSERT INTO public.collections (
+  id,
+  name,
+  symbol,
+  description,
+  image_url,
+  max_supply,
+  items_available,
+  items_redeemed,
+  mint_price,
+  creator_address,
+  treasury_wallet,
+  royalty_percentage,
+  is_active,
+  is_live,
+  whitelist_enabled
+) VALUES (
+  '123e4567-e89b-12d3-a456-426614174000',
+  'ANIME ARMY Genesis',
+  'AAGEN',
+  'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
+  '/images/og-anime.jpg',
+  10000,
+  10000,
+  2847,
+  0,
+  'ANiMeArMyCreator1234567890',
+  'ANiMeArMyTreasury1234567890',
+  5,
+  true,
+  true,
+  false
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  max_supply = EXCLUDED.max_supply,
+  items_redeemed = EXCLUDED.items_redeemed,
+  is_active = EXCLUDED.is_active,
+  is_live = EXCLUDED.is_live;
