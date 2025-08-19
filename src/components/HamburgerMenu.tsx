@@ -116,14 +116,6 @@ const navigationItems = [
     }
   },
   { 
-    title: "NFT Marketplace", 
-    icon: Store,
-    hash: "",
-    onClick: () => {
-      window.location.href = "/marketplace";
-    }
-  },
-  { 
     title: "My Profile", 
     icon: User,
     hash: "",
