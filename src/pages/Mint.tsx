@@ -14,8 +14,8 @@ export default function Mint() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header */}
-          <div className="text-center mb-12">
+          {/* Header - aligned with hamburger menu */}
+          <div className="text-center mb-12 pt-8">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
               Mint NFT
             </h1>
