@@ -5,36 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Copy, ExternalLink, Settings, Wallet, TrendingUp, Activity, LogOut } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Copy, Wallet, TrendingUp, Activity, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import avatar1 from "@/assets/nft-ai-portrait-alt.jpg";
-import avatar2 from "@/assets/nft-dragon-spirit.jpg";
-import avatar3 from "@/assets/nft-mecha-pilot.jpg";
-import avatar4 from "@/assets/nft-pixel-warrior.jpg";
-import avatar5 from "@/assets/nft-space-explorer.jpg";
-import avatar6 from "@/assets/nft-digital-art.jpg";
-import avatar7 from "@/assets/nft-ai-generated.jpg";
-import avatar8 from "@/assets/nft-8bit-pixel.jpg";
 
 export default function Profile() {
   const { connected, publicKey, disconnect } = useSolanaWallet();
 
-  // Emoji fallback avatars
-  const emojiAvatars = [
-    "🧙‍♀️", "🥷", "👺", "🎌", "⚔️", "🌸", "✨", "🔥", 
-    "🐉", "🦋", "🌙", "⭐", "💫", "🎭", "🎨", "🎪"
-  ];
-  
-  const getEmojiAvatar = () => {
-    if (!publicKey) return "👤";
-    const index = parseInt(publicKey.slice(-2), 16) % emojiAvatars.length;
-    return emojiAvatars[index];
+  const displayName = 'ANIME Collector';
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(' ').filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return (parts[0]?.slice(0,2) || 'AN').toUpperCase();
   };
-
-  // Anime image avatars (deterministic by wallet)
-  const animeImages = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
-  const avatarIndex = publicKey ? parseInt(publicKey.slice(-2), 16) % animeImages.length : 0;
+  const initials = getInitials(displayName);
 
   const handleCopyAddress = async () => {
     if (publicKey) {
@@ -47,15 +31,6 @@ export default function Profile() {
     }
   };
 
-  const handleViewOnExplorer = () => {
-    if (!publicKey) return;
-    const url = `https://solscan.io/account/${publicKey}`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.click();
-  };
 
   const userStats = {
     nftsOwned: 42,
@@ -81,9 +56,8 @@ export default function Profile() {
                 {/* Compact Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/5 rounded-lg border">
                   <Avatar className="w-20 h-20 border-2 border-primary/20">
-                    <AvatarImage src={animeImages[avatarIndex]} alt="Anime avatar" className="object-cover" />
-                    <AvatarFallback className="text-4xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                      {getEmojiAvatar()}
+                    <AvatarFallback className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      {initials}
                     </AvatarFallback>
                   </Avatar>
                   
@@ -103,14 +77,6 @@ export default function Profile() {
                             title="Copy wallet address"
                           >
                             <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={handleViewOnExplorer}
-                            title="View on Solscan"
-                          >
-                            <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
