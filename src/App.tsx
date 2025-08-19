@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Reports from "./pages/Reports";
 import ShareNFT from "./pages/ShareNFT";
 import Mint from "./pages/Mint";
+import Collections from "./pages/Collections";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
 import { ErrorBoundary } from "react-error-boundary";
@@ -46,6 +47,7 @@ const App = () => (
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/share/nft/:nftId" element={<ShareNFT />} />
                 <Route path="/mint" element={<Mint />} />
+                <Route path="/collections" element={<Collections />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/profile" element={<Profile />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

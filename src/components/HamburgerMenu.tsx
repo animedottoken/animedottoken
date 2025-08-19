@@ -14,7 +14,8 @@ import {
   Users,
   Coins,
   Store,
-  User
+  User,
+  Palette
 } from "lucide-react";
 
 const navigationItems = [
@@ -120,6 +121,14 @@ const navigationItems = [
     hash: "mint",
     onClick: () => {
       window.location.href = '/mint';
+    }
+  },
+  { 
+    title: "Create Collections", 
+    icon: Palette,
+    hash: "collections",
+    onClick: () => {
+      window.location.href = '/collections';
     }
   },
   { 
