@@ -230,12 +230,68 @@ export const TopNav = () => {
   // Mobile view - same structure as desktop dropdown
   return (
     <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-      <button 
-        onClick={handleHomeNavigation}
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
-      >
-        <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={handleHomeNavigation}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+        >
+          <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
+        </button>
+        
+        {/* Hamburger menu for quick section navigation on mobile */}
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="sm" className="p-2 h-8 w-8">
+              <Menu className="h-4 w-4" />
+              <span className="sr-only">Quick navigation</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 sm:w-80">
+            <div className="flex flex-col gap-4 mt-8">
+              <div className="flex items-center gap-2 px-2 mb-6">
+                <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-10 w-10" />
+                <div>
+                  <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
+                  <p className="text-sm text-muted-foreground">Quick Navigation</p>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Main Pages</h3>
+                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                  <Button
+                    key={item.path}
+                    variant={isActive(item) ? "secondary" : "ghost"}
+                    className="w-full justify-start gap-3 h-12"
+                    asChild
+                  >
+                    <Link to={item.path} onClick={() => setOpen(false)}>
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.title}</span>
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+
+              <div className="space-y-1 mt-6">
+                <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Home Sections</h3>
+                {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
+                  <Button
+                    key={item.hash}
+                    variant="ghost"
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => handleNavigation(item)}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.title}</span>
+                    <ChevronRight className="h-4 w-4 ml-auto" />
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
       
       <nav className="flex items-center gap-1">
         {/* Mobile wallet dropdown - same as desktop */}
