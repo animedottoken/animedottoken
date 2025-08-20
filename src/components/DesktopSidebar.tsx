@@ -72,7 +72,7 @@ export const DesktopSidebar = ({ className }: DesktopSidebarProps) => {
   return (
     <TooltipProvider>
       <aside className={cn(
-        "flex flex-col border-r bg-sidebar-background text-sidebar-foreground transition-all duration-300",
+        "flex flex-col border-r bg-sidebar-background text-sidebar-foreground transition-[width] duration-300",
         collapsed ? "w-16" : "w-64",
         className
       )}>
