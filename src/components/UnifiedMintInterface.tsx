@@ -28,11 +28,13 @@ import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { MintingInterface } from '@/components/MintingInterface';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { validateImageFile, validateCollectionData, areRequiredFieldsValid } from '@/utils/validation';
+import { validateImageFile, validateCollectionData, areRequiredFieldsValid, validateStandaloneNFTData } from '@/utils/validation';
+import { useStandaloneMint, type StandaloneNFTData } from '@/hooks/useStandaloneMint';
 
 export const UnifiedMintInterface = () => {
   const { connected, publicKey } = useSolanaWallet();
   const { creating, createCollection } = useCollections();
+  const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState<'collection' | 'standalone'>('collection');
@@ -54,11 +56,27 @@ export const UnifiedMintInterface = () => {
     treasury_wallet: publicKey || '',
     whitelist_enabled: false,
   });
+
+  // Standalone NFT form data
+  const [standaloneData, setStandaloneData] = useState<StandaloneNFTData>({
+    name: '',
+    symbol: '',
+    description: '',
+    quantity: 1,
+    royalty_percentage: 5,
+    category: '',
+    external_links: [],
+    attributes: []
+  });
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+
+  // Standalone NFT image state
+  const [standaloneImageFile, setStandaloneImageFile] = useState<File | null>(null);
+  const [standaloneImagePreview, setStandaloneImagePreview] = useState<string | null>(null);
 
   // Update treasury wallet when wallet connects
   React.useEffect(() => {
@@ -105,6 +123,27 @@ export const UnifiedMintInterface = () => {
       setBannerFile(file);
       const reader = new FileReader();
       reader.onload = () => setBannerPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleStandaloneImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate image file
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: 'Invalid image file',
+          description: validation.error,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setStandaloneImageFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setStandaloneImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -202,6 +241,72 @@ export const UnifiedMintInterface = () => {
     }
   };
 
+  const handleMintStandalone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!connected) {
+      return;
+    }
+
+    // Validate standalone NFT data
+    const validationErrors = validateStandaloneNFTData(standaloneData);
+    if (validationErrors.length > 0) {
+      // Show first error
+      const firstError = validationErrors[0];
+      toast({
+        title: `Invalid ${firstError.field}`,
+        description: firstError.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const result = await mintStandaloneNFT({
+      ...standaloneData,
+      image_file: standaloneImageFile || undefined,
+    });
+
+    if (result.success) {
+      // Reset form on success
+      setStandaloneData({
+        name: '',
+        symbol: '',
+        description: '',
+        quantity: 1,
+        royalty_percentage: 5,
+        category: '',
+        external_links: [],
+        attributes: []
+      });
+      setStandaloneImageFile(null);
+      setStandaloneImagePreview(null);
+    }
+  };
+
+  const addAttribute = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStandaloneData(prev => ({
+      ...prev,
+      attributes: [...(prev.attributes || []), { trait_type: '', value: '' }]
+    }));
+  };
+
+  const removeAttribute = (index: number) => {
+    setStandaloneData(prev => ({
+      ...prev,
+      attributes: prev.attributes?.filter((_, i) => i !== index) || []
+    }));
+  };
+
+  const updateAttribute = (index: number, field: 'trait_type' | 'value', value: string) => {
+    setStandaloneData(prev => ({
+      ...prev,
+      attributes: prev.attributes?.map((attr, i) => 
+        i === index ? { ...attr, [field]: value } : attr
+      ) || []
+    }));
+  };
+
   const resetCollection = () => {
     setCreatedCollectionId(null);
     setFormData({
@@ -270,6 +375,34 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
+      {/* Choose Your Path Banner */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Collections are optional containers that help organize your NFTs. You can mint NFTs immediately without creating a collection first.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              variant={activeTab === 'collection' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('collection')}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Create Collection First
+            </Button>
+            <Button 
+              variant={activeTab === 'standalone' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('standalone')}
+              className="flex items-center gap-2"
+            >
+              <Zap className="h-4 w-4" />
+              Skip & Mint NFT Now
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'collection' | 'standalone')}>
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="collection" className="flex items-center gap-2">
@@ -293,6 +426,11 @@ export const UnifiedMintInterface = () => {
               <p className="text-muted-foreground">
                 Create a collection to group and organize your NFTs. Collections are like folders that help users discover and browse your work.
               </p>
+              <div className="p-3 bg-accent/10 rounded-md mt-4">
+                <p className="text-sm text-accent-foreground">
+                  ℹ️ <strong>Important:</strong> Creating a collection does not mint NFTs. It sets up a container with rules (price, supply, royalties) for organizing your NFTs.
+                </p>
+              </div>
             </CardHeader>
             
             <CardContent className="space-y-8">
@@ -434,11 +572,20 @@ export const UnifiedMintInterface = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="art">Art</SelectItem>
+                        <SelectItem value="collectibles">Collectibles</SelectItem>
+                        <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
                         <SelectItem value="photography">Photography</SelectItem>
                         <SelectItem value="music">Music</SelectItem>
                         <SelectItem value="gaming">Gaming</SelectItem>
-                        <SelectItem value="pfp">Profile Pictures</SelectItem>
+                        <SelectItem value="domains">Domain Names</SelectItem>
+                        <SelectItem value="metaverse">Metaverse</SelectItem>
                         <SelectItem value="utility">Utility</SelectItem>
+                        <SelectItem value="sports">Sports</SelectItem>
+                        <SelectItem value="trading-cards">Trading Cards</SelectItem>
+                        <SelectItem value="virtual-worlds">Virtual Worlds</SelectItem>
+                        <SelectItem value="meme">Meme</SelectItem>
+                        <SelectItem value="ai-art">AI Art</SelectItem>
+                        <SelectItem value="anime">Anime</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -461,7 +608,7 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="twitter">Twitter</Label>
+                      <Label htmlFor="twitter">Twitter/X</Label>
                       <Input
                         id="twitter"
                         placeholder="https://twitter.com/username"
@@ -487,6 +634,46 @@ export const UnifiedMintInterface = () => {
                         placeholder="https://instagram.com/username"
                         value={formData.external_links?.find(l => l.type === 'instagram')?.url || ''}
                         onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="telegram">Telegram</Label>
+                      <Input
+                        id="telegram"
+                        placeholder="https://t.me/username"
+                        value={formData.external_links?.find(l => l.type === 'telegram')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('telegram', e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="facebook">Facebook</Label>
+                      <Input
+                        id="facebook"
+                        placeholder="https://facebook.com/page"
+                        value={formData.external_links?.find(l => l.type === 'facebook')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('facebook', e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="youtube">YouTube</Label>
+                      <Input
+                        id="youtube"
+                        placeholder="https://youtube.com/channel"
+                        value={formData.external_links?.find(l => l.type === 'youtube')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('youtube', e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="medium">Medium</Label>
+                      <Input
+                        id="medium"
+                        placeholder="https://medium.com/@username"
+                        value={formData.external_links?.find(l => l.type === 'medium')?.url || ''}
+                        onChange={(e) => handleSocialLinkChange('medium', e.target.value)}
                       />
                     </div>
                   </div>
@@ -624,25 +811,228 @@ export const UnifiedMintInterface = () => {
                 Mint Standalone NFT
               </CardTitle>
               <p className="text-muted-foreground">
-                Mint a single NFT without creating a collection. Perfect for one-off pieces or testing.
+                Mint NFTs immediately without creating a collection. Perfect for one-off pieces or testing.
               </p>
+              <div className="p-3 bg-primary/10 rounded-md mt-4">
+                <p className="text-sm text-primary">
+                  ⚡ <strong>Quick Mint:</strong> This mints NFTs directly. You can assign them to a collection later if needed.
+                </p>
+              </div>
             </CardHeader>
             
-            <CardContent className="p-8 text-center">
-              <div className="mb-8">
-                <div className="text-6xl mb-4">🚧</div>
-                <h3 className="text-xl font-semibold mb-4">Coming Soon</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                  Standalone NFT minting is currently under development. For now, you can create a collection with a single NFT.
-                </p>
+            <CardContent className="space-y-6">
+              <form onSubmit={handleMintStandalone} className="space-y-6">
+                
+                {/* NFT Artwork */}
+                <div className="space-y-4">
+                  <Label className="text-lg font-semibold">NFT Artwork</Label>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="standalone-image-upload" className="cursor-pointer">
+                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                          <AspectRatio ratio={1}>
+                            {standaloneImagePreview ? (
+                              <img
+                                src={standaloneImagePreview}
+                                alt="NFT artwork"
+                                className="h-full w-full object-cover rounded-md"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                                <div>
+                                  <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                  <p className="text-sm font-medium">Upload Artwork</p>
+                                  <p className="text-xs text-muted-foreground">JPG, PNG, GIF, WEBP (5MB max)</p>
+                                </div>
+                              </div>
+                            )}
+                          </AspectRatio>
+                        </div>
+                      </Label>
+                      <Input
+                        id="standalone-image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleStandaloneImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-semibold">Tips:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• High-quality images work best</li>
+                        <li>• Square format (1:1) recommended</li>
+                        <li>• File formats: JPG, PNG, GIF, WEBP</li>
+                        <li>• Maximum file size: 5MB</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Basic Information */}
+                <div className="space-y-4">
+                  <Label className="text-lg font-semibold">Basic Information</Label>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="standalone-name">
+                        NFT Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="standalone-name"
+                        value={standaloneData.name}
+                        onChange={(e) => setStandaloneData({...standaloneData, name: e.target.value})}
+                        placeholder="e.g., My Awesome NFT"
+                        maxLength={100}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {(standaloneData.name || '').length}/100 characters
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="standalone-symbol">Symbol (Optional)</Label>
+                      <Input
+                        id="standalone-symbol"
+                        value={standaloneData.symbol}
+                        onChange={(e) => setStandaloneData({...standaloneData, symbol: e.target.value.toUpperCase()})}
+                        placeholder="e.g., MYNFT"
+                        maxLength={10}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="standalone-description">Description (Optional)</Label>
+                    <Textarea
+                      id="standalone-description"
+                      value={standaloneData.description}
+                      onChange={(e) => setStandaloneData({...standaloneData, description: e.target.value})}
+                      placeholder="Describe your NFT..."
+                      className="h-24"
+                      maxLength={1000}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {(standaloneData.description || '').length}/1000 characters
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="standalone-quantity">Quantity</Label>
+                      <Input
+                        id="standalone-quantity"
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={standaloneData.quantity}
+                        onChange={(e) => setStandaloneData({...standaloneData, quantity: parseInt(e.target.value) || 1})}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">1-10 NFTs</p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="standalone-royalty">Royalties (%)</Label>
+                      <Input
+                        id="standalone-royalty"
+                        type="number"
+                        min="0"
+                        max="20"
+                        step="0.1"
+                        value={standaloneData.royalty_percentage}
+                        onChange={(e) => setStandaloneData({...standaloneData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="standalone-category">Category</Label>
+                      <Select value={standaloneData.category} onValueChange={(value) => setStandaloneData({...standaloneData, category: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="art">Art</SelectItem>
+                          <SelectItem value="collectibles">Collectibles</SelectItem>
+                          <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
+                          <SelectItem value="photography">Photography</SelectItem>
+                          <SelectItem value="music">Music</SelectItem>
+                          <SelectItem value="gaming">Gaming</SelectItem>
+                          <SelectItem value="meme">Meme</SelectItem>
+                          <SelectItem value="ai-art">AI Art</SelectItem>
+                          <SelectItem value="anime">Anime</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attributes */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">Attributes (Optional)</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={addAttribute}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Attribute
+                    </Button>
+                  </div>
+                  
+                  {standaloneData.attributes && standaloneData.attributes.length > 0 && (
+                    <div className="space-y-3">
+                      {standaloneData.attributes.map((attr, index) => (
+                        <div key={index} className="flex gap-3 items-end">
+                          <div className="flex-1">
+                            <Label>Trait Type</Label>
+                            <Input
+                              value={attr.trait_type}
+                              onChange={(e) => updateAttribute(index, 'trait_type', e.target.value)}
+                              placeholder="e.g., Color"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label>Value</Label>
+                            <Input
+                              value={attr.value}
+                              onChange={(e) => updateAttribute(index, 'value', e.target.value)}
+                              placeholder="e.g., Blue"
+                            />
+                          </div>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => removeAttribute(index)}
+                            className="mb-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <Button 
-                  variant="outline" 
-                  onClick={() => setActiveTab('collection')}
-                  className="mt-4"
+                  type="submit" 
+                  disabled={minting || !standaloneData.name?.trim()}
+                  className="w-full h-12 text-lg font-semibold"
                 >
-                  Create Collection Instead
+                  {minting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Minting NFT{(standaloneData.quantity || 1) > 1 ? 's' : ''}...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="mr-2 h-5 w-5" />
+                      Mint {(standaloneData.quantity || 1) > 1 ? `${standaloneData.quantity} NFTs` : 'NFT'}
+                    </>
+                  )}
                 </Button>
-              </div>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>

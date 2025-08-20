@@ -92,6 +92,42 @@ export const getRequiredFields = (enablePrimarySales: boolean = false): string[]
   return required;
 };
 
+// Standalone NFT data validation
+export const validateStandaloneNFTData = (data: any): ValidationError[] => {
+  const errors: ValidationError[] = [];
+
+  // Required fields
+  if (!data.name?.trim()) {
+    errors.push({ field: 'name', message: 'NFT name is required' });
+  } else if (data.name.trim().length < 1) {
+    errors.push({ field: 'name', message: 'NFT name cannot be empty' });
+  } else if (data.name.trim().length > 100) {
+    errors.push({ field: 'name', message: 'NFT name must be 100 characters or less' });
+  }
+
+  // Symbol validation (optional but constrained if provided)
+  if (data.symbol && (data.symbol.length < 1 || data.symbol.length > 10)) {
+    errors.push({ field: 'symbol', message: 'Symbol must be 1-10 characters if provided' });
+  }
+
+  // Description validation
+  if (data.description && data.description.length > 1000) {
+    errors.push({ field: 'description', message: 'Description must be 1000 characters or less' });
+  }
+
+  // Quantity validation
+  if (data.quantity && (data.quantity < 1 || data.quantity > 10)) {
+    errors.push({ field: 'quantity', message: 'Quantity must be between 1 and 10' });
+  }
+
+  // Royalty validation
+  if (data.royalty_percentage && (data.royalty_percentage < 0 || data.royalty_percentage > 20)) {
+    errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 20%' });
+  }
+
+  return errors;
+};
+
 // Check if all required fields are valid
 export const areRequiredFieldsValid = (data: any, enablePrimarySales: boolean = false): boolean => {
   const requiredFields = getRequiredFields(enablePrimarySales);
