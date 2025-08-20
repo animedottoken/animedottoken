@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -42,6 +42,17 @@ export const TopNav = () => {
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleHomeNavigation = () => {
+    if (location.pathname === "/") {
+      // If already on home page, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Navigate to home page
+      navigate("/");
+    }
+  };
 
   const handleNavigation = (item: NavigationItem) => {
     if (item.type === "route") {
@@ -67,10 +78,13 @@ export const TopNav = () => {
   if (!isMobile) {
     return (
       <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <button 
+          onClick={handleHomeNavigation}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+        >
           <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
-        </Link>
+        </button>
         <nav className="flex items-center gap-1">
           {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
             <Button
@@ -93,10 +107,13 @@ export const TopNav = () => {
   // Mobile view with hamburger menu
   return (
     <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      <button 
+        onClick={handleHomeNavigation}
+        className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+      >
         <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
         <span className="font-bold text-lg">ANIME.TOKEN</span>
-      </Link>
+      </button>
       
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
@@ -107,13 +124,16 @@ export const TopNav = () => {
         </SheetTrigger>
         <SheetContent side="left" className="w-72 sm:w-80">
           <div className="flex flex-col gap-4 mt-8">
-            <Link to="/" className="flex items-center gap-2 px-2 mb-6 hover:opacity-80 transition-opacity">
+            <button 
+              onClick={handleHomeNavigation}
+              className="flex items-center gap-2 px-2 mb-6 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-left"
+            >
               <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-10 w-10" />
               <div>
                 <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
                 <p className="text-sm text-muted-foreground">Navigation Menu</p>
               </div>
-            </Link>
+            </button>
 
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Main Pages</h3>

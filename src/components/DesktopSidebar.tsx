@@ -54,6 +54,16 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     onCollapseChange?.(newCollapsed);
   };
 
+  const handleHomeNavigation = () => {
+    if (location.pathname === "/") {
+      // If already on home page, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Navigate to home page
+      navigate("/");
+    }
+  };
+
   const handleNavigation = (item: NavigationItem) => {
     if (item.type === "route") {
       navigate(item.path);
@@ -86,15 +96,21 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           {!collapsed && (
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <button 
+              onClick={handleHomeNavigation}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+            >
               <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
               <span className="font-bold text-lg">ANIME.TOKEN</span>
-            </Link>
+            </button>
           )}
           {collapsed && (
-            <Link to="/" className="hover:opacity-80 transition-opacity">
+            <button 
+              onClick={handleHomeNavigation}
+              className="hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0"
+            >
               <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
-            </Link>
+            </button>
           )}
           <Button
             variant="ghost"
