@@ -19,7 +19,7 @@ export const SolanaWalletButton = () => {
 
   return (
     <Button 
-      onClick={connect} 
+      onClick={() => connect()} 
       disabled={connecting}
       className="bg-primary text-primary-foreground hover:bg-primary/90"
     >

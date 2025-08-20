@@ -1,11 +1,15 @@
 import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react';
 
+interface WalletInfo { id: string; name: string; provider: any }
+
 interface SolanaWalletContextType {
   connected: boolean;
   connecting: boolean;
   publicKey: string | null;
-  connect: () => Promise<void>;
+  connect: (providerId?: string) => Promise<void>;
+  connectWith: (providerId: string) => Promise<void>;
   disconnect: () => void;
+  listProviders: () => { id: string; name: string }[];
 }
 
 const SolanaWalletContext = createContext<SolanaWalletContextType>({
@@ -13,7 +17,9 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   connecting: false,
   publicKey: null,
   connect: async () => {},
+  connectWith: async () => {},
   disconnect: () => {},
+  listProviders: () => [],
 });
 
 export const useSolanaWallet = () => {
@@ -28,113 +34,97 @@ interface SolanaWalletProviderProps {
   children: ReactNode;
 }
 
+function detectProviders(): WalletInfo[] {
+  const providers: WalletInfo[] = [];
+  const anyWin = window as any;
+  const solana = anyWin.solana;
+  const pushProvider = (p: any) => {
+    const id = p?.wallet || p?.name || (p?.isPhantom ? 'phantom' : p?.isSolflare ? 'solflare' : p?.isBackpack ? 'backpack' : p?.isGlow ? 'glow' : p?.isExodus ? 'exodus' : p?.isBitgetWallet ? 'bitget' : 'unknown');
+    const name = p?.name || (p?.isPhantom ? 'Phantom' : p?.isSolflare ? 'Solflare' : p?.isBackpack ? 'Backpack' : p?.isGlow ? 'Glow' : p?.isExodus ? 'Exodus' : p?.isBitgetWallet ? 'Bitget' : 'Wallet');
+    providers.push({ id, name, provider: p });
+  };
+  if (solana?.providers?.length) {
+    solana.providers.forEach(pushProvider);
+  } else if (solana) {
+    pushProvider(solana);
+  }
+  return providers;
+}
+
 export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) => {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [publicKey, setPublicKey] = useState<string | null>(null);
 
-  // Listen ONLY for external disconnects to avoid auto-connecting
+  // Do NOT auto-connect. Only ensure we clear state on external disconnects.
   useEffect(() => {
-    const { solana } = window as any;
-    if (!solana || !solana.isPhantom) return;
-
+    const anyWin = window as any;
+    const solana = anyWin.solana;
+    if (!solana) return;
     const handleDisconnect = () => {
       setConnected(false);
       setPublicKey(null);
     };
-
-    try {
-      solana.on('disconnect', handleDisconnect);
-    } catch {}
-
-    return () => {
-      try {
-        solana.off?.('disconnect', handleDisconnect);
-      } catch {}
-    };
+    try { solana.on?.('disconnect', handleDisconnect); } catch {}
+    return () => { try { solana.off?.('disconnect', handleDisconnect); } catch {} };
   }, []);
 
-  const connect = useCallback(async () => {
+  const connectWith = useCallback(async (providerId: string) => {
     if (connecting) return;
     try {
       setConnecting(true);
-      const { solana } = window as any;
-      if (!solana || !solana.isPhantom) {
-        window.open('https://phantom.app/', '_blank');
-        alert('Phantom wallet not found! Please install Phantom wallet and refresh the page.');
-        return;
-      }
+      const wallets = detectProviders();
+      const target = wallets.find(w => w.id === providerId) || wallets.find(w => w.name.toLowerCase() === providerId.toLowerCase());
+      const p = target?.provider;
+      if (!p) throw new Error('Selected wallet not available');
 
-      // Force complete disconnection and revoke authorization
-      try {
-        // First disconnect normally
-        await solana.disconnect();
-        
-        // Clear all cached connection state
-        setConnected(false);
-        setPublicKey(null);
-        
-        // Try to revoke site authorization (this forces fresh wallet selection)
-        if (solana.request) {
-          try {
-            await solana.request({ method: 'wallet_revokePermissions' });
-          } catch (e) {
-            // Ignore if method doesn't exist
-          }
-        }
-      } catch {}
+      // Hard reset provider state
+      try { await p.disconnect?.(); } catch {}
+      await new Promise(r => setTimeout(r, 150));
 
-      // Longer delay to ensure complete cleanup
-      await new Promise((r) => setTimeout(r, 200));
-
-      // Force a completely fresh connection with explicit wallet selection
-      const response = await solana.connect({ 
-        onlyIfTrusted: false,
-        // Additional options to force fresh selection
-        eager: false
-      });
-      
-      if (response && response.publicKey) {
-        setPublicKey(response.publicKey.toString());
+      const resp = await p.connect({ onlyIfTrusted: false });
+      if (resp?.publicKey) {
+        setPublicKey(resp.publicKey.toString());
         setConnected(true);
       } else {
         throw new Error('No wallet selected');
       }
-    } catch (error: any) {
-      console.error('Failed to connect wallet:', error);
-      if (error?.code === 4001 || error?.message?.includes('rejected')) {
-        return;
-      }
-      alert('Failed to connect to wallet. Please try again.');
     } finally {
       setConnecting(false);
     }
   }, [connecting]);
 
-  const disconnect = useCallback(async () => {
-    try {
-      const { solana } = window as any;
-      if (solana) {
-        // Disconnect from wallet
-        await solana.disconnect();
-        
-        // Try to revoke site permissions to ensure fresh selection next time
-        if (solana.request) {
-          try {
-            await solana.request({ method: 'wallet_revokePermissions' });
-          } catch (e) {
-            // Ignore if method doesn't exist
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Disconnect error:', error);
-    } finally {
-      // Always clear state regardless of disconnect success
-      setConnected(false);
-      setPublicKey(null);
+  const connect = useCallback(async (providerId?: string) => {
+    // If provider specified, delegate to connectWith
+    if (providerId) return connectWith(providerId);
+
+    const wallets = detectProviders();
+    if (wallets.length === 0) {
+      window.open('https://phantom.app/', '_blank');
+      alert('No Solana wallets detected. Please install a wallet (e.g., Phantom).');
+      return;
     }
+    if (wallets.length === 1) {
+      return connectWith(wallets[0].id);
+    }
+    // Ask user which wallet to use (native prompt fallback)
+    const choice = window.prompt(`Choose wallet:\n${wallets.map((w, i) => `${i + 1}. ${w.name}`).join('\n')}`, '1');
+    const idx = choice ? parseInt(choice, 10) - 1 : -1;
+    if (idx >= 0 && idx < wallets.length) {
+      return connectWith(wallets[idx].id);
+    }
+  }, [connectWith]);
+
+  const disconnect = useCallback(async () => {
+    const wallets = detectProviders();
+    for (const w of wallets) {
+      try { await w.provider.disconnect?.(); } catch {}
+    }
+    setConnected(false);
+    setPublicKey(null);
   }, []);
+
+  const listProviders = useCallback(() => detectProviders().map(w => ({ id: w.id, name: w.name })), []);
 
   return (
     <SolanaWalletContext.Provider
@@ -143,7 +133,9 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
         connecting,
         publicKey,
         connect,
+        connectWith,
         disconnect,
+        listProviders,
       }}
     >
       {children}

@@ -47,7 +47,8 @@ export const TopNav = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { connected, connecting, publicKey, connect, disconnect } = useSolanaWallet();
+  const { connected, connecting, publicKey, connect, connectWith, disconnect, listProviders } = useSolanaWallet();
+  const providers = listProviders();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -191,7 +192,7 @@ export const TopNav = () => {
                 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  onClick={connect}
+                  onClick={() => connect()}
                   disabled={connecting}
                   className="cursor-pointer text-green-600"
                 >
