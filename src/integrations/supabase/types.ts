@@ -47,6 +47,13 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "collection_whitelist_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       collections: {
@@ -185,6 +192,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "marketplace_activities_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "marketplace_activities_nft_id_fkey"
             columns: ["nft_id"]
             isOneToOne: false
@@ -303,6 +317,13 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mint_jobs_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       nfts: {
@@ -374,6 +395,13 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "nfts_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_profiles: {
@@ -423,12 +451,129 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      collections_public: {
+        Row: {
+          banner_image_url: string | null
+          candy_machine_id: string | null
+          category: string | null
+          collection_mint_address: string | null
+          created_at: string | null
+          creator_address: string | null
+          description: string | null
+          explicit_content: boolean | null
+          external_links: Json | null
+          go_live_date: string | null
+          id: string | null
+          image_url: string | null
+          is_active: boolean | null
+          is_live: boolean | null
+          items_available: number | null
+          items_redeemed: number | null
+          max_supply: number | null
+          mint_price: number | null
+          name: string | null
+          royalty_percentage: number | null
+          slug: string | null
+          symbol: string | null
+          treasury_wallet: string | null
+          updated_at: string | null
+          verified: boolean | null
+          whitelist_enabled: boolean | null
+        }
+        Insert: {
+          banner_image_url?: string | null
+          candy_machine_id?: string | null
+          category?: string | null
+          collection_mint_address?: string | null
+          created_at?: string | null
+          creator_address?: never
+          description?: string | null
+          explicit_content?: boolean | null
+          external_links?: Json | null
+          go_live_date?: string | null
+          id?: string | null
+          image_url?: string | null
+          is_active?: boolean | null
+          is_live?: boolean | null
+          items_available?: number | null
+          items_redeemed?: number | null
+          max_supply?: number | null
+          mint_price?: number | null
+          name?: string | null
+          royalty_percentage?: number | null
+          slug?: string | null
+          symbol?: string | null
+          treasury_wallet?: never
+          updated_at?: string | null
+          verified?: boolean | null
+          whitelist_enabled?: boolean | null
+        }
+        Update: {
+          banner_image_url?: string | null
+          candy_machine_id?: string | null
+          category?: string | null
+          collection_mint_address?: string | null
+          created_at?: string | null
+          creator_address?: never
+          description?: string | null
+          explicit_content?: boolean | null
+          external_links?: Json | null
+          go_live_date?: string | null
+          id?: string | null
+          image_url?: string | null
+          is_active?: boolean | null
+          is_live?: boolean | null
+          items_available?: number | null
+          items_redeemed?: number | null
+          max_supply?: number | null
+          mint_price?: number | null
+          name?: string | null
+          royalty_percentage?: number | null
+          slug?: string | null
+          symbol?: string | null
+          treasury_wallet?: never
+          updated_at?: string | null
+          verified?: boolean | null
+          whitelist_enabled?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_collection_slug: {
         Args: { collection_name: string }
         Returns: string
+      }
+      get_collection_details: {
+        Args: { collection_id: string }
+        Returns: {
+          banner_image_url: string
+          candy_machine_id: string
+          category: string
+          collection_mint_address: string
+          created_at: string
+          creator_address: string
+          description: string
+          explicit_content: boolean
+          external_links: Json
+          go_live_date: string
+          id: string
+          image_url: string
+          is_active: boolean
+          is_live: boolean
+          items_available: number
+          items_redeemed: number
+          max_supply: number
+          mint_price: number
+          name: string
+          royalty_percentage: number
+          slug: string
+          symbol: string
+          treasury_wallet: string
+          updated_at: string
+          verified: boolean
+          whitelist_enabled: boolean
+        }[]
       }
     }
     Enums: {

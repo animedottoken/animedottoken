@@ -49,15 +49,12 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
     try {
       console.log('Loading collection:', collectionId);
       const { data, error } = await supabase
-        .from('collections')
-        .select('*')
-        .eq('id', collectionId)
-        .maybeSingle();
+        .rpc('get_collection_details', { collection_id: collectionId });
 
       console.log('Collection query result:', { data, error });
 
-      if (data) {
-        setCollection(data);
+      if (data && data.length > 0) {
+        setCollection(data[0]);
       } else {
         console.log('No collection found, creating sample collection');
         // Create sample collection if none exists

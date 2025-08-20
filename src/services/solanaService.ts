@@ -53,13 +53,10 @@ export class SolanaService {
       
       try {
         const { data, error } = await supabase
-          .from('collections')
-          .select('*')
-          .eq('id', collectionId)
-          .maybeSingle();
+          .rpc('get_collection_details', { collection_id: collectionId });
 
-        if (data) {
-          collection = data;
+        if (data && data.length > 0) {
+          collection = data[0];
           console.log('Collection found in database:', collection);
         }
       } catch (dbError) {
@@ -217,11 +214,10 @@ export class SolanaService {
 
   async getCollectionStats(collectionId: string) {
     try {
-      const { data: collection } = await supabase
-        .from('collections')
-        .select('*')
-        .eq('id', collectionId)
-        .single();
+      const { data: collectionData } = await supabase
+        .rpc('get_collection_details', { collection_id: collectionId });
+      
+      const collection = collectionData && collectionData.length > 0 ? collectionData[0] : null;
 
       const { data: activities } = await supabase
         .from('marketplace_activities')

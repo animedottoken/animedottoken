@@ -39,18 +39,20 @@ export const useCollection = (collectionId: string) => {
   const loadCollection = async () => {
     try {
       setLoading(true);
+      
+      // Use the secure function to get collection details with appropriate wallet masking
       const { data, error } = await supabase
-        .from('collections')
-        .select('*')
-        .eq('id', collectionId)
-        .single();
+        .rpc('get_collection_details', { collection_id: collectionId });
 
       if (error) {
         setError(error.message);
         setCollection(null);
-      } else {
-        setCollection(data);
+      } else if (data && data.length > 0) {
+        setCollection(data[0]);
         setError(null);
+      } else {
+        setError('Collection not found');
+        setCollection(null);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
