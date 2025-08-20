@@ -150,53 +150,41 @@ export const useCollections = () => {
         }
       }
 
-      // Create collection record
-      const newCollection = {
-        id: collectionId,
-        name: collectionData.name,
-        symbol: collectionData.symbol || null,
-        description: collectionData.site_description || null, // Keep for backward compatibility
-        site_description: collectionData.site_description || null,
-        onchain_description: collectionData.onchain_description || null,
-        image_url: imageUrl,
-        banner_image_url: bannerUrl,
-        creator_address: publicKey,
-        external_links: collectionData.external_links || [],
-        category: collectionData.category || null,
-        explicit_content: collectionData.explicit_content || false,
-        is_active: true,
-        is_live: true,
-        verified: false,
-        // Only set primary sales fields if enabled
-        ...(collectionData.enable_primary_sales && {
-          treasury_wallet: collectionData.treasury_wallet || publicKey,
+      // Call secure edge function to create collection (bypasses RLS with service role)
+      const { data, error } = await supabase.functions.invoke('create-collection', {
+        body: {
+          id: collectionId,
+          name: collectionData.name,
+          symbol: collectionData.symbol || null,
+          site_description: collectionData.site_description || null,
+          onchain_description: collectionData.onchain_description || null,
+          image_url: imageUrl,
+          banner_image_url: bannerUrl,
+          creator_address: publicKey,
+          external_links: collectionData.external_links || [],
+          category: collectionData.category || null,
+          explicit_content: collectionData.explicit_content || false,
+          enable_primary_sales: collectionData.enable_primary_sales || false,
           mint_price: collectionData.mint_price || 0,
-          max_supply: collectionData.max_supply || 1000,
-          items_available: collectionData.max_supply || 1000,
-          items_redeemed: 0,
+          max_supply: collectionData.max_supply || null,
           royalty_percentage: collectionData.royalty_percentage || 0,
+          treasury_wallet: (collectionData.enable_primary_sales ? (collectionData.treasury_wallet || publicKey) : null),
           whitelist_enabled: collectionData.whitelist_enabled || false,
           go_live_date: collectionData.go_live_date || null,
-        }),
-      };
+        }
+      });
 
-      const { data, error } = await supabase
-        .from('collections')
-        .insert(newCollection)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating collection:', error);
+      if (error || !data?.success) {
+        console.error('Error creating collection:', error || data);
         toast.error('Failed to create collection');
         return { success: false };
       }
 
-      // Refresh collections
+      // Refresh collections (may be empty due to RLS, but we continue)
       await loadCollections();
 
       toast.success(`Collection "${collectionData.name}" created successfully!`);
-      return { success: true, collection: data };
+      return { success: true, collection: data.collection };
 
     } catch (error) {
       console.error('Unexpected error creating collection:', error);

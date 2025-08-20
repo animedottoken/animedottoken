@@ -445,35 +445,69 @@ export const UnifiedMintInterface = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Avatar (Square) */}
-                    <div>
-                      <Label htmlFor="avatar-upload" className="cursor-pointer">
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                          <AspectRatio ratio={1}>
-                            {imagePreview ? (
-                              <img
-                                src={imagePreview}
-                                alt="Collection avatar"
-                                className="h-full w-full object-cover rounded-md"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                                <div>
-                                  <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                  <p className="text-sm font-medium">Avatar (Optional)</p>
-                                  <p className="text-xs text-muted-foreground">Square format recommended</p>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="avatar-upload" className="cursor-pointer">
+                          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                            <AspectRatio ratio={1}>
+                              {imagePreview ? (
+                                <img
+                                  src={imagePreview}
+                                  alt="Collection avatar"
+                                  className="h-full w-full object-cover rounded-md"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                                  <div>
+                                    <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                    <p className="text-sm font-medium">Avatar (Optional)</p>
+                                    <p className="text-xs text-muted-foreground">Square format recommended</p>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </AspectRatio>
-                        </div>
-                      </Label>
-                      <Input
-                        id="avatar-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
+                              )}
+                            </AspectRatio>
+                          </div>
+                        </Label>
+                        <Input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </div>
+
+                      {/* Banner (3:1) */}
+                      <div>
+                        <Label htmlFor="banner-upload" className="cursor-pointer">
+                          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                            <AspectRatio ratio={3 / 1}>
+                              {bannerPreview ? (
+                                <img
+                                  src={bannerPreview}
+                                  alt="Collection banner"
+                                  className="h-full w-full object-cover rounded-md"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                                  <div>
+                                    <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                    <p className="text-sm font-medium">Banner (Optional)</p>
+                                    <p className="text-xs text-muted-foreground">Wide format 3:1</p>
+                                  </div>
+                                </div>
+                              )}
+                            </AspectRatio>
+                          </div>
+                        </Label>
+                        <Input
+                          id="banner-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleBannerChange}
+                          className="hidden"
+                        />
+                      </div>
                     </div>
                     
                     <div className="space-y-3">
