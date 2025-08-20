@@ -65,38 +65,16 @@ export const TopNav = () => {
 
   // For tablet and desktop, don't render this component
   if (!isMobile) {
-    return (
-      <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
-          <span className="font-bold text-lg">ANIME.TOKEN</span>
-        </div>
-        <nav className="hidden md:flex items-center gap-1">
-          {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-            <Button
-              key={item.path}
-              variant={isActive(item) ? "secondary" : "ghost"}
-              size="sm"
-              asChild
-            >
-              <Link to={item.path} className="flex items-center gap-2">
-                <item.icon className="h-4 w-4" />
-                {item.title}
-              </Link>
-            </Button>
-          ))}
-        </nav>
-      </header>
-    );
+    return null;
   }
 
   // Mobile view with hamburger menu
   return (
     <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-      <div className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
         <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
         <span className="font-bold text-lg">ANIME.TOKEN</span>
-      </div>
+      </Link>
       
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
@@ -107,13 +85,13 @@ export const TopNav = () => {
         </SheetTrigger>
         <SheetContent side="left" className="w-72 sm:w-80">
           <div className="flex flex-col gap-4 mt-8">
-            <div className="flex items-center gap-2 px-2 mb-6">
+            <Link to="/" className="flex items-center gap-2 px-2 mb-6 hover:opacity-80 transition-opacity">
               <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-10 w-10" />
               <div>
                 <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
                 <p className="text-sm text-muted-foreground">Navigation Menu</p>
               </div>
-            </div>
+            </Link>
 
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Main Pages</h3>
