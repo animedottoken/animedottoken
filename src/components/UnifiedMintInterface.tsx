@@ -43,16 +43,16 @@ export const UnifiedMintInterface = () => {
 
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
-    symbol: '',
+    symbol: undefined,
     site_description: '',
     onchain_description: '',
     external_links: [],
     category: '',
     explicit_content: false,
-    enable_primary_sales: true, // Always enabled for simplicity
-    mint_price: 0.1,
-    max_supply: 1000,
-    royalty_percentage: 5,
+    enable_primary_sales: false, // Disabled in simple folder step
+    mint_price: undefined,
+    max_supply: undefined,
+    royalty_percentage: undefined,
     treasury_wallet: publicKey || '',
     whitelist_enabled: false,
   });
@@ -311,16 +311,16 @@ export const UnifiedMintInterface = () => {
     setCreatedCollectionId(null);
     setFormData({
       name: '',
-      symbol: '',
+      symbol: undefined,
       site_description: '',
       onchain_description: '',
       external_links: [],
       category: '',
       explicit_content: false,
-      enable_primary_sales: true, // Always enabled for simplicity
-      mint_price: 0.1,
-      max_supply: 1000,
-      royalty_percentage: 5,
+      enable_primary_sales: false,
+      mint_price: undefined,
+      max_supply: undefined,
+      royalty_percentage: undefined,
       treasury_wallet: publicKey || '',
       whitelist_enabled: false,
     });
