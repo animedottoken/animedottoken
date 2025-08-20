@@ -68,10 +68,15 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     if (item.type === "route") {
       navigate(item.path);
     } else {
-      // Section navigation
+      // Section navigation: navigate to home with hash if not on home
+      if (location.pathname !== "/") {
+        navigate(`/#${item.hash}`);
+        return;
+      }
       const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', `#${item.hash}`);
       }
     }
   };

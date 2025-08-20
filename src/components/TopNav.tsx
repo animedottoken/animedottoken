@@ -57,16 +57,23 @@ export const TopNav = () => {
   const handleNavigation = (item: NavigationItem) => {
     if (item.type === "route") {
       setOpen(false);
+      navigate(item.path);
     } else {
-      // Section navigation
+      // Section navigation: if not on home, navigate with hash so Index scrolls
+      if (location.pathname !== "/") {
+        setOpen(false);
+        navigate(`/#${item.hash}`);
+        return;
+      }
+      // Already on home: smooth-scroll and update hash
       const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', `#${item.hash}`);
       }
       setOpen(false);
     }
   };
-
   const isActive = (item: NavigationItem) => {
     if (item.type === "route") {
       return location.pathname === item.path;
