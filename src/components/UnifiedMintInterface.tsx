@@ -49,7 +49,7 @@ export const UnifiedMintInterface = () => {
     external_links: [],
     category: '',
     explicit_content: false,
-    enable_primary_sales: false,
+    enable_primary_sales: true, // Always enabled for simplicity
     mint_price: 0.1,
     max_supply: 1000,
     royalty_percentage: 5,
@@ -317,7 +317,7 @@ export const UnifiedMintInterface = () => {
       external_links: [],
       category: '',
       explicit_content: false,
-      enable_primary_sales: false,
+      enable_primary_sales: true, // Always enabled for simplicity
       mint_price: 0.1,
       max_supply: 1000,
       royalty_percentage: 5,
@@ -375,33 +375,6 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Choose Your Path Banner */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Collections are optional containers that help organize your NFTs. You can mint NFTs immediately without creating a collection first.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button 
-              variant={activeTab === 'collection' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('collection')}
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create Collection First
-            </Button>
-            <Button 
-              variant={activeTab === 'standalone' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('standalone')}
-              className="flex items-center gap-2"
-            >
-              <Zap className="h-4 w-4" />
-              Skip & Mint NFT Now
-            </Button>
-          </div>
-        </div>
-      </div>
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'collection' | 'standalone')}>
         <TabsList className="grid w-full grid-cols-2 mb-8">
@@ -735,97 +708,84 @@ export const UnifiedMintInterface = () => {
                       </p>
                     </div>
 
-                    {/* Primary Sales Toggle */}
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <Label htmlFor="enable-sales" className="font-medium">Enable Primary Sales</Label>
-                        <p className="text-sm text-muted-foreground">Configure minting price, supply, and royalties for selling NFTs</p>
-                      </div>
-                      <Switch 
-                        id="enable-sales"
-                        checked={formData.enable_primary_sales}
-                        onCheckedChange={(checked) => setFormData({...formData, enable_primary_sales: checked})}
-                      />
-                    </div>
-
-                    {/* Primary Sales Settings */}
-                    {formData.enable_primary_sales && (
-                      <div className="space-y-4 p-4 bg-muted/20 rounded-lg">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="mint-price">Mint Price (SOL)</Label>
-                            <Input
-                              id="mint-price"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              value={formData.mint_price}
-                              onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="max-supply">
-                              Max Supply <span className="text-destructive">*</span>
-                            </Label>
-                            <Input
-                              id="max-supply"
-                              type="number"
-                              min="1"
-                              max="100000"
-                              value={formData.max_supply}
-                              onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
-                              required={formData.enable_primary_sales}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">1-100,000 NFTs</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="royalties">Royalties (%)</Label>
-                            <Input
-                              id="royalties"
-                              type="number"
-                              min="0"
-                              max="20"
-                              step="0.1"
-                              value={formData.royalty_percentage}
-                              onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">0-20% on secondary sales</p>
-                          </div>
-                          <div>
-                            <Label htmlFor="treasury">
-                              Treasury Wallet <span className="text-destructive">*</span>
-                            </Label>
-                            <Input
-                              id="treasury"
-                              value={formData.treasury_wallet}
-                              onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
-                              placeholder="Wallet address for payments"
-                              required={formData.enable_primary_sales}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
-                            <p className="text-sm text-muted-foreground">Restrict minting to specific addresses</p>
-                          </div>
-                          <Switch 
-                            id="whitelist"
-                            checked={formData.whitelist_enabled}
-                            onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
+                    {/* Minting Configuration */}
+                    <div className="space-y-4 p-4 bg-muted/20 rounded-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="mint-price">Mint Price (SOL)</Label>
+                          <Input
+                            id="mint-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={formData.mint_price}
+                            onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
                           />
+                          <p className="text-xs text-muted-foreground mt-1">Price per NFT in SOL</p>
+                        </div>
+                        <div>
+                          <Label htmlFor="max-supply">
+                            Max Supply <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
+                          </Label>
+                          <Input
+                            id="max-supply"
+                            type="number"
+                            min="1"
+                            max="100000"
+                            value={formData.max_supply}
+                            onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                            required
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Total NFTs that can be minted (1-100,000)</p>
                         </div>
                       </div>
-                    )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="royalties">Royalties (%)</Label>
+                          <Input
+                            id="royalties"
+                            type="number"
+                            min="0"
+                            max="20"
+                            step="0.1"
+                            value={formData.royalty_percentage}
+                            onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Percentage you earn when others resell (0-20%)</p>
+                        </div>
+                        <div>
+                          <Label htmlFor="treasury">
+                            Treasury Wallet <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
+                          </Label>
+                          <Input
+                            id="treasury"
+                            value={formData.treasury_wallet}
+                            onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
+                            placeholder="Wallet address for payments"
+                            required
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Where mint payments and royalties are sent</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
+                          <p className="text-sm text-muted-foreground">Only allow specific wallet addresses to mint (exclusive access)</p>
+                        </div>
+                        <Switch 
+                          id="whitelist"
+                          checked={formData.whitelist_enabled}
+                          onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
+                        />
+                      </div>
+                    </div>
                   </CollapsibleContent>
                 </Collapsible>
 
                 <Button 
                   type="submit" 
-                  disabled={creating || !areRequiredFieldsValid(formData, formData.enable_primary_sales)}
+                  disabled={creating || !areRequiredFieldsValid(formData, true)}
                   className="w-full h-12 text-lg font-semibold"
                 >
 
