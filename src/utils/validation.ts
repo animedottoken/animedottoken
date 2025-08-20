@@ -36,7 +36,7 @@ export const validateImageFile = (file: File): FileValidationResult => {
 export const validateCollectionData = (data: any): ValidationError[] => {
   const errors: ValidationError[] = [];
 
-  // Required fields
+  // Only name is required for basic collection creation
   if (!data.name?.trim()) {
     errors.push({ field: 'name', message: 'Collection name is required' });
   } else if (data.name.trim().length < 3) {
@@ -45,12 +45,11 @@ export const validateCollectionData = (data: any): ValidationError[] => {
     errors.push({ field: 'name', message: 'Collection name must be 32 characters or less' });
   }
 
-  // Symbol is optional for basic collection creation
+  // All other validations are for optional fields - only validate if provided
   if (data.symbol && (data.symbol.length < 2 || data.symbol.length > 10)) {
     errors.push({ field: 'symbol', message: 'Symbol must be 2-10 characters if provided' });
   }
 
-  // Description validation
   if (data.site_description && data.site_description.length > 2000) {
     errors.push({ field: 'site_description', message: 'Site description must be 2000 characters or less' });
   }
@@ -59,7 +58,7 @@ export const validateCollectionData = (data: any): ValidationError[] => {
     errors.push({ field: 'onchain_description', message: 'On-chain description must be 200 characters or less' });
   }
 
-  // Primary sales validation (if enabled)
+  // These validations will only be relevant in the next step when minting
   if (data.enable_primary_sales) {
     if (data.max_supply <= 0 || data.max_supply > 100000) {
       errors.push({ field: 'max_supply', message: 'Max supply must be between 1 and 100,000' });
