@@ -138,6 +138,26 @@ export const TopNav = () => {
                 </div>
                 <DropdownMenuSeparator />
                 
+                {/* Switch Wallet Section */}
+                {providers.length > 1 && (
+                  <>
+                    <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+                      Switch Wallet
+                    </div>
+                    {providers.map((provider) => (
+                      <DropdownMenuItem 
+                        key={provider.id}
+                        onClick={() => connectWith(provider.id)}
+                        className="cursor-pointer flex items-center gap-3"
+                      >
+                        <Wallet className="h-4 w-4" />
+                        <span>{provider.name}</span>
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                
                 {/* Main Navigation Items */}
                 {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
