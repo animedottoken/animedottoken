@@ -74,17 +74,26 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
       const { solana } = window as any;
       
       if (!solana || !solana.isPhantom) {
-        alert('Phantom wallet not found! Please install Phantom wallet from https://phantom.app/');
+        // Open Phantom installation page
+        window.open('https://phantom.app/', '_blank');
+        alert('Phantom wallet not found! Please install Phantom wallet and refresh the page.');
         return;
       }
 
-      // Request connection to wallet
+      // Force a fresh connection dialog (don't auto-connect to last wallet)
+      await solana.disconnect().catch(() => {}); // Disconnect first to show wallet selection
+      
+      // Request connection to wallet - this will show wallet selection
       const response = await solana.connect();
       setPublicKey(response.publicKey.toString());
       setConnected(true);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect wallet:', error);
+      if (error?.code === 4001) {
+        // User rejected the request
+        return;
+      }
       alert('Failed to connect to wallet. Please try again.');
     } finally {
       setConnecting(false);

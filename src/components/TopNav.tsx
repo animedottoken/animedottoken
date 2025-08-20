@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown } from "lucide-react";
+import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown, Wallet, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 
 type RouteItem = {
   type: "route";
@@ -44,6 +46,7 @@ export const TopNav = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
+  const { connected, connecting, publicKey, connect, disconnect } = useSolanaWallet();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -107,6 +110,55 @@ export const TopNav = () => {
               </Link>
             </Button>
           ))}
+
+          {/* Wallet Status Indicator */}
+          {connected ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2 border-green-500/20 bg-green-500/10 hover:bg-green-500/20">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <Wallet className="h-4 w-4" />
+                  <span className="font-mono text-xs">
+                    {publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}
+                  </span>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-2 py-1.5 text-sm">
+                  <div className="flex items-center gap-2 text-green-600 font-medium">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    Wallet Connected
+                  </div>
+                  <div className="font-mono text-xs text-muted-foreground mt-1">
+                    {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    View Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={disconnect} className="cursor-pointer text-red-600">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Disconnect
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={connect}
+              disabled={connecting}
+              className="flex items-center gap-2"
+            >
+              <Wallet className="h-4 w-4" />
+              {connecting ? "Connecting..." : "Connect Wallet"}
+            </Button>
+          )}
         </nav>
       </header>
     );
@@ -174,6 +226,57 @@ export const TopNav = () => {
                   <ChevronRight className="h-4 w-4 ml-auto" />
                 </Button>
               ))}
+            </div>
+
+            {/* Wallet Status in Mobile Menu */}
+            <div className="space-y-2 mt-8 pt-6 border-t">
+              <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Wallet</h3>
+              {connected ? (
+                <div className="px-2 space-y-2">
+                  <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Wallet Connected
+                  </div>
+                  <div className="font-mono text-xs text-muted-foreground bg-muted/50 rounded p-2">
+                    {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" asChild className="flex-1">
+                      <Link to="/profile" onClick={() => setOpen(false)}>
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Link>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        disconnect();
+                        setOpen(false);
+                      }}
+                      className="flex-1 text-red-600 hover:text-red-700"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Disconnect
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="px-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      connect();
+                      setOpen(false);
+                    }}
+                    disabled={connecting}
+                  >
+                    <Wallet className="h-4 w-4 mr-2" />
+                    {connecting ? "Connecting..." : "Connect Wallet"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </SheetContent>
