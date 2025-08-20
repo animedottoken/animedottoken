@@ -65,16 +65,35 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
         return;
       }
 
-      // Ensure a fresh selection every time
+      // Force complete disconnection and revoke authorization
       try {
+        // First disconnect normally
         await solana.disconnect();
+        
+        // Clear all cached connection state
         setConnected(false);
         setPublicKey(null);
+        
+        // Try to revoke site authorization (this forces fresh wallet selection)
+        if (solana.request) {
+          try {
+            await solana.request({ method: 'wallet_revokePermissions' });
+          } catch (e) {
+            // Ignore if method doesn't exist
+          }
+        }
       } catch {}
 
-      await new Promise((r) => setTimeout(r, 100));
+      // Longer delay to ensure complete cleanup
+      await new Promise((r) => setTimeout(r, 200));
 
-      const response = await solana.connect({ onlyIfTrusted: false });
+      // Force a completely fresh connection with explicit wallet selection
+      const response = await solana.connect({ 
+        onlyIfTrusted: false,
+        // Additional options to force fresh selection
+        eager: false
+      });
+      
       if (response && response.publicKey) {
         setPublicKey(response.publicKey.toString());
         setConnected(true);
@@ -96,11 +115,22 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
     try {
       const { solana } = window as any;
       if (solana) {
+        // Disconnect from wallet
         await solana.disconnect();
+        
+        // Try to revoke site permissions to ensure fresh selection next time
+        if (solana.request) {
+          try {
+            await solana.request({ method: 'wallet_revokePermissions' });
+          } catch (e) {
+            // Ignore if method doesn't exist
+          }
+        }
       }
     } catch (error) {
       console.error('Disconnect error:', error);
     } finally {
+      // Always clear state regardless of disconnect success
       setConnected(false);
       setPublicKey(null);
     }
