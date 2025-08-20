@@ -81,7 +81,7 @@ export type Database = {
           royalty_percentage: number
           site_description: string | null
           slug: string | null
-          symbol: string
+          symbol: string | null
           treasury_wallet: string
           updated_at: string
           verified: boolean | null
@@ -111,7 +111,7 @@ export type Database = {
           royalty_percentage?: number
           site_description?: string | null
           slug?: string | null
-          symbol: string
+          symbol?: string | null
           treasury_wallet: string
           updated_at?: string
           verified?: boolean | null
@@ -141,7 +141,7 @@ export type Database = {
           royalty_percentage?: number
           site_description?: string | null
           slug?: string | null
-          symbol?: string
+          symbol?: string | null
           treasury_wallet?: string
           updated_at?: string
           verified?: boolean | null
