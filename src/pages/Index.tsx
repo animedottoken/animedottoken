@@ -541,11 +541,11 @@ const Index = () => {
           </Collapsible>
         </section>
 
-        <section id="faq-section" className="mt-8 scroll-mt-20">
-          <h3 className="text-3xl md:text-4xl font-semibold mb-4">
-            <span className="text-xl mr-2 leading-[1.2] align-middle pb-1">❓</span>
-            <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
-          </h3>
+      <section id="faq-section" className="mx-auto mt-16 max-w-5xl scroll-mt-20">
+        <h3 className="text-center text-3xl md:text-4xl font-semibold mb-4">
+          <span className="text-xl mr-2 leading-[1.2] align-middle pb-1">❓</span>
+          <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
+        </h3>
           <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
