@@ -348,7 +348,7 @@ export const UnifiedMintInterface = () => {
     );
   }
 
-  // If collection is created, show minting interface
+  // If collection is created, show setup/minting interface
   if (createdCollectionId) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
@@ -356,10 +356,10 @@ export const UnifiedMintInterface = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                🎉 Collection Created Successfully!
+                🎉 Collection Folder Created Successfully!
               </CardTitle>
               <p className="text-muted-foreground">
-                Your collection "{formData.name}" is ready. You can now mint NFTs from it.
+                Your collection folder "{formData.name}" is ready. Now add the minting details below to start selling NFTs.
               </p>
             </div>
             <Button variant="outline" onClick={resetCollection}>
@@ -368,7 +368,244 @@ export const UnifiedMintInterface = () => {
           </CardHeader>
         </Card>
         
-        <MintingInterface collectionId={createdCollectionId} />
+        {/* Collection Setup Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-6 w-6" />
+              Add Minting Details
+              <Badge variant="secondary">Required for minting</Badge>
+            </CardTitle>
+            <p className="text-muted-foreground">
+              Complete these settings to enable NFT minting for your collection.
+            </p>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            <form className="space-y-6">
+              
+              {/* Collection Avatar (Required for minting) */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="h-5 w-5 text-primary" />
+                  <Label className="text-lg font-semibold">Collection Avatar <span className="text-destructive">*</span></Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="avatar-upload" className="cursor-pointer">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                        <AspectRatio ratio={1}>
+                          {imagePreview ? (
+                            <img
+                              src={imagePreview}
+                              alt="Collection avatar"
+                              className="h-full w-full object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                              <div>
+                                <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                <p className="text-sm font-medium">Avatar Required</p>
+                                <p className="text-xs text-muted-foreground">Square format (1:1 ratio)</p>
+                              </div>
+                            </div>
+                          )}
+                        </AspectRatio>
+                      </div>
+                    </Label>
+                    <Input
+                      id="avatar-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="font-semibold">Requirements:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• <strong>Format:</strong> Square (1:1 ratio)</li>
+                      <li>• <strong>Files:</strong> JPG, PNG, GIF, WEBP</li>
+                      <li>• <strong>Size:</strong> Maximum 5MB</li>
+                      <li>• <strong>Required:</strong> Needed for minting</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Minting Configuration */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  <Label className="text-lg font-semibold">Minting Configuration</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="symbol">
+                      Symbol <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="symbol"
+                      value={formData.symbol || ''}
+                      onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
+                      placeholder="e.g., ART"
+                      maxLength={10}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">2-10 characters</p>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="mint-price">Mint Price (SOL) <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="mint-price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.mint_price || 0.1}
+                      onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Price per NFT in SOL</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="max-supply">
+                      Max Supply <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="max-supply"
+                      type="number"
+                      min="1"
+                      max="100000"
+                      value={formData.max_supply || 1000}
+                      onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Total NFTs that can be minted (1-100,000)</p>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="royalties">Royalties (%) <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="royalties"
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.1"
+                      value={formData.royalty_percentage || 5}
+                      onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Percentage you earn when others resell (0-20%)</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="treasury">
+                    Treasury Wallet <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="treasury"
+                    value={formData.treasury_wallet || publicKey || ''}
+                    onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
+                    placeholder="Wallet address for payments"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Where mint payments and royalties are sent</p>
+                </div>
+              </div>
+
+              {/* Optional Settings */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  <Label className="text-lg font-semibold">Optional Settings</Label>
+                </div>
+                
+                <div>
+                  <Label htmlFor="onchain-description">On-Chain Description (Optional)</Label>
+                  <Textarea
+                    id="onchain-description"
+                    value={formData.onchain_description || ''}
+                    onChange={(e) => setFormData({...formData, onchain_description: e.target.value})}
+                    placeholder="Brief description stored on blockchain..."
+                    className="h-16"
+                    maxLength={200}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {(formData.onchain_description || '').length}/200 characters - Stored permanently on-chain
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
+                    <p className="text-sm text-muted-foreground">Only allow specific wallet addresses to mint (exclusive access)</p>
+                  </div>
+                  <Switch 
+                    id="whitelist"
+                    checked={formData.whitelist_enabled || false}
+                    onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
+                  />
+                </div>
+              </div>
+
+              <Button 
+                type="button"
+                onClick={async () => {
+                  // Validate required fields
+                  if (!formData.symbol || !imageFile) {
+                    toast({
+                      title: 'Missing required fields',
+                      description: 'Please add Symbol and Avatar before enabling minting',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
+                  
+                  // Update collection with minting details
+                  const result = await createCollection({
+                    ...formData,
+                    symbol: formData.symbol,
+                    enable_primary_sales: true,
+                    image_file: imageFile || undefined,
+                    mint_price: formData.mint_price || 0.1,
+                    max_supply: formData.max_supply || 1000,
+                    royalty_percentage: formData.royalty_percentage || 5,
+                    treasury_wallet: formData.treasury_wallet || publicKey || '',
+                  });
+                  
+                  if (result?.success) {
+                    toast({
+                      title: 'Collection setup complete!',
+                      description: 'You can now mint NFTs.',
+                    });
+                  }
+                }}
+                disabled={creating}
+                className="w-full h-12 text-lg font-semibold"
+              >
+                {creating ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Setting up Collection...
+                  </>
+                ) : (
+                  <>
+                    <Settings className="mr-2 h-5 w-5" />
+                    Complete Setup & Enable Minting
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     );
   }
