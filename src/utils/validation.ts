@@ -45,11 +45,9 @@ export const validateCollectionData = (data: any): ValidationError[] => {
     errors.push({ field: 'name', message: 'Collection name must be 32 characters or less' });
   }
 
-  // Symbol is now required
-  if (!data.symbol?.trim()) {
-    errors.push({ field: 'symbol', message: 'Symbol is required' });
-  } else if (data.symbol.length < 2 || data.symbol.length > 10) {
-    errors.push({ field: 'symbol', message: 'Symbol must be 2-10 characters' });
+  // Symbol is optional for basic collection creation
+  if (data.symbol && (data.symbol.length < 2 || data.symbol.length > 10)) {
+    errors.push({ field: 'symbol', message: 'Symbol must be 2-10 characters if provided' });
   }
 
   // Description validation
@@ -85,10 +83,10 @@ export const validateCollectionData = (data: any): ValidationError[] => {
 
 // Get list of required fields for collection creation
 export const getRequiredFields = (enablePrimarySales: boolean = false): string[] => {
-  const required = ['name', 'symbol'];
+  const required = ['name'];
   
   if (enablePrimarySales) {
-    required.push('max_supply', 'treasury_wallet');
+    required.push('symbol', 'max_supply', 'treasury_wallet');
   }
   
   return required;
