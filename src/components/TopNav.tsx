@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown, Wallet, LogOut } from "lucide-react";
+import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown, Wallet, LogOut, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -104,20 +104,34 @@ export const TopNav = () => {
                 <Button variant="outline" size="sm" className="flex items-center gap-2 border-green-500/20 bg-green-500/10 hover:bg-green-500/20">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                   <Wallet className="h-4 w-4" />
-                  <span className="font-mono text-xs">
-                    {publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}
-                  </span>
+                  <span className="text-sm font-medium">Connected</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
                 <div className="px-2 py-1.5 text-sm">
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
+                  <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full" />
                     Wallet Connected
                   </div>
-                  <div className="font-mono text-xs text-muted-foreground mt-1">
-                    {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
+                  <div className="flex items-center gap-2 bg-muted/50 rounded p-2">
+                    <span className="font-mono text-xs text-muted-foreground flex-1">
+                      {publicKey}
+                    </span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 w-6 p-0 hover:bg-muted"
+                      onClick={async () => {
+                        if (publicKey) {
+                          await navigator.clipboard.writeText(publicKey);
+                          // You could add a toast here if needed
+                        }
+                      }}
+                      title="Copy wallet address"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
@@ -145,13 +159,22 @@ export const TopNav = () => {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="flex items-center gap-2 border-red-500/20 bg-red-500/10 hover:bg-red-500/20">
+                  <div className="w-2 h-2 bg-red-500 rounded-full" />
                   <Wallet className="h-4 w-4" />
-                  Menu
+                  <span className="text-sm font-medium">Disconnected</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                <div className="px-2 py-1.5 text-sm">
+                  <div className="flex items-center gap-2 text-red-600 font-medium">
+                    <div className="w-2 h-2 bg-red-500 rounded-full" />
+                    Wallet Disconnected
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                
                 {/* Main Navigation Items */}
                 {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
