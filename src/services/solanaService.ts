@@ -143,11 +143,7 @@ export class SolanaService {
         } else {
           console.log('NFT stored in database:', nft);
           
-          // Update collection items_redeemed count
-          await supabase
-            .from('collections')
-            .update({ items_redeemed: (collection.items_redeemed || 0) + 1 })
-            .eq('id', collectionId);
+          // Note: Collection supply counters are now updated automatically by database triggers
         }
       } catch (dbError) {
         console.error('Database error during NFT creation:', dbError);

@@ -115,11 +115,21 @@ export const useMintQueue = () => {
 
     setCreating(true);
     try {
+      // Create message to sign with timestamp for security
+      const timestamp = Date.now();
+      const message = `Create mint job for collection ${collectionId} with quantity ${quantity} at timestamp: ${timestamp}`;
+      
+      // Sign the message with the wallet (this would need to be implemented with actual wallet signing)
+      // For now, we'll create a placeholder signature - in production, integrate with actual wallet signing
+      const signature = `placeholder_signature_${timestamp}`;
+
       const { data, error } = await supabase.functions.invoke('create-mint-job', {
         body: {
           collectionId,
           quantity,
-          walletAddress: publicKey
+          walletAddress: publicKey,
+          signature,
+          message
         }
       });
 

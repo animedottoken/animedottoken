@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { PublicKey } from "https://esm.sh/@solana/web3.js@1.98.4";
+import * as nacl from "https://esm.sh/tweetnacl@1.0.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +12,38 @@ interface CreateMintJobRequest {
   collectionId: string;
   quantity: number;
   walletAddress: string;
+  signature: string; // Base58 encoded signature
+  message: string; // Message that was signed (should include timestamp)
+}
+
+// Verify wallet signature to prevent unauthorized mint job creation
+function verifyWalletSignature(walletAddress: string, message: string, signature: string): boolean {
+  try {
+    const publicKey = new PublicKey(walletAddress);
+    const messageBytes = new TextEncoder().encode(message);
+    const signatureBytes = nacl.util.decodeBase64(signature);
+    
+    return nacl.sign.detached.verify(messageBytes, signatureBytes, publicKey.toBytes());
+  } catch (error) {
+    console.error('Signature verification failed:', error);
+    return false;
+  }
+}
+
+// Check if message timestamp is within acceptable range (5 minutes)
+function isValidTimestamp(message: string): boolean {
+  try {
+    const timestampMatch = message.match(/timestamp:\s*(\d+)/);
+    if (!timestampMatch) return false;
+    
+    const timestamp = parseInt(timestampMatch[1]);
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000;
+    
+    return Math.abs(now - timestamp) < fiveMinutes;
+  } catch {
+    return false;
+  }
 }
 
 serve(async (req) => {
@@ -43,13 +77,29 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { collectionId, quantity, walletAddress }: CreateMintJobRequest = await req.json();
+    const { collectionId, quantity, walletAddress, signature, message }: CreateMintJobRequest = await req.json();
 
     // Validate input
-    if (!collectionId || !quantity || !walletAddress) {
+    if (!collectionId || !quantity || !walletAddress || !signature || !message) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: collectionId, quantity, walletAddress" }),
+        JSON.stringify({ error: "Missing required fields: collectionId, quantity, walletAddress, signature, message" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify wallet signature to prevent unauthorized access
+    if (!verifyWalletSignature(walletAddress, message, signature)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid wallet signature" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check message timestamp to prevent replay attacks
+    if (!isValidTimestamp(message)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid or expired timestamp" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
