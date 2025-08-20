@@ -155,14 +155,14 @@ export function NFTSupporterSection() {
                 {/* Early Supporter Campaign for Ambassadors */}
                 {nft.id === "ambassadors" && (
                   <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-yellow-500/10 border-2 border-gradient-to-r border-yellow-500/30">
-                    <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-start gap-4 mb-4">
                       <img 
                         src={earlySupporterBadge}
                         alt="Early Supporter Badge"
                         className="w-16 h-16 object-cover rounded-lg shadow-lg"
                       />
-                      <div>
-                        <h4 className="text-lg font-bold text-yellow-400 mb-1">
+                      <div className="min-w-0">
+                        <h4 className="text-base md:text-lg font-bold text-yellow-400 mb-1 leading-tight break-words">
                           First 100 Early Supporter
                         </h4>
                         <p className="text-xs text-purple-300 font-semibold">Special Edition NFT</p>
