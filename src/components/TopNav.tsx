@@ -97,22 +97,7 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </button>
         <nav className="flex items-center gap-1">
-          {/* Show navigation buttons only when wallet is NOT connected */}
-          {!connected && navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-            <Button
-              key={item.path}
-              variant={isActive(item) ? "secondary" : "ghost"}
-              size="sm"
-              asChild
-            >
-              <Link to={item.path} className="flex items-center gap-2">
-                <item.icon className="h-4 w-4" />
-                {item.title}
-              </Link>
-            </Button>
-          ))}
-
-          {/* Wallet Status Indicator */}
+          {/* Always show wallet dropdown with navigation */}
           {connected ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -158,16 +143,39 @@ export const TopNav = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={connect}
-              disabled={connecting}
-              className="flex items-center gap-2"
-            >
-              <Wallet className="h-4 w-4" />
-              {connecting ? "Connecting..." : "Connect Wallet"}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Menu
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {/* Main Navigation Items */}
+                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                  <DropdownMenuItem key={item.path} asChild>
+                    <Link 
+                      to={item.path} 
+                      className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
+                    >
+                      <item.icon className="h-4 w-4 mr-2" />
+                      {item.title}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={connect}
+                  disabled={connecting}
+                  className="cursor-pointer text-green-600"
+                >
+                  <Wallet className="h-4 w-4 mr-2" />
+                  {connecting ? "Connecting..." : "Connect Wallet"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </nav>
       </header>
