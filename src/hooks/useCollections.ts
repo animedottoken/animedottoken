@@ -155,7 +155,7 @@ export const useCollections = () => {
         body: {
           id: collectionId,
           name: collectionData.name,
-          symbol: collectionData.symbol || null,
+          symbol: collectionData.symbol, // now required, no fallback to null
           site_description: collectionData.site_description || null,
           onchain_description: collectionData.onchain_description || null,
           image_url: imageUrl,

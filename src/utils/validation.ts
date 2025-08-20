@@ -45,9 +45,11 @@ export const validateCollectionData = (data: any): ValidationError[] => {
     errors.push({ field: 'name', message: 'Collection name must be 32 characters or less' });
   }
 
-  // Symbol validation (optional but constrained if provided)
-  if (data.symbol && (data.symbol.length < 2 || data.symbol.length > 10)) {
-    errors.push({ field: 'symbol', message: 'Symbol must be 2-10 characters if provided' });
+  // Symbol is now required
+  if (!data.symbol?.trim()) {
+    errors.push({ field: 'symbol', message: 'Symbol is required' });
+  } else if (data.symbol.length < 2 || data.symbol.length > 10) {
+    errors.push({ field: 'symbol', message: 'Symbol must be 2-10 characters' });
   }
 
   // Description validation
@@ -83,7 +85,7 @@ export const validateCollectionData = (data: any): ValidationError[] => {
 
 // Get list of required fields for collection creation
 export const getRequiredFields = (enablePrimarySales: boolean = false): string[] => {
-  const required = ['name'];
+  const required = ['name', 'symbol'];
   
   if (enablePrimarySales) {
     required.push('max_supply', 'treasury_wallet');
@@ -134,6 +136,9 @@ export const areRequiredFieldsValid = (data: any, enablePrimarySales: boolean = 
   
   for (const field of requiredFields) {
     if (field === 'name' && (!data.name?.trim() || data.name.trim().length < 3)) {
+      return false;
+    }
+    if (field === 'symbol' && (!data.symbol?.trim() || data.symbol.trim().length < 2)) {
       return false;
     }
     if (field === 'max_supply' && (!data.max_supply || data.max_supply <= 0)) {

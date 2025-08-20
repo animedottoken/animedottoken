@@ -555,15 +555,18 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="symbol">Symbol (Optional)</Label>
+                      <Label htmlFor="symbol">
+                        Symbol <span className="text-destructive">*</span>
+                      </Label>
                       <Input
                         id="symbol"
                         value={formData.symbol}
                         onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
                         placeholder="e.g., ART"
                         maxLength={10}
+                        required
                       />
-                      <p className="text-xs text-muted-foreground mt-1">2-10 characters if provided</p>
+                      <p className="text-xs text-muted-foreground mt-1">2-10 characters (required)</p>
                     </div>
                   </div>
                   

@@ -40,9 +40,9 @@ serve(async (req) => {
 
     const body: CreateCollectionRequest = await req.json();
 
-    if (!body || !body.name || !body.creator_address) {
+    if (!body || !body.name || !body.symbol || !body.creator_address) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: name, creator_address" }),
+        JSON.stringify({ error: "Missing required fields: name, symbol, creator_address" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -51,6 +51,13 @@ serve(async (req) => {
     if (body.name.trim().length < 3 || body.name.trim().length > 32) {
       return new Response(
         JSON.stringify({ error: "Collection name must be between 3 and 32 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!body.symbol.trim() || body.symbol.length < 2 || body.symbol.length > 10) {
+      return new Response(
+        JSON.stringify({ error: "Symbol must be between 2 and 10 characters" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -79,7 +86,7 @@ serve(async (req) => {
     const insertData: any = {
       id: body.id, // allow client-provided id to match uploaded asset paths
       name: body.name,
-      symbol: body.symbol || null,
+      symbol: body.symbol, // now required
       description: body.site_description || null,
       site_description: body.site_description || null,
       onchain_description: body.onchain_description || null,
