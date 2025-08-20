@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { QuickNav } from "@/components/QuickNav";
 import { Zap, Coins, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 export default function Mint() {
@@ -15,11 +14,6 @@ export default function Mint() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Quick Navigation */}
-          <div className="mb-6">
-            <QuickNav />
-          </div>
-
           {/* Header */}
           <div className="text-center mb-12 pt-4">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">

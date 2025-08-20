@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { QuickNav } from "@/components/QuickNav";
-import { 
+import {
   ArrowLeft,
   Plus, 
   ExternalLink,
@@ -80,9 +79,6 @@ export default function CollectionDetail() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Quick Navigation */}
-          <QuickNav className="mb-6 hidden md:flex" />
-          
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
