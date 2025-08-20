@@ -12,6 +12,7 @@ import {
   Coins
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import React from "react";
 
 import {
   Sidebar,
@@ -101,10 +102,17 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const showLabel = !isMobile && !isCollapsed;
   const navigate = useNavigate();
   const location = useLocation();
+
+  React.useEffect(() => {
+    if (!isMobile && isCollapsed) {
+      setOpen(true);
+    }
+  }, [isMobile, isCollapsed, setOpen]);
 
   const handleNavigation = (item: typeof navigationItems[0]) => {
     if (item.type === "route") {
@@ -137,7 +145,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
+          <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
             Main Pages
           </SidebarGroupLabel>
           
@@ -150,10 +158,10 @@ export function AppSidebar() {
                     className={`cursor-pointer transition-colors ${
                       isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
                     }`}
-                    tooltip={isCollapsed ? item.title : undefined}
+                    tooltip={!showLabel ? item.title : undefined}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
-                    {!isCollapsed && <span className="ml-2">{item.title}</span>}
+                    {showLabel && <span className="ml-2">{item.title}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -162,7 +170,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
+          <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
             Home Sections
           </SidebarGroupLabel>
           
@@ -173,7 +181,7 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     onClick={() => handleNavigation(item)}
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    tooltip={isCollapsed ? item.title : undefined}
+                    tooltip={!showLabel ? item.title : undefined}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     {!isCollapsed && <span className="ml-2">{item.title}</span>}
