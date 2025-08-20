@@ -33,7 +33,7 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
   const [connecting, setConnecting] = useState(false);
   const [publicKey, setPublicKey] = useState<string | null>(null);
 
-  // Auto-connect Phantom if already trusted and keep state in sync
+  // Check for existing connection but don't auto-connect
   useEffect(() => {
     const { solana } = window as any;
     if (!solana || !solana.isPhantom) return;
@@ -50,7 +50,7 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
       setPublicKey(null);
     };
 
-    solana.connect({ onlyIfTrusted: true }).then(handleConnect).catch(() => {});
+    // Only listen for events, don't auto-connect
     try {
       solana.on('connect', handleConnect);
       solana.on('disconnect', handleDisconnect);
@@ -80,18 +80,33 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
         return;
       }
 
-      // Force a fresh connection dialog (don't auto-connect to last wallet)
-      await solana.disconnect().catch(() => {}); // Disconnect first to show wallet selection
+      // Always disconnect first to ensure fresh wallet selection
+      try {
+        await solana.disconnect();
+        // Clear any cached connection state
+        setConnected(false);
+        setPublicKey(null);
+      } catch (error) {
+        // Ignore disconnect errors
+      }
+
+      // Small delay to ensure clean state
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Request connection to wallet - this will show wallet selection
-      const response = await solana.connect();
-      setPublicKey(response.publicKey.toString());
-      setConnected(true);
+      // Force a fresh connection - this should always show wallet selection
+      const response = await solana.connect({ onlyIfTrusted: false });
+      
+      if (response && response.publicKey) {
+        setPublicKey(response.publicKey.toString());
+        setConnected(true);
+      } else {
+        throw new Error('No wallet selected');
+      }
       
     } catch (error: any) {
       console.error('Failed to connect wallet:', error);
-      if (error?.code === 4001) {
-        // User rejected the request
+      if (error?.code === 4001 || error?.message?.includes('rejected')) {
+        // User rejected the request - no need to show error
         return;
       }
       alert('Failed to connect to wallet. Please try again.');
@@ -100,13 +115,19 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
     }
   }, [connecting]);
 
-  const disconnect = useCallback(() => {
-    const { solana } = window as any;
-    if (solana) {
-      solana.disconnect();
+  const disconnect = useCallback(async () => {
+    try {
+      const { solana } = window as any;
+      if (solana) {
+        await solana.disconnect();
+      }
+    } catch (error) {
+      console.error('Disconnect error:', error);
+    } finally {
+      // Always clear state regardless of disconnect success
+      setConnected(false);
+      setPublicKey(null);
     }
-    setConnected(false);
-    setPublicKey(null);
   }, []);
 
   return (
