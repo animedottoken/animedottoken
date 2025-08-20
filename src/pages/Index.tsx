@@ -434,7 +434,7 @@ const Index = () => {
           </picture>
           </div>
           <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
-          <div className="mt-5 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center items-center px-4">
             {/* Main platforms */}
             <Button asChild variant="glass" size="lg">
               <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
@@ -457,7 +457,7 @@ const Index = () => {
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-card border shadow-lg">
+              <DropdownMenuContent className="z-50 w-56 bg-card border shadow-lg">
                 <DropdownMenuItem asChild>
                   <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
                     <SiTelegram className="h-4 w-4" />
