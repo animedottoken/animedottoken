@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { 
   Home, 
   ShoppingCart, 
@@ -12,6 +11,7 @@ import {
   Users,
   Coins
 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import {
   Sidebar,
@@ -29,165 +29,154 @@ const navigationItems = [
   { 
     title: "Home", 
     icon: Home,
-    hash: "",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
+    path: "/",
+    type: "route" as const
+  },
+  { 
+    title: "My Profile", 
+    icon: Users,
+    path: "/profile",
+    type: "route" as const
+  },
+  { 
+    title: "Mint NFTs", 
+    icon: Coins,
+    path: "/mint",
+    type: "route" as const
+  },
+  { 
+    title: "NFT Marketplace", 
+    icon: ShoppingBag,
+    path: "/marketplace",
+    type: "route" as const
   },
   { 
     title: "Community Showcase", 
     icon: Users,
     hash: "featured-community-content",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#featured-community-content';
-      } else {
-        document.querySelector('.featured-community-content')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "Trust & Security", 
     icon: Shield,
     hash: "trust-security-section",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#trust-security-section';
-      } else {
-        document.querySelector('.trust-security-section')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "Ownership Calculator", 
     icon: Calculator,
     hash: "ownership-calculator",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#ownership-calculator';
-      } else {
-        document.querySelector('.ownership-calculator')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "Market Chart", 
     icon: TrendingUp,
     hash: "market-cap-chart",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#market-cap-chart';
-      } else {
-        document.querySelector('.market-cap-chart')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "How to Buy ANIME", 
     icon: ShoppingCart,
     hash: "how-to-buy",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#how-to-buy';
-      } else {
-        document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "FAQ", 
     icon: HelpCircle,
     hash: "faq-section",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#faq-section';
-      } else {
-        document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   },
   { 
     title: "ANIME ARMY", 
     icon: Trophy,
     hash: "nft-supporter-section",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#nft-supporter-section';
-      } else {
-        document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  },
-  { 
-    title: "My Profile", 
-    icon: Users,
-    hash: "profile",
-    onClick: () => {
-      window.location.href = '/profile';
-    }
-  },
-  { 
-    title: "Mint NFTs", 
-    icon: Coins,
-    hash: "mint",
-    onClick: () => {
-      window.location.href = '/mint';
-    }
-  },
-  { 
-    title: "NFT Marketplace", 
-    icon: ShoppingBag,
-    hash: "marketplace",
-    onClick: () => {
-      window.location.href = '/marketplace';
-    }
+    type: "section" as const
   },
   { 
     title: "Share & Promote", 
     icon: Share2,
     hash: "share-promote-section",
-    onClick: () => {
-      if (window.location.pathname !== '/') {
-        window.location.href = '/#share-promote-section';
-      } else {
-        document.getElementById('share-promote-section')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    type: "section" as const
   }
 ];
 
 export function AppSidebar() {
-  const { state, open } = useSidebar();
-  const isCollapsed = state === "collapsed" || !open;
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigation = (item: typeof navigationItems[0]) => {
+    if (item.type === "route") {
+      navigate(item.path!);
+    } else {
+      // For sections, navigate to home first if not there
+      if (location.pathname !== '/') {
+        navigate(`/#${item.hash}`);
+      } else {
+        // Scroll to section if already on home
+        const element = document.getElementById(item.hash!) || 
+                       document.querySelector(`.${item.hash!}`);
+        element?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const isActive = (item: typeof navigationItems[0]) => {
+    if (item.type === "route") {
+      return location.pathname === item.path;
+    }
+    return false;
+  };
+
+  // Separate routes and sections
+  const routes = navigationItems.filter(item => item.type === "route");
+  const sections = navigationItems.filter(item => item.type === "section");
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className={isCollapsed ? "w-16" : "w-64"}
-    >
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
-            Quick Navigation
+            Main Pages
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
+              {routes.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    asChild
+                    onClick={() => handleNavigation(item)}
+                    className={`cursor-pointer transition-colors ${
+                      isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
+                    }`}
+                    tooltip={isCollapsed ? item.title : undefined}
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    {!isCollapsed && <span className="ml-2">{item.title}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
+            Home Sections
+          </SidebarGroupLabel>
+          
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {sections.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    onClick={() => handleNavigation(item)}
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
                     tooltip={isCollapsed ? item.title : undefined}
                   >
-                    <div onClick={item.onClick} className="flex items-center">
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {!isCollapsed && <span className="ml-2">{item.title}</span>}
-                    </div>
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    {!isCollapsed && <span className="ml-2">{item.title}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
