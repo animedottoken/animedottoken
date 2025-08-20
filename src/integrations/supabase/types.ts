@@ -77,7 +77,9 @@ export type Database = {
           max_supply: number
           mint_price: number
           name: string
+          onchain_description: string | null
           royalty_percentage: number
+          site_description: string | null
           slug: string | null
           symbol: string
           treasury_wallet: string
@@ -105,7 +107,9 @@ export type Database = {
           max_supply?: number
           mint_price?: number
           name: string
+          onchain_description?: string | null
           royalty_percentage?: number
+          site_description?: string | null
           slug?: string | null
           symbol: string
           treasury_wallet: string
@@ -133,7 +137,9 @@ export type Database = {
           max_supply?: number
           mint_price?: number
           name?: string
+          onchain_description?: string | null
           royalty_percentage?: number
+          site_description?: string | null
           slug?: string | null
           symbol?: string
           treasury_wallet?: string
@@ -472,7 +478,9 @@ export type Database = {
           max_supply: number | null
           mint_price: number | null
           name: string | null
+          onchain_description: string | null
           royalty_percentage: number | null
+          site_description: string | null
           slug: string | null
           symbol: string | null
           treasury_wallet: string | null
@@ -500,7 +508,9 @@ export type Database = {
           max_supply?: number | null
           mint_price?: number | null
           name?: string | null
+          onchain_description?: string | null
           royalty_percentage?: number | null
+          site_description?: string | null
           slug?: string | null
           symbol?: string | null
           treasury_wallet?: never
@@ -528,7 +538,9 @@ export type Database = {
           max_supply?: number | null
           mint_price?: number | null
           name?: string | null
+          onchain_description?: string | null
           royalty_percentage?: number | null
+          site_description?: string | null
           slug?: string | null
           symbol?: string | null
           treasury_wallet?: never
