@@ -173,7 +173,7 @@ const Index = () => {
   const [faqOpen, setFaqOpen] = useState(false);
 
   return (
-    <main className="min-h-screen py-12 md:py-20 container mx-auto px-4 max-w-full overflow-x-hidden">
+    <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-full overflow-x-hidden">
       <Helmet>
         <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
         <meta name="description" content="Join the ANIME token community on Solana! Learn how to earn with our live NFT marketplace. How to join Discord, Telegram, X, TikTok. 100% LP burned." />

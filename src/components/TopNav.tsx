@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { toast } from "sonner";
 
 type RouteItem = {
   type: "route";
@@ -125,7 +126,7 @@ export const TopNav = () => {
                       onClick={async () => {
                         if (publicKey) {
                           await navigator.clipboard.writeText(publicKey);
-                          // You could add a toast here if needed
+                          toast.success("Wallet address copied!");
                         }
                       }}
                       title="Copy wallet address"
