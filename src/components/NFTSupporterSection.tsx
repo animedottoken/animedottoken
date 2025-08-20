@@ -76,7 +76,7 @@ export function NFTSupporterSection() {
       <div>
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
             Join the ANIME ARMY
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
