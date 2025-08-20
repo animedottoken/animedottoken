@@ -135,11 +135,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                         </Link>
                       </Button>
                     </TooltipTrigger>
-                    {collapsed && (
-                      <TooltipContent side="right">
-                        <p>{item.title}</p>
-                      </TooltipContent>
-                    )}
                   </Tooltip>
                 );
               })}
@@ -169,11 +164,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                       {!collapsed && <span className="font-medium">{item.title}</span>}
                     </Button>
                   </TooltipTrigger>
-                  {collapsed && (
-                    <TooltipContent side="right">
-                      <p>{item.title}</p>
-                    </TooltipContent>
-                  )}
                 </Tooltip>
               ))}
             </div>
