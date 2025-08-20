@@ -390,6 +390,7 @@ export const UnifiedMintInterface = () => {
             >
               <Plus className="h-4 w-4" />
               Create Collection & Mint
+              <Badge variant="secondary" className="ml-2">Recommended</Badge>
             </Button>
             <Button 
               variant={activeTab === 'standalone' ? 'default' : 'outline'}
@@ -553,7 +554,7 @@ export const UnifiedMintInterface = () => {
                   ) : (
                     <>
                       <Plus className="mr-2 h-5 w-5" />
-                      Create Collection Folder (Recommended)
+                      Create Collection Folder
                     </>
                   )}
                 </Button>
