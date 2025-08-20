@@ -207,18 +207,18 @@ export const TopNav = () => {
                 </div>
                 <DropdownMenuSeparator />
                 
-                {/* Main Navigation Items */}
-                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-                  <DropdownMenuItem key={item.path} asChild>
-                    <Link 
-                      to={item.path} 
-                      className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
-                    >
-                      <item.icon className="h-4 w-4 mr-2" />
-                      {item.title}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
+              {/* Main Navigation Items */}
+              {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                <DropdownMenuItem key={item.path} asChild>
+                  <Link 
+                    to={item.path} 
+                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''} ${!connected ? 'text-muted-foreground opacity-50' : ''}`}
+                  >
+                    <item.icon className="h-4 w-4 mr-2" />
+                    {item.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
                 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
@@ -389,7 +389,7 @@ export const TopNav = () => {
                 <DropdownMenuItem key={item.path} asChild>
                   <Link 
                     to={item.path} 
-                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
+                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''} ${!connected ? 'text-muted-foreground opacity-50' : ''}`}
                   >
                     <item.icon className="h-4 w-4 mr-2" />
                     {item.title}
