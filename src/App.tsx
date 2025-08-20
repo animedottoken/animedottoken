@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
-import { BottomNav } from "@/components/BottomNav";
 import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
@@ -44,7 +43,7 @@ const AppLayout = () => {
         <div className="sticky top-0 z-20 bg-background border-b">
           <TopNav />
         </div>
-        <main className="flex-1 pb-20 overflow-x-hidden">
+        <main className="flex-1 overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
@@ -55,7 +54,6 @@ const AppLayout = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-        <BottomNav />
       </div>
     );
   }
