@@ -77,6 +77,7 @@ export function NFTSupporterSection() {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
+            <span className="mr-2 align-middle">🎖</span>
             Join the ANIME ARMY
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
