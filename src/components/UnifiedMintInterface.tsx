@@ -731,7 +731,7 @@ export const UnifiedMintInterface = () => {
                   <CollapsibleContent className="space-y-4 mt-4">
                     <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-800">
                       <p className="text-sm text-amber-800 dark:text-amber-200">
-                        ⚠️ <strong>Important:</strong> These settings use default values and can't be changed after collection creation. Configure them now if you plan to sell NFTs from this collection.
+                        ⚠️ <strong>Important:</strong> These settings use default values if not configured. You can edit collections <strong>only before any NFTs are minted</strong> - after minting begins, all settings become permanently locked for security.
                       </p>
                     </div>
 

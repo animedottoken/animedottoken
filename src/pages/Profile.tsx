@@ -182,7 +182,7 @@ export default function Profile() {
                       {[...Array(6)].map((_, i) => (
                         <Card key={i} className="animate-pulse">
                           <CardHeader>
-                            <div className="w-full h-48 bg-muted rounded-lg" />
+                            <div className="w-full aspect-square bg-muted rounded-lg" />
                             <div className="h-6 bg-muted rounded w-3/4" />
                             <div className="h-4 bg-muted rounded w-1/2" />
                           </CardHeader>

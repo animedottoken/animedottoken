@@ -91,13 +91,13 @@ export function NFTSupporterSection() {
             <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
               <CardContent className="p-6">
                 {/* NFT Image */}
-                <div className="mb-6 overflow-hidden rounded-lg">
+                <div className="mb-6 overflow-hidden rounded-lg aspect-square">
                   <img 
                     src={nft.image}
                     alt={nft.title}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 

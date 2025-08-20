@@ -23,15 +23,21 @@ import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useFavorites } from "@/hooks/useFavorites";
+import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
   const navigate = useNavigate();
   const { connected } = useSolanaWallet();
-  const { collection, loading: collectionLoading } = useCollection(collectionId!);
+  const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+
+  const handleCollectionUpdate = (updatedCollection: any) => {
+    // Refresh collection data to get latest version
+    refreshCollection();
+  };
 
   if (collectionLoading) {
     return (
@@ -227,6 +233,14 @@ export default function CollectionDetail() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Collection Editor */}
+          <div className="mb-8">
+            <CollectionEditor 
+              collection={collection as any} 
+              onUpdate={handleCollectionUpdate}
+            />
+          </div>
 
           {/* Minted NFTs Section */}
           <Card>
