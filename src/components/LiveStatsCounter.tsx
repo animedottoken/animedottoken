@@ -57,7 +57,7 @@ export function LiveStatsCounter() {
 
   return (
     <div className="w-full max-w-4xl mx-auto my-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => {
           const IconComponent = stat.icon;
           return (

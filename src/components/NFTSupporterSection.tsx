@@ -86,7 +86,7 @@ export function NFTSupporterSection() {
         </div>
 
         {/* NFT Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {nftTypes.map((nft, index) => (
             <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
               <CardContent className="p-6">

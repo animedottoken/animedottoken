@@ -517,7 +517,7 @@ const Index = () => {
                   </a>
                 </Button>
               </div>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                 {memoizedPromoImages.map((img) => (
                   <article key={img.src} className="rounded-md border bg-card/50 p-3">
                     <ImageLazyLoad
