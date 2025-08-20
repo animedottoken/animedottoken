@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown, Wallet, LogOut, Copy } from "lucide-react";
+import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronDown, Wallet, LogOut, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -65,19 +65,24 @@ export const TopNav = () => {
       setOpen(false);
       navigate(item.path);
     } else {
-      // Section navigation: if not on home, navigate with hash so Index scrolls
-      if (location.pathname !== "/") {
+      const scrollToHash = () => {
+        const element = (document.getElementById(item.hash) || document.querySelector(`.${item.hash}`)) as HTMLElement | null;
+        if (element) {
+          const headerOffset = 56; // top bar height (h-14)
+          const y = element.getBoundingClientRect().top + window.scrollY - headerOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          history.replaceState(null, '', `#${item.hash}`);
+        }
         setOpen(false);
+      };
+
+      if (location.pathname !== "/") {
         navigate(`/#${item.hash}`);
-        return;
+        // Scroll after navigation renders
+        setTimeout(scrollToHash, 80);
+      } else {
+        scrollToHash();
       }
-      // Already on home: smooth-scroll and update hash
-      const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        history.replaceState(null, '', `#${item.hash}`);
-      }
-      setOpen(false);
     }
   };
   const isActive = (item: NavigationItem) => {
@@ -245,7 +250,6 @@ export const TopNav = () => {
                 <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-10 w-10" />
                 <div>
                   <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
-                  <p className="text-sm text-muted-foreground">Navigation Menu</p>
                 </div>
               </div>
 
@@ -260,7 +264,7 @@ export const TopNav = () => {
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="font-medium">{item.title}</span>
-                    <ChevronRight className="h-4 w-4 ml-auto" />
+                    
                   </Button>
                 ))}
               </div>
