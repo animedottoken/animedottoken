@@ -94,7 +94,7 @@ export default function Profile() {
         <meta name="keywords" content="NFT profile, portfolio, Solana wallet, digital collectibles, anime NFT collection" />
       </Helmet>
       
-      <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
+      <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10 overflow-x-hidden">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Quick Navigation */}
           <QuickNav className="mb-6 hidden md:flex" />
