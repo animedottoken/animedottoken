@@ -465,11 +465,12 @@ export const UnifiedMintInterface = () => {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={formData.mint_price || 0.1}
+                      value={formData.mint_price || 0}
                       onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                      placeholder="0 for free minting"
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Price per NFT in SOL</p>
+                    <p className="text-xs text-muted-foreground mt-1">Set to 0 for FREE minting, or any amount in SOL</p>
                   </div>
                 </div>
                 
