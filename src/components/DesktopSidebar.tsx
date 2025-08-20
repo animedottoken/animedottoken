@@ -27,7 +27,7 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
   { type: "route", title: "Profile", icon: User, path: "/profile" },
   
-  // Home sections - matching actual IDs on the page
+  // Home sections - matching actual IDs and classes on the page
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
@@ -73,9 +73,12 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
         navigate(`/#${item.hash}`);
         return;
       }
+      // Try both ID and class selector
       const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        const headerOffset = 80; // account for fixed header
+        const y = element.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
         history.replaceState(null, '', `#${item.hash}`);
       }
     }
