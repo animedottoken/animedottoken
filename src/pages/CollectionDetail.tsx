@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +87,7 @@ export default function CollectionDetail() {
               Back to Profile
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <a href="/profile">My Profile</a>
+              <Link to="/profile">My Profile</Link>
             </Button>
           </div>
 
@@ -221,10 +221,10 @@ export default function CollectionDetail() {
                 <div className="flex flex-col gap-2 min-w-[200px]">
                   {connected && mints.length === 0 && (
                     <Button variant="outline" size="lg" asChild>
-                      <a href={`/mint?edit=${collection.id}`}>
+                      <Link to={`/mint?edit=${collection.id}`}>
                         <Settings className="w-4 h-4 mr-2" />
                         Edit Collection
-                      </a>
+                      </Link>
                     </Button>
                   )}
                 </div>
@@ -263,10 +263,10 @@ export default function CollectionDetail() {
                     Start minting NFTs from this collection to see them here.
                   </p>
                   <Button asChild>
-                    <a href={`/mint?collection=${collection.slug || collection.id}`}>
+                    <Link to={`/mint?collection=${collection.slug || collection.id}`}>
                       <Plus className="w-4 h-4 mr-2" />
                       Create First NFT
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               ) : (

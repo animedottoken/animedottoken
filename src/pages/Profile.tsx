@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useSearchParams } from "react-router-dom";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Link } from "react-router-dom";
 import { Copy, Wallet, Activity, LogOut, ExternalLink, Plus, Eye, Heart, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCollections } from "@/hooks/useCollections";
@@ -15,6 +17,9 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Profile() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'collections';
+  
   const { connected, publicKey, disconnect } = useSolanaWallet();
   const { collections, loading: collectionsLoading } = useCollections();
   const { activities, loading: activitiesLoading } = useUserActivity();
@@ -162,7 +167,7 @@ export default function Profile() {
               </div>
 
               {/* Tabs */}
-              <Tabs defaultValue="collections" className="mb-8">
+              <Tabs value={activeTab} onValueChange={(value) => setSearchParams({ tab: value })} className="mb-8">
                 <TabsList className="grid w-full grid-cols-4 lg:w-96">
                   <TabsTrigger value="collections">Collections</TabsTrigger>
                   <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -193,7 +198,7 @@ export default function Profile() {
                           Create your first collection to organize and showcase your NFTs.
                         </p>
                         <Button asChild size="lg">
-                          <a href="/mint">Create First Collection</a>
+                          <Link to="/mint">Create First Collection</Link>
                         </Button>
                       </CardContent>
                     </Card>
@@ -278,16 +283,16 @@ export default function Profile() {
                               
                               <div className="flex gap-2">
                                 <Button variant="outline" size="sm" asChild className="flex-1">
-                                  <a href={`/collection/${collection.id}`}>
+                                  <Link to={`/collection/${collection.id}`}>
                                     <Eye className="w-3 h-3 mr-1" />
                                     View Details
-                                  </a>
+                                  </Link>
                                 </Button>
                                 <Button size="sm" asChild className="flex-1">
-                                  <a href={`/mint?collection=${collection.slug || collection.id}`}>
+                                  <Link to={`/mint?collection=${collection.slug || collection.id}`}>
                                     <Plus className="w-3 h-3 mr-1" />
                                     Create NFT
-                                  </a>
+                                  </Link>
                                 </Button>
                               </div>
                               
@@ -312,10 +317,10 @@ export default function Profile() {
                               Organize your NFTs in themed collections
                             </p>
                             <Button asChild size="sm" className="w-full">
-                              <a href="/mint">
+                              <Link to="/mint">
                                 <Plus className="w-3 h-3 mr-2" />
                                 Create New Collection
-                              </a>
+                              </Link>
                             </Button>
                           </div>
                         </CardContent>
@@ -417,10 +422,10 @@ export default function Profile() {
                           </p>
                           <div className="flex gap-2 justify-center">
                             <Button asChild variant="outline">
-                              <a href="/collections">Browse Collections</a>
+                              <Link to="/profile?tab=collections">Browse Collections</Link>
                             </Button>
                             <Button asChild>
-                              <a href="/marketplace">Visit Marketplace</a>
+                              <Link to="/marketplace">Visit Marketplace</Link>
                             </Button>
                           </div>
                         </div>
