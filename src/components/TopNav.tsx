@@ -82,7 +82,7 @@ export const TopNav = () => {
     return false;
   };
 
-  // For tablet and desktop, show top navigation with dropdown for sections
+  // For tablet and desktop, show top navigation
   if (!isMobile) {
     return (
       <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
@@ -90,7 +90,7 @@ export const TopNav = () => {
           onClick={handleHomeNavigation}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
         >
-          <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+          <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </button>
         <nav className="flex items-center gap-1">
@@ -107,29 +107,6 @@ export const TopNav = () => {
               </Link>
             </Button>
           ))}
-          
-          {/* Home Sections Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
-                Sections
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-card border shadow-lg">
-              {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
-                <DropdownMenuItem 
-                  key={item.hash}
-                  onClick={() => handleNavigation(item)}
-                  className="cursor-pointer flex items-center gap-3"
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
       </header>
     );
@@ -142,7 +119,7 @@ export const TopNav = () => {
         onClick={handleHomeNavigation}
         className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
       >
-        <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+        <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
         <span className="font-bold text-lg">ANIME.TOKEN</span>
       </button>
       
@@ -159,7 +136,7 @@ export const TopNav = () => {
               onClick={handleHomeNavigation}
               className="flex items-center gap-2 px-2 mb-6 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-left"
             >
-              <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-10 w-10" />
+              <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-10 w-10" />
               <div>
                 <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
                 <p className="text-sm text-muted-foreground">Navigation Menu</p>

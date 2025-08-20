@@ -105,7 +105,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
               onClick={handleHomeNavigation}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
             >
-              <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+              <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
               <span className="font-bold text-lg">ANIME.TOKEN</span>
             </button>
           )}
@@ -114,7 +114,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
               onClick={handleHomeNavigation}
               className="hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0"
             >
-              <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+              <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
             </button>
           )}
           <Button
