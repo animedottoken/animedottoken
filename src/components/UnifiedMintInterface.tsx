@@ -404,17 +404,6 @@ export const UnifiedMintInterface = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'collection' | 'standalone')}>
-        <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="collection" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Create Collection & Mint
-          </TabsTrigger>
-          <TabsTrigger value="standalone" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Mint Standalone NFT
-          </TabsTrigger>
-        </TabsList>
-
         <TabsContent value="collection">
           <Card>
             <CardHeader>
@@ -431,58 +420,7 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-8">
               <form onSubmit={handleCreateCollection} className="space-y-8">
                 
-                {/* Collection Artwork - Banner Only */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Banner (Optional)</Label>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="banner-upload" className="cursor-pointer">
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                          <AspectRatio ratio={3 / 1}>
-                            {bannerPreview ? (
-                              <img
-                                src={bannerPreview}
-                                alt="Collection banner"
-                                className="h-full w-full object-cover rounded-md"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                                <div>
-                                  <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                  <p className="text-sm font-medium">Banner (Optional)</p>
-                                  <p className="text-xs text-muted-foreground">Wide format 3:1</p>
-                                </div>
-                              </div>
-                            )}
-                          </AspectRatio>
-                        </div>
-                      </Label>
-                      <Input
-                        id="banner-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleBannerChange}
-                        className="hidden"
-                      />
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <h4 className="font-semibold">Guidelines:</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Wide format (3:1 ratio) recommended</li> 
-                        <li>• File formats: JPG, PNG, GIF, WEBP</li>
-                        <li>• Maximum file size: 5MB</li>
-                        <li>• Can be changed later when ready to mint</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Collection Information - Simplified */}
+                {/* Collection Information - First */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Palette className="h-5 w-5 text-primary" />
@@ -548,6 +486,57 @@ export const UnifiedMintInterface = () => {
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground mt-1">Can be changed later</p>
+                  </div>
+                </div>
+
+                {/* Banner - Last */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                    <Label className="text-lg font-semibold">Banner (Optional)</Label>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="banner-upload" className="cursor-pointer">
+                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                          <AspectRatio ratio={3 / 1}>
+                            {bannerPreview ? (
+                              <img
+                                src={bannerPreview}
+                                alt="Collection banner"
+                                className="h-full w-full object-cover rounded-md"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                                <div>
+                                  <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                  <p className="text-sm font-medium">Banner (Optional)</p>
+                                  <p className="text-xs text-muted-foreground">Wide format 3:1</p>
+                                </div>
+                              </div>
+                            )}
+                          </AspectRatio>
+                        </div>
+                      </Label>
+                      <Input
+                        id="banner-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerChange}
+                        className="hidden"
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-semibold">Guidelines:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Wide format (3:1 ratio) recommended</li> 
+                        <li>• File formats: JPG, PNG, GIF, WEBP</li>
+                        <li>• Maximum file size: 5MB</li>
+                        <li>• Can be changed later when ready to mint</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
