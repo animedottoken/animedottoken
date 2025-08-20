@@ -61,19 +61,16 @@ export const TopNav = () => {
   };
 
   const handleNavigation = (item: NavigationItem) => {
-    const scrollToTarget = (hash: string) => {
-      const doScroll = () => {
-        const el = (document.getElementById(hash) || document.querySelector(`.${hash}`)) as HTMLElement | null;
-        if (!el) return;
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // adjust for fixed header
-        setTimeout(() => {
-          window.scrollBy({ top: -80, left: 0, behavior: 'instant' as ScrollBehavior });
-        }, 10);
-        history.replaceState(null, '', `#${hash}`);
-      };
-      // wait for menu close/layout
-      requestAnimationFrame(() => setTimeout(doScroll, 60));
+    const scrollToHash = (hash: string) => {
+      const el = (document.getElementById(hash) || document.querySelector(`.${hash}`)) as HTMLElement | null;
+      if (!el) {
+        console.warn('Section not found:', hash);
+        return;
+      }
+      const headerOffset = 80;
+      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.history.replaceState(null, '', `#${hash}`);
+      window.scrollTo({ top: y, behavior: 'smooth' });
     };
 
     if (item.type === 'route') {
@@ -85,9 +82,12 @@ export const TopNav = () => {
     setOpen(false);
     if (location.pathname !== '/') {
       navigate(`/#${item.hash}`);
-      setTimeout(() => scrollToTarget(item.hash), 120);
+      setTimeout(() => scrollToHash(item.hash), 150);
     } else {
-      scrollToTarget(item.hash);
+      // Update hash first for consistency (also helps mobile browser URL)
+      window.location.hash = `#${item.hash}`;
+      // Scroll after hash update
+      setTimeout(() => scrollToHash(item.hash), 10);
     }
   };
   const isActive = (item: NavigationItem) => {
