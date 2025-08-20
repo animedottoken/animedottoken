@@ -40,12 +40,19 @@ const navigationItems: NavigationItem[] = [
 
 interface DesktopSidebarProps {
   className?: string;
+  onCollapseChange?: (collapsed: boolean) => void;
 }
 
-export const DesktopSidebar = ({ className }: DesktopSidebarProps) => {
+export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleCollapseToggle = () => {
+    const newCollapsed = !collapsed;
+    setCollapsed(newCollapsed);
+    onCollapseChange?.(newCollapsed);
+  };
 
   const handleNavigation = (item: NavigationItem) => {
     if (item.type === "route") {
@@ -92,7 +99,7 @@ export const DesktopSidebar = ({ className }: DesktopSidebarProps) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={handleCollapseToggle}
             className="p-2"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}

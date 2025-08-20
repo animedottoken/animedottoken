@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
@@ -35,6 +36,7 @@ function ErrorFallback({ error }: { error: Error }) {
 
 const AppLayout = () => {
   const isMobile = useIsMobile();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   if (isMobile) {
     return (
@@ -57,10 +59,21 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen flex w-full">
-      <DesktopSidebar />
-      <div className="flex-1 flex flex-col overflow-x-hidden">
-        <TopNav />
+    <div className="min-h-screen w-full">
+      <DesktopSidebar 
+        className="fixed left-0 top-0 h-screen z-30" 
+        onCollapseChange={setSidebarCollapsed}
+      />
+      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <div className="sticky top-0 z-20 bg-background border-b">
+          <div className="flex items-center justify-between px-4 py-3">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+              <span className="font-bold text-lg">ANIME.TOKEN</span>
+            </Link>
+            <TopNav />
+          </div>
+        </div>
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Index />} />
