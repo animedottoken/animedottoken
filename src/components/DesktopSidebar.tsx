@@ -27,7 +27,6 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
   { type: "route", title: "Profile", icon: User, path: "/profile" },
-  { type: "route", title: "Reports", icon: FileText, path: "/reports" },
   
   // Home sections
   { type: "section", title: "Featured Content", icon: Star, hash: "featured-community-content" },

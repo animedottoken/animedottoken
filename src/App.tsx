@@ -9,7 +9,6 @@ import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Reports from "./pages/Reports";
 import ShareNFT from "./pages/ShareNFT";
 import Mint from "./pages/Mint";
 import CollectionDetail from "./pages/CollectionDetail";
@@ -44,7 +43,6 @@ const AppLayout = () => {
         <main className="flex-1 pb-20 overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/reports" element={<Reports />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
             <Route path="/mint" element={<Mint />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
@@ -66,7 +64,6 @@ const AppLayout = () => {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/reports" element={<Reports />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
             <Route path="/mint" element={<Mint />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
