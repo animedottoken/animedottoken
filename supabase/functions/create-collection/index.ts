@@ -86,32 +86,29 @@ serve(async (req) => {
     const insertData: any = {
       id: body.id,
       name: body.name,
-      symbol: body.symbol, // now required
+      symbol: body.symbol, // required
       description: body.site_description || null,
       site_description: body.site_description || null,
       onchain_description: body.onchain_description || null,
       image_url: body.image_url || null,
       banner_image_url: body.banner_image_url || null,
       creator_address: body.creator_address,
+      treasury_wallet: body.treasury_wallet || body.creator_address, // ALWAYS set (NOT NULL)
       external_links: body.external_links || [],
       category: body.category || null,
       explicit_content: body.explicit_content ?? false,
+      // Defaults for non-primary-sales
+      mint_price: body.enable_primary_sales ? (body.mint_price ?? 0) : 0,
+      max_supply: body.enable_primary_sales ? (body.max_supply ?? 0) : 0,
+      items_available: body.enable_primary_sales ? (body.max_supply ?? 0) : 0,
+      items_redeemed: 0,
+      royalty_percentage: body.enable_primary_sales ? (body.royalty_percentage ?? 0) : 0,
+      whitelist_enabled: body.enable_primary_sales ? (body.whitelist_enabled ?? false) : false,
+      go_live_date: body.enable_primary_sales ? (body.go_live_date || null) : null,
       is_active: true,
       is_live: true,
       verified: false,
     };
-
-    // Only add primary sales fields if enabled
-    if (body.enable_primary_sales) {
-      insertData.treasury_wallet = body.treasury_wallet;
-      insertData.mint_price = body.mint_price ?? 0;
-      insertData.max_supply = body.max_supply ?? 0;
-      insertData.items_available = body.max_supply ?? 0;
-      insertData.items_redeemed = 0;
-      insertData.royalty_percentage = body.royalty_percentage ?? 0;
-      insertData.whitelist_enabled = body.whitelist_enabled ?? false;
-      insertData.go_live_date = body.go_live_date || null;
-    }
 
     const { data, error } = await serviceClient
       .from('collections')
@@ -122,7 +119,7 @@ serve(async (req) => {
     if (error) {
       console.error('Insert error:', error);
       return new Response(
-        JSON.stringify({ error: 'Failed to create collection' }),
+        JSON.stringify({ error: error.message || 'Failed to create collection' }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
