@@ -729,6 +729,12 @@ export const UnifiedMintInterface = () => {
                   </CollapsibleTrigger>
                   
                   <CollapsibleContent className="space-y-4 mt-4">
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-800">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        ⚠️ <strong>Important:</strong> These settings use default values and can't be changed after collection creation. Configure them now if you plan to sell NFTs from this collection.
+                      </p>
+                    </div>
+
                     {/* Primary Sales Toggle */}
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
