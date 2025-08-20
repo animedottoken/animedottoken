@@ -40,9 +40,9 @@ serve(async (req) => {
 
     const body: CreateCollectionRequest = await req.json();
 
-    if (!body || !body.name || !body.symbol || !body.creator_address) {
+    if (!body || !body.name || !body.creator_address) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: name, symbol, creator_address" }),
+        JSON.stringify({ error: "Missing required fields: name, creator_address" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -55,9 +55,10 @@ serve(async (req) => {
       );
     }
 
-    if (!body.symbol.trim() || body.symbol.length < 2 || body.symbol.length > 10) {
+    // Symbol validation - only if provided
+    if (body.symbol && body.symbol.trim() && (body.symbol.length < 2 || body.symbol.length > 10)) {
       return new Response(
-        JSON.stringify({ error: "Symbol must be between 2 and 10 characters" }),
+        JSON.stringify({ error: "Symbol must be between 2 and 10 characters if provided" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -86,7 +87,7 @@ serve(async (req) => {
     const insertData: any = {
       id: body.id,
       name: body.name,
-      symbol: body.symbol, // required
+      symbol: body.symbol && body.symbol.trim() ? body.symbol : null, // optional
       description: body.site_description || null,
       site_description: body.site_description || null,
       onchain_description: body.onchain_description || null,
