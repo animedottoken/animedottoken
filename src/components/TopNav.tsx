@@ -63,9 +63,28 @@ export const TopNav = () => {
     return false;
   };
 
-  // For tablet and desktop, don't render this component
+  // For tablet and desktop, show top navigation
   if (!isMobile) {
-    return null;
+    return (
+      <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
+        <div></div>
+        <nav className="flex items-center gap-1">
+          {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+            <Button
+              key={item.path}
+              variant={isActive(item) ? "secondary" : "ghost"}
+              size="sm"
+              asChild
+            >
+              <Link to={item.path} className="flex items-center gap-2">
+                <item.icon className="h-4 w-4" />
+                {item.title}
+              </Link>
+            </Button>
+          ))}
+        </nav>
+      </header>
+    );
   }
 
   // Mobile view with hamburger menu

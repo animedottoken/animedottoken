@@ -108,40 +108,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-          {/* Main Routes */}
-          <div>
-            {!collapsed && (
-              <h3 className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3">
-                Main Pages
-              </h3>
-            )}
-            <div className="space-y-1">
-              {routes.map((item) => {
-                const active = isActive(item);
-                return (
-                  <Tooltip key={item.path} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={active ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start gap-3 h-10",
-                          collapsed && "justify-center px-2"
-                        )}
-                        asChild
-                      >
-                        <Link to={item.path}>
-                          <item.icon className="h-5 w-5 shrink-0" />
-                          {!collapsed && <span className="font-medium">{item.title}</span>}
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Home Sections */}
+          {/* Home Sections Only */}
           <div>
             {!collapsed && (
               <h3 className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3">
