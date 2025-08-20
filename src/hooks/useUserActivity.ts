@@ -28,9 +28,9 @@ export const useUserActivity = () => {
     try {
       setLoading(true);
 
-      // Get collections created
+      // Get collections created from secure public view (won't expose wallet addresses)
       const { data: collections } = await supabase
-        .from('collections')
+        .from('collections_public')
         .select('id, name, created_at, mint_price')
         .eq('creator_address', publicKey)
         .order('created_at', { ascending: false });

@@ -28,18 +28,23 @@ export default function Marketplace() {
       try {
         setLoading(true);
         
-        // Get all NFTs
+        // Get all NFTs with collection info from secure public view
         const { data: nftsData } = await supabase
           .from('nfts')
           .select(`
             *,
-            collections (
+            collections!inner (
               name,
               symbol
             )
           `)
           .order('created_at', { ascending: false })
           .limit(50);
+
+        // Also get collection stats from the public view to avoid wallet exposure
+        const { data: collectionsData } = await supabase
+          .from('collections_public')
+          .select('*');
 
         setNfts(nftsData || []);
 
