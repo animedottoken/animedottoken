@@ -61,29 +61,33 @@ export const TopNav = () => {
   };
 
   const handleNavigation = (item: NavigationItem) => {
-    if (item.type === "route") {
+    const scrollToTarget = (hash: string) => {
+      const doScroll = () => {
+        const el = (document.getElementById(hash) || document.querySelector(`.${hash}`)) as HTMLElement | null;
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // adjust for fixed header
+        setTimeout(() => {
+          window.scrollBy({ top: -80, left: 0, behavior: 'instant' as ScrollBehavior });
+        }, 10);
+        history.replaceState(null, '', `#${hash}`);
+      };
+      // wait for menu close/layout
+      requestAnimationFrame(() => setTimeout(doScroll, 60));
+    };
+
+    if (item.type === 'route') {
       setOpen(false);
       navigate(item.path);
-    } else {
-      const scrollToHash = () => {
-        // Try both ID and class selector
-        const element = (document.getElementById(item.hash) || document.querySelector(`.${item.hash}`)) as HTMLElement | null;
-        if (element) {
-          const headerOffset = 80; // account for fixed header
-          const y = element.getBoundingClientRect().top + window.scrollY - headerOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-          history.replaceState(null, '', `#${item.hash}`);
-        }
-        setOpen(false);
-      };
+      return;
+    }
 
-      if (location.pathname !== "/") {
-        navigate(`/#${item.hash}`);
-        // Scroll after navigation renders
-        setTimeout(scrollToHash, 100);
-      } else {
-        scrollToHash();
-      }
+    setOpen(false);
+    if (location.pathname !== '/') {
+      navigate(`/#${item.hash}`);
+      setTimeout(() => scrollToTarget(item.hash), 120);
+    } else {
+      scrollToTarget(item.hash);
     }
   };
   const isActive = (item: NavigationItem) => {
