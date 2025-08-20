@@ -538,7 +538,7 @@ export const UnifiedMintInterface = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="name">
-                        Collection Name <span className="text-destructive">*</span>
+                        Collection Name <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
                       </Label>
                       <Input
                         id="name"
@@ -556,7 +556,7 @@ export const UnifiedMintInterface = () => {
                     
                     <div>
                       <Label htmlFor="symbol">
-                        Symbol <span className="text-destructive">*</span>
+                        Symbol <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
                       </Label>
                       <Input
                         id="symbol"
