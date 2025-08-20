@@ -115,8 +115,8 @@ export const TopNav = () => {
                     Wallet Connected
                   </div>
                   <div className="flex items-center gap-2 bg-muted/50 rounded p-2">
-                    <span className="font-mono text-xs text-muted-foreground flex-1">
-                      {publicKey}
+                    <span className="font-mono text-sm text-foreground flex-1">
+                      {publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}
                     </span>
                     <Button 
                       variant="ghost" 
