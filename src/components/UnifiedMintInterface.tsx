@@ -389,7 +389,7 @@ export const UnifiedMintInterface = () => {
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Create Collection First
+              Create Collection & Mint
             </Button>
             <Button 
               variant={activeTab === 'standalone' ? 'default' : 'outline'}
@@ -431,168 +431,97 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-8">
               <form onSubmit={handleCreateCollection} className="space-y-8">
                 
-                {/* Collection Artwork */}
-                <div className="space-y-6">
+                {/* Collection Artwork - Banner Only */}
+                <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-primary" />
-                    <Label className="text-lg font-semibold">Collection Artwork</Label>
+                    <Label className="text-lg font-semibold">Banner (Optional)</Label>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Avatar (Square) */}
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="avatar-upload" className="cursor-pointer">
-                          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                            <AspectRatio ratio={1}>
-                              {imagePreview ? (
-                                <img
-                                  src={imagePreview}
-                                  alt="Collection avatar"
-                                  className="h-full w-full object-cover rounded-md"
-                                />
-                              ) : (
-                                <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                                  <div>
-                                    <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                    <p className="text-sm font-medium">Avatar (Optional)</p>
-                                    <p className="text-xs text-muted-foreground">Square format recommended</p>
-                                  </div>
+                    <div>
+                      <Label htmlFor="banner-upload" className="cursor-pointer">
+                        <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                          <AspectRatio ratio={3 / 1}>
+                            {bannerPreview ? (
+                              <img
+                                src={bannerPreview}
+                                alt="Collection banner"
+                                className="h-full w-full object-cover rounded-md"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                                <div>
+                                  <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                  <p className="text-sm font-medium">Banner (Optional)</p>
+                                  <p className="text-xs text-muted-foreground">Wide format 3:1</p>
                                 </div>
-                              )}
-                            </AspectRatio>
-                          </div>
-                        </Label>
-                        <Input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                      </div>
-
-                      {/* Banner (3:1) */}
-                      <div>
-                        <Label htmlFor="banner-upload" className="cursor-pointer">
-                          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                            <AspectRatio ratio={3 / 1}>
-                              {bannerPreview ? (
-                                <img
-                                  src={bannerPreview}
-                                  alt="Collection banner"
-                                  className="h-full w-full object-cover rounded-md"
-                                />
-                              ) : (
-                                <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                                  <div>
-                                    <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                    <p className="text-sm font-medium">Banner (Optional)</p>
-                                    <p className="text-xs text-muted-foreground">Wide format 3:1</p>
-                                  </div>
-                                </div>
-                              )}
-                            </AspectRatio>
-                          </div>
-                        </Label>
-                        <Input
-                          id="banner-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleBannerChange}
-                          className="hidden"
-                        />
-                      </div>
+                              </div>
+                            )}
+                          </AspectRatio>
+                        </div>
+                      </Label>
+                      <Input
+                        id="banner-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerChange}
+                        className="hidden"
+                      />
                     </div>
                     
                     <div className="space-y-3">
                       <h4 className="font-semibold">Guidelines:</h4>
                       <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• <strong>Avatar:</strong> Square format (1:1 ratio)</li>
-                        <li>• <strong>Banner:</strong> Wide format (3:1 ratio) - Optional</li>
+                        <li>• Wide format (3:1 ratio) recommended</li> 
                         <li>• File formats: JPG, PNG, GIF, WEBP</li>
                         <li>• Maximum file size: 5MB</li>
-                        <li>• High quality for best display</li>
+                        <li>• Can be changed later when ready to mint</li>
                       </ul>
-                      <div className="p-3 bg-primary/10 rounded-md">
-                        <p className="text-xs text-primary font-medium">
-                          💡 Collections are organizational containers - you don't need perfect artwork to start!
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Collection Details */}
+                {/* Collection Information - Simplified */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Palette className="h-5 w-5 text-primary" />
                     <Label className="text-lg font-semibold">Collection Information</Label>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">
-                        Collection Name <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        placeholder="e.g., My Art Series"
-                        minLength={3}
-                        maxLength={32}
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {(formData.name || '').length}/32 characters (min: 3)
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="symbol">Symbol (Optional)</Label>
-                      <Input
-                        id="symbol"
-                        value={formData.symbol}
-                        onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                        placeholder="e.g., ART"
-                        maxLength={10}
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">2-10 characters (optional)</p>
-                    </div>
+                  <div>
+                    <Label htmlFor="name">
+                      Collection Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="e.g., My Art Series"
+                      minLength={3}
+                      maxLength={32}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {(formData.name || '').length}/32 characters (min: 3)
+                    </p>
                   </div>
                   
                   <div>
-                    <Label htmlFor="site-description">Site Description (Optional)</Label>
+                    <Label htmlFor="site-description">Description (Optional)</Label>
                     <Textarea
                       id="site-description"
                       value={formData.site_description}
                       onChange={(e) => setFormData({...formData, site_description: e.target.value})}
-                      placeholder="Describe your collection for marketplace display..."
+                      placeholder="Describe your collection..."
                       className="h-24"
                       maxLength={2000}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      {(formData.site_description || '').length}/2000 characters - Shown on marketplace
+                      {(formData.site_description || '').length}/2000 characters - Can be changed later
                     </p>
                   </div>
 
-                  <div>
-                    <Label htmlFor="onchain-description">On-Chain Description (Optional)</Label>
-                    <Textarea
-                      id="onchain-description"
-                      value={formData.onchain_description}
-                      onChange={(e) => setFormData({...formData, onchain_description: e.target.value})}
-                      placeholder="Brief description stored on blockchain..."
-                      className="h-16"
-                      maxLength={200}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {(formData.onchain_description || '').length}/200 characters - Stored permanently on-chain
-                    </p>
-                  </div>
-
-                  {/* Category */}
                   <div>
                     <Label htmlFor="category">Category (Optional)</Label>
                     <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
@@ -618,190 +547,8 @@ export const UnifiedMintInterface = () => {
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-muted-foreground mt-1">Can be changed later</p>
                   </div>
-                </div>
-
-                {/* External Links */}
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold">External Links (Optional)</Label>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="website">Website</Label>
-                      <Input
-                        id="website"
-                        placeholder="https://yourwebsite.com"
-                        value={formData.external_links?.find(l => l.type === 'website')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('website', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="twitter">Twitter/X</Label>
-                      <Input
-                        id="twitter"
-                        placeholder="https://twitter.com/username"
-                        value={formData.external_links?.find(l => l.type === 'twitter')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="discord">Discord</Label>
-                      <Input
-                        id="discord"
-                        placeholder="https://discord.gg/invite"
-                        value={formData.external_links?.find(l => l.type === 'discord')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('discord', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="instagram">Instagram</Label>
-                      <Input
-                        id="instagram"
-                        placeholder="https://instagram.com/username"
-                        value={formData.external_links?.find(l => l.type === 'instagram')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="telegram">Telegram</Label>
-                      <Input
-                        id="telegram"
-                        placeholder="https://t.me/username"
-                        value={formData.external_links?.find(l => l.type === 'telegram')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('telegram', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="facebook">Facebook</Label>
-                      <Input
-                        id="facebook"
-                        placeholder="https://facebook.com/page"
-                        value={formData.external_links?.find(l => l.type === 'facebook')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('facebook', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="youtube">YouTube</Label>
-                      <Input
-                        id="youtube"
-                        placeholder="https://youtube.com/channel"
-                        value={formData.external_links?.find(l => l.type === 'youtube')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('youtube', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="medium">Medium</Label>
-                      <Input
-                        id="medium"
-                        placeholder="https://medium.com/@username"
-                        value={formData.external_links?.find(l => l.type === 'medium')?.url || ''}
-                        onChange={(e) => handleSocialLinkChange('medium', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Advanced Settings - Hidden for simple collection creation */}
-                <div className="hidden">
-                  <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-                    <CollapsibleTrigger asChild>
-                      <Button type="button" variant="ghost" className="w-full justify-between p-0 h-auto">
-                        <div className="flex items-center gap-2">
-                          <Settings className="h-5 w-5 text-primary" />
-                          <Label className="text-lg font-semibold cursor-pointer">Advanced Settings</Label>
-                        </div>
-                        <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-                      </Button>
-                    </CollapsibleTrigger>
-                    
-                    <CollapsibleContent className="space-y-4 mt-4">
-                      <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-800">
-                        <p className="text-sm text-amber-800 dark:text-amber-200">
-                          ⚠️ <strong>Important:</strong> These settings use default values if not configured. You can edit collections <strong>only before any NFTs are minted</strong> - after minting begins, all settings become permanently locked for security.
-                        </p>
-                      </div>
-
-                      {/* Minting Configuration */}
-                      <div className="space-y-4 p-4 bg-muted/20 rounded-lg">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="mint-price">Mint Price (SOL)</Label>
-                            <Input
-                              id="mint-price"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              value={formData.mint_price}
-                              onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">Price per NFT in SOL</p>
-                          </div>
-                          <div>
-                            <Label htmlFor="max-supply">
-                              Max Supply <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
-                            </Label>
-                            <Input
-                              id="max-supply"
-                              type="number"
-                              min="1"
-                              max="100000"
-                              value={formData.max_supply}
-                              onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
-                              required
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">Total NFTs that can be minted (1-100,000)</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="royalties">Royalties (%)</Label>
-                            <Input
-                              id="royalties"
-                              type="number"
-                              min="0"
-                              max="20"
-                              step="0.1"
-                              value={formData.royalty_percentage}
-                              onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">Percentage you earn when others resell (0-20%)</p>
-                          </div>
-                          <div>
-                            <Label htmlFor="treasury">
-                              Treasury Wallet <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Mandatory)</span>
-                            </Label>
-                            <Input
-                              id="treasury"
-                              value={formData.treasury_wallet}
-                              onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
-                              placeholder="Wallet address for payments"
-                              required
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">Where mint payments and royalties are sent</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
-                            <p className="text-sm text-muted-foreground">Only allow specific wallet addresses to mint (exclusive access)</p>
-                          </div>
-                          <Switch 
-                            id="whitelist"
-                            checked={formData.whitelist_enabled}
-                            onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
-                          />
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
                 </div>
 
                 <Button 
@@ -809,7 +556,6 @@ export const UnifiedMintInterface = () => {
                   disabled={creating || !formData.name.trim()}
                   className="w-full h-12 text-lg font-semibold"
                 >
-
                   {creating ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -818,7 +564,7 @@ export const UnifiedMintInterface = () => {
                   ) : (
                     <>
                       <Plus className="mr-2 h-5 w-5" />
-                      Create Collection Folder
+                      Create Collection Folder (Recommended)
                     </>
                   )}
                 </Button>
