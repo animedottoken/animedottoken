@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight } from "lucide-react";
+import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type RouteItem = {
@@ -81,7 +82,7 @@ export const TopNav = () => {
     return false;
   };
 
-  // For tablet and desktop, show top navigation
+  // For tablet and desktop, show top navigation with dropdown for sections
   if (!isMobile) {
     return (
       <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
@@ -106,6 +107,29 @@ export const TopNav = () => {
               </Link>
             </Button>
           ))}
+          
+          {/* Home Sections Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Sections
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-card border shadow-lg">
+              {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
+                <DropdownMenuItem 
+                  key={item.hash}
+                  onClick={() => handleNavigation(item)}
+                  className="cursor-pointer flex items-center gap-3"
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </header>
     );
