@@ -25,7 +25,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
     symbol: '',
-    description: '',
+    site_description: '',
     mint_price: 0,
     max_supply: 1000,
     royalty_percentage: 5,
@@ -70,7 +70,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
       setFormData({
         name: '',
         symbol: '',
-        description: '',
+        site_description: '',
         mint_price: 0,
         max_supply: 1000,
         royalty_percentage: 5,
@@ -212,11 +212,11 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
             </div>
             
             <div>
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description">Site Description *</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                value={formData.site_description}
+                onChange={(e) => setFormData({...formData, site_description: e.target.value})}
                 placeholder="Describe your NFT collection, its story, utility, and what makes it unique..."
                 className="h-24"
                 required
@@ -334,7 +334,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
           <div className="flex justify-end pt-6 border-t">
             <Button 
               type="submit" 
-              disabled={creating || !formData.name || !formData.symbol || !formData.description}
+              disabled={creating || !formData.name || !formData.symbol || !formData.site_description}
               className="px-8 py-3"
               size="lg"
             >

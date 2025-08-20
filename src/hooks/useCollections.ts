@@ -35,7 +35,8 @@ export interface Collection {
 export interface CreateCollectionData {
   name: string;
   symbol?: string;
-  description?: string;
+  site_description?: string;  // For marketplace display (up to 2000 chars)
+  onchain_description?: string;  // For on-chain metadata (up to 200 chars)
   image_file?: File;
   banner_file?: File;
   external_links?: { type: string; url: string }[];
@@ -154,7 +155,9 @@ export const useCollections = () => {
         id: collectionId,
         name: collectionData.name,
         symbol: collectionData.symbol || null,
-        description: collectionData.description || null,
+        description: collectionData.site_description || null, // Keep for backward compatibility
+        site_description: collectionData.site_description || null,
+        onchain_description: collectionData.onchain_description || null,
         image_url: imageUrl,
         banner_image_url: bannerUrl,
         creator_address: publicKey,

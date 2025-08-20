@@ -28,6 +28,7 @@ import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { MintingInterface } from '@/components/MintingInterface';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { validateImageFile, validateCollectionData, areRequiredFieldsValid } from '@/utils/validation';
 
 export const UnifiedMintInterface = () => {
   const { connected, publicKey } = useSolanaWallet();
@@ -41,7 +42,8 @@ export const UnifiedMintInterface = () => {
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
     symbol: '',
-    description: '',
+    site_description: '',
+    onchain_description: '',
     external_links: [],
     category: '',
     explicit_content: false,
@@ -68,6 +70,17 @@ export const UnifiedMintInterface = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate image file
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: 'Invalid image file',
+          description: validation.error,
+          variant: 'destructive',
+        });
+        return;
+      }
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
@@ -78,6 +91,17 @@ export const UnifiedMintInterface = () => {
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate banner file
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: 'Invalid banner file',
+          description: validation.error,
+          variant: 'destructive',
+        });
+        return;
+      }
+
       setBannerFile(file);
       const reader = new FileReader();
       reader.onload = () => setBannerPreview(reader.result as string);
@@ -142,33 +166,14 @@ export const UnifiedMintInterface = () => {
       return;
     }
 
-    if (!formData.name.trim()) {
+    // Validate collection data
+    const validationErrors = validateCollectionData(formData);
+    if (validationErrors.length > 0) {
+      // Show first error
+      const firstError = validationErrors[0];
       toast({
-        title: 'Collection name is required',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (formData.name.trim().length < 3) {
-      toast({
-        title: 'Collection name must be at least 3 characters',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (formData.name.trim().length > 20) {
-      toast({
-        title: 'Collection name must be 20 characters or less',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (formData.description && formData.description.length > 1500) {
-      toast({
-        title: 'Description must be 1500 characters or less',
+        title: `Invalid ${firstError.field}`,
+        description: firstError.message,
         variant: 'destructive',
       });
       return;
@@ -202,7 +207,8 @@ export const UnifiedMintInterface = () => {
     setFormData({
       name: '',
       symbol: '',
-      description: '',
+      site_description: '',
+      onchain_description: '',
       external_links: [],
       category: '',
       explicit_content: false,
@@ -359,18 +365,20 @@ export const UnifiedMintInterface = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Collection Name *</Label>
+                      <Label htmlFor="name">
+                        Collection Name <span className="text-destructive">*</span>
+                      </Label>
                       <Input
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         placeholder="e.g., My Art Series"
                         minLength={3}
-                        maxLength={20}
+                        maxLength={32}
                         required
                       />
                       <p className="text-xs text-muted-foreground mt-1">
-                        {(formData.name || '').length}/20 characters (min: 3)
+                        {(formData.name || '').length}/32 characters (min: 3)
                       </p>
                     </div>
                     
@@ -383,22 +391,37 @@ export const UnifiedMintInterface = () => {
                         placeholder="e.g., ART"
                         maxLength={10}
                       />
-                      <p className="text-xs text-muted-foreground mt-1">Short identifier for your collection</p>
+                      <p className="text-xs text-muted-foreground mt-1">2-10 characters if provided</p>
                     </div>
                   </div>
                   
                   <div>
-                    <Label htmlFor="description">Description (Optional)</Label>
+                    <Label htmlFor="site-description">Site Description (Optional)</Label>
                     <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      placeholder="Describe your collection..."
+                      id="site-description"
+                      value={formData.site_description}
+                      onChange={(e) => setFormData({...formData, site_description: e.target.value})}
+                      placeholder="Describe your collection for marketplace display..."
                       className="h-24"
-                      maxLength={1500}
+                      maxLength={2000}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      {(formData.description || '').length}/1500 characters
+                      {(formData.site_description || '').length}/2000 characters - Shown on marketplace
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="onchain-description">On-Chain Description (Optional)</Label>
+                    <Textarea
+                      id="onchain-description"
+                      value={formData.onchain_description}
+                      onChange={(e) => setFormData({...formData, onchain_description: e.target.value})}
+                      placeholder="Brief description stored on blockchain..."
+                      className="h-16"
+                      maxLength={200}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {(formData.onchain_description || '').length}/200 characters - Stored permanently on-chain
                     </p>
                   </div>
 
@@ -511,14 +534,19 @@ export const UnifiedMintInterface = () => {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="max-supply">Max Supply</Label>
+                            <Label htmlFor="max-supply">
+                              Max Supply <span className="text-destructive">*</span>
+                            </Label>
                             <Input
                               id="max-supply"
                               type="number"
                               min="1"
+                              max="100000"
                               value={formData.max_supply}
                               onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                              required={formData.enable_primary_sales}
                             />
+                            <p className="text-xs text-muted-foreground mt-1">1-100,000 NFTs</p>
                           </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -528,19 +556,23 @@ export const UnifiedMintInterface = () => {
                               id="royalties"
                               type="number"
                               min="0"
-                              max="50"
+                              max="20"
                               step="0.1"
                               value={formData.royalty_percentage}
                               onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
                             />
+                            <p className="text-xs text-muted-foreground mt-1">0-20% on secondary sales</p>
                           </div>
                           <div>
-                            <Label htmlFor="treasury">Treasury Wallet</Label>
+                            <Label htmlFor="treasury">
+                              Treasury Wallet <span className="text-destructive">*</span>
+                            </Label>
                             <Input
                               id="treasury"
                               value={formData.treasury_wallet}
                               onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
                               placeholder="Wallet address for payments"
+                              required={formData.enable_primary_sales}
                             />
                           </div>
                         </div>
@@ -563,9 +595,10 @@ export const UnifiedMintInterface = () => {
 
                 <Button 
                   type="submit" 
-                  disabled={creating || !formData.name}
+                  disabled={creating || !areRequiredFieldsValid(formData, formData.enable_primary_sales)}
                   className="w-full h-12 text-lg font-semibold"
                 >
+
                   {creating ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
