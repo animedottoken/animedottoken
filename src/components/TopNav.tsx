@@ -37,7 +37,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
   { type: "section", title: "Market Chart", icon: Target, hash: "market-cap-chart" },
   { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
-  { type: "section", title: "FAQ", icon: FileText, hash: "faq-section" },
+  { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote-section" },
 ];
@@ -249,20 +249,18 @@ export const TopNav = () => {
                 </div>
               </div>
 
-              {/* Only Main Pages - same as desktop dropdown */}
+              {/* Home Sections - same as desktop sidebar */}
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">Main Pages</h3>
-                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
                   <Button
-                    key={item.path}
-                    variant={isActive(item) ? "secondary" : "ghost"}
+                    key={item.hash}
+                    variant="ghost"
                     className="w-full justify-start gap-3 h-12"
-                    asChild
+                    onClick={() => handleNavigation(item)}
                   >
-                    <Link to={item.path} onClick={() => setOpen(false)}>
-                      <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.title}</span>
-                    </Link>
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.title}</span>
+                    <ChevronRight className="h-4 w-4 ml-auto" />
                   </Button>
                 ))}
               </div>
