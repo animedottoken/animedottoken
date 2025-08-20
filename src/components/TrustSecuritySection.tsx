@@ -34,7 +34,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Block 1: Liquidity Status */}
         <Card className="h-full">
           <CardHeader>
@@ -135,12 +135,12 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                       Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
                     </p>
                     <div className="bg-muted/50 p-3 rounded-lg">
-                      <div className="flex items-center gap-2 text-xs font-mono bg-background p-2 rounded border">
-                        <span className="text-muted-foreground break-all flex-1">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
+                      <div className="flex items-start gap-2 text-xs font-mono bg-background p-2 rounded border">
+                        <span className="text-muted-foreground break-all flex-1 min-w-0">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-8 w-8 p-0 hover:bg-muted"
+                          className="h-8 w-8 p-0 hover:bg-muted flex-shrink-0"
                           onClick={async () => {
                             await navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8');
                             toast.success("Address copied to clipboard!");
@@ -155,7 +155,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                 </CollapsibleContent>
               </Collapsible>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col gap-2">
               <Button asChild variant="hero">
                 <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
                   View Ecosystem Fund <ExternalLink className="ml-2 h-4 w-4" />

@@ -173,7 +173,7 @@ const Index = () => {
   const [faqOpen, setFaqOpen] = useState(false);
 
   return (
-    <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-full overflow-x-hidden">
+    <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-6xl overflow-x-hidden">
       <Helmet>
         <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
         <meta name="description" content="Join the ANIME token community on Solana! Learn how to earn with our live NFT marketplace. How to join Discord, Telegram, X, TikTok. 100% LP burned." />
@@ -548,7 +548,7 @@ const Index = () => {
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all max-w-full inline-block flex-1">{CONTRACT}</code>
+                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all w-full block">{CONTRACT}</code>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
                   <Copy className="h-4 w-4" />
                 </Button>
