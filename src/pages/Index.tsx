@@ -151,16 +151,18 @@ const Index = () => {
     }
   }, []);
 
-  // Handle deep-linking on initial load
+  // Handle deep-linking on initial load with offset for fixed header
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     if (hash) {
       setTimeout(() => {
-        const element = document.getElementById(hash) || document.querySelector(`.${hash}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+        const el = document.getElementById(hash) || document.querySelector(`.${hash}`);
+        if (el) {
+          const headerOffset = 80;
+          const y = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
         }
-      }, 100);
+      }, 120);
     }
   }, []);
 
@@ -256,7 +258,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="featured-community-content scroll-mt-20">
+      <div id="featured-community-content" className="featured-community-content scroll-mt-20">
         <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-32"></div>}>
           <FeaturedCommunityContent />
         </Suspense>
@@ -273,11 +275,11 @@ const Index = () => {
         </Button>
       </section>
 
-      <div className="trust-security-section scroll-mt-20">
+      <div id="trust-security-section" className="trust-security-section scroll-mt-20">
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
       </div>
 
-      <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
+      <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold">
             <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">📊</span>
@@ -302,7 +304,7 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="mt-8 market-cap-chart scroll-mt-20">
+        <div id="market-cap-chart" className="mt-8 market-cap-chart scroll-mt-20">
           <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-64"></div>}>
             <MarketCapChart />
           </Suspense>
