@@ -23,7 +23,6 @@ type NavigationItem = RouteItem | SectionItem;
 
 const navigationItems: NavigationItem[] = [
   // Main routes
-  { type: "route", title: "Home", icon: Home, path: "/" },
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
   { type: "route", title: "Profile", icon: User, path: "/profile" },
@@ -34,6 +33,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "How to Buy", icon: Target, hash: "how-to-buy" },
   { type: "section", title: "NFT Program", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Community", icon: Users, hash: "community-features" },
+  { type: "section", title: "Reports", icon: FileText, hash: "security-reports" },
 ];
 
 interface DesktopSidebarProps {
