@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { Copy, Wallet, Activity, LogOut, ExternalLink, Plus, Eye, Heart, Settings, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCollections } from "@/hooks/useCollections";
+import { QuickNav } from "@/components/QuickNav";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useFavorites } from "@/hooks/useFavorites";
 import { formatDistanceToNow } from "date-fns";
@@ -95,6 +96,9 @@ export default function Profile() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
+          {/* Quick Navigation */}
+          <QuickNav className="mb-6 hidden md:flex" />
+          
           {connected ? (
             <>
               {/* Profile Header */}

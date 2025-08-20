@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, TrendingUp, Eye, Heart, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { QuickNav } from "@/components/QuickNav";
 
 export default function Marketplace() {
   const { connected } = useSolanaWallet();
@@ -87,8 +88,11 @@ export default function Marketplace() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header - add top padding to avoid hamburger menu overlap */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 pt-8">
+          {/* Quick Navigation */}
+          <QuickNav className="mb-6 hidden md:flex" />
+          
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
                 NFT Marketplace

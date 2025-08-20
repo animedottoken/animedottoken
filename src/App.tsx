@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { BottomNav } from "@/components/BottomNav";
 import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -48,7 +49,7 @@ const App = () => (
                   <SidebarTrigger />
                 </header>
                 
-                <main className="flex-1">
+                <main className="flex-1 pb-20 md:pb-0">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/reports" element={<Reports />} />
@@ -62,6 +63,8 @@ const App = () => (
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
+                
+                <BottomNav />
               </div>
             </div>
           </SidebarProvider>
