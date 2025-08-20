@@ -468,21 +468,21 @@ export const UnifiedMintInterface = () => {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="art">Art</SelectItem>
-                        <SelectItem value="collectibles">Collectibles</SelectItem>
-                        <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
-                        <SelectItem value="photography">Photography</SelectItem>
-                        <SelectItem value="music">Music</SelectItem>
-                        <SelectItem value="gaming">Gaming</SelectItem>
-                        <SelectItem value="domains">Domain Names</SelectItem>
-                        <SelectItem value="metaverse">Metaverse</SelectItem>
-                        <SelectItem value="utility">Utility</SelectItem>
-                        <SelectItem value="sports">Sports</SelectItem>
-                        <SelectItem value="trading-cards">Trading Cards</SelectItem>
-                        <SelectItem value="virtual-worlds">Virtual Worlds</SelectItem>
-                        <SelectItem value="meme">Meme</SelectItem>
                         <SelectItem value="ai-art">AI Art</SelectItem>
                         <SelectItem value="anime">Anime</SelectItem>
+                        <SelectItem value="art">Art</SelectItem>
+                        <SelectItem value="collectibles">Collectibles</SelectItem>
+                        <SelectItem value="domains">Domain Names</SelectItem>
+                        <SelectItem value="gaming">Gaming</SelectItem>
+                        <SelectItem value="meme">Meme</SelectItem>
+                        <SelectItem value="metaverse">Metaverse</SelectItem>
+                        <SelectItem value="music">Music</SelectItem>
+                        <SelectItem value="photography">Photography</SelectItem>
+                        <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
+                        <SelectItem value="sports">Sports</SelectItem>
+                        <SelectItem value="trading-cards">Trading Cards</SelectItem>
+                        <SelectItem value="utility">Utility</SelectItem>
+                        <SelectItem value="virtual-worlds">Virtual Worlds</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -714,15 +714,15 @@ export const UnifiedMintInterface = () => {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="art">Art</SelectItem>
-                          <SelectItem value="collectibles">Collectibles</SelectItem>
-                          <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
-                          <SelectItem value="photography">Photography</SelectItem>
-                          <SelectItem value="music">Music</SelectItem>
-                          <SelectItem value="gaming">Gaming</SelectItem>
-                          <SelectItem value="meme">Meme</SelectItem>
                           <SelectItem value="ai-art">AI Art</SelectItem>
                           <SelectItem value="anime">Anime</SelectItem>
+                          <SelectItem value="art">Art</SelectItem>
+                          <SelectItem value="collectibles">Collectibles</SelectItem>
+                          <SelectItem value="gaming">Gaming</SelectItem>
+                          <SelectItem value="meme">Meme</SelectItem>
+                          <SelectItem value="music">Music</SelectItem>
+                          <SelectItem value="pfp">Profile Pictures (PFP)</SelectItem>
+                          <SelectItem value="photography">Photography</SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
