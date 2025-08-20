@@ -428,22 +428,37 @@ export const UnifiedMintInterface = () => {
                     <Label className="text-lg font-semibold">Collection Information</Label>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="name">
-                      Collection Name <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      placeholder="e.g., My Art Series"
-                      minLength={3}
-                      maxLength={32}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {(formData.name || '').length}/32 characters (min: 3)
-                    </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">
+                        Collection Name <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        placeholder="e.g., My Art Series"
+                        minLength={3}
+                        maxLength={32}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {(formData.name || '').length}/32 characters (min: 3)
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="symbol">Symbol <span className="text-destructive">*</span></Label>
+                      <Input
+                        id="symbol"
+                        value={formData.symbol}
+                        onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
+                        placeholder="e.g., ART"
+                        maxLength={10}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">2-10 characters</p>
+                    </div>
                   </div>
                   
                   <div>
