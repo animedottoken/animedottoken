@@ -67,7 +67,10 @@ export const TopNav = () => {
   if (!isMobile) {
     return (
       <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
-        <div></div>
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token" className="h-8 w-8" />
+          <span className="font-bold text-lg">ANIME.TOKEN</span>
+        </Link>
         <nav className="flex items-center gap-1">
           {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
             <Button

@@ -110,11 +110,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
           {/* Home Sections Only */}
           <div>
-            {!collapsed && (
-              <h3 className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3">
-                Home Sections
-              </h3>
-            )}
             <div className="space-y-1">
               {sections.map((item) => (
                 <Tooltip key={item.hash} delayDuration={0}>
