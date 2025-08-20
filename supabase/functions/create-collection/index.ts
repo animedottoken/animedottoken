@@ -65,7 +65,7 @@ serve(async (req) => {
     if (body.enable_primary_sales) {
       if (!body.max_supply || body.max_supply < 1 || body.max_supply > 100000) {
         return new Response(
-          JSON.stringify({ error: "Max supply must be between 1 and 100000" }),
+          JSON.stringify({ error: "Max supply must be between 1 and 100000 when primary sales are enabled" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -84,7 +84,7 @@ serve(async (req) => {
     }
 
     const insertData: any = {
-      id: body.id, // allow client-provided id to match uploaded asset paths
+      id: body.id,
       name: body.name,
       symbol: body.symbol, // now required
       description: body.site_description || null,
@@ -101,6 +101,7 @@ serve(async (req) => {
       verified: false,
     };
 
+    // Only add primary sales fields if enabled
     if (body.enable_primary_sales) {
       insertData.treasury_wallet = body.treasury_wallet;
       insertData.mint_price = body.mint_price ?? 0;

@@ -155,7 +155,7 @@ export const useCollections = () => {
         body: {
           id: collectionId,
           name: collectionData.name,
-          symbol: collectionData.symbol, // now required, no fallback to null
+          symbol: collectionData.symbol,
           site_description: collectionData.site_description || null,
           onchain_description: collectionData.onchain_description || null,
           image_url: imageUrl,
@@ -165,12 +165,15 @@ export const useCollections = () => {
           category: collectionData.category || null,
           explicit_content: collectionData.explicit_content || false,
           enable_primary_sales: collectionData.enable_primary_sales || false,
-          mint_price: collectionData.mint_price || 0,
-          max_supply: collectionData.max_supply || null,
-          royalty_percentage: collectionData.royalty_percentage || 0,
-          treasury_wallet: (collectionData.enable_primary_sales ? (collectionData.treasury_wallet || publicKey) : null),
-          whitelist_enabled: collectionData.whitelist_enabled || false,
-          go_live_date: collectionData.go_live_date || null,
+          // Only send primary sales fields if enabled
+          ...(collectionData.enable_primary_sales && {
+            mint_price: collectionData.mint_price || 0,
+            max_supply: collectionData.max_supply || 1000,
+            royalty_percentage: collectionData.royalty_percentage || 0,
+            treasury_wallet: collectionData.treasury_wallet || publicKey,
+            whitelist_enabled: collectionData.whitelist_enabled || false,
+            go_live_date: collectionData.go_live_date || null,
+          })
         }
       });
 
