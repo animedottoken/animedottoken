@@ -27,7 +27,7 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },  
   { type: "route", title: "Profile", icon: User, path: "/profile" },
   
-  // Home sections - matching live version exactly
+  // Home sections - matching live version exactly (no duplicates)
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
@@ -35,9 +35,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "anime-army" },
-  { type: "section", title: "NFT Marketplace", icon: Coins, hash: "nft-marketplace" },
   { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote" },
-  { type: "section", title: "Reports", icon: FileText, hash: "security-reports" },
 ];
 
 interface DesktopSidebarProps {
