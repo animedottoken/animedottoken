@@ -97,7 +97,8 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </button>
         <nav className="flex items-center gap-1">
-          {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+          {/* Show navigation buttons only when wallet is NOT connected */}
+          {!connected && navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
             <Button
               key={item.path}
               variant={isActive(item) ? "secondary" : "ghost"}
@@ -135,12 +136,21 @@ export const TopNav = () => {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer">
-                    <User className="h-4 w-4 mr-2" />
-                    View Profile
-                  </Link>
-                </DropdownMenuItem>
+                
+                {/* Main Navigation Items */}
+                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                  <DropdownMenuItem key={item.path} asChild>
+                    <Link 
+                      to={item.path} 
+                      className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
+                    >
+                      <item.icon className="h-4 w-4 mr-2" />
+                      {item.title}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={disconnect} className="cursor-pointer text-red-600">
                   <LogOut className="h-4 w-4 mr-2" />
                   Disconnect
