@@ -92,10 +92,14 @@ export const getRequiredFields = (enablePrimarySales: boolean = false): string[]
 };
 
 // Standalone NFT data validation
-export const validateStandaloneNFTData = (data: any): ValidationError[] => {
+export const validateStandaloneNFTData = (data: any, imageFile?: File | null): ValidationError[] => {
   const errors: ValidationError[] = [];
 
-  // Required fields
+  // Required fields - artwork is now mandatory
+  if (!imageFile) {
+    errors.push({ field: 'artwork', message: 'NFT artwork is required' });
+  }
+
   if (!data.name?.trim()) {
     errors.push({ field: 'name', message: 'NFT name is required' });
   } else if (data.name.trim().length < 1) {

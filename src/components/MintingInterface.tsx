@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Clock, Users, Zap, Shield, Plus, Minus, Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useMintQueue } from '@/hooks/useMintQueue';
 import { MintQueueStatus } from '@/components/MintQueueStatus';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -155,9 +157,17 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const handleMint = async () => {
     if (!collection || !connected) return;
     
+    // Check if artwork is required and missing
+    if (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) {
+      toast.error('Please upload NFT artwork before minting.');
+      return;
+    }
+    
     const result = await createMintJob(collection.id, quantity, nftDetails);
     if (result.success) {
       setQuantity(1); // Reset quantity after successful job creation
+      // Show toast with link to profile mint queue
+      toast.success('🎉 Mint job created! Your NFTs are being minted. Check your mint queue in Profile for progress.');
     }
   };
 
@@ -246,7 +256,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Price per NFT:</span>
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Price per NFT</Label>
                     <div className="font-bold text-lg text-green-600">
                       {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
                     </div>
@@ -255,7 +265,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                     )}
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Supply:</span>
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Supply</Label>
                     <div className="font-bold">{collection.max_supply.toLocaleString()}</div>
                     <div className="text-xs text-muted-foreground">{remainingSupply.toLocaleString()} remaining</div>
                   </div>
@@ -331,7 +341,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
 
               <Button 
                 onClick={handleMint}
-                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply}
+                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview)}
                 className="w-full py-6 text-lg font-semibold"
                 size="lg"
               >
@@ -344,6 +354,8 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   'SOLD OUT'
                 ) : !connected ? (
                   'Connect Wallet to Mint'
+                ) : (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) ? (
+                  'Upload Artwork Required'
                 ) : quantity > remainingSupply ? (
                   `Only ${remainingSupply} Left`
                 ) : (
@@ -366,13 +378,15 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         </CardContent>
       </Card>
 
-      {/* Queue Status */}
-      <MintQueueStatus 
-        jobs={jobs} 
-        loading={queueLoading} 
-        getJobProgress={getJobProgress} 
-        collectionName={collection.name}
-      />
+      {/* Queue Status - Only show if embedded */}
+      {!embedded && (
+        <MintQueueStatus 
+          jobs={jobs} 
+          loading={queueLoading} 
+          getJobProgress={getJobProgress} 
+          collectionName={collection.name}
+        />
+      )}
 
       <Card>
         <CardHeader>

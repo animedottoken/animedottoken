@@ -9,11 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
-import { Copy, Wallet, Activity, LogOut, ExternalLink, Plus, Eye, Heart, Settings, Trash2 } from "lucide-react";
+import { Copy, Wallet, Activity, LogOut, ExternalLink, Plus, Eye, Heart, Settings, Trash2, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCollections } from "@/hooks/useCollections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useMintQueue } from "@/hooks/useMintQueue";
+import { MintQueueStatus } from "@/components/MintQueueStatus";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Profile() {
@@ -24,6 +26,7 @@ export default function Profile() {
   const { collections, loading: collectionsLoading } = useCollections();
   const { activities, loading: activitiesLoading } = useUserActivity();
   const { favorites, removeFromFavorites } = useFavorites();
+  const { jobs, loading: jobsLoading, getJobProgress } = useMintQueue();
 
   const displayName = 'ANIME Collector';
   const getInitials = (name: string) => {
@@ -168,8 +171,9 @@ export default function Profile() {
 
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={(value) => setSearchParams({ tab: value })} className="mb-8">
-                <TabsList className="grid w-full grid-cols-4 lg:w-96">
+                <TabsList className="grid w-full grid-cols-5 lg:w-auto">
                   <TabsTrigger value="collections">Collections</TabsTrigger>
+                  <TabsTrigger value="mint-queue">Mint Queue</TabsTrigger>
                   <TabsTrigger value="activity">Activity</TabsTrigger>
                   <TabsTrigger value="favorites">Favorites</TabsTrigger>
                   <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -327,6 +331,26 @@ export default function Profile() {
                       </Card>
                     </div>
                   )}
+                </TabsContent>
+
+                {/* Mint Queue Tab - Show user's mint jobs */}
+                <TabsContent value="mint-queue" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Clock className="h-5 w-5" />
+                        Mint Queue
+                      </CardTitle>
+                      <CardDescription>Track your NFT minting jobs and progress</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <MintQueueStatus 
+                        jobs={jobs} 
+                        loading={jobsLoading} 
+                        getJobProgress={getJobProgress}
+                      />
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 {/* Activity Tab - Show user's activities */}

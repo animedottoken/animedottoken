@@ -407,8 +407,8 @@ export const UnifiedMintInterface = () => {
       return;
     }
 
-    // Validate standalone NFT data
-    const validationErrors = validateStandaloneNFTData(standaloneData);
+    // Validate standalone NFT data with image file
+    const validationErrors = validateStandaloneNFTData(standaloneData, standaloneImageFile);
     if (validationErrors.length > 0) {
       // Show first error
       const firstError = validationErrors[0];
@@ -1100,7 +1100,8 @@ export const UnifiedMintInterface = () => {
               <div className="space-y-6">
                 {/* NFT Image */}
                 <div className="space-y-4">
-                  <Label htmlFor="nft-image" className="text-lg font-semibold">NFT Artwork (Optional)</Label>
+                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Artwork Preview</Label>
+                  <Label htmlFor="nft-image" className="text-lg font-semibold">NFT Artwork <span className="text-destructive">*</span></Label>
                   <Label htmlFor="nft-image-upload" className="cursor-pointer">
                     <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
                       <AspectRatio ratio={1}>
@@ -1114,7 +1115,7 @@ export const UnifiedMintInterface = () => {
                           <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
                             <div>
                               <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                              <p className="text-sm font-medium">Upload NFT Artwork</p>
+                              <p className="text-sm font-medium">Upload NFT Artwork (Required)</p>
                               <p className="text-xs text-muted-foreground">Will be used for all NFTs in this batch</p>
                             </div>
                           </div>
@@ -1129,11 +1130,33 @@ export const UnifiedMintInterface = () => {
                     onChange={handleNftImageChange}
                     className="hidden"
                   />
+                  {!nftDetails.nftImagePreview && (
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        if (imagePreview) {
+                          setNftDetails(prev => ({
+                            ...prev,
+                            nftImagePreview: imagePreview
+                          }));
+                          toast({ title: "Collection avatar used", description: "Using collection avatar as NFT artwork" });
+                        } else {
+                          toast({ title: "No collection avatar", description: "Please upload a collection avatar in Step 2 first", variant: "destructive" });
+                        }
+                      }}
+                      disabled={!imagePreview}
+                    >
+                      Use Collection Avatar
+                    </Button>
+                  )}
                 </div>
                 
                 {/* NFT Details */}
                 <div className="space-y-4">
                   <div>
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Name Template</Label>
                     <Label htmlFor="nft-name">NFT Name Template (Optional)</Label>
                     <Input
                       id="nft-name"
@@ -1148,6 +1171,7 @@ export const UnifiedMintInterface = () => {
                   </div>
                   
                   <div>
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Description</Label>
                     <Label htmlFor="nft-description">NFT Description (Optional)</Label>
                     <Textarea
                       id="nft-description"
@@ -1165,18 +1189,15 @@ export const UnifiedMintInterface = () => {
                 
                 {/* NFT Attributes */}
                 <div className="space-y-4">
+                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
                   <div className="flex items-center justify-between">
                     <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
-                    <Button variant="outline" size="sm" onClick={addNftAttribute}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Attribute
-                    </Button>
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Add metadata attributes that will be applied to all NFTs in this mint batch.
                   </div>
                   
-                  {nftDetails.nftAttributes.length > 0 && (
+                  {nftDetails.nftAttributes.length > 0 ? (
                     <div className="space-y-3">
                       {nftDetails.nftAttributes.map((attr, index) => (
                         <div key={index} className="flex gap-3 items-end">
@@ -1207,9 +1228,19 @@ export const UnifiedMintInterface = () => {
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
+                          {index === nftDetails.nftAttributes.length - 1 && (
+                            <Button variant="outline" size="sm" onClick={addNftAttribute}>
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    <Button variant="outline" size="sm" onClick={addNftAttribute}>
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Attribute
+                    </Button>
                   )}
                 </div>
               </div>
@@ -2021,8 +2052,9 @@ export const UnifiedMintInterface = () => {
                 
                 {/* NFT Artwork */}
                 <div className="space-y-4">
+                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Artwork Preview</Label>
                   <div className="flex items-center gap-2">
-                    <Label className="text-lg font-semibold required-field">NFT Artwork *</Label>
+                    <Label className="text-lg font-semibold required-field">NFT Artwork <span className="text-destructive">*</span></Label>
                     <Badge variant="secondary">For Individual NFTs</Badge>
                   </div>
                   
@@ -2041,7 +2073,7 @@ export const UnifiedMintInterface = () => {
                               <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
                                 <div>
                                   <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                  <p className="text-sm font-medium">Upload Artwork</p>
+                                  <p className="text-sm font-medium">Upload Artwork (Required)</p>
                                   <p className="text-xs text-muted-foreground">JPG, PNG, GIF, WEBP (5MB max)</p>
                                 </div>
                               </div>
@@ -2072,10 +2104,12 @@ export const UnifiedMintInterface = () => {
 
                 {/* Basic Information */}
                 <div className="space-y-4">
+                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Basic Information</Label>
                   <Label className="text-lg font-semibold">Basic Information</Label>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Name</Label>
                       <Label htmlFor="standalone-name" className="required-field">
                         NFT Name <span className="text-destructive">*</span>
                       </Label>
@@ -2094,6 +2128,7 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Symbol</Label>
                       <Label htmlFor="standalone-symbol">Symbol (Optional)</Label>
                       <Input
                         id="standalone-symbol"
@@ -2107,6 +2142,7 @@ export const UnifiedMintInterface = () => {
                   </div>
 
                   <div>
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Description</Label>
                     <Label htmlFor="standalone-description">Description (Optional)</Label>
                     <Textarea
                       id="standalone-description"
@@ -2123,6 +2159,7 @@ export const UnifiedMintInterface = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Quantity</Label>
                       <Label htmlFor="standalone-quantity">Quantity</Label>
                       <Input
                         id="standalone-quantity"
@@ -2137,6 +2174,7 @@ export const UnifiedMintInterface = () => {
                     </div>
 
                     <div>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Royalties</Label>
                       <Label htmlFor="standalone-royalty">Royalties (%)</Label>
                       <Input
                         id="standalone-royalty"
@@ -2151,6 +2189,7 @@ export const UnifiedMintInterface = () => {
                     </div>
 
                     <div>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Category</Label>
                       <Label htmlFor="standalone-category">Category</Label>
                       <Select value={standaloneData.category} onValueChange={(value) => setStandaloneData({...standaloneData, category: value})}>
                         <SelectTrigger>
@@ -2175,15 +2214,12 @@ export const UnifiedMintInterface = () => {
 
                 {/* Attributes */}
                 <div className="space-y-4">
+                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
                   <div className="flex items-center justify-between">
                     <Label className="text-base font-semibold">Attributes (Optional)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={addAttribute}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Attribute
-                    </Button>
                   </div>
                   
-                  {standaloneData.attributes && standaloneData.attributes.length > 0 && (
+                  {standaloneData.attributes && standaloneData.attributes.length > 0 ? (
                     <div className="space-y-3">
                       {standaloneData.attributes.map((attr, index) => (
                         <div key={index} className="flex gap-3 items-end">
@@ -2214,15 +2250,25 @@ export const UnifiedMintInterface = () => {
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
+                          {index === standaloneData.attributes.length - 1 && (
+                            <Button type="button" variant="outline" size="sm" onClick={addAttribute}>
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    <Button type="button" variant="outline" size="sm" onClick={addAttribute}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Attribute
+                    </Button>
                   )}
                 </div>
 
                 <Button 
                   type="submit" 
-                  disabled={minting || !standaloneData.name?.trim()}
+                  disabled={minting || !standaloneData.name?.trim() || !standaloneImageFile}
                   className="w-full h-12 text-lg font-semibold"
                 >
                   {minting ? (
@@ -2230,6 +2276,8 @@ export const UnifiedMintInterface = () => {
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Minting NFT{(standaloneData.quantity || 1) > 1 ? 's' : ''}...
                     </>
+                  ) : !standaloneImageFile ? (
+                    'Upload Artwork Required'
                   ) : (
                     <>
                       <Zap className="mr-2 h-5 w-5" />
