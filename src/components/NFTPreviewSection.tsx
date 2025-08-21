@@ -37,12 +37,12 @@ export function NFTPreviewSection() {
                 <span className="text-sm">FREE Minting (Gas only)</span>
               </div>
               <div className="flex items-center gap-3">
-                <Palette className="h-5 w-5 text-purple-500" />
-                <span className="text-sm">Unique Rarity System</span>
+                <Users className="h-5 w-5 text-blue-500" />
+                <span className="text-sm">On-Chain Creator Royalties</span>
               </div>
               <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">Creator Royalties</span>
+                <Palette className="h-5 w-5 text-purple-500" />
+                <span className="text-sm">Custom Rarity Traits</span>
               </div>
             </div>
             
