@@ -190,7 +190,7 @@ export function AppSidebar() {
                     tooltip={!showLabel ? item.title : undefined}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
-                    {!isCollapsed && <span className="ml-2">{item.title}</span>}
+                    {showLabel && <span className="ml-2">{item.title}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
