@@ -664,7 +664,7 @@ export const UnifiedMintInterface = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Plus className="h-6 w-6" />
-                Create a Collection
+                Step 1: Create Your Collection
                 <Badge variant="secondary" className="ml-2">Recommended</Badge>
               </CardTitle>
               <p className="text-muted-foreground">
