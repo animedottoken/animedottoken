@@ -27,7 +27,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">Mint Your NFTs</CardTitle>
             <CardDescription className="text-base">
-              Create unique anime-inspired NFTs with <strong>unlockable content</strong> and rarity traits
+              Create and mint your original anime-inspired art directly on Solana. Our tool makes it easy to add custom traits, set your own creator royalties, and launch your collection.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
