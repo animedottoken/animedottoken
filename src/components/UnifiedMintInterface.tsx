@@ -1663,12 +1663,12 @@ export const UnifiedMintInterface = () => {
                 {creating ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Creating Collection...
+                    Saving Rules...
                   </>
                 ) : (
                   <>
                     <Settings className="mr-2 h-5 w-5" />
-                    Create & Continue to Step 2
+                    Save Rules & Mint Collection (Demo)
                   </>
                 )}
               </Button>
