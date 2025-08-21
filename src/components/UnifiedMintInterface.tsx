@@ -123,12 +123,44 @@ export const UnifiedMintInterface = () => {
 
   const loadStep3Collection = React.useCallback(async () => {
     if (!createdCollectionId) return;
-    const { data, error } = await supabase
-      .rpc('get_collection_details', { collection_id: createdCollectionId });
-    if (!error && data && data.length > 0) {
-      setStep3Collection(data[0] as Step3Collection);
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('get_collection_details', { collection_id: createdCollectionId });
+      
+      if (!error && data && data.length > 0) {
+        setStep3Collection(data[0] as Step3Collection);
+      } else {
+        // Fallback to form data when database call fails
+        setStep3Collection({
+          id: createdCollectionId,
+          name: formData.name || 'Untitled Collection',
+          symbol: formData.symbol || null,
+          image_url: imagePreview || null,
+          banner_image_url: bannerPreview || null,
+          mint_price: parseFloat(formData.mint_price?.toString() || '0') || 0,
+          max_supply: parseInt(formData.max_supply?.toString() || '0') || 0,
+          items_redeemed: 0,
+          royalty_percentage: parseFloat(formData.royalty_percentage?.toString() || '0') || 0,
+          is_live: true
+        });
+      }
+    } catch (error) {
+      // Use form data as fallback
+      setStep3Collection({
+        id: createdCollectionId,
+        name: formData.name || 'Untitled Collection',
+        symbol: formData.symbol || null,
+        image_url: imagePreview || null,
+        banner_image_url: bannerPreview || null,
+        mint_price: parseFloat(formData.mint_price?.toString() || '0') || 0,
+        max_supply: parseInt(formData.max_supply?.toString() || '0') || 0,
+        items_redeemed: 0,
+        royalty_percentage: parseFloat(formData.royalty_percentage?.toString() || '0') || 0,
+        is_live: true
+      });
     }
-  }, [createdCollectionId]);
+  }, [createdCollectionId, formData, imagePreview, bannerPreview]);
 
   React.useEffect(() => {
     if (createdCollectionId && currentStep === 3) {
