@@ -607,21 +607,21 @@ export const UnifiedMintInterface = () => {
         </Card>
 
         {/* Collection Banner */}
-        {step3Collection?.banner_image_url && (
+        {(step3Collection?.banner_image_url || bannerPreview) && (
           <Card className="overflow-hidden relative">
             <AspectRatio ratio={16/5}>
               <img
-                src={step3Collection.banner_image_url}
-                alt={`${step3Collection.name} banner`}
+                src={step3Collection?.banner_image_url || bannerPreview!}
+                alt={`${formData.name || step3Collection?.name} banner`}
                 className="w-full h-full object-cover"
               />
-              {/* Collection Avatar Overlay */}
-              {(step3Collection?.image_url || imagePreview) && (
+              {/* Collection Avatar Overlay - Always show if we have imagePreview */}
+              {imagePreview && (
                 <div className="absolute bottom-4 left-4">
                   <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
                     <img 
-                      src={step3Collection?.image_url || imagePreview!}
-                      alt={`${step3Collection?.name || formData.name} avatar`}
+                      src={imagePreview}
+                      alt={`${formData.name || step3Collection?.name} avatar`}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -636,36 +636,36 @@ export const UnifiedMintInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                {(step3Collection?.image_url || imagePreview) && (
+                {imagePreview && (
                   <img 
-                    src={step3Collection?.image_url || imagePreview!}
-                    alt={step3Collection?.name || formData.name}
+                    src={imagePreview}
+                    alt={formData.name}
                     className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
                   />
                 )}
                 <div>
-                  <h3 className="text-xl font-bold">{step3Collection?.name || formData.name}</h3>
-                  <p className="text-sm text-muted-foreground">Symbol: {step3Collection?.symbol || formData.symbol || '—'}</p>
+                  <h3 className="text-xl font-bold">{formData.name}</h3>
+                  <p className="text-sm text-muted-foreground">Symbol: {formData.symbol || '—'}</p>
                 </div>
               </div>
             </CardTitle>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               <div className="text-center p-3 bg-background/50 rounded-lg">
                 <div className="font-bold text-lg text-green-600">
-                  {step3Collection ? (step3Collection.mint_price === 0 ? 'FREE' : `${step3Collection.mint_price} SOL`) : '—'}
+                  {formData.mint_price === 0 ? 'FREE' : `${formData.mint_price} SOL`}
                 </div>
                 <div className="text-xs text-muted-foreground">Mint Price</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{step3Collection?.max_supply?.toLocaleString?.() || '—'}</div>
+                <div className="font-bold text-lg">{formData.max_supply?.toLocaleString?.()}</div>
                 <div className="text-xs text-muted-foreground">Max Supply</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{step3Collection?.royalty_percentage ?? 0}%</div>
+                <div className="font-bold text-lg">{formData.royalty_percentage ?? 0}%</div>
                 <div className="text-xs text-muted-foreground">Royalties</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg text-primary">{step3Collection?.is_live ? 'LIVE' : 'PAUSED'}</div>
+                <div className="font-bold text-lg text-primary">LIVE</div>
                 <div className="text-xs text-muted-foreground">Status</div>
               </div>
             </div>
