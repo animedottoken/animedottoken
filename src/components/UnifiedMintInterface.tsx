@@ -548,8 +548,18 @@ export const UnifiedMintInterface = () => {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={formData.mint_price || 0}
-                      onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                      value={formData.mint_price !== undefined ? formData.mint_price : ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '') {
+                          setFormData({...formData, mint_price: undefined});
+                        } else {
+                          const numValue = parseFloat(value);
+                          if (!isNaN(numValue) && numValue >= 0) {
+                            setFormData({...formData, mint_price: numValue});
+                          }
+                        }
+                      }}
                       placeholder="0 for free minting"
                       className="h-12 text-lg"
                       required
@@ -1006,8 +1016,18 @@ export const UnifiedMintInterface = () => {
                           type="number"
                           step="0.01"
                           min="0"
-                          value={formData.mint_price || 0}
-                          onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                          value={formData.mint_price !== undefined ? formData.mint_price : ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '') {
+                              setFormData({...formData, mint_price: undefined});
+                            } else {
+                              const numValue = parseFloat(value);
+                              if (!isNaN(numValue) && numValue >= 0) {
+                                setFormData({...formData, mint_price: numValue});
+                              }
+                            }
+                          }}
                           placeholder="0 for free minting"
                           className="h-12 text-lg"
                           required
