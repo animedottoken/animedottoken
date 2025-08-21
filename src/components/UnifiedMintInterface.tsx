@@ -433,6 +433,16 @@ export const UnifiedMintInterface = () => {
       });
       return;
     }
+
+    // Validate royalty percentage
+    if (formData.royalty_percentage && (formData.royalty_percentage < 0 || formData.royalty_percentage > 20)) {
+      toast({
+        title: 'Invalid royalty percentage',
+        description: 'Royalty must be between 0% and 20%',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     // Update collection with minting details
     const result = await createCollection({
@@ -442,7 +452,7 @@ export const UnifiedMintInterface = () => {
       image_file: imageFile || undefined,
       mint_price: formData.mint_price || 0,
       max_supply: formData.max_supply || 1000,
-      royalty_percentage: formData.royalty_percentage || 5,
+      royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 20), // Ensure it's within bounds
       treasury_wallet: formData.treasury_wallet || publicKey || '',
     });
     
@@ -477,6 +487,14 @@ export const UnifiedMintInterface = () => {
       setImagePreview(null);
       setBannerFile(null);
       setBannerPreview(null);
+    } else {
+      // Show specific error message from backend
+      const errorMessage = (result as any)?.error || 'Failed to complete collection setup';
+      toast({
+        title: 'Setup Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     }
   };
 
@@ -1134,11 +1152,16 @@ export const UnifiedMintInterface = () => {
                           max="20"
                           step="0.1"
                           value={formData.royalty_percentage || 5}
-                          onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            if (value >= 0 && value <= 20) {
+                              setFormData({...formData, royalty_percentage: value});
+                            }
+                          }}
                           className="h-12 text-lg"
                           required
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 25%.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 20%.</p>
                       </div>
                     </div>
                     

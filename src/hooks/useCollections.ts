@@ -179,8 +179,9 @@ export const useCollections = () => {
 
       if (error || !data?.success) {
         console.error('Error creating collection:', error || data);
-        toast.error('Failed to create collection');
-        return { success: false };
+        const errorMessage = data?.error || error?.message || 'Failed to create collection';
+        toast.error(errorMessage);
+        return { success: false, error: errorMessage };
       }
 
       // Refresh collections (may be empty due to RLS, but we continue)
@@ -191,8 +192,9 @@ export const useCollections = () => {
 
     } catch (error) {
       console.error('Unexpected error creating collection:', error);
-      toast.error('Failed to create collection');
-      return { success: false };
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create collection';
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setCreating(false);
     }
