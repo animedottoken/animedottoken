@@ -464,6 +464,7 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
                       placeholder="e.g., ANIMEFS"
                       maxLength={10}
+                      className="h-12 text-lg"
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">A short, 5-10 character 'ticker' for your NFT series (e.g., ANIMEFS)</p>
@@ -479,6 +480,7 @@ export const UnifiedMintInterface = () => {
                       value={formData.mint_price || 0}
                       onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
                       placeholder="0 for free minting"
+                      className="h-12 text-lg"
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">Set to 0 for FREE minting, or any amount in SOL</p>
@@ -497,6 +499,7 @@ export const UnifiedMintInterface = () => {
                       max="100000"
                       value={formData.max_supply || 1000}
                       onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                      className="h-12 text-lg"
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
@@ -512,6 +515,7 @@ export const UnifiedMintInterface = () => {
                       step="0.1"
                       value={formData.royalty_percentage || 5}
                       onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                      className="h-12 text-lg"
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">The percentage you will earn from every future sale of your NFT. Value can be set from 0% to 25%. This is permanent and cannot be changed after setup.</p>
@@ -527,6 +531,7 @@ export const UnifiedMintInterface = () => {
                     value={formData.treasury_wallet || publicKey || ''}
                     onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
                     placeholder="Wallet address for payments"
+                    className="h-12 text-lg"
                     required
                   />
                   <p className="text-xs text-muted-foreground mt-1">The Solana wallet address that will receive your initial sales and future royalties</p>
@@ -547,7 +552,7 @@ export const UnifiedMintInterface = () => {
                     value={formData.onchain_description || ''}
                     onChange={(e) => setFormData({...formData, onchain_description: e.target.value})}
                     placeholder="Brief description stored on blockchain..."
-                    className="h-16"
+                    className="h-20 text-lg"
                     maxLength={200}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
@@ -688,6 +693,7 @@ export const UnifiedMintInterface = () => {
                       placeholder="e.g., Cyber Samurai Chronicles"
                       minLength={3}
                       maxLength={32}
+                      className="h-12 text-lg"
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">
@@ -702,7 +708,7 @@ export const UnifiedMintInterface = () => {
                       value={formData.site_description}
                       onChange={(e) => setFormData({...formData, site_description: e.target.value})}
                       placeholder="Tell the story behind your art series..."
-                      className="h-24"
+                      className="h-28 text-lg"
                       maxLength={2000}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
