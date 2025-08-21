@@ -20,7 +20,7 @@ export default function Mint() {
               Mint NFTs & Collections
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Create collections and mint exclusive digital collectibles on Solana with lightning-fast transactions and minimal fees.
+              Create collections and mint exclusive digital collectibles on Solana. Lightning-fast transactions and minimal fees for every creator.
             </p>
           </div>
 
@@ -36,7 +36,7 @@ export default function Mint() {
                 <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
                 <p className="text-sm text-muted-foreground">
-                  Mint your NFTs in seconds with Solana's high-performance blockchain
+                  Mint your NFTs in seconds on Solana's high-performance blockchain.
                 </p>
               </CardContent>
             </Card>
@@ -46,7 +46,7 @@ export default function Mint() {
                 <Coins className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Low Fees</h3>
                 <p className="text-sm text-muted-foreground">
-                  Pay fractions of cents in transaction fees, not dollars
+                  Pay fractions of a cent in transaction fees.
                 </p>
               </CardContent>
             </Card>
@@ -56,7 +56,7 @@ export default function Mint() {
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Community</h3>
                 <p className="text-sm text-muted-foreground">
-                  Join a vibrant community of anime fans and NFT collectors
+                  Launch your collection and connect with a vibrant community of anime fans and NFT collectors.
                 </p>
               </CardContent>
             </Card>
