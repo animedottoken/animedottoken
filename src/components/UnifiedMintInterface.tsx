@@ -27,7 +27,10 @@ import {
   Check,
   Info,
   Edit2,
-  Lock
+  Lock,
+  Users,
+  Clock,
+  Shield
 } from 'lucide-react';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
@@ -1160,37 +1163,51 @@ export const UnifiedMintInterface = () => {
                   )}
                 </div>
                 
-                {/* NFT Details */}
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="nft-name">NFT Name Template (Optional)</Label>
-                    <Input
-                      id="nft-name"
-                      value={nftDetails.nftName}
-                      onChange={(e) => setNftDetails(prev => ({ ...prev, nftName: e.target.value }))}
-                      placeholder="e.g., Cyber Samurai or leave empty for auto-numbering"
-                      maxLength={100}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      NFTs will be named "{nftDetails.nftName || 'Collection Name'} #1", "#2", etc.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="nft-description">NFT Description (Optional)</Label>
-                    <Textarea
-                      id="nft-description"
-                      value={nftDetails.nftDescription}
-                      onChange={(e) => setNftDetails(prev => ({ ...prev, nftDescription: e.target.value }))}
-                      placeholder="Description for individual NFTs..."
-                      className="h-20"
-                      maxLength={500}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {nftDetails.nftDescription.length}/500 characters
-                    </p>
-                  </div>
-                </div>
+                {/* Collection Details */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Info className="h-5 w-5" />
+                      Collection Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
+                        <div className="font-bold">{createdCollectionId ? '1000' : 'TBD'}</div>
+                        <div className="text-sm text-muted-foreground">Total Supply</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
+                        <div className="font-bold">Live Now</div>
+                        <div className="text-sm text-muted-foreground">Mint Status</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
+                        <div className="font-bold">Queue System</div>
+                        <div className="text-sm text-muted-foreground">Professional</div>
+                      </div>
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
+                        <div className="font-bold">5%</div>
+                        <div className="text-sm text-muted-foreground">Royalties</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 space-y-3">
+                      <h4 className="font-semibold">Features & Benefits</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <Badge variant="secondary" className="justify-start p-2">✨ Unique Anime Art</Badge>
+                        <Badge variant="secondary" className="justify-start p-2">🎮 Gaming Integration</Badge>
+                        <Badge variant="secondary" className="justify-start p-2">💎 Rare Traits</Badge>
+                        <Badge variant="secondary" className="justify-start p-2">🏆 Community Access</Badge>
+                        <Badge variant="secondary" className="justify-start p-2">⚡ Queue Processing</Badge>
+                        <Badge variant="secondary" className="justify-start p-2">🔄 Auto Retry Logic</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
                 
                 {/* NFT Attributes */}
                 <div className="space-y-4">
@@ -1250,8 +1267,40 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              {/* Right Column - Minting Interface */}
-              <div>
+              {/* Right Column - NFT Details & Minting Interface */}
+              <div className="space-y-6">
+                {/* NFT Details moved to top right */}
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="nft-name">NFT Name Template (Optional)</Label>
+                    <Input
+                      id="nft-name"
+                      value={nftDetails.nftName}
+                      onChange={(e) => setNftDetails(prev => ({ ...prev, nftName: e.target.value }))}
+                      placeholder="e.g., Cyber Samurai or leave empty for auto-numbering"
+                      maxLength={100}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      NFTs will be named "{nftDetails.nftName || 'Collection Name'} #1", "#2", etc.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="nft-description">NFT Description (Optional)</Label>
+                    <Textarea
+                      id="nft-description"
+                      value={nftDetails.nftDescription}
+                      onChange={(e) => setNftDetails(prev => ({ ...prev, nftDescription: e.target.value }))}
+                      placeholder="Description for individual NFTs..."
+                      className="h-20"
+                      maxLength={500}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {nftDetails.nftDescription.length}/500 characters
+                    </p>
+                  </div>
+                </div>
+
                 {createdCollectionId && (
                   <MintingInterface 
                     collectionId={createdCollectionId} 

@@ -274,13 +274,6 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
             )}
 
             <div className="space-y-6">
-              <div>
-                <div className="text-xs text-muted-foreground/60 mb-1">Collection Name</div>
-                <h3 className="font-semibold mb-2">{collection.name}</h3>
-                <div className="text-xs text-muted-foreground/60 mb-1">Collection Description</div>
-                <p className="text-muted-foreground text-sm">{collection.description}</p>
-              </div>
-
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Minted</span>
@@ -345,6 +338,17 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 </div>
               </div>
 
+              {/* Professional Queue Info */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">Professional Queue System</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>✅ Guaranteed completion - jobs persist through network issues</li>
+                  <li>✅ Real-time progress tracking with live updates</li>
+                  <li>✅ Automatic retries for failed transactions</li>
+                  <li>✅ Batch processing optimized for Solana</li>
+                </ul>
+              </div>
+
               <Button 
                 onClick={handleMint}
                 disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview)}
@@ -368,17 +372,6 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   `Queue ${quantity} NFT${quantity > 1 ? 's' : ''} for Minting`
                 )}
               </Button>
-
-              {/* Professional Queue Info */}
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-800 mb-2">Professional Queue System</h4>
-                <ul className="text-sm text-blue-700 space-y-1">
-                  <li>✅ Guaranteed completion - jobs persist through network issues</li>
-                  <li>✅ Real-time progress tracking with live updates</li>
-                  <li>✅ Automatic retries for failed transactions</li>
-                  <li>✅ Batch processing optimized for Solana</li>
-                </ul>
-              </div>
             </div>
           </div>
         </CardContent>
@@ -394,47 +387,6 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         />
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Collection Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{collection.max_supply.toLocaleString()}</div>
-              <div className="text-sm text-muted-foreground">Total Supply</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">Live Now</div>
-              <div className="text-sm text-muted-foreground">Mint Status</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">Queue System</div>
-              <div className="text-sm text-muted-foreground">Professional</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{collection.royalty_percentage || 0}%</div>
-              <div className="text-sm text-muted-foreground">Royalties</div>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-3">
-            <h4 className="font-semibold">Features & Benefits</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <Badge variant="secondary" className="justify-start p-2">✨ Unique Anime Art</Badge>
-              <Badge variant="secondary" className="justify-start p-2">🎮 Gaming Integration</Badge>
-              <Badge variant="secondary" className="justify-start p-2">💎 Rare Traits</Badge>
-              <Badge variant="secondary" className="justify-start p-2">🏆 Community Access</Badge>
-              <Badge variant="secondary" className="justify-start p-2">⚡ Queue Processing</Badge>
-              <Badge variant="secondary" className="justify-start p-2">🔄 Auto Retry Logic</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
