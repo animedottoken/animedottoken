@@ -518,7 +518,7 @@ export const UnifiedMintInterface = () => {
                       className="h-12 text-lg"
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">The percentage you will earn from every future sale of your NFT. Value can be set from 0% to 25%. This is permanent and cannot be changed after setup.</p>
+                    <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 25%.</p>
                   </div>
                 </div>
                 
