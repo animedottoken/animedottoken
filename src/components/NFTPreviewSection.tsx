@@ -10,7 +10,7 @@ export function NFTPreviewSection() {
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
-          Create & Trade NFTs on Solana
+          The Home for Anime NFTs on Solana
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Join the ANIME ecosystem by minting unique NFTs and trading in our marketplace. 
