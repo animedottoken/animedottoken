@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { MintInput as Input } from '@/components/ui/mint-input';
 import { Label } from '@/components/ui/label';
 import { Clock, Users, Zap, Shield, Plus, Minus, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -314,6 +314,10 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                     onChange={handleQuantityChange}
                     className="w-20 text-center"
                     disabled={creating}
+                    autoComplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    data-1p-ignore
                   />
                   
                   <Button

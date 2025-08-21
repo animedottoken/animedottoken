@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { MintInput as Input, MintTextarea as Textarea } from '@/components/ui/mint-input';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -814,6 +813,10 @@ export const UnifiedMintInterface = () => {
                               step="0.01"
                               min="0"
                               defaultValue={formData.mint_price ?? step3Collection?.mint_price ?? 0}
+                              autoComplete="off"
+                              data-form-type="other"
+                              data-lpignore="true"
+                              data-1p-ignore
                             />
                             <div className="flex gap-2">
                               <Button 
@@ -1060,6 +1063,10 @@ export const UnifiedMintInterface = () => {
                             <Label htmlFor="edit-description">On-chain Description</Label>
                             <Textarea
                               id="edit-description"
+                              autoComplete="off"
+                              data-form-type="other"
+                              data-lpignore="true"
+                              data-1p-ignore
                               defaultValue={formData.onchain_description || step3Collection?.description || ''}
                               maxLength={200}
                               onBlur={(e) => {
