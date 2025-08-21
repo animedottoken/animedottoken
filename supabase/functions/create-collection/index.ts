@@ -39,6 +39,8 @@ serve(async (req) => {
     );
 
     const body: CreateCollectionRequest = await req.json();
+    console.log('Create-collection request body:', body);
+
 
     if (!body || !body.name || !body.creator_address) {
       return new Response(
@@ -84,6 +86,10 @@ serve(async (req) => {
       }
     }
 
+    const maxSupply = body.max_supply != null ? Number(body.max_supply) : null;
+    const mintPrice = body.mint_price != null ? Number(body.mint_price) : null;
+    const royalty = body.royalty_percentage != null ? Number(body.royalty_percentage) : null;
+
     const insertData: any = {
       id: body.id,
       name: body.name,
@@ -99,11 +105,11 @@ serve(async (req) => {
       category: body.category || null,
       explicit_content: body.explicit_content ?? false,
       // Always satisfy NOT NULL + CHECK constraints
-      max_supply: body.max_supply ?? 1000,
-      items_available: body.max_supply ?? 1000,
+      max_supply: maxSupply ?? 1000,
+      items_available: maxSupply ?? 1000,
       items_redeemed: 0,
-      mint_price: body.mint_price ?? 0,
-      royalty_percentage: body.royalty_percentage ?? 0,
+      mint_price: mintPrice ?? 0,
+      royalty_percentage: royalty ?? 0,
       whitelist_enabled: body.whitelist_enabled ?? false,
       go_live_date: body.go_live_date || null,
       is_active: true,

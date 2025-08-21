@@ -411,6 +411,23 @@ export const UnifiedMintInterface = () => {
       const collectionId = (result as any).collection.id;
       setCreatedCollectionId(collectionId);
       
+      // Ensure server has the latest settings (mint price, max supply, royalties, treasury)
+      try {
+        await supabase.functions.invoke('update-collection', {
+          body: {
+            collection_id: collectionId,
+            updates: {
+              ...(formData.mint_price !== undefined ? { mint_price: Number(formData.mint_price) } : {}),
+              ...(formData.max_supply !== undefined ? { max_supply: Number(formData.max_supply) } : {}),
+              ...(formData.royalty_percentage !== undefined ? { royalty_percentage: Number(formData.royalty_percentage) } : {}),
+              ...(formData.treasury_wallet ? { treasury_wallet: formData.treasury_wallet } : {})
+            }
+          }
+        });
+      } catch (e) {
+        console.warn('Post-create update failed (non-blocking):', e);
+      }
+      
       toast({
         title: 'Collection created successfully!',
         description: 'You can now mint NFTs from your collection.',
