@@ -131,6 +131,11 @@ export const UnifiedMintInterface = () => {
       const { data, error } = await supabase
         .rpc('get_collection_details', { collection_id: createdCollectionId });
       
+      console.log('Step 3 DB data:', data?.[0]);
+      console.log('Step 3 formData:', formData);
+      console.log('Step 3 imagePreview:', imagePreview);
+      console.log('Step 3 bannerPreview:', bannerPreview);
+      
       if (!error && data && data.length > 0) {
         setStep3Collection(data[0] as Step3Collection);
       } else {
@@ -541,28 +546,11 @@ export const UnifiedMintInterface = () => {
         description: 'You can now start minting NFTs from your collection.',
       });
       
-      // Clear form data to prevent confusion
-      setFormData({
-        name: formData.name, // Keep name for reference
-        symbol: formData.symbol, // Keep symbol for reference  
-        site_description: '',
-        onchain_description: '',
-        external_links: [],
-        category: '',
-        explicit_content: false,
-        enable_primary_sales: true,
-        mint_price: undefined,
-        max_supply: undefined,
-        royalty_percentage: undefined,
-        treasury_wallet: publicKey || '',
-        whitelist_enabled: false,
-      });
-      
-      // Clear image files
+      // DON'T clear imagePreview or formData - Step 3 needs them for display
+      // Just clear the file objects since they're uploaded to storage
       setImageFile(null);
-      setImagePreview(null);
       setBannerFile(null);
-      setBannerPreview(null);
+      // Keep imagePreview and bannerPreview for Step 3 display
     } else {
       // Show specific error message from backend
       const errorMessage = (result as any)?.error || 'Failed to complete collection setup';
@@ -621,18 +609,18 @@ export const UnifiedMintInterface = () => {
                 alt={`${formData.name || step3Collection?.name} banner`}
                 className="w-full h-full object-cover"
               />
-                {/* Collection Avatar Overlay */}
-                {(step3Collection?.image_url || imagePreview) && (
-                  <div className="absolute bottom-4 left-4">
-                    <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
-                      <img 
-                        src={step3Collection?.image_url || imagePreview!}
-                        alt={`${step3Collection?.name || formData.name} avatar`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                )}
+                 {/* Collection Avatar Overlay */}
+                 {(imagePreview || step3Collection?.image_url) && (
+                   <div className="absolute bottom-4 left-4">
+                     <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
+                       <img 
+                         src={imagePreview || step3Collection?.image_url!}
+                         alt={`${step3Collection?.name || formData.name} avatar`}
+                         className="w-full h-full object-cover"
+                       />
+                     </div>
+                   </div>
+                 )}
             </AspectRatio>
           </Card>
         )}
@@ -642,9 +630,9 @@ export const UnifiedMintInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                {(step3Collection?.image_url || imagePreview) && (
+                {(imagePreview || step3Collection?.image_url) && (
                   <img 
-                    src={step3Collection?.image_url || imagePreview!}
+                    src={imagePreview || step3Collection?.image_url!}
                     alt={step3Collection?.name || formData.name}
                     className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
                   />
@@ -658,18 +646,18 @@ export const UnifiedMintInterface = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               <div className="text-center p-3 bg-background/50 rounded-lg">
                 <div className="font-bold text-lg text-green-600">
-                  {((step3Collection?.mint_price ?? formData.mint_price) === 0)
+                  {((formData.mint_price ?? step3Collection?.mint_price) === 0)
                     ? 'FREE'
-                    : `${step3Collection?.mint_price ?? formData.mint_price ?? ''} SOL`}
+                    : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
                 </div>
                 <div className="text-xs text-muted-foreground">Mint Price</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.()}</div>
+                <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
                 <div className="text-xs text-muted-foreground">Max Supply</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{(step3Collection?.royalty_percentage ?? formData.royalty_percentage ?? 0)}%</div>
+                <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
                 <div className="text-xs text-muted-foreground">Royalties</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
@@ -683,19 +671,19 @@ export const UnifiedMintInterface = () => {
               <div className="p-3 bg-background/50 rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">Treasury Wallet</div>
                 <div className="font-mono break-all text-sm">
-                  {step3Collection?.treasury_wallet || formData.treasury_wallet || '—'}
+                  {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
                 </div>
               </div>
               <div className="p-3 bg-background/50 rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">Whitelist</div>
                 <div className="text-sm font-semibold">
-                  {(step3Collection?.whitelist_enabled ?? formData.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                  {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
                 </div>
               </div>
               <div className="p-3 bg-background/50 rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">On-chain Description</div>
                 <div className="text-sm">
-                  {step3Collection?.description || formData.onchain_description || '—'}
+                  {formData.onchain_description || step3Collection?.description || '—'}
                 </div>
               </div>
             </div>
