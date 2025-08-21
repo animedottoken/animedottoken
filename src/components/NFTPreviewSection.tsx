@@ -42,7 +42,7 @@ export function NFTPreviewSection() {
               </div>
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">Community Collection</span>
+                <span className="text-sm">Creator Royalties</span>
               </div>
             </div>
             
