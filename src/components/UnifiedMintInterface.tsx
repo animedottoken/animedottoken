@@ -118,6 +118,9 @@ export const UnifiedMintInterface = () => {
     items_redeemed?: number | null;
     royalty_percentage?: number | null;
     is_live: boolean;
+    whitelist_enabled?: boolean | null;
+    treasury_wallet?: string | null;
+    description?: string | null;
   };
   const [step3Collection, setStep3Collection] = useState<Step3Collection | null>(null);
 
@@ -142,7 +145,10 @@ export const UnifiedMintInterface = () => {
           max_supply: parseInt(formData.max_supply?.toString() || '0') || 0,
           items_redeemed: 0,
           royalty_percentage: parseFloat(formData.royalty_percentage?.toString() || '0') || 0,
-          is_live: true
+          is_live: true,
+          whitelist_enabled: formData.whitelist_enabled ?? null,
+          treasury_wallet: formData.treasury_wallet || publicKey || null,
+          description: formData.site_description || null,
         });
       }
     } catch (error) {
@@ -669,6 +675,28 @@ export const UnifiedMintInterface = () => {
               <div className="text-center p-3 bg-background/50 rounded-lg">
                 <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
                 <div className="text-xs text-muted-foreground">Status</div>
+              </div>
+            </div>
+
+            {/* Extra details the user requested to see visibly */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div className="p-3 bg-background/50 rounded-lg">
+                <div className="text-xs text-muted-foreground mb-1">Treasury Wallet</div>
+                <div className="font-mono break-all text-sm">
+                  {step3Collection?.treasury_wallet || formData.treasury_wallet || '—'}
+                </div>
+              </div>
+              <div className="p-3 bg-background/50 rounded-lg">
+                <div className="text-xs text-muted-foreground mb-1">Whitelist</div>
+                <div className="text-sm font-semibold">
+                  {(step3Collection?.whitelist_enabled ?? formData.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                </div>
+              </div>
+              <div className="p-3 bg-background/50 rounded-lg">
+                <div className="text-xs text-muted-foreground mb-1">On-chain Description</div>
+                <div className="text-sm">
+                  {step3Collection?.description || formData.onchain_description || '—'}
+                </div>
               </div>
             </div>
           </CardHeader>
