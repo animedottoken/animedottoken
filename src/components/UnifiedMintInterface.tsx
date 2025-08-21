@@ -362,10 +362,15 @@ export const UnifiedMintInterface = () => {
     }));
   };
 
-  const handleCreateCollection = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateCollection = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     
     if (!connected) {
+      toast({
+        title: 'Connect your wallet',
+        description: 'Please connect your wallet to create a collection.',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -634,22 +639,6 @@ export const UnifiedMintInterface = () => {
     }
   };
 
-  if (!connected) {
-    return (
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardContent className="p-8 text-center">
-          <div className="mb-6">
-            <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-            <p className="text-muted-foreground mb-6">
-              Connect your Solana wallet to start minting NFTs or creating collections.
-            </p>
-            <SolanaWalletButton />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   // If collection is created and on Step 3, show minting interface directly
   if (createdCollectionId && currentStep === 3) {
@@ -1652,7 +1641,8 @@ export const UnifiedMintInterface = () => {
               </div>
 
               <Button 
-                type="submit"
+                type="button"
+                onClick={() => handleCreateCollection()}
                 disabled={creating || !formData.name.trim()}
                 className="w-full h-12 text-lg font-semibold"
               >
@@ -1856,7 +1846,8 @@ export const UnifiedMintInterface = () => {
                     </div>
                     <div className="flex gap-3">
                       <Button 
-                        type="submit" 
+                        type="button" 
+                        onClick={() => handleCreateCollection()}
                         disabled={creating || !formData.name.trim()}
                         className="flex items-center gap-2"
                       >
