@@ -24,7 +24,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  Info
+  Info,
+  Edit2,
+  Lock
 } from 'lucide-react';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
@@ -651,9 +653,14 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              {/* Collection Minting Configuration */}
+              {/* Collection Configuration - Locked & Editable Fields */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-background/50 rounded-lg">
+                {/* Mint Price - Editable */}
+                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Edit2 className="h-3 w-3 text-green-600" />
+                    <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                  </div>
                   <div className="font-bold text-lg text-green-600">
                     {((formData.mint_price ?? step3Collection?.mint_price) === 0)
                       ? 'FREE'
@@ -661,36 +668,73 @@ export const UnifiedMintInterface = () => {
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
                 </div>
-                <div className="text-center p-4 bg-background/50 rounded-lg">
+                
+                {/* Max Supply - Locked */}
+                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Lock className="h-3 w-3 text-orange-600" />
+                    <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                  </div>
                   <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
                 </div>
-                <div className="text-center p-4 bg-background/50 rounded-lg">
+                
+                {/* Royalties - Locked */}
+                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Lock className="h-3 w-3 text-orange-600" />
+                    <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                  </div>
                   <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Royalties</div>
                 </div>
+                
+                {/* Status - Show current */}
                 <div className="text-center p-4 bg-background/50 rounded-lg">
                   <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Status</div>
                 </div>
               </div>
 
-              {/* Collection Advanced Settings */}
+              {/* Collection Advanced Settings - Editable */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-background/50 rounded-lg">
-                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection Treasury Wallet</div>
+                {/* Treasury Wallet - Editable */}
+                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
+                    <div className="flex items-center gap-1">
+                      <Edit2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                    </div>
+                  </div>
                   <div className="font-mono break-all text-sm">
                     {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
                   </div>
                 </div>
-                <div className="p-4 bg-background/50 rounded-lg">
-                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection Whitelist</div>
+                
+                {/* Whitelist - Editable */}
+                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
+                    <div className="flex items-center gap-1">
+                      <Edit2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                    </div>
+                  </div>
                   <div className="text-sm font-semibold">
                     {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
                   </div>
                 </div>
-                <div className="p-4 bg-background/50 rounded-lg">
-                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection On-chain Description</div>
+                
+                {/* On-chain Description - Editable */}
+                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
+                    <div className="flex items-center gap-1">
+                      <Edit2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                    </div>
+                  </div>
                   <div className="text-sm">
                     {formData.onchain_description || step3Collection?.description || '—'}
                   </div>
@@ -702,15 +746,11 @@ export const UnifiedMintInterface = () => {
 
         {/* Minting Interface */}
         <Card>
-          <CardHeader className="flex items-center justify-between">
+          <CardHeader>
             <CardTitle className="text-xl font-bold flex items-center gap-2">
               <Zap className="h-5 w-5" />
               Create NFTs in this Collection
             </CardTitle>
-            <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Step 2
-            </Button>
           </CardHeader>
           <CardContent>
             {createdCollectionId && (
