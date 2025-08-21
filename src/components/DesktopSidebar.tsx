@@ -28,14 +28,13 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Profile", icon: User, path: "/profile" },
   
   // Home sections - matching actual IDs and classes on the page
-  { type: "section", title: "🎨 Create & Trade NFTs on Solana", icon: Coins, hash: "nft-supporter-section" },
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
   { type: "section", title: "Market Chart", icon: Target, hash: "market-cap-chart" },
   { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
-  { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
+  { type: "section", title: "Create NFTs", icon: Coins, hash: "nft-supporter-section" },
   { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote-section" },
 ];
 
