@@ -483,7 +483,7 @@ export const UnifiedMintInterface = () => {
                       className="h-12 text-lg"
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Set to 0 for FREE minting, or any amount in SOL</p>
+                    <p className="text-xs text-muted-foreground mt-1">Set to 0 for a FREE mint, or any amount in SOL. This price is for the initial, primary sale only. After an NFT is owned, the holder can list it for any new price on the secondary market.</p>
                   </div>
                 </div>
                 
