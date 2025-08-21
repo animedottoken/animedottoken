@@ -136,6 +136,7 @@ export const UnifiedMintInterface = () => {
     whitelist_enabled?: boolean | null;
     treasury_wallet?: string | null;
     description?: string | null;
+    collection_mint_address?: string | null;
   };
   const [step3Collection, setStep3Collection] = useState<Step3Collection | null>(null);
 
@@ -205,7 +206,7 @@ export const UnifiedMintInterface = () => {
             (stepNumber === 1 && createdCollectionId) ||
             (stepNumber === 2 && isCollectionSetupComplete);
           
-          const stepNames = ['Basics (off-chain)', 'Mint Collection', 'Add Art & Mint NFTs'];
+          const stepNames = ['Create Collection', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
           
           return (
             <div key={stepNumber} className="flex items-center">
@@ -705,6 +706,35 @@ export const UnifiedMintInterface = () => {
 
   // If collection is created and on Step 3, show minting interface directly
   if (createdCollectionId && currentStep === 3) {
+    // Guard: Check if collection is minted on-chain
+    if (!step3Collection?.collection_mint_address) {
+      return (
+        <div className="w-full max-w-4xl mx-auto">
+          <Card className="border-orange-200 dark:border-orange-800">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-orange-600" />
+                </div>
+                <h2 className="text-2xl font-bold mb-4 text-orange-700 dark:text-orange-400">
+                  Collection Not Minted On-Chain
+                </h2>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Before you can mint individual NFTs, you need to mint your collection on the Solana blockchain first.
+                </p>
+                <Button 
+                  onClick={() => setCurrentStep(2)}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Go Back to Step 2: Mint Collection
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
         {/* Congratulations Banner */}
@@ -1833,252 +1863,197 @@ export const UnifiedMintInterface = () => {
               </CardContent>
             </Card>
           ) : (
-            /* Step 2: Configure Minting */
+            /* Step 2: Mint Collection On-Chain */
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-6 w-6" />
-                  Step 2: Mint Collection
-                  <Badge variant="secondary">Required for minting</Badge>
+                  <Zap className="h-6 w-6" />
+                  Step 2: Mint Collection On-Chain
+                  <Badge variant="secondary">Creates Collection NFT</Badge>
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  {createdCollectionId ? 
-                    'Your collection is ready! Now configure the minting settings for your NFTs.' :
-                    'Complete these settings to enable NFT minting for your collection.'
-                  }
+                  Create your collection on the Solana blockchain. This creates a "Collection NFT" that serves as the parent for all NFTs you'll mint in Step 3.
                 </p>
               </CardHeader>
               
               <CardContent className="space-y-6">
-                <form className="space-y-6">
-                  
-                  {/* Collection Avatar (Required for minting) */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="h-5 w-5 text-primary" />
-                      <Label className="text-lg font-semibold required-field">Collection Avatar <span className="text-destructive">*</span></Label>
-                      <Badge variant="secondary">For Collection Display</Badge>
+                {/* Collection Summary */}
+                <div className="bg-muted/30 rounded-lg p-4 border">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Collection Summary
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Name:</span>
+                      <span className="ml-2 font-medium">{formData.name}</span>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <Label htmlFor="avatar-upload" className="cursor-pointer">
-                          <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                            <AspectRatio ratio={1}>
-                              {imagePreview ? (
-                                <img
-                                  src={imagePreview}
-                                  alt="Collection avatar"
-                                  className="h-full w-full object-cover rounded-md"
-                                />
-                              ) : (
-                                <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                                  <div>
-                                    <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                                    <p className="text-sm font-medium">Avatar Required</p>
-                                    <p className="text-xs text-muted-foreground">Square format (1:1 ratio)</p>
-                                  </div>
-                                </div>
-                              )}
-                            </AspectRatio>
-                          </div>
-                        </Label>
-                        <Input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Requirements:</h4>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• <strong>Format:</strong> Square (1:1 ratio)</li>
-                          <li>• <strong>Files:</strong> JPG, PNG, GIF, WEBP</li>
-                          <li>• <strong>Size:</strong> Maximum 5MB</li>
-                          <li>• <strong>Required:</strong> Needed for minting</li>
-                        </ul>
-                      </div>
+                    <div>
+                      <span className="text-muted-foreground">Description:</span>
+                      <span className="ml-2 font-medium">
+                        {formData.site_description ? `${formData.site_description.slice(0, 50)}...` : 'No description'}
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  {/* Minting Configuration */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Settings className="h-5 w-5 text-primary" />
-                      <Label className="text-lg font-semibold">Minting Configuration</Label>
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg border-l-4 border-primary">
-                      <strong>Important:</strong> The settings below apply to the individual NFTs you will create (the "stamps"), not the Collection itself (the "stamp album"). You are setting the permanent rules that each NFT in this set will follow.
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="symbol" className="required-field">
-                          Symbol <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="symbol"
-                          value={formData.symbol || ''}
-                          onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                          placeholder="e.g., ANIMF"
-                          maxLength={10}
-                          className="h-12 text-lg"
-                          required
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">A short, unique 'ticker' for your NFT series (5-10 characters, e.g., ANIMF). This is permanent and cannot be changed after setup.</p>
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="mint-price" className="required-field">Mint Price (SOL) <span className="text-destructive">*</span></Label>
-                        <Input
-                          id="mint-price"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={formData.mint_price !== undefined ? formData.mint_price : ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '') {
-                              setFormData({...formData, mint_price: undefined});
-                            } else {
-                              const numValue = parseFloat(value);
-                              if (!isNaN(numValue) && numValue >= 0) {
-                                setFormData({...formData, mint_price: numValue});
-                              }
-                            }
-                          }}
-                          placeholder="0 for free minting"
-                          className="h-12 text-lg"
-                          required
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">Set to 0 for a FREE mint, or any amount in SOL. This price is for the initial, primary sale only. After an NFT is owned, the holder can list it for any new price on the secondary market.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="max-supply" className="required-field">
-                          Max Supply <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="max-supply"
-                          type="number"
-                          min="1"
-                          max="100000"
-                          value={formData.max_supply !== undefined ? formData.max_supply : ''}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            if (v === '') {
-                              setFormData({ ...formData, max_supply: undefined });
-                            } else {
-                              const num = parseInt(v, 10);
-                              if (!isNaN(num)) {
-                                setFormData({ ...formData, max_supply: num });
-                              }
-                            }
-                          }}
-                          className="h-12 text-lg"
-                          required
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="royalties" className="required-field">Royalties (%) <span className="text-destructive">*</span></Label>
-                        <Input
-                          id="royalties"
-                          type="number"
-                          min="0"
-                          max="50"
-                          step="0.1"
-                          value={formData.royalty_percentage !== undefined ? formData.royalty_percentage : ''}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            if (v === '') {
-                              setFormData({ ...formData, royalty_percentage: undefined });
-                            } else {
-                              const num = parseFloat(v);
-                              if (!isNaN(num) && num >= 0 && num <= 50) {
-                                setFormData({ ...formData, royalty_percentage: num });
-                              }
-                            }
-                          }}
-                          className="h-12 text-lg"
-                          required
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 50%.</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="treasury" className="required-field">
-                        Treasury Wallet <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="treasury"
-                        value={formData.treasury_wallet || publicKey || ''}
-                        onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
-                        placeholder="Wallet address for payments"
-                        className="h-12 text-lg"
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">The Solana wallet address that will receive your initial sales and future royalties</p>
+                {/* What happens when you mint */}
+                <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                  <h3 className="font-semibold mb-3 text-primary">What happens when you mint on-chain:</h3>
+                  <ul className="text-sm space-y-2 text-muted-foreground">
+                    <li>✓ Creates a Collection NFT on Solana (represents your collection)</li>
+                    <li>✓ Uploads collection metadata to IPFS/Arweave</li>
+                    <li>✓ Sets you as the collection authority</li>
+                    <li>✓ Enables minting individual NFTs in Step 3</li>
+                  </ul>
+                </div>
+
+                {/* Cost estimation */}
+                <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                  <h3 className="font-semibold mb-2 text-orange-700 dark:text-orange-400">
+                    💰 Estimated Costs (Demo Mode)
+                  </h3>
+                  <div className="text-sm space-y-1 text-orange-600 dark:text-orange-300">
+                    <div>• Collection NFT Creation: ~0.01 SOL</div>
+                    <div>• Metadata Storage: ~0.002 SOL</div>
+                    <div>• Network Fees: ~0.001 SOL</div>
+                    <div className="font-semibold pt-1 border-t border-orange-200 dark:border-orange-800">
+                      Total: ~0.013 SOL (~$2-5)
                     </div>
                   </div>
+                </div>
 
-                  {/* Optional Settings */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Settings className="h-5 w-5 text-primary" />
-                      <Label className="text-lg font-semibold">Optional Settings</Label>
+                {/* Demo warning */}
+                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <h3 className="font-semibold mb-2 text-blue-700 dark:text-blue-400">
+                    🧪 Demo Mode Active
+                  </h3>
+                  <p className="text-sm text-blue-600 dark:text-blue-300">
+                    This is currently running in demo mode. No real transactions will be made and no SOL will be spent. 
+                    The UI will simulate the minting process for testing purposes.
+                  </p>
+                </div>
+
+                {/* Mint Collection Button */}
+                <div className="flex flex-col items-center space-y-4 py-6">
+                  {step3Collection?.collection_mint_address ? (
+                    // Already minted
+                    <div className="text-center space-y-3">
+                      <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
+                        <Check className="h-8 w-8 text-green-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-green-700 dark:text-green-400">
+                        Collection Minted Successfully! ✨
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Your collection is now live on-chain and ready for NFT minting.
+                      </p>
+                      <div className="bg-muted/50 rounded-lg p-3 text-xs font-mono">
+                        Collection Address: {step3Collection.collection_mint_address}
+                      </div>
+                      <Button 
+                        onClick={handleNextStep}
+                        className="flex items-center gap-2"
+                      >
+                        Continue to Step 3: Mint NFTs
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                    
-                    <div>
-                      <Label htmlFor="onchain-description">On-Chain Description (Optional)</Label>
-                      <Textarea
-                        id="onchain-description"
-                        value={formData.onchain_description || ''}
-                        onChange={(e) => setFormData({...formData, onchain_description: e.target.value})}
-                        placeholder="Brief description stored on blockchain..."
-                        className="h-20 text-lg"
-                        maxLength={200}
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {(formData.onchain_description || '').length}/200 characters - Stored permanently on-chain
+                  ) : (
+                    // Not yet minted
+                    <div className="text-center space-y-4">
+                      <Button 
+                        size="lg"
+                        onClick={async () => {
+                          // Demo mint collection functionality
+                          toast({
+                            title: '🚀 Minting Collection...',
+                            description: 'Creating your collection on-chain (demo mode)',
+                          });
+                          
+                          // Simulate network delay
+                          setTimeout(async () => {
+                            // Generate mock collection mint address
+                            const mockMintAddress = `Demo${Math.random().toString(36).substring(2, 15)}Mock`;
+                            
+                            // Update collection with mock address
+                            try {
+                              const { data, error } = await supabase.functions.invoke('update-collection', {
+                                body: {
+                                  collection_id: createdCollectionId,
+                                  updates: {
+                                    collection_mint_address: mockMintAddress
+                                  }
+                                }
+                              });
+
+                              if (data?.success) {
+                                await loadStep3Collection();
+                                toast({
+                                  title: '✅ Collection Minted Successfully!',
+                                  description: `Your collection is now live on-chain (demo)`,
+                                });
+                              } else {
+                                toast({
+                                  title: 'Demo Update Failed',
+                                  description: 'Could not update collection status',
+                                  variant: 'destructive',
+                                });
+                              }
+                            } catch (error) {
+                              toast({
+                                title: 'Demo Error',
+                                description: 'Failed to simulate collection minting',
+                                variant: 'destructive',
+                              });
+                            }
+                          }, 2000);
+                        }}
+                        className="flex items-center gap-2 text-lg px-8 py-3"
+                        disabled={creating}
+                      >
+                        {creating ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Minting Collection...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="h-5 w-5" />
+                            Mint Collection On-Chain (Demo)
+                          </>
+                        )}
+                      </Button>
+                      <p className="text-xs text-muted-foreground max-w-md">
+                        This will create your collection NFT on Solana and enable individual NFT minting in the next step.
                       </p>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="whitelist" className="font-medium">Enable Whitelist</Label>
-                        <p className="text-sm text-muted-foreground">Only allow specific wallet addresses to mint (exclusive access)</p>
-                      </div>
-                      <Switch 
-                        id="whitelist"
-                        checked={formData.whitelist_enabled || false}
-                        onCheckedChange={(checked) => setFormData({...formData, whitelist_enabled: checked})}
-                      />
-                    </div>
-                  </div>
+                  )}
+                </div>
 
-                  {/* Navigation */}
-                  <div className="flex justify-between pt-6 border-t">
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={handlePreviousStep}
-                      className="flex items-center gap-2"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Back to Step 1
-                    </Button>
-                    <div />
+                {/* Navigation */}
+                <div className="flex justify-between pt-6 border-t">
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={handlePreviousStep}
+                    className="flex items-center gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Back to Step 1
+                  </Button>
+                  <div>
+                    {step3Collection?.collection_mint_address && (
+                      <Button 
+                        onClick={handleNextStep}
+                        className="flex items-center gap-2"
+                      >
+                        Continue to Step 3
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                </form>
+                </div>
               </CardContent>
             </Card>
           )}
