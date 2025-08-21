@@ -26,7 +26,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
             <CardDescription className="text-base">
-              Have an original character or a piece of fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible that you truly own. It's fast, simple, and free.
+              Have an original character or fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible that you truly own.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
