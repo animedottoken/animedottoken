@@ -10,11 +10,10 @@ export function NFTPreviewSection() {
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
-          The Home for Anime NFTs on Solana
+          The Easiest Way to Create & Collect Anime Art NFTs
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Join the ANIME ecosystem by minting unique NFTs and trading in our marketplace. 
-          Lightning-fast transactions with minimal fees on Solana blockchain.
+          Finally, a safe and simple platform for anime fans to turn their art into digital collectibles. No crypto experience needed—we guide you through every step.
         </p>
       </div>
 
@@ -25,24 +24,24 @@ export function NFTPreviewSection() {
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Coins className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Mint Your NFTs</CardTitle>
+            <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
             <CardDescription className="text-base">
-              Create and mint your original anime-inspired art directly on Solana. Our tool makes it easy to add custom traits, set your own creator royalties, and launch your collection.
+              Have an original character or a piece of fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible that you truly own. It's fast, simple, and free.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Zap className="h-5 w-5 text-green-500" />
-                <span className="text-sm">FREE Minting (Gas only)</span>
+                <span className="text-sm">Free to Create (you only pay network fees)</span>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">On-Chain Creator Royalties</span>
+                <span className="text-sm">Earn Royalties on Future Sales</span>
               </div>
               <div className="flex items-center gap-3">
                 <Palette className="h-5 w-5 text-purple-500" />
-                <span className="text-sm">Custom Rarity Traits</span>
+                <span className="text-sm">Add Custom Traits & Rarity</span>
               </div>
             </div>
             
@@ -52,7 +51,7 @@ export function NFTPreviewSection() {
               </Badge>
               <Link to="/mint" className="block">
                 <Button className="w-full group-hover:scale-105 transition-transform">
-                  Start Minting
+                  Start Creating
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
@@ -66,24 +65,24 @@ export function NFTPreviewSection() {
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ShoppingBag className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="text-2xl">NFT Marketplace</CardTitle>
+            <CardTitle className="text-2xl">The Anime Art Marketplace</CardTitle>
             <CardDescription className="text-base">
-              Discover, buy, and sell unique anime NFTs from the community
+              Discover and collect unique digital art from talented creators in the ANIME community. Every piece on our marketplace is verified on the Solana blockchain, guaranteeing its authenticity. Whether you're a seasoned collector or buying your first piece, this is your trusted home for high-quality, anime-inspired art.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Zap className="h-5 w-5 text-green-500" />
-                <span className="text-sm">Instant Transactions</span>
+                <span className="text-sm">Instant & Secure Transactions</span>
               </div>
               <div className="flex items-center gap-3">
                 <Palette className="h-5 w-5 text-purple-500" />
-                <span className="text-sm">Curated Collections</span>
+                <span className="text-sm">Curated & Verified Artists</span>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">Community Trading</span>
+                <span className="text-sm">A Community of Fans & Collectors</span>
               </div>
             </div>
 
@@ -93,7 +92,7 @@ export function NFTPreviewSection() {
               </Badge>
               <Link to="/marketplace" className="block">
                 <Button variant="outline" className="w-full group-hover:scale-105 transition-transform">
-                  Browse Marketplace
+                  Explore the Marketplace
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
