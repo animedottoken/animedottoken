@@ -88,6 +88,15 @@ export const UnifiedMintInterface = () => {
   const [standaloneImageFile, setStandaloneImageFile] = useState<File | null>(null);
   const [standaloneImagePreview, setStandaloneImagePreview] = useState<string | null>(null);
 
+  // Collection NFT details state (for batch metadata)
+  const [nftDetails, setNftDetails] = useState({
+    nftImageFile: null as File | null,
+    nftImagePreview: null as string | null,
+    nftName: '',
+    nftDescription: '',
+    nftAttributes: [] as Array<{ trait_type: string; value: string }>
+  });
+
   // Update treasury wallet when wallet connects
   React.useEffect(() => {
     if (publicKey) {
@@ -457,6 +466,59 @@ export const UnifiedMintInterface = () => {
     }));
   };
 
+  // NFT Details handlers for collection minting
+  const handleNftImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({
+          title: 'Invalid image file',
+          description: validation.error,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setNftDetails(prev => ({
+        ...prev,
+        nftImageFile: file,
+      }));
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        setNftDetails(prev => ({
+          ...prev,
+          nftImagePreview: reader.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addNftAttribute = () => {
+    setNftDetails(prev => ({
+      ...prev,
+      nftAttributes: [...prev.nftAttributes, { trait_type: '', value: '' }]
+    }));
+  };
+
+  const removeNftAttribute = (index: number) => {
+    setNftDetails(prev => ({
+      ...prev,
+      nftAttributes: prev.nftAttributes.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateNftAttribute = (index: number, field: 'trait_type' | 'value', value: string) => {
+    setNftDetails(prev => ({
+      ...prev,
+      nftAttributes: prev.nftAttributes.map((attr, i) => 
+        i === index ? { ...attr, [field]: value } : attr
+      )
+    }));
+  };
+
   const resetCollection = () => {
     setCreatedCollectionId(null);
     setCurrentStep(1);
@@ -481,6 +543,14 @@ export const UnifiedMintInterface = () => {
     setBannerFile(null);
     setBannerPreview(null);
     setShowAdvanced(false);
+    // Reset NFT details
+    setNftDetails({
+      nftImageFile: null,
+      nftImagePreview: null,
+      nftName: '',
+      nftDescription: '',
+      nftAttributes: []
+    });
   };
 
   const handleNextStep = () => {
@@ -1013,12 +1083,33 @@ export const UnifiedMintInterface = () => {
                   <div className="flex items-center gap-2">
                     <FileImage className="h-5 w-5" />
                     Individual NFT Artwork & Details (Optional)
+                    <Badge variant="outline" className="ml-2">Batch Metadata</Badge>
                   </div>
                   <ChevronDown className="h-5 w-5" />
                 </CardTitle>
-                <p className="text-muted-foreground text-left">
-                  Configure specific details for each NFT in your mint batch (image, name, description, attributes).
-                </p>
+                <div className="text-left space-y-2">
+                  <p className="text-muted-foreground">
+                    Configure specific artwork and metadata that will be applied to all NFTs in your mint batch.
+                  </p>
+                  <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border-l-4 border-blue-400">
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      <strong>Purpose:</strong> This section lets you upload custom artwork and details that will be used for all NFTs you mint from this collection. If left empty, NFTs will use the collection's default avatar and auto-generated names.
+                    </p>
+                  </div>
+                  {(nftDetails.nftImagePreview || nftDetails.nftName || nftDetails.nftDescription || nftDetails.nftAttributes.length > 0) && (
+                    <div className="bg-green-50 dark:bg-green-950/30 p-3 rounded-lg border-l-4 border-green-400">
+                      <p className="text-sm text-green-700 dark:text-green-300 font-medium mb-2">
+                        ✓ NFT Details Configured:
+                      </p>
+                      <div className="space-y-1 text-xs text-green-600 dark:text-green-400">
+                        {nftDetails.nftImagePreview && <div>• Custom artwork uploaded</div>}
+                        {nftDetails.nftName && <div>• Name: "{nftDetails.nftName}"</div>}
+                        {nftDetails.nftDescription && <div>• Description added</div>}
+                        {nftDetails.nftAttributes.length > 0 && <div>• {nftDetails.nftAttributes.length} attribute(s) added</div>}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -1026,37 +1117,66 @@ export const UnifiedMintInterface = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* NFT Image */}
                   <div className="space-y-4">
-                    <Label htmlFor="nft-image">Individual NFT Image (Optional)</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                      <AspectRatio ratio={1}>
-                        <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
-                          <div>
-                            <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-sm font-medium">Upload NFT Artwork</p>
-                            <p className="text-xs text-muted-foreground">Will be used for all NFTs in this mint</p>
-                          </div>
-                        </div>
-                      </AspectRatio>
-                    </div>
+                    <Label htmlFor="nft-image">Individual NFT Artwork (Optional)</Label>
+                    <Label htmlFor="nft-image-upload" className="cursor-pointer">
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                        <AspectRatio ratio={1}>
+                          {nftDetails.nftImagePreview ? (
+                            <img
+                              src={nftDetails.nftImagePreview}
+                              alt="NFT artwork"
+                              className="h-full w-full object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                              <div>
+                                <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                                <p className="text-sm font-medium">Upload NFT Artwork</p>
+                                <p className="text-xs text-muted-foreground">Will be used for all NFTs in this batch</p>
+                              </div>
+                            </div>
+                          )}
+                        </AspectRatio>
+                      </div>
+                    </Label>
+                    <Input
+                      id="nft-image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleNftImageChange}
+                      className="hidden"
+                    />
                   </div>
                   
                   {/* NFT Details */}
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="nft-name">NFT Name (Optional)</Label>
+                      <Label htmlFor="nft-name">NFT Name Template (Optional)</Label>
                       <Input
                         id="nft-name"
-                        placeholder="e.g., Cyber Samurai #1"
+                        value={nftDetails.nftName}
+                        onChange={(e) => setNftDetails(prev => ({ ...prev, nftName: e.target.value }))}
+                        placeholder="e.g., Cyber Samurai or leave empty for auto-numbering"
+                        maxLength={100}
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        NFTs will be named "{nftDetails.nftName || 'Collection Name'} #1", "#2", etc.
+                      </p>
                     </div>
                     
                     <div>
                       <Label htmlFor="nft-description">NFT Description (Optional)</Label>
                       <Textarea
                         id="nft-description"
+                        value={nftDetails.nftDescription}
+                        onChange={(e) => setNftDetails(prev => ({ ...prev, nftDescription: e.target.value }))}
                         placeholder="Description for individual NFTs..."
                         className="h-20"
+                        maxLength={500}
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {nftDetails.nftDescription.length}/500 characters
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1065,7 +1185,7 @@ export const UnifiedMintInterface = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={addNftAttribute}>
                       <Plus className="h-4 w-4 mr-1" />
                       Add Attribute
                     </Button>
@@ -1073,6 +1193,42 @@ export const UnifiedMintInterface = () => {
                   <div className="text-sm text-muted-foreground">
                     Add metadata attributes that will be applied to all NFTs in this mint batch.
                   </div>
+                  
+                  {nftDetails.nftAttributes.length > 0 && (
+                    <div className="space-y-3">
+                      {nftDetails.nftAttributes.map((attr, index) => (
+                        <div key={index} className="flex gap-3 items-end">
+                          <div className="flex-1">
+                            <Label>Trait Type</Label>
+                            <Input
+                              value={attr.trait_type}
+                              onChange={(e) => updateNftAttribute(index, 'trait_type', e.target.value)}
+                              placeholder="e.g., Rarity"
+                              className="h-10 text-base"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Label>Value</Label>
+                            <Input
+                              value={attr.value}
+                              onChange={(e) => updateNftAttribute(index, 'value', e.target.value)}
+                              placeholder="e.g., Epic"
+                              className="h-10 text-base"
+                            />
+                          </div>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => removeNftAttribute(index)}
+                            className="mb-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </CollapsibleContent>
@@ -1085,11 +1241,20 @@ export const UnifiedMintInterface = () => {
             <CardTitle className="text-xl font-bold flex items-center gap-2">
               <Zap className="h-5 w-5" />
               Create NFTs in this Collection
+              <Badge variant="secondary" className="ml-2">Actual Minting</Badge>
             </CardTitle>
+            <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-lg border-l-4 border-amber-400">
+              <p className="text-sm text-amber-700 dark:text-amber-300">
+                <strong>Purpose:</strong> This is where you actually mint the NFTs to your wallet. Choose how many you want to create and click mint. Each NFT will use your collection settings and any custom artwork/details configured above.
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
             {createdCollectionId && (
-              <MintingInterface collectionId={createdCollectionId} />
+              <MintingInterface 
+                collectionId={createdCollectionId} 
+                nftDetails={nftDetails}
+              />
             )}
           </CardContent>
         </Card>

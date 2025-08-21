@@ -107,7 +107,14 @@ export const useMintQueue = () => {
   // Create new mint job
   const createMintJob = async (
     collectionId: string, 
-    quantity: number
+    quantity: number,
+    nftDetails?: {
+      nftImageFile: File | null;
+      nftImagePreview: string | null;
+      nftName: string;
+      nftDescription: string;
+      nftAttributes: Array<{ trait_type: string; value: string }>;
+    }
   ): Promise<CreateJobResult> => {
     if (!publicKey) {
       return { success: false, error: 'Wallet not connected' };
@@ -129,7 +136,13 @@ export const useMintQueue = () => {
           quantity,
           walletAddress: publicKey,
           signature,
-          message
+          message,
+          nftDetails: nftDetails ? {
+            name: nftDetails.nftName,
+            description: nftDetails.nftDescription,
+            attributes: nftDetails.nftAttributes.filter(attr => attr.trait_type && attr.value),
+            imagePreview: nftDetails.nftImagePreview
+          } : null
         }
       });
 

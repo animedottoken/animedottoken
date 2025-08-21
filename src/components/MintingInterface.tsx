@@ -30,11 +30,20 @@ interface Collection {
   royalty_percentage?: number;
 }
 
-interface MintingInterfaceProps {
-  collectionId?: string;
+interface NFTDetails {
+  nftImageFile: File | null;
+  nftImagePreview: string | null;
+  nftName: string;
+  nftDescription: string;
+  nftAttributes: Array<{ trait_type: string; value: string }>;
 }
 
-export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000' }: MintingInterfaceProps) => {
+interface MintingInterfaceProps {
+  collectionId?: string;
+  nftDetails?: NFTDetails;
+}
+
+export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000', nftDetails }: MintingInterfaceProps) => {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [collectionLoading, setCollectionLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -135,7 +144,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const handleMint = async () => {
     if (!collection || !connected) return;
     
-    const result = await createMintJob(collection.id, quantity);
+    const result = await createMintJob(collection.id, quantity, nftDetails);
     if (result.success) {
       setQuantity(1); // Reset quantity after successful job creation
     }
