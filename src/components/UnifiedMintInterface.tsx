@@ -732,17 +732,21 @@ export const UnifiedMintInterface = () => {
                 className="w-full h-full object-cover"
               />
                  {/* Collection Avatar Overlay - Doubled Size */}
-                 {(imagePreview || step3Collection?.image_url) && (
-                   <div className="absolute bottom-6 left-6">
-                     <div className="w-64 h-64 rounded-xl overflow-hidden border-4 border-background shadow-xl">
-                       <img 
-                         src={imagePreview || step3Collection?.image_url!}
-                         alt={`${step3Collection?.name || formData.name} avatar`}
-                         className="w-full h-full object-cover"
-                       />
-                     </div>
+                 <div className="absolute bottom-6 left-6">
+                   <div className="w-64 h-64 rounded-xl overflow-hidden border-4 border-background shadow-xl bg-muted">
+                     <img 
+                       src={imagePreview || step3Collection?.image_url || "/placeholder.svg"}
+                       alt={`${step3Collection?.name || formData.name || 'Collection'} avatar`}
+                       className="w-full h-full object-cover"
+                       onError={(e) => {
+                         const img = e.currentTarget as HTMLImageElement;
+                         if (img.src !== "/placeholder.svg") {
+                           img.src = "/placeholder.svg";
+                         }
+                       }}
+                     />
                    </div>
-                 )}
+                 </div>
             </AspectRatio>
           </Card>
         )}

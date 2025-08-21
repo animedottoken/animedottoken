@@ -217,11 +217,17 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-lg">
+              <div className="aspect-square overflow-hidden rounded-lg bg-muted">
                 <img 
-                  src={collection.image_url} 
+                  src={collection.image_url || "/placeholder.svg"} 
                   alt={collection.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    if (img.src !== "/placeholder.svg") {
+                      img.src = "/placeholder.svg";
+                    }
+                  }}
                 />
               </div>
               
