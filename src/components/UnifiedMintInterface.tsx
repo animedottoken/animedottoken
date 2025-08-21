@@ -901,6 +901,7 @@ export const UnifiedMintInterface = () => {
                         onChange={(e) => setStandaloneData({...standaloneData, name: e.target.value})}
                         placeholder="e.g., My Awesome NFT"
                         maxLength={100}
+                        className="h-12 text-lg"
                         required
                       />
                       <p className="text-xs text-muted-foreground mt-1">
@@ -916,6 +917,7 @@ export const UnifiedMintInterface = () => {
                         onChange={(e) => setStandaloneData({...standaloneData, symbol: e.target.value.toUpperCase()})}
                         placeholder="e.g., MYNFT"
                         maxLength={10}
+                        className="h-12 text-lg"
                       />
                     </div>
                   </div>
@@ -927,7 +929,7 @@ export const UnifiedMintInterface = () => {
                       value={standaloneData.description}
                       onChange={(e) => setStandaloneData({...standaloneData, description: e.target.value})}
                       placeholder="Describe your NFT..."
-                      className="h-24"
+                      className="h-28 text-lg"
                       maxLength={1000}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
@@ -945,6 +947,7 @@ export const UnifiedMintInterface = () => {
                         max="10"
                         value={standaloneData.quantity}
                         onChange={(e) => setStandaloneData({...standaloneData, quantity: parseInt(e.target.value) || 1})}
+                        className="h-12 text-lg"
                       />
                       <p className="text-xs text-muted-foreground mt-1">1-10 NFTs</p>
                     </div>
@@ -959,6 +962,7 @@ export const UnifiedMintInterface = () => {
                         step="0.1"
                         value={standaloneData.royalty_percentage}
                         onChange={(e) => setStandaloneData({...standaloneData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                        className="h-12 text-lg"
                       />
                     </div>
 
@@ -1005,6 +1009,7 @@ export const UnifiedMintInterface = () => {
                               value={attr.trait_type}
                               onChange={(e) => updateAttribute(index, 'trait_type', e.target.value)}
                               placeholder="e.g., Color"
+                              className="h-10 text-base"
                             />
                           </div>
                           <div className="flex-1">
@@ -1013,6 +1018,7 @@ export const UnifiedMintInterface = () => {
                               value={attr.value}
                               onChange={(e) => updateAttribute(index, 'value', e.target.value)}
                               placeholder="e.g., Blue"
+                              className="h-10 text-base"
                             />
                           </div>
                           <Button 
