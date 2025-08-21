@@ -609,10 +609,10 @@ export const UnifiedMintInterface = () => {
                 alt={`${formData.name || step3Collection?.name} banner`}
                 className="w-full h-full object-cover"
               />
-                 {/* Collection Avatar Overlay */}
+                 {/* Collection Avatar Overlay - Much Bigger */}
                  {(imagePreview || step3Collection?.image_url) && (
-                   <div className="absolute bottom-4 left-4">
-                     <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
+                   <div className="absolute bottom-6 left-6">
+                     <div className="w-32 h-32 rounded-xl overflow-hidden border-4 border-background shadow-xl">
                        <img 
                          src={imagePreview || step3Collection?.image_url!}
                          alt={`${step3Collection?.name || formData.name} avatar`}
@@ -625,65 +625,68 @@ export const UnifiedMintInterface = () => {
           </Card>
         )}
 
-        {/* Collection Info Banner */}
+        {/* Collection Details Header */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
           <CardHeader>
-            <CardTitle className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                {(imagePreview || step3Collection?.image_url) && (
-                  <img 
-                    src={imagePreview || step3Collection?.image_url!}
-                    alt={step3Collection?.name || formData.name}
-                    className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
-                  />
-                )}
-                <div>
-                  <h3 className="text-xl font-bold">{step3Collection?.name || formData.name}</h3>
-                  <p className="text-sm text-muted-foreground">Symbol: {step3Collection?.symbol || formData.symbol || '—'}</p>
+            <div className="space-y-6">
+              {/* Collection Name & Symbol */}
+              <div className="space-y-3">
+                <h2 className="text-2xl font-bold">Collection Overview</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Name</label>
+                    <p className="text-xl font-bold mt-1">{step3Collection?.name || formData.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Symbol</label>
+                    <p className="text-xl font-bold mt-1">{step3Collection?.symbol || formData.symbol || '—'}</p>
+                  </div>
                 </div>
               </div>
-            </CardTitle>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg text-green-600">
-                  {((formData.mint_price ?? step3Collection?.mint_price) === 0)
-                    ? 'FREE'
-                    : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
-                </div>
-                <div className="text-xs text-muted-foreground">Mint Price</div>
-              </div>
-              <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
-                <div className="text-xs text-muted-foreground">Max Supply</div>
-              </div>
-              <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
-                <div className="text-xs text-muted-foreground">Royalties</div>
-              </div>
-              <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
-                <div className="text-xs text-muted-foreground">Status</div>
-              </div>
-            </div>
 
-            {/* Extra details the user requested to see visibly */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="p-3 bg-background/50 rounded-lg">
-                <div className="text-xs text-muted-foreground mb-1">Treasury Wallet</div>
-                <div className="font-mono break-all text-sm">
-                  {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
+              {/* Collection Minting Configuration */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <div className="font-bold text-lg text-green-600">
+                    {((formData.mint_price ?? step3Collection?.mint_price) === 0)
+                      ? 'FREE'
+                      : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Royalties</div>
+                </div>
+                <div className="text-center p-4 bg-background/50 rounded-lg">
+                  <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Status</div>
                 </div>
               </div>
-              <div className="p-3 bg-background/50 rounded-lg">
-                <div className="text-xs text-muted-foreground mb-1">Whitelist</div>
-                <div className="text-sm font-semibold">
-                  {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+
+              {/* Collection Advanced Settings */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-background/50 rounded-lg">
+                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection Treasury Wallet</div>
+                  <div className="font-mono break-all text-sm">
+                    {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
+                  </div>
                 </div>
-              </div>
-              <div className="p-3 bg-background/50 rounded-lg">
-                <div className="text-xs text-muted-foreground mb-1">On-chain Description</div>
-                <div className="text-sm">
-                  {formData.onchain_description || step3Collection?.description || '—'}
+                <div className="p-4 bg-background/50 rounded-lg">
+                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection Whitelist</div>
+                  <div className="text-sm font-semibold">
+                    {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                  </div>
+                </div>
+                <div className="p-4 bg-background/50 rounded-lg">
+                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Collection On-chain Description</div>
+                  <div className="text-sm">
+                    {formData.onchain_description || step3Collection?.description || '—'}
+                  </div>
                 </div>
               </div>
             </div>
