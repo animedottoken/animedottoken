@@ -39,6 +39,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
+  { type: "section", title: "Create NFTs", icon: Coins, hash: "nft-preview-section" },
   { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote-section" },
 ];
 
