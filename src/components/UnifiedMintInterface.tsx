@@ -1264,63 +1264,6 @@ export const UnifiedMintInterface = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
-                {/* NFT Attributes */}
-                <div className="space-y-4">
-                  <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
-                  <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Add metadata attributes that will be applied to all NFTs in this mint batch.
-                  </div>
-                  
-                  {nftDetails.nftAttributes.length > 0 ? (
-                    <div className="space-y-3">
-                      {nftDetails.nftAttributes.map((attr, index) => (
-                        <div key={index} className="flex gap-3 items-end">
-                          <div className="flex-1">
-                            <Label>Trait Type</Label>
-                            <Input
-                              value={attr.trait_type}
-                              onChange={(e) => updateNftAttribute(index, 'trait_type', e.target.value)}
-                              placeholder="e.g., Rarity"
-                              className="h-10 text-base"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Label>Value</Label>
-                            <Input
-                              value={attr.value}
-                              onChange={(e) => updateNftAttribute(index, 'value', e.target.value)}
-                              placeholder="e.g., Epic"
-                              className="h-10 text-base"
-                            />
-                          </div>
-                          <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => removeNftAttribute(index)}
-                            className="mb-0"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                          {index === nftDetails.nftAttributes.length - 1 && (
-                            <Button variant="outline" size="sm" onClick={addNftAttribute}>
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <Button variant="outline" size="sm" onClick={addNftAttribute}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Attribute
-                    </Button>
-                  )}
-                </div>
               </div>
 
               {/* Right Column - NFT Details & Minting Interface */}
@@ -1354,6 +1297,63 @@ export const UnifiedMintInterface = () => {
                     <p className="text-xs text-muted-foreground mt-1">
                       {nftDetails.nftDescription.length}/500 characters
                     </p>
+                  </div>
+
+                  {/* NFT Attributes - MOVED HERE after NFT Description */}
+                  <div className="space-y-4">
+                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Add metadata attributes that will be applied to all NFTs in this mint batch.
+                    </div>
+                    
+                    {nftDetails.nftAttributes.length > 0 ? (
+                      <div className="space-y-3">
+                        {nftDetails.nftAttributes.map((attr, index) => (
+                          <div key={index} className="flex gap-3 items-end">
+                            <div className="flex-1">
+                              <Label>Trait Type</Label>
+                              <Input
+                                value={attr.trait_type}
+                                onChange={(e) => updateNftAttribute(index, 'trait_type', e.target.value)}
+                                placeholder="e.g., Rarity"
+                                className="h-10 text-base"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label>Value</Label>
+                              <Input
+                                value={attr.value}
+                                onChange={(e) => updateNftAttribute(index, 'value', e.target.value)}
+                                placeholder="e.g., Epic"
+                                className="h-10 text-base"
+                              />
+                            </div>
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => removeNftAttribute(index)}
+                              className="mb-0"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                            {index === nftDetails.nftAttributes.length - 1 && (
+                              <Button variant="outline" size="sm" onClick={addNftAttribute}>
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={addNftAttribute}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Attribute
+                      </Button>
+                    )}
                   </div>
                 </div>
 
