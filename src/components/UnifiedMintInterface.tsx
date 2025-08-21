@@ -584,108 +584,53 @@ export const UnifiedMintInterface = () => {
   };
 
   const handleCompleteSetup = async () => {
-    // For existing collections, we don't need to re-validate image files
-    const isExistingCollection = !!createdCollectionId;
+    // For Step 1, we only validate and save form data, then go to Step 2
+    // No minting happens in Step 1 anymore
     
-    // Validate required fields - relaxed for existing collections
-    if (!formData.symbol || (!imageFile && !isExistingCollection && !imagePreview)) {
+    // Validate required fields for Step 1
+    if (!formData.name.trim()) {
       toast({
         title: 'Missing required fields',
-        description: isExistingCollection 
-          ? 'Please add Symbol to update collection settings'
-          : 'Please add Symbol and Avatar before completing setup',
+        description: 'Please add Collection Name before continuing',
         variant: 'destructive',
       });
       return;
     }
 
-    // Validate royalty percentage
-    if (formData.royalty_percentage && (formData.royalty_percentage < 0 || formData.royalty_percentage > 50)) {
+    // If collection already created, just go to Step 2
+    if (createdCollectionId) {
+      setCurrentStep(2);
       toast({
-        title: 'Invalid royalty percentage',
-        description: 'Royalty must be between 0% and 50%',
-        variant: 'destructive',
+        title: '✅ Continuing to Step 2',
+        description: 'Ready to mint your collection on-chain',
       });
       return;
     }
-    
-    if (isExistingCollection) {
-      // Update existing collection using update-collection edge function
-      try {
-        const { data, error } = await supabase.functions.invoke('update-collection', {
-          body: {
-            collection_id: createdCollectionId,
-            updates: {
-              mint_price: formData.mint_price || 0,
-              treasury_wallet: formData.treasury_wallet || publicKey || '',
-              whitelist_enabled: formData.whitelist_enabled || false,
-              onchain_description: formData.onchain_description || null,
-              max_supply: formData.max_supply,
-              royalty_percentage: formData.royalty_percentage,
-            }
-          }
-        });
 
-        if (error) {
-          throw new Error(error.message);
-        }
+    // Create collection (but don't mint on-chain yet)
+    const result = await createCollection({
+      ...formData,
+      enable_primary_sales: false, // Not enabling sales yet
+      image_file: imageFile || undefined,
+      banner_file: bannerFile || undefined,
+    });
 
-        if (data?.success) {
-          setIsCollectionSetupComplete(true);
-          setCurrentStep(3);
-          
-          // Force reload of Step 3 collection data
-          await loadStep3Collection();
-          
-          toast({
-            title: '✅ Collection Updated!',
-            description: 'Your collection settings have been updated successfully.',
-          });
-        } else {
-          throw new Error(data?.error || 'Failed to update collection');
-        }
-      } catch (error) {
-        toast({
-          title: 'Update Failed',
-          description: error instanceof Error ? error.message : 'Failed to update collection settings',
-          variant: 'destructive',
-        });
-        return;
-      }
-    } else {
-      // Create new collection using original method
-      const result = await createCollection({
-        ...formData,
-        symbol: formData.symbol,
-        enable_primary_sales: true,
-        image_file: imageFile || undefined, // Only include if we have a new file
-        mint_price: formData.mint_price || 0,
-        max_supply: formData.max_supply || 100, // Require explicit input, no 1000 default
-        royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
-        treasury_wallet: formData.treasury_wallet || publicKey || '',
+    if (result && (result as any).success && (result as any).collection) {
+      const collectionId = (result as any).collection.id;
+      setCreatedCollectionId(collectionId);
+      
+      toast({
+        title: 'Collection created successfully!',
+        description: 'Now continue to Step 2 to mint it on-chain.',
       });
       
-      if (result?.success) {
-        setIsCollectionSetupComplete(true);
-        setCurrentStep(3);
-        
-        toast({
-          title: '🎉 Collection Setup Complete!',
-          description: 'You can now start minting NFTs from your collection.',
-        });
-        
-        // Clear the file objects since they're uploaded to storage
-        setImageFile(null);
-        setBannerFile(null);
-      } else {
-        const errorMessage = (result as any)?.error || 'Failed to complete collection setup';
-        toast({
-          title: 'Setup Failed',
-          description: errorMessage,
-          variant: 'destructive',
-        });
-        return;
-      }
+      // Auto-navigate to Step 2 (happens via useEffect when createdCollectionId is set)
+    } else {
+      toast({
+        title: 'Failed to create collection',
+        description: ((result as any)?.error?.message) || 'Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -724,13 +669,82 @@ export const UnifiedMintInterface = () => {
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Before you can mint individual NFTs, you need to mint your collection on the Solana blockchain first.
                 </p>
-                <Button 
-                  onClick={() => setCurrentStep(2)}
-                  className="flex items-center gap-2"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Go Back to Step 2: Mint Collection
-                </Button>
+                
+                {/* Demo Mode Active Indicator */}
+                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800 mb-6 max-w-md mx-auto">
+                  <h3 className="font-semibold text-blue-700 dark:text-blue-400 text-sm mb-1">
+                    🧪 Demo Mode Active
+                  </h3>
+                  <p className="text-xs text-blue-600 dark:text-blue-300">
+                    Click the button below to simulate minting on-chain and proceed to Step 3
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button 
+                    onClick={async () => {
+                      // Demo mint collection functionality
+                      toast({
+                        title: '🚀 Minting Collection...',
+                        description: 'Creating your collection on-chain (demo mode)',
+                      });
+                      
+                      // Simulate network delay
+                      setTimeout(async () => {
+                        // Generate mock collection mint address
+                        const mockMintAddress = `Demo${Math.random().toString(36).substring(2, 15)}Mock`;
+                        
+                        // Update collection with mock address
+                        try {
+                          const { data, error } = await supabase.functions.invoke('update-collection', {
+                            body: {
+                              collection_id: createdCollectionId,
+                              updates: {
+                                collection_mint_address: mockMintAddress
+                              }
+                            }
+                          });
+
+                          if (data?.success) {
+                            setIsCollectionSetupComplete(true);
+                            setStep3Collection(prev => prev ? { ...prev, collection_mint_address: mockMintAddress } : prev);
+                            await loadStep3Collection();
+                            toast({
+                              title: '✅ Collection Minted Successfully!',
+                              description: `Your collection is now live on-chain (demo)`,
+                            });
+                            setCurrentStep(3);
+                          } else {
+                            toast({
+                              title: 'Demo Update Failed',
+                              description: 'Could not update collection status',
+                              variant: 'destructive',
+                            });
+                          }
+                        } catch (error) {
+                          toast({
+                            title: 'Demo Error',
+                            description: 'Failed to simulate collection minting',
+                            variant: 'destructive',
+                          });
+                        }
+                      }, 2000);
+                    }}
+                    className="flex items-center gap-2"
+                    size="lg"
+                  >
+                    <Zap className="h-4 w-4" />
+                    Mint on-chain (Demo) now
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setCurrentStep(2)}
+                    className="flex items-center gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Go Back to Step 2: Mint Collection
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1638,20 +1652,19 @@ export const UnifiedMintInterface = () => {
               </div>
 
               <Button 
-                type="button"
-                onClick={handleCompleteSetup}
-                disabled={creating}
+                type="submit"
+                disabled={creating || !formData.name.trim()}
                 className="w-full h-12 text-lg font-semibold"
               >
                 {creating ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Setting up Collection...
+                    Creating Collection...
                   </>
                 ) : (
                   <>
                     <Settings className="mr-2 h-5 w-5" />
-                    Mint Collection and Continue to Step 3
+                    Create & Continue to Step 2
                   </>
                 )}
               </Button>
@@ -1872,6 +1885,10 @@ export const UnifiedMintInterface = () => {
                   <Zap className="h-6 w-6" />
                   Step 2: Mint Collection On-Chain
                   <Badge variant="secondary">Creates Collection NFT</Badge>
+                  {/* Demo Mode Badge */}
+                  <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+                    🧪 Demo Mode
+                  </Badge>
                 </CardTitle>
                 <p className="text-muted-foreground">
                   Create your collection on the Solana blockchain. This creates a "Collection NFT" that serves as the parent for all NFTs you'll mint in Step 3.
