@@ -519,22 +519,34 @@ export const UnifiedMintInterface = () => {
   if (createdCollectionId && currentStep === 3) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
+        {/* Congratulations Banner */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                🎉 Collection Setup Complete!
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Your collection "<strong>{formData.name}</strong>" is now live and ready for minting. Individual NFTs can now be created and sold.
+              </p>
+            </div>
+            <Button variant="outline" onClick={resetCollection}>
+              Create Another
+            </Button>
+          </CardHeader>
+        </Card>
+
+        {/* Minting Interface */}
         <Card>
           <CardHeader className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold flex items-center gap-2">
-              <Zap className="h-6 w-6" />
-              Step 3: Mint Your NFTs
+            <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              Mint Your NFTs
             </CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
-                <ChevronLeft className="h-4 w-4" />
-                Back to Step 2
-              </Button>
-              <Button variant="outline" onClick={resetCollection} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Create Another
-              </Button>
-            </div>
+            <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Step 2
+            </Button>
           </CardHeader>
           <CardContent>
             {createdCollectionId && (

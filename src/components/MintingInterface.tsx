@@ -359,7 +359,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">5%</div>
+              <div className="font-bold">{collection.royalty_percentage || 0}%</div>
               <div className="text-sm text-muted-foreground">Royalties</div>
             </div>
           </div>
