@@ -99,8 +99,8 @@ serve(async (req) => {
       category: body.category || null,
       explicit_content: body.explicit_content ?? false,
       // Always satisfy NOT NULL + CHECK constraints
-      max_supply: body.max_supply && body.max_supply > 0 ? body.max_supply : 1000,
-      items_available: body.max_supply && body.max_supply > 0 ? body.max_supply : 1000,
+      max_supply: body.max_supply ?? 1000,
+      items_available: body.max_supply ?? 1000,
       items_redeemed: 0,
       mint_price: body.mint_price ?? 0,
       royalty_percentage: body.royalty_percentage ?? 0,
