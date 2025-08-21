@@ -628,24 +628,24 @@ export const UnifiedMintInterface = () => {
         </Card>
 
         {/* Minting Interface */}
-        cCarde
-          cCardHeader className="flex items-center justify-between"e
-            cCardTitle className="text-xl font-bold flex items-center gap-2"e
-              cZap className="h-5 w-5" /e
+        <Card>
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <Zap className="h-5 w-5" />
               Create NFTs in this Collection
-            c/CardTitlee
-            cButton variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2"e
-              cChevronLeft className="h-4 w-4" /e
+            </CardTitle>
+            <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
+              <ChevronLeft className="h-4 w-4" />
               Back to Step 2
-            c/Buttone
-          c/CardHeadere
-          cCardContente
+            </Button>
+          </CardHeader>
+          <CardContent>
             {createdCollectionId && (
-              cMintingInterface collectionId={createdCollectionId} /e
+              <MintingInterface collectionId={createdCollectionId} />
             )}
-          c/CardContente
-        c/Carde
-      c/dive
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
