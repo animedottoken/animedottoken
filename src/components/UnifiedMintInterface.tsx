@@ -615,18 +615,18 @@ export const UnifiedMintInterface = () => {
                 alt={`${formData.name || step3Collection?.name} banner`}
                 className="w-full h-full object-cover"
               />
-              {/* Collection Avatar Overlay - Always show if we have imagePreview */}
-              {imagePreview && (
-                <div className="absolute bottom-4 left-4">
-                  <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
-                    <img 
-                      src={imagePreview}
-                      alt={`${formData.name || step3Collection?.name} avatar`}
-                      className="w-full h-full object-cover"
-                    />
+                {/* Collection Avatar Overlay */}
+                {(step3Collection?.image_url || imagePreview) && (
+                  <div className="absolute bottom-4 left-4">
+                    <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
+                      <img 
+                        src={step3Collection?.image_url || imagePreview!}
+                        alt={`${step3Collection?.name || formData.name} avatar`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </AspectRatio>
           </Card>
         )}
@@ -636,36 +636,38 @@ export const UnifiedMintInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                {imagePreview && (
+                {(step3Collection?.image_url || imagePreview) && (
                   <img 
-                    src={imagePreview}
-                    alt={formData.name}
+                    src={step3Collection?.image_url || imagePreview!}
+                    alt={step3Collection?.name || formData.name}
                     className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
                   />
                 )}
                 <div>
-                  <h3 className="text-xl font-bold">{formData.name}</h3>
-                  <p className="text-sm text-muted-foreground">Symbol: {formData.symbol || '—'}</p>
+                  <h3 className="text-xl font-bold">{step3Collection?.name || formData.name}</h3>
+                  <p className="text-sm text-muted-foreground">Symbol: {step3Collection?.symbol || formData.symbol || '—'}</p>
                 </div>
               </div>
             </CardTitle>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               <div className="text-center p-3 bg-background/50 rounded-lg">
                 <div className="font-bold text-lg text-green-600">
-                  {formData.mint_price === 0 ? 'FREE' : `${formData.mint_price} SOL`}
+                  {((step3Collection?.mint_price ?? formData.mint_price) === 0)
+                    ? 'FREE'
+                    : `${step3Collection?.mint_price ?? formData.mint_price ?? ''} SOL`}
                 </div>
                 <div className="text-xs text-muted-foreground">Mint Price</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{formData.max_supply?.toLocaleString?.()}</div>
+                <div className="font-bold text-lg">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.()}</div>
                 <div className="text-xs text-muted-foreground">Max Supply</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{formData.royalty_percentage ?? 0}%</div>
+                <div className="font-bold text-lg">{(step3Collection?.royalty_percentage ?? formData.royalty_percentage ?? 0)}%</div>
                 <div className="text-xs text-muted-foreground">Royalties</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg text-primary">LIVE</div>
+                <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
                 <div className="text-xs text-muted-foreground">Status</div>
               </div>
             </div>
@@ -882,16 +884,26 @@ export const UnifiedMintInterface = () => {
                     <Label htmlFor="max-supply">
                       Max Supply <span className="text-destructive">*</span>
                     </Label>
-                    <Input
-                      id="max-supply"
-                      type="number"
-                      min="1"
-                      max="100000"
-                      value={formData.max_supply || 1000}
-                      onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
-                      className="h-12 text-lg"
-                      required
-                    />
+                      <Input
+                        id="max-supply"
+                        type="number"
+                        min="1"
+                        max="100000"
+                        value={formData.max_supply !== undefined ? formData.max_supply : ''}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          if (v === '') {
+                            setFormData({ ...formData, max_supply: undefined });
+                          } else {
+                            const num = parseInt(v, 10);
+                            if (!isNaN(num)) {
+                              setFormData({ ...formData, max_supply: num });
+                            }
+                          }
+                        }}
+                        className="h-12 text-lg"
+                        required
+                      />
                     <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
                   </div>
                   
@@ -903,13 +915,18 @@ export const UnifiedMintInterface = () => {
                       min="0"
                       max="50"
                       step="0.1"
-                      value={formData.royalty_percentage || 5}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        if (value >= 0 && value <= 50) {
-                          setFormData({...formData, royalty_percentage: value});
-                        }
-                      }}
+                        value={formData.royalty_percentage !== undefined ? formData.royalty_percentage : ''}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          if (v === '') {
+                            setFormData({ ...formData, royalty_percentage: undefined });
+                          } else {
+                            const num = parseFloat(v);
+                            if (!isNaN(num) && num >= 0 && num <= 50) {
+                              setFormData({ ...formData, royalty_percentage: num });
+                            }
+                          }
+                        }}
                       className="h-12 text-lg"
                       required
                     />
