@@ -1348,8 +1348,18 @@ export const UnifiedMintInterface = () => {
                           type="number"
                           min="1"
                           max="100000"
-                          value={formData.max_supply || 1000}
-                          onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
+                          value={formData.max_supply !== undefined ? formData.max_supply : ''}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === '') {
+                              setFormData({ ...formData, max_supply: undefined });
+                            } else {
+                              const num = parseInt(v, 10);
+                              if (!isNaN(num)) {
+                                setFormData({ ...formData, max_supply: num });
+                              }
+                            }
+                          }}
                           className="h-12 text-lg"
                           required
                         />
@@ -1364,11 +1374,16 @@ export const UnifiedMintInterface = () => {
                           min="0"
                           max="50"
                           step="0.1"
-                          value={formData.royalty_percentage || 5}
+                          value={formData.royalty_percentage !== undefined ? formData.royalty_percentage : ''}
                           onChange={(e) => {
-                            const value = parseFloat(e.target.value) || 0;
-                            if (value >= 0 && value <= 50) {
-                              setFormData({...formData, royalty_percentage: value});
+                            const v = e.target.value;
+                            if (v === '') {
+                              setFormData({ ...formData, royalty_percentage: undefined });
+                            } else {
+                              const num = parseFloat(v);
+                              if (!isNaN(num) && num >= 0 && num <= 50) {
+                                setFormData({ ...formData, royalty_percentage: num });
+                              }
                             }
                           }}
                           className="h-12 text-lg"
