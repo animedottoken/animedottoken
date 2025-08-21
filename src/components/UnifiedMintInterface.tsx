@@ -170,6 +170,7 @@ export const UnifiedMintInterface = () => {
           whitelist_enabled: formData.whitelist_enabled ?? null,
           treasury_wallet: formData.treasury_wallet || publicKey || null,
           description: formData.site_description || null,
+          collection_mint_address: `Demo${createdCollectionId.slice(-8)}Mock`, // Mock address for testing
         });
       }
     } catch (error) {
@@ -184,7 +185,8 @@ export const UnifiedMintInterface = () => {
         max_supply: parseInt(formData.max_supply?.toString() || '0') || 0,
         items_redeemed: 0,
         royalty_percentage: parseFloat(formData.royalty_percentage?.toString() || '0') || 0,
-        is_live: true
+        is_live: true,
+        collection_mint_address: `Demo${createdCollectionId.slice(-8)}Mock`, // Mock address for testing
       });
     }
   }, [createdCollectionId, formData, imagePreview, bannerPreview]);
