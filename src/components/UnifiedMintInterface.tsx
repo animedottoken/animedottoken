@@ -681,14 +681,19 @@ export const UnifiedMintInterface = () => {
                       id="royalties"
                       type="number"
                       min="0"
-                      max="20"
+                      max="50"
                       step="0.1"
                       value={formData.royalty_percentage || 5}
-                      onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        if (value >= 0 && value <= 50) {
+                          setFormData({...formData, royalty_percentage: value});
+                        }
+                      }}
                       className="h-12 text-lg"
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 25%.</p>
+                    <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 50%.</p>
                   </div>
                 </div>
                 
