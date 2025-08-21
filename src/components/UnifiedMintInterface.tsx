@@ -603,6 +603,10 @@ export const UnifiedMintInterface = () => {
   };
 
   const handleCompleteSetup = async () => {
+    console.log('🔥 handleCompleteSetup called in Step 2');
+    console.log('🔥 createdCollectionId:', createdCollectionId);
+    console.log('🔥 currentStep:', currentStep);
+    
     // For Step 1, we only validate and save form data, then go to Step 2
     // No minting happens in Step 1 anymore
     
@@ -618,14 +622,17 @@ export const UnifiedMintInterface = () => {
 
     // If collection already created, just go to Step 2
     if (createdCollectionId) {
-      setCurrentStep(2);
+      console.log('🔥 Collection exists, marking as setup complete and going to Step 3');
+      setIsCollectionSetupComplete(true);
+      setCurrentStep(3);
       toast({
-        title: '✅ Continuing to Step 2',
-        description: 'Ready to mint your collection on-chain',
+        title: '✅ Collection Ready!',
+        description: 'Your collection is now ready for NFT minting',
       });
       return;
     }
 
+    console.log('🔥 Creating new collection...');
     // Create collection (but don't mint on-chain yet)
     const result = await createCollection({
       ...formData,
@@ -1656,14 +1663,14 @@ export const UnifiedMintInterface = () => {
 
               <Button 
                 type="button"
-                onClick={() => handleCreateCollection()}
+                onClick={handleCompleteSetup}
                 disabled={creating || !formData.name.trim()}
                 className="w-full h-12 text-lg font-semibold"
               >
                 {creating ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Saving Rules...
+                    Saving Rules & Minting...
                   </>
                 ) : (
                   <>
