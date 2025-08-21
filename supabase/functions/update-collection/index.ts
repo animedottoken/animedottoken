@@ -15,6 +15,7 @@ interface UpdateCollectionRequest {
     onchain_description?: string;
     max_supply?: number;
     royalty_percentage?: number;
+    collection_mint_address?: string;
   };
 }
 
@@ -82,6 +83,9 @@ serve(async (req) => {
     }
     if (updates.onchain_description !== undefined) {
       updateData.onchain_description = updates.onchain_description
+    }
+    if (updates.collection_mint_address !== undefined) {
+      updateData.collection_mint_address = updates.collection_mint_address
     }
 
     // Allow max_supply and royalty_percentage updates only if no NFTs have been minted
