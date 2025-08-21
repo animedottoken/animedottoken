@@ -771,7 +771,7 @@ export const UnifiedMintInterface = () => {
                 🎉 Collection Setup Complete!
               </CardTitle>
               <p className="text-muted-foreground">
-                Your collection "<strong>{formData.name}</strong>" is now live and ready for minting. Individual NFTs can now be created and sold.
+                Your collection "<strong>{formData.name}</strong>" has been successfully minted on-chain! You can now upload artwork and mint individual NFTs.
               </p>
             </div>
             <Button variant="outline" onClick={resetCollection}>

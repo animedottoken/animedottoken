@@ -338,17 +338,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 </div>
               </div>
 
-              {/* Professional Queue Info */}
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-800 mb-2">Professional Queue System</h4>
-                <ul className="text-sm text-blue-700 space-y-1">
-                  <li>✅ Guaranteed completion - jobs persist through network issues</li>
-                  <li>✅ Real-time progress tracking with live updates</li>
-                  <li>✅ Automatic retries for failed transactions</li>
-                  <li>✅ Batch processing optimized for Solana</li>
-                </ul>
-              </div>
-
+              {/* Mint Button */}
               <Button 
                 onClick={handleMint}
                 disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview)}
@@ -372,6 +362,17 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   `Queue ${quantity} NFT${quantity > 1 ? 's' : ''} for Minting`
                 )}
               </Button>
+
+              {/* Professional Queue Info - moved below mint button */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">Professional Queue System</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>✅ Guaranteed completion - jobs persist through network issues</li>
+                  <li>✅ Real-time progress tracking with live updates</li>
+                  <li>✅ Automatic retries for failed transactions</li>
+                  <li>✅ Batch processing optimized for Solana</li>
+                </ul>
+              </div>
             </div>
           </div>
         </CardContent>
