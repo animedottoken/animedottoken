@@ -26,7 +26,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
             <CardDescription className="text-base">
-              Have an original character or fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible that you truly own.
+              Have an original character or fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -67,7 +67,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">The Anime Art Marketplace</CardTitle>
             <CardDescription className="text-base">
-              Discover and collect unique digital art from talented creators in the ANIME community. Every piece is verified on the Solana blockchain for authenticity and quality.
+              Discover and collect unique digital art from talented creators in the ANIME community. Every piece is verified on blockchain for authenticity.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
