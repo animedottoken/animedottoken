@@ -52,12 +52,6 @@ const navigationItems = [
     type: "route" as const
   },
   { 
-    title: "🎨 Create & Trade NFTs on Solana", 
-    icon: Coins,
-    hash: "nft-supporter-section",
-    type: "section" as const
-  },
-  { 
     title: "Community Showcase", 
     icon: Users,
     hash: "featured-community-content",
@@ -97,6 +91,12 @@ const navigationItems = [
     title: "ANIME ARMY", 
     icon: Trophy,
     hash: "nft-supporter-section",
+    type: "section" as const
+  },
+  { 
+    title: "Create NFTs", 
+    icon: Coins,
+    hash: "nft-preview-section",
     type: "section" as const
   },
   { 
