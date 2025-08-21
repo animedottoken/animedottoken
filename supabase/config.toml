@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.create-collection]
 verify_jwt = false
+
+[functions.update-collection]
+verify_jwt = false

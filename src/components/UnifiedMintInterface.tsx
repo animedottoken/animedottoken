@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Upload, 
   Image as ImageIcon, 
@@ -532,42 +534,81 @@ export const UnifiedMintInterface = () => {
       return;
     }
     
-    // Update collection with minting details
-    const result = await createCollection({
-      ...formData,
-      symbol: formData.symbol,
-      enable_primary_sales: true,
-      image_file: imageFile || undefined, // Only include if we have a new file
-      mint_price: formData.mint_price || 0,
-      max_supply: formData.max_supply || 1000,
-      royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
-      treasury_wallet: formData.treasury_wallet || publicKey || '',
-    });
-    
-    if (result?.success) {
-      setIsCollectionSetupComplete(true);
-      setCurrentStep(3);
-      
-      toast({
-        title: '🎉 Collection Setup Complete!',
-        description: isExistingCollection 
-          ? 'Your collection settings have been updated!'
-          : 'You can now start minting NFTs from your collection.',
-      });
-      
-      // DON'T clear imagePreview or formData - Step 3 needs them for display
-      // Just clear the file objects since they're uploaded to storage
-      setImageFile(null);
-      setBannerFile(null);
-      // Keep imagePreview and bannerPreview for Step 3 display
+    if (isExistingCollection) {
+      // Update existing collection using update-collection edge function
+      try {
+        const { data, error } = await supabase.functions.invoke('update-collection', {
+          body: {
+            collection_id: createdCollectionId,
+            updates: {
+              mint_price: formData.mint_price || 0,
+              treasury_wallet: formData.treasury_wallet || publicKey || '',
+              whitelist_enabled: formData.whitelist_enabled || false,
+              onchain_description: formData.onchain_description || null,
+            }
+          }
+        });
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        if (data?.success) {
+          setIsCollectionSetupComplete(true);
+          setCurrentStep(3);
+          
+          // Force reload of Step 3 collection data
+          await loadStep3Collection();
+          
+          toast({
+            title: '✅ Collection Updated!',
+            description: 'Your collection settings have been updated successfully.',
+          });
+        } else {
+          throw new Error(data?.error || 'Failed to update collection');
+        }
+      } catch (error) {
+        toast({
+          title: 'Update Failed',
+          description: error instanceof Error ? error.message : 'Failed to update collection settings',
+          variant: 'destructive',
+        });
+        return;
+      }
     } else {
-      // Show specific error message from backend
-      const errorMessage = (result as any)?.error || 'Failed to complete collection setup';
-      toast({
-        title: 'Setup Failed',
-        description: errorMessage,
-        variant: 'destructive',
+      // Create new collection using original method
+      const result = await createCollection({
+        ...formData,
+        symbol: formData.symbol,
+        enable_primary_sales: true,
+        image_file: imageFile || undefined, // Only include if we have a new file
+        mint_price: formData.mint_price || 0,
+        max_supply: formData.max_supply || 1000,
+        royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
+        treasury_wallet: formData.treasury_wallet || publicKey || '',
       });
+      
+      if (result?.success) {
+        setIsCollectionSetupComplete(true);
+        setCurrentStep(3);
+        
+        toast({
+          title: '🎉 Collection Setup Complete!',
+          description: 'You can now start minting NFTs from your collection.',
+        });
+        
+        // Clear the file objects since they're uploaded to storage
+        setImageFile(null);
+        setBannerFile(null);
+      } else {
+        const errorMessage = (result as any)?.error || 'Failed to complete collection setup';
+        toast({
+          title: 'Setup Failed',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+        return;
+      }
     }
   };
 
@@ -618,10 +659,10 @@ export const UnifiedMintInterface = () => {
                 alt={`${formData.name || step3Collection?.name} banner`}
                 className="w-full h-full object-cover"
               />
-                 {/* Collection Avatar Overlay - Much Bigger */}
+                 {/* Collection Avatar Overlay - Doubled Size */}
                  {(imagePreview || step3Collection?.image_url) && (
                    <div className="absolute bottom-6 left-6">
-                     <div className="w-32 h-32 rounded-xl overflow-hidden border-4 border-background shadow-xl">
+                     <div className="w-64 h-64 rounded-xl overflow-hidden border-4 border-background shadow-xl">
                        <img 
                          src={imagePreview || step3Collection?.image_url!}
                          alt={`${step3Collection?.name || formData.name} avatar`}
@@ -633,6 +674,16 @@ export const UnifiedMintInterface = () => {
             </AspectRatio>
           </Card>
         )}
+
+        {/* Step 3 Title */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+            Step 3: Create NFTs in this Collection
+          </h1>
+          <p className="text-muted-foreground">
+            Your collection is set up and ready. Configure individual NFT details and start minting.
+          </p>
+        </div>
 
         {/* Collection Details Header */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
@@ -656,38 +707,83 @@ export const UnifiedMintInterface = () => {
               {/* Collection Configuration - Locked & Editable Fields */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {/* Mint Price - Editable */}
-                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Edit2 className="h-3 w-3 text-green-600" />
-                    <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                  </div>
-                  <div className="font-bold text-lg text-green-600">
-                    {((formData.mint_price ?? step3Collection?.mint_price) === 0)
-                      ? 'FREE'
-                      : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                            </div>
+                            <div className="font-bold text-lg text-green-600">
+                              {((formData.mint_price ?? step3Collection?.mint_price) === 0)
+                                ? 'FREE'
+                                : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
+                            </div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Mint Price</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Label htmlFor="edit-mint-price">Mint Price (SOL)</Label>
+                            <Input
+                              id="edit-mint-price"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              defaultValue={formData.mint_price ?? step3Collection?.mint_price ?? 0}
+                              onBlur={(e) => {
+                                const newPrice = parseFloat(e.target.value) || 0;
+                                setFormData(prev => ({ ...prev, mint_price: newPrice }));
+                                toast({ title: "Price updated", description: `Mint price set to ${newPrice} SOL` });
+                              }}
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </TooltipTrigger>
+                    <TooltipContent>Click to edit mint price</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 {/* Max Supply - Locked */}
-                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Lock className="h-3 w-3 text-orange-600" />
-                    <span className="text-xs text-orange-600 font-medium">LOCKED</span>
-                  </div>
-                  <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Lock className="h-3 w-3 text-orange-600" />
+                          <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                        </div>
+                        <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>Cannot be changed after creation</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 {/* Royalties - Locked */}
-                <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <Lock className="h-3 w-3 text-orange-600" />
-                    <span className="text-xs text-orange-600 font-medium">LOCKED</span>
-                  </div>
-                  <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Royalties</div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Lock className="h-3 w-3 text-orange-600" />
+                          <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                        </div>
+                        <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Royalties</div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>Cannot be changed after creation</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 {/* Status - Show current */}
                 <div className="text-center p-4 bg-background/50 rounded-lg">
@@ -699,50 +795,209 @@ export const UnifiedMintInterface = () => {
               {/* Collection Advanced Settings - Editable */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Treasury Wallet - Editable */}
-                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
-                    <div className="flex items-center gap-1">
-                      <Edit2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                    </div>
-                  </div>
-                  <div className="font-mono break-all text-sm">
-                    {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
-                  </div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="font-mono break-all text-sm">
+                              {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Treasury Wallet</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Label htmlFor="edit-treasury">Treasury Wallet Address</Label>
+                            <Input
+                              id="edit-treasury"
+                              defaultValue={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
+                              onBlur={(e) => {
+                                const newWallet = e.target.value.trim();
+                                setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
+                                toast({ title: "Treasury updated", description: "Treasury wallet address updated" });
+                              }}
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </TooltipTrigger>
+                    <TooltipContent>Click to edit treasury wallet</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 {/* Whitelist - Editable */}
-                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
-                    <div className="flex items-center gap-1">
-                      <Edit2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                    </div>
-                  </div>
-                  <div className="text-sm font-semibold">
-                    {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
-                  </div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="text-sm font-semibold">
+                              {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Whitelist Setting</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Label htmlFor="edit-whitelist">Enable Whitelist</Label>
+                            <Switch
+                              id="edit-whitelist"
+                              defaultChecked={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
+                              onCheckedChange={(checked) => {
+                                setFormData(prev => ({ ...prev, whitelist_enabled: checked }));
+                                toast({ title: "Whitelist updated", description: `Whitelist ${checked ? 'enabled' : 'disabled'}` });
+                              }}
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </TooltipTrigger>
+                    <TooltipContent>Click to edit whitelist setting</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 
                 {/* On-chain Description - Editable */}
-                <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
-                    <div className="flex items-center gap-1">
-                      <Edit2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    {formData.onchain_description || step3Collection?.description || '—'}
-                  </div>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="text-sm line-clamp-2">
+                              {formData.onchain_description || step3Collection?.description || '—'}
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit On-chain Description</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Label htmlFor="edit-description">On-chain Description</Label>
+                            <Textarea
+                              id="edit-description"
+                              defaultValue={formData.onchain_description || step3Collection?.description || ''}
+                              maxLength={200}
+                              onBlur={(e) => {
+                                const newDescription = e.target.value.trim();
+                                setFormData(prev => ({ ...prev, onchain_description: newDescription }));
+                                toast({ title: "Description updated", description: "On-chain description updated" });
+                              }}
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </TooltipTrigger>
+                    <TooltipContent>Click to edit on-chain description</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           </CardHeader>
         </Card>
+
+        {/* Per-NFT Details (Optional) */}
+        <Collapsible>
+          <Card>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-muted/20">
+                <CardTitle className="text-xl font-bold flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileImage className="h-5 w-5" />
+                    Individual NFT Artwork & Details (Optional)
+                  </div>
+                  <ChevronDown className="h-5 w-5" />
+                </CardTitle>
+                <p className="text-muted-foreground text-left">
+                  Configure specific details for each NFT in your mint batch (image, name, description, attributes).
+                </p>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* NFT Image */}
+                  <div className="space-y-4">
+                    <Label htmlFor="nft-image">Individual NFT Image (Optional)</Label>
+                    <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
+                      <AspectRatio ratio={1}>
+                        <div className="flex h-full w-full items-center justify-center text-center bg-muted/20">
+                          <div>
+                            <FileImage className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm font-medium">Upload NFT Artwork</p>
+                            <p className="text-xs text-muted-foreground">Will be used for all NFTs in this mint</p>
+                          </div>
+                        </div>
+                      </AspectRatio>
+                    </div>
+                  </div>
+                  
+                  {/* NFT Details */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="nft-name">NFT Name (Optional)</Label>
+                      <Input
+                        id="nft-name"
+                        placeholder="e.g., Cyber Samurai #1"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="nft-description">NFT Description (Optional)</Label>
+                      <Textarea
+                        id="nft-description"
+                        placeholder="Description for individual NFTs..."
+                        className="h-20"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* NFT Attributes */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
+                    <Button variant="outline" size="sm">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Attribute
+                    </Button>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Add metadata attributes that will be applied to all NFTs in this mint batch.
+                  </div>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {/* Minting Interface */}
         <Card>

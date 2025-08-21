@@ -220,6 +220,7 @@ export type Database = {
           error_message: string | null
           id: string
           max_retries: number
+          metadata: Json | null
           mint_job_id: string
           nft_mint_address: string | null
           processed_at: string | null
@@ -234,6 +235,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           max_retries?: number
+          metadata?: Json | null
           mint_job_id: string
           nft_mint_address?: string | null
           processed_at?: string | null
@@ -248,6 +250,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           max_retries?: number
+          metadata?: Json | null
           mint_job_id?: string
           nft_mint_address?: string | null
           processed_at?: string | null

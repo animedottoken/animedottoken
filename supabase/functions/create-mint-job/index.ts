@@ -14,6 +14,12 @@ interface CreateMintJobRequest {
   walletAddress: string;
   signature: string; // Base58 encoded signature
   message: string; // Message that was signed (should include timestamp)
+  metadata?: {
+    image?: string;
+    name?: string;
+    description?: string;
+    attributes?: Array<{ trait_type: string; value: string }>;
+  };
 }
 
 // Verify wallet signature to prevent unauthorized mint job creation
@@ -85,7 +91,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { collectionId, quantity, walletAddress, signature, message }: CreateMintJobRequest = await req.json();
+    const { collectionId, quantity, walletAddress, signature, message, metadata }: CreateMintJobRequest = await req.json();
 
     // Validate input
     if (!collectionId || !quantity || !walletAddress || !signature || !message) {
@@ -189,7 +195,8 @@ serve(async (req) => {
         jobItems.push({
           mint_job_id: mintJob.id,
           batch_number: batch + 1,
-          status: "pending"
+          status: "pending",
+          metadata: metadata || null
         });
       }
     }
