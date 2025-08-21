@@ -33,7 +33,7 @@ import { MintingInterface } from '@/components/MintingInterface';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { validateImageFile, validateCollectionData, areRequiredFieldsValid, validateStandaloneNFTData } from '@/utils/validation';
 import { useStandaloneMint, type StandaloneNFTData } from '@/hooks/useStandaloneMint';
-
+import { supabase } from '@/integrations/supabase/client';
 export const UnifiedMintInterface = () => {
   const { connected, publicKey } = useSolanaWallet();
   const { creating, createCollection } = useCollections();
@@ -96,7 +96,44 @@ export const UnifiedMintInterface = () => {
       setCurrentStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+}, [createdCollectionId]);
+
+  // Scroll to top when entering Step 3
+  React.useEffect(() => {
+    if (currentStep === 3) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentStep]);
+
+  // Load collection details for Step 3 banner
+  type Step3Collection = {
+    id: string;
+    name: string;
+    symbol?: string | null;
+    image_url?: string | null;
+    banner_image_url?: string | null;
+    mint_price: number;
+    max_supply: number;
+    items_redeemed?: number | null;
+    royalty_percentage?: number | null;
+    is_live: boolean;
+  };
+  const [step3Collection, setStep3Collection] = useState<Step3Collection | null>(null);
+
+  const loadStep3Collection = React.useCallback(async () => {
+    if (!createdCollectionId) return;
+    const { data, error } = await supabase
+      .rpc('get_collection_details', { collection_id: createdCollectionId });
+    if (!error && data && data.length > 0) {
+      setStep3Collection(data[0] as Step3Collection);
+    }
   }, [createdCollectionId]);
+
+  React.useEffect(() => {
+    if (createdCollectionId && currentStep === 3) {
+      loadStep3Collection();
+    }
+  }, [createdCollectionId, currentStep, loadStep3Collection]);
 
   // Step Indicator Component
   const StepIndicator = ({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) => (
@@ -536,41 +573,54 @@ export const UnifiedMintInterface = () => {
           </CardHeader>
         </Card>
 
+        {/* Collection Banner */}
+        {step3Collection?.banner_image_url && (
+          <Card className="overflow-hidden">
+            <AspectRatio ratio={16/5}>
+              <img
+                src={step3Collection.banner_image_url}
+                alt={`${step3Collection.name} banner`}
+                className="w-full h-full object-cover"
+              />
+            </AspectRatio>
+          </Card>
+        )}
+
         {/* Collection Info Banner */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
           <CardHeader>
             <CardTitle className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                {imagePreview && (
+                {(step3Collection?.image_url || imagePreview) && (
                   <img 
-                    src={imagePreview} 
-                    alt={formData.name}
+                    src={step3Collection?.image_url || imagePreview!}
+                    alt={step3Collection?.name || formData.name}
                     className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
                   />
                 )}
                 <div>
-                  <h3 className="text-xl font-bold">{formData.name}</h3>
-                  <p className="text-sm text-muted-foreground">Symbol: {formData.symbol || 'Not set'}</p>
+                  <h3 className="text-xl font-bold">{step3Collection?.name || formData.name}</h3>
+                  <p className="text-sm text-muted-foreground">Symbol: {step3Collection?.symbol || formData.symbol || '—'}</p>
                 </div>
               </div>
             </CardTitle>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
               <div className="text-center p-3 bg-background/50 rounded-lg">
                 <div className="font-bold text-lg text-green-600">
-                  {formData.mint_price === 0 ? 'FREE' : `${formData.mint_price} SOL`}
+                  {step3Collection ? (step3Collection.mint_price === 0 ? 'FREE' : `${step3Collection.mint_price} SOL`) : '—'}
                 </div>
                 <div className="text-xs text-muted-foreground">Mint Price</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{formData.max_supply?.toLocaleString()}</div>
+                <div className="font-bold text-lg">{step3Collection?.max_supply?.toLocaleString?.() || '—'}</div>
                 <div className="text-xs text-muted-foreground">Max Supply</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg">{formData.royalty_percentage || 0}%</div>
+                <div className="font-bold text-lg">{step3Collection?.royalty_percentage ?? 0}%</div>
                 <div className="text-xs text-muted-foreground">Royalties</div>
               </div>
               <div className="text-center p-3 bg-background/50 rounded-lg">
-                <div className="font-bold text-lg text-primary">LIVE</div>
+                <div className="font-bold text-lg text-primary">{step3Collection?.is_live ? 'LIVE' : 'PAUSED'}</div>
                 <div className="text-xs text-muted-foreground">Status</div>
               </div>
             </div>
@@ -578,24 +628,24 @@ export const UnifiedMintInterface = () => {
         </Card>
 
         {/* Minting Interface */}
-        <Card>
-          <CardHeader className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold flex items-center gap-2">
-              <Zap className="h-5 w-5" />
+        cCarde
+          cCardHeader className="flex items-center justify-between"e
+            cCardTitle className="text-xl font-bold flex items-center gap-2"e
+              cZap className="h-5 w-5" /e
               Create NFTs in this Collection
-            </CardTitle>
-            <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
-              <ChevronLeft className="h-4 w-4" />
+            c/CardTitlee
+            cButton variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2"e
+              cChevronLeft className="h-4 w-4" /e
               Back to Step 2
-            </Button>
-          </CardHeader>
-          <CardContent>
+            c/Buttone
+          c/CardHeadere
+          cCardContente
             {createdCollectionId && (
-              <MintingInterface collectionId={createdCollectionId} />
+              cMintingInterface collectionId={createdCollectionId} /e
             )}
-          </CardContent>
-        </Card>
-      </div>
+          c/CardContente
+        c/Carde
+      c/dive
     );
   }
 
