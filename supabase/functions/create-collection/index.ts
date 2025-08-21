@@ -76,9 +76,9 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (body.royalty_percentage != null && (body.royalty_percentage < 0 || body.royalty_percentage > 20)) {
+      if (body.royalty_percentage != null && (body.royalty_percentage < 0 || body.royalty_percentage > 50)) {
         return new Response(
-          JSON.stringify({ error: "Royalty must be between 0 and 20" }),
+          JSON.stringify({ error: "Royalty must be between 0 and 50" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }

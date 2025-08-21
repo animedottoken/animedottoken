@@ -68,8 +68,8 @@ export const validateCollectionData = (data: any): ValidationError[] => {
       errors.push({ field: 'mint_price', message: 'Mint price cannot be negative' });
     }
 
-    if (data.royalty_percentage < 0 || data.royalty_percentage > 20) {
-      errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 20%' });
+    if (data.royalty_percentage < 0 || data.royalty_percentage > 50) {
+      errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 50%' });
     }
 
     if (!data.treasury_wallet?.trim()) {
@@ -120,8 +120,8 @@ export const validateStandaloneNFTData = (data: any): ValidationError[] => {
   }
 
   // Royalty validation
-  if (data.royalty_percentage && (data.royalty_percentage < 0 || data.royalty_percentage > 20)) {
-    errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 20%' });
+  if (data.royalty_percentage && (data.royalty_percentage < 0 || data.royalty_percentage > 50)) {
+    errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 50%' });
   }
 
   return errors;
