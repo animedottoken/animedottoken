@@ -426,7 +426,7 @@ const Index = () => {
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
-              src="/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png"
+              src="/lovable-uploads/dfb2ccf3-2099-427d-9e4e-b38bfd2a4a9e.png"
               alt="Congratulations — Proud Anime Society Member poster"
               loading="lazy"
               decoding="async"
