@@ -363,10 +363,10 @@ export const UnifiedMintInterface = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                🎉 Collection Folder Created Successfully!
+                🎉 Collection Created Successfully!
               </CardTitle>
               <p className="text-muted-foreground">
-                Your collection folder "{formData.name}" is ready. Now add the minting details below to start selling NFTs.
+                Your Master Blueprint is ready. Now, let's set the permanent, on-chain rules for the individual NFTs that will be minted into this collection.
               </p>
             </div>
             <Button variant="outline" onClick={resetCollection}>
@@ -380,7 +380,7 @@ export const UnifiedMintInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-6 w-6" />
-              Add Minting Details
+              Step 2: Set the Rules for Your NFTs
               <Badge variant="secondary">Required for minting</Badge>
             </CardTitle>
             <p className="text-muted-foreground">
@@ -449,6 +449,10 @@ export const UnifiedMintInterface = () => {
                   <Label className="text-lg font-semibold">Minting Configuration</Label>
                 </div>
                 
+                <p className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg border-l-4 border-primary">
+                  <strong>Important:</strong> The settings below apply to the individual NFTs you will create (the "stamps"), not the Collection itself (the "stamp album"). You are setting the permanent rules that each NFT in this set will follow.
+                </p>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="symbol">
@@ -462,7 +466,7 @@ export const UnifiedMintInterface = () => {
                       maxLength={10}
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">2-10 characters</p>
+                    <p className="text-xs text-muted-foreground mt-1">A short, 5-10 character 'ticker' for your NFT series (e.g., ANIMEFS)</p>
                   </div>
                   
                   <div>
@@ -495,7 +499,7 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Total NFTs that can be minted (1-100,000)</p>
+                    <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection (e.g., 100). This number is permanent and cannot be changed after setup.</p>
                   </div>
                   
                   <div>
@@ -510,7 +514,7 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Percentage you earn when others resell (0-20%)</p>
+                    <p className="text-xs text-muted-foreground mt-1">The percentage you will earn from every future sale of your NFTs on the secondary market</p>
                   </div>
                 </div>
                 
@@ -525,7 +529,7 @@ export const UnifiedMintInterface = () => {
                     placeholder="Wallet address for payments"
                     required
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Where mint payments and royalties are sent</p>
+                  <p className="text-xs text-muted-foreground mt-1">The Solana wallet address that will receive your initial sales and future royalties</p>
                 </div>
               </div>
 
