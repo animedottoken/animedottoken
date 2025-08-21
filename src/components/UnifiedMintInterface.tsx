@@ -499,7 +499,7 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 0})}
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection (e.g., 100). This number is permanent and cannot be changed after setup.</p>
+                    <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
                   </div>
                   
                   <div>
@@ -514,7 +514,7 @@ export const UnifiedMintInterface = () => {
                       onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">The percentage you will earn from every future sale of your NFTs on the secondary market</p>
+                    <p className="text-xs text-muted-foreground mt-1">The percentage you will earn from every future sale of your NFT. Value can be set from 0% to 25%. This is permanent and cannot be changed after setup.</p>
                   </div>
                 </div>
                 
