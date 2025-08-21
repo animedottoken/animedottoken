@@ -197,57 +197,71 @@ export const UnifiedMintInterface = () => {
     }
   }, [createdCollectionId, currentStep, loadStep3Collection]);
 
-  // Step Indicator Component
-  const StepIndicator = ({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) => (
-    <div className="flex items-center justify-center mb-6">
-      <div className="flex items-center space-x-4">
-        {Array.from({ length: totalSteps }, (_, i) => {
-          const stepNumber = i + 1;
-          const isActive = stepNumber === currentStep;
-          const isCompleted = stepNumber < currentStep || 
-            (stepNumber === 1 && createdCollectionId) ||
-            (stepNumber === 2 && isCollectionSetupComplete);
-          
-          const stepNames = ['Create Collection', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
-          
-          return (
-            <div key={stepNumber} className="flex items-center">
-              <div className={`
-                flex items-center justify-center w-10 h-10 rounded-full border-2 font-semibold
-                ${isActive 
-                  ? 'bg-primary text-primary-foreground border-primary' 
-                  : isCompleted 
-                    ? 'bg-primary/20 text-primary border-primary' 
-                    : 'bg-muted text-muted-foreground border-muted-foreground/30'
-                }
-              `}>
-                {isCompleted && stepNumber !== currentStep ? (
-                  <Check className="w-5 h-5" />
-                ) : (
-                  stepNumber
-                )}
-              </div>
-              <div className="ml-2 text-sm">
-                <div className={`font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  Step {stepNumber}
+  // Step Indicator Component - Made more prominent
+  const StepIndicator = ({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) => {
+    // Debug logging
+    console.log('🔍 DEBUG: Current step =', currentStep);
+    console.log('🔍 DEBUG: createdCollectionId =', createdCollectionId);
+    console.log('🔍 DEBUG: isCollectionSetupComplete =', isCollectionSetupComplete);
+    
+    return (
+      <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 rounded-lg p-6 mb-8 border">
+        <div className="text-center mb-4">
+          <h2 className="text-xl font-bold text-primary">Collection Creation Progress</h2>
+          <p className="text-sm text-muted-foreground">Follow these steps to create and mint your collection</p>
+        </div>
+        <div className="flex items-center justify-center">
+          <div className="flex items-center space-x-4">
+            {Array.from({ length: totalSteps }, (_, i) => {
+              const stepNumber = i + 1;
+              const isActive = stepNumber === currentStep;
+              const isCompleted = stepNumber < currentStep || 
+                (stepNumber === 1 && createdCollectionId) ||
+                (stepNumber === 2 && isCollectionSetupComplete);
+              
+              const stepNames = ['Create Collection', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
+              
+              return (
+                <div key={stepNumber} className="flex items-center">
+                  <div className={`
+                    flex items-center justify-center w-12 h-12 rounded-full border-3 font-bold text-lg
+                    ${isActive 
+                      ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-110' 
+                      : isCompleted 
+                        ? 'bg-primary/20 text-primary border-primary' 
+                        : 'bg-muted text-muted-foreground border-muted-foreground/30'
+                    }
+                  `}>
+                    {isCompleted && stepNumber !== currentStep ? (
+                      <Check className="w-6 h-6" />
+                    ) : (
+                      stepNumber
+                    )}
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <div className={`font-bold ${isActive ? 'text-primary text-lg' : 'text-muted-foreground'}`}>
+                      Step {stepNumber}
+                      {isActive && <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">CURRENT</span>}
+                    </div>
+                    <div className={`text-xs ${isActive ? 'text-foreground font-medium' : 'text-muted-foreground/70'}`}>
+                      {stepNames[i]}
+                    </div>
+                  </div>
+                  {stepNumber < totalSteps && (
+                    <ChevronRight className={`w-6 h-6 mx-6 ${
+                      stepNumber < currentStep || (stepNumber === 1 && createdCollectionId) || (stepNumber === 2 && isCollectionSetupComplete)
+                        ? 'text-primary' 
+                        : 'text-muted-foreground/50'
+                    }`} />
+                  )}
                 </div>
-                <div className={`text-xs ${isActive ? 'text-muted-foreground' : 'text-muted-foreground/70'}`}>
-                  {stepNames[i]}
-                </div>
-              </div>
-              {stepNumber < totalSteps && (
-                <ChevronRight className={`w-5 h-5 mx-4 ${
-                  stepNumber < currentStep || (stepNumber === 1 && createdCollectionId) || (stepNumber === 2 && isCollectionSetupComplete)
-                    ? 'text-primary' 
-                    : 'text-muted-foreground/50'
-                }`} />
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
