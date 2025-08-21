@@ -218,10 +218,10 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-lg bg-muted">
+              <div className="aspect-square overflow-hidden rounded-lg bg-muted relative">
                 <img 
-                  src={collection.image_url || "/placeholder.svg"} 
-                  alt={collection.name}
+                  src={nftDetails?.nftImagePreview || collection.image_url || collection.banner_image_url || "/placeholder.svg"} 
+                  alt={nftDetails?.nftName || collection.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const img = e.currentTarget as HTMLImageElement;
@@ -230,6 +230,14 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                     }
                   }}
                 />
+                {!nftDetails?.nftImagePreview && !collection.image_url && (
+                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm text-center p-4">
+                    <div>
+                      <div className="mb-2">Your artwork preview</div>
+                      <div className="text-xs">Upload artwork in the section above</div>
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4 text-sm">
