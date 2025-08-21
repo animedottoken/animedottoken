@@ -61,7 +61,7 @@ export const UnifiedMintInterface = () => {
     external_links: [],
     category: '',
     explicit_content: false,
-    enable_primary_sales: false, // Disabled in simple folder step
+    enable_primary_sales: true, // Enable primary sales by default
     mint_price: undefined,
     max_supply: undefined,
     royalty_percentage: undefined,

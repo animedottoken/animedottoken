@@ -35,7 +35,11 @@ export const useMinting = () => {
 
       if (result.success) {
         toast.success(`Successfully minted NFT! 🎉`, {
-          description: `Transaction: ${result.signature?.slice(0, 8)}...`
+          description: `Transaction: ${result.signature?.slice(0, 8)}...`,
+          action: {
+            label: 'Go to Profile',
+            onClick: () => { window.location.href = '/profile'; }
+          }
         });
       } else {
         toast.error('Minting failed', {

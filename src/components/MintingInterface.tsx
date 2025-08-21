@@ -167,7 +167,12 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
     if (result.success) {
       setQuantity(1); // Reset quantity after successful job creation
       // Show toast with link to profile mint queue
-      toast.success('🎉 Mint job created! Your NFTs are being minted. Check your mint queue in Profile for progress.');
+      toast.success('🎉 Mint job created! Your NFTs are being minted. You can track them in your Profile.', {
+        action: {
+          label: 'Go to Profile',
+          onClick: () => { window.location.href = '/profile'; }
+        }
+      });
     }
   };
 
@@ -325,7 +330,10 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   </Button>
                   
                   <div className="text-sm text-muted-foreground">
-                    Max per job: {maxPerJob}
+                    Max per job (quantity cap): {maxPerJob}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Collection Max Supply: {collection.max_supply.toLocaleString()} • Remaining: {remainingSupply.toLocaleString()}
                   </div>
                 </div>
                 

@@ -164,16 +164,13 @@ export const useCollections = () => {
           external_links: collectionData.external_links || [],
           category: collectionData.category || null,
           explicit_content: collectionData.explicit_content || false,
-          enable_primary_sales: collectionData.enable_primary_sales || false,
-          // Only send primary sales fields if enabled
-          ...(collectionData.enable_primary_sales && {
-            mint_price: collectionData.mint_price || 0,
-            max_supply: collectionData.max_supply || 1000,
-            royalty_percentage: collectionData.royalty_percentage || 0,
-            treasury_wallet: collectionData.treasury_wallet || publicKey,
-            whitelist_enabled: collectionData.whitelist_enabled || false,
-            go_live_date: collectionData.go_live_date || null,
-          })
+          enable_primary_sales: collectionData.enable_primary_sales ?? true,
+          mint_price: collectionData.mint_price ?? 0,
+          max_supply: collectionData.max_supply ?? 1000,
+          royalty_percentage: collectionData.royalty_percentage ?? 0,
+          treasury_wallet: collectionData.treasury_wallet || publicKey,
+          whitelist_enabled: collectionData.whitelist_enabled ?? false,
+          go_live_date: collectionData.go_live_date || null,
         }
       });
 
