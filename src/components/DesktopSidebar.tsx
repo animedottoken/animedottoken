@@ -28,6 +28,7 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Profile", icon: User, path: "/profile" },
   
   // Home sections - matching actual IDs and classes on the page
+  { type: "section", title: "🎨 Create & Trade NFTs on Solana", icon: Coins, hash: "nft-supporter-section" },
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
