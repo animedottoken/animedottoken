@@ -462,7 +462,7 @@ export const UnifiedMintInterface = () => {
                       id="symbol"
                       value={formData.symbol || ''}
                       onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                      placeholder="e.g., ART"
+                      placeholder="e.g., ANIMEFS"
                       maxLength={10}
                       required
                     />
