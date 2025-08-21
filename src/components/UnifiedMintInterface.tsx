@@ -435,10 +435,10 @@ export const UnifiedMintInterface = () => {
     }
 
     // Validate royalty percentage
-    if (formData.royalty_percentage && (formData.royalty_percentage < 0 || formData.royalty_percentage > 20)) {
+    if (formData.royalty_percentage && (formData.royalty_percentage < 0 || formData.royalty_percentage > 50)) {
       toast({
         title: 'Invalid royalty percentage',
-        description: 'Royalty must be between 0% and 20%',
+        description: 'Royalty must be between 0% and 50%',
         variant: 'destructive',
       });
       return;
@@ -452,7 +452,7 @@ export const UnifiedMintInterface = () => {
       image_file: imageFile || undefined,
       mint_price: formData.mint_price || 0,
       max_supply: formData.max_supply || 1000,
-      royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 20), // Ensure it's within bounds
+      royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
       treasury_wallet: formData.treasury_wallet || publicKey || '',
     });
     
@@ -1149,19 +1149,19 @@ export const UnifiedMintInterface = () => {
                           id="royalties"
                           type="number"
                           min="0"
-                          max="20"
+                          max="50"
                           step="0.1"
                           value={formData.royalty_percentage || 5}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value) || 0;
-                            if (value >= 0 && value <= 20) {
+                            if (value >= 0 && value <= 50) {
                               setFormData({...formData, royalty_percentage: value});
                             }
                           }}
                           className="h-12 text-lg"
                           required
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 20%.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 50%.</p>
                       </div>
                     </div>
                     
