@@ -13,6 +13,8 @@ interface UpdateCollectionRequest {
     treasury_wallet?: string;
     whitelist_enabled?: boolean;
     onchain_description?: string;
+    max_supply?: number;
+    royalty_percentage?: number;
   };
 }
 
@@ -51,10 +53,10 @@ serve(async (req) => {
       )
     }
 
-    // Verify collection ownership
+    // Verify collection ownership and get current state
     const { data: collection, error: fetchError } = await supabase
       .from('collections')
-      .select('creator_address')
+      .select('creator_address, items_redeemed')
       .eq('id', collection_id)
       .single()
 
@@ -80,6 +82,18 @@ serve(async (req) => {
     }
     if (updates.onchain_description !== undefined) {
       updateData.onchain_description = updates.onchain_description
+    }
+
+    // Allow max_supply and royalty_percentage updates only if no NFTs have been minted
+    const itemsRedeemed = collection.items_redeemed || 0;
+    if (itemsRedeemed === 0) {
+      if (updates.max_supply !== undefined) {
+        updateData.max_supply = updates.max_supply;
+        updateData.items_available = updates.max_supply;
+      }
+      if (updates.royalty_percentage !== undefined) {
+        updateData.royalty_percentage = updates.royalty_percentage;
+      }
     }
 
     // Update collection

@@ -675,15 +675,6 @@ export const UnifiedMintInterface = () => {
           </Card>
         )}
 
-        {/* Step 3 Title */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
-            Step 3: Create NFTs in this Collection
-          </h1>
-          <p className="text-muted-foreground">
-            Your collection is set up and ready. Configure individual NFT details and start minting.
-          </p>
-        </div>
 
         {/* Collection Details Header */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
@@ -702,6 +693,16 @@ export const UnifiedMintInterface = () => {
                     <p className="text-xl font-bold mt-1">{step3Collection?.symbol || formData.symbol || '—'}</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Step 3 Title moved here */}
+              <div className="text-center pt-6 border-t">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                  Step 3: Create NFTs in this Collection
+                </h1>
+                <p className="text-muted-foreground">
+                  Your collection is set up and ready. Configure individual NFT details and start minting.
+                </p>
               </div>
 
               {/* Collection Configuration - Locked & Editable Fields */}
@@ -730,19 +731,43 @@ export const UnifiedMintInterface = () => {
                             <DialogTitle>Edit Mint Price</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
-                            <Label htmlFor="edit-mint-price">Mint Price (SOL)</Label>
+                            <Label htmlFor="edit-mint-price" className="required-field">Mint Price (SOL) *</Label>
                             <Input
                               id="edit-mint-price"
                               type="number"
                               step="0.01"
                               min="0"
                               defaultValue={formData.mint_price ?? step3Collection?.mint_price ?? 0}
-                              onBlur={(e) => {
-                                const newPrice = parseFloat(e.target.value) || 0;
-                                setFormData(prev => ({ ...prev, mint_price: newPrice }));
-                                toast({ title: "Price updated", description: `Mint price set to ${newPrice} SOL` });
-                              }}
                             />
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  const input = document.getElementById('edit-mint-price') as HTMLInputElement;
+                                  const newPrice = parseFloat(input.value) || 0;
+                                  setFormData(prev => ({ ...prev, mint_price: newPrice }));
+                                  toast({ title: "Price updated", description: `Mint price set to ${newPrice} SOL` });
+                                  const dialog = input.closest('[role="dialog"]');
+                                  if (dialog) {
+                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                  }
+                                }}
+                              >
+                                Save
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  const dialog = document.getElementById('edit-mint-price')?.closest('[role="dialog"]');
+                                  if (dialog) {
+                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                  }
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -760,7 +785,7 @@ export const UnifiedMintInterface = () => {
                           <Lock className="h-3 w-3 text-orange-600" />
                           <span className="text-xs text-orange-600 font-medium">LOCKED</span>
                         </div>
-                        <div className="font-bold text-lg">{(formData.max_supply ?? step3Collection?.max_supply)?.toLocaleString?.()}</div>
+                        <div className="font-bold text-lg">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.()}</div>
                         <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
                       </div>
                     </TooltipTrigger>
@@ -818,16 +843,40 @@ export const UnifiedMintInterface = () => {
                             <DialogTitle>Edit Treasury Wallet</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
-                            <Label htmlFor="edit-treasury">Treasury Wallet Address</Label>
+                            <Label htmlFor="edit-treasury" className="required-field">Treasury Wallet Address *</Label>
                             <Input
                               id="edit-treasury"
                               defaultValue={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
-                              onBlur={(e) => {
-                                const newWallet = e.target.value.trim();
-                                setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
-                                toast({ title: "Treasury updated", description: "Treasury wallet address updated" });
-                              }}
                             />
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  const input = document.getElementById('edit-treasury') as HTMLInputElement;
+                                  const newWallet = input.value.trim();
+                                  setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
+                                  toast({ title: "Treasury updated", description: "Treasury wallet address updated" });
+                                  const dialog = input.closest('[role="dialog"]');
+                                  if (dialog) {
+                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                  }
+                                }}
+                              >
+                                Save
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  const dialog = document.getElementById('edit-treasury')?.closest('[role="dialog"]');
+                                  if (dialog) {
+                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                  }
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -860,15 +909,46 @@ export const UnifiedMintInterface = () => {
                             <DialogTitle>Edit Whitelist Setting</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
-                            <Label htmlFor="edit-whitelist">Enable Whitelist</Label>
-                            <Switch
-                              id="edit-whitelist"
-                              defaultChecked={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
-                              onCheckedChange={(checked) => {
-                                setFormData(prev => ({ ...prev, whitelist_enabled: checked }));
-                                toast({ title: "Whitelist updated", description: `Whitelist ${checked ? 'enabled' : 'disabled'}` });
-                              }}
-                            />
+                            <Label htmlFor="edit-whitelist" className="required-field">Enable Whitelist *</Label>
+                            <div className="flex items-center justify-between">
+                              <Switch
+                                id="edit-whitelist"
+                                defaultChecked={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
+                                onCheckedChange={(checked) => {
+                                  // Store the temporary value
+                                  (document.getElementById('edit-whitelist') as any).__tempValue = checked;
+                                }}
+                              />
+                              <div className="flex gap-2 ml-4">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => {
+                                    const switchEl = document.getElementById('edit-whitelist') as any;
+                                    const checked = switchEl.__tempValue !== undefined ? switchEl.__tempValue : (switchEl.getAttribute('data-state') === 'checked');
+                                    setFormData(prev => ({ ...prev, whitelist_enabled: checked }));
+                                    toast({ title: "Whitelist updated", description: `Whitelist ${checked ? 'enabled' : 'disabled'}` });
+                                    const dialog = switchEl.closest('[role="dialog"]');
+                                    if (dialog) {
+                                      (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                    }
+                                  }}
+                                >
+                                  Save
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => {
+                                    const dialog = document.getElementById('edit-whitelist')?.closest('[role="dialog"]');
+                                    if (dialog) {
+                                      (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
+                                    }
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -1557,7 +1637,8 @@ export const UnifiedMintInterface = () => {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <ImageIcon className="h-5 w-5 text-primary" />
-                      <Label className="text-lg font-semibold">Collection Avatar <span className="text-destructive">*</span></Label>
+                      <Label className="text-lg font-semibold required-field">Collection Avatar <span className="text-destructive">*</span></Label>
+                      <Badge variant="secondary">For Collection Display</Badge>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1617,7 +1698,7 @@ export const UnifiedMintInterface = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="symbol">
+                        <Label htmlFor="symbol" className="required-field">
                           Symbol <span className="text-destructive">*</span>
                         </Label>
                         <Input
@@ -1633,7 +1714,7 @@ export const UnifiedMintInterface = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="mint-price">Mint Price (SOL) <span className="text-destructive">*</span></Label>
+                        <Label htmlFor="mint-price" className="required-field">Mint Price (SOL) <span className="text-destructive">*</span></Label>
                         <Input
                           id="mint-price"
                           type="number"
@@ -1661,7 +1742,7 @@ export const UnifiedMintInterface = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="max-supply">
+                        <Label htmlFor="max-supply" className="required-field">
                           Max Supply <span className="text-destructive">*</span>
                         </Label>
                         <Input
@@ -1688,7 +1769,7 @@ export const UnifiedMintInterface = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="royalties">Royalties (%) <span className="text-destructive">*</span></Label>
+                        <Label htmlFor="royalties" className="required-field">Royalties (%) <span className="text-destructive">*</span></Label>
                         <Input
                           id="royalties"
                           type="number"
@@ -1715,7 +1796,7 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="treasury">
+                      <Label htmlFor="treasury" className="required-field">
                         Treasury Wallet <span className="text-destructive">*</span>
                       </Label>
                       <Input
@@ -1806,7 +1887,10 @@ export const UnifiedMintInterface = () => {
                 
                 {/* NFT Artwork */}
                 <div className="space-y-4">
-                  <Label className="text-lg font-semibold">NFT Artwork</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-lg font-semibold required-field">NFT Artwork *</Label>
+                    <Badge variant="secondary">For Individual NFTs</Badge>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -1858,7 +1942,7 @@ export const UnifiedMintInterface = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="standalone-name">
+                      <Label htmlFor="standalone-name" className="required-field">
                         NFT Name <span className="text-destructive">*</span>
                       </Label>
                       <Input
