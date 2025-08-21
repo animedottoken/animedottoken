@@ -203,7 +203,7 @@ export const UnifiedMintInterface = () => {
             (stepNumber === 1 && createdCollectionId) ||
             (stepNumber === 2 && isCollectionSetupComplete);
           
-          const stepNames = ['Create Collection', 'Configure Minting', 'Mint NFTs'];
+          const stepNames = ['Basics (off-chain)', 'Mint Collection', 'Add Art & Mint NFTs'];
           
           return (
             <div key={stepNumber} className="flex items-center">
@@ -774,7 +774,7 @@ export const UnifiedMintInterface = () => {
               {/* Step 3 Title moved here */}
               <div className="text-center pt-6 border-t">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
-                  Step 3: Create NFTs in this Collection
+                  Step 3: Add artworks & mint NFTs
                 </h1>
                 <p className="text-muted-foreground">
                   Your collection is set up and ready. Configure individual NFT details and start minting.
@@ -1334,11 +1334,11 @@ export const UnifiedMintInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-6 w-6" />
-              Step 2: Set the Rules for Your NFTs
+              Step 2: Mint Collection
               <Badge variant="secondary">Required for minting</Badge>
             </CardTitle>
             <p className="text-muted-foreground">
-              Complete these settings to enable NFT minting for your collection.
+              Finalize your collection on-chain to lock key settings (max supply, royalties). After this, you can add artwork(s) and mint NFTs.
             </p>
           </CardHeader>
           
@@ -1624,11 +1624,11 @@ export const UnifiedMintInterface = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <Plus className="h-6 w-6" />
-                  Step 1: Create Your Collection
+                  Step 1: Basics (off-chain)
                   <Badge variant="secondary" className="ml-2">Recommended</Badge>
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  Start here by creating a professional collection for your art series. You will only set up the basic details now; you can add the on-chain rules like max supply and royalties in the next step.
+                  Provide the basics for your collection. This is not on-chain yet — it's just for visitor orientation. You will mint the collection and lock rules in Step 2.
                 </p>
               </CardHeader>
               
@@ -1790,7 +1790,7 @@ export const UnifiedMintInterface = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-6 w-6" />
-                  Step 2: Configure NFT Minting Settings
+                  Step 2: Mint Collection
                   <Badge variant="secondary">Required for minting</Badge>
                 </CardTitle>
                 <p className="text-muted-foreground">

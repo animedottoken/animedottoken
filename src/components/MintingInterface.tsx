@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Clock, Users, Zap, Shield, Plus, Minus } from 'lucide-react';
+import { Clock, Users, Zap, Shield, Plus, Minus, Info } from 'lucide-react';
 import { useMintQueue } from '@/hooks/useMintQueue';
 import { MintQueueStatus } from '@/components/MintQueueStatus';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -16,6 +16,7 @@ interface Collection {
   name: string;
   description: string;
   image_url: string;
+  banner_image_url?: string | null;
   mint_price: number;
   max_supply: number;
   items_redeemed: number;
