@@ -505,11 +505,16 @@ export const UnifiedMintInterface = () => {
   };
 
   const handleCompleteSetup = async () => {
-    // Validate required fields
-    if (!formData.symbol || !imageFile) {
+    // For existing collections, we don't need to re-validate image files
+    const isExistingCollection = !!createdCollectionId;
+    
+    // Validate required fields - relaxed for existing collections
+    if (!formData.symbol || (!imageFile && !isExistingCollection && !imagePreview)) {
       toast({
         title: 'Missing required fields',
-        description: 'Please add Symbol and Avatar before completing setup',
+        description: isExistingCollection 
+          ? 'Please add Symbol to update collection settings'
+          : 'Please add Symbol and Avatar before completing setup',
         variant: 'destructive',
       });
       return;
@@ -530,7 +535,7 @@ export const UnifiedMintInterface = () => {
       ...formData,
       symbol: formData.symbol,
       enable_primary_sales: true,
-      image_file: imageFile || undefined,
+      image_file: imageFile || undefined, // Only include if we have a new file
       mint_price: formData.mint_price || 0,
       max_supply: formData.max_supply || 1000,
       royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
@@ -543,7 +548,9 @@ export const UnifiedMintInterface = () => {
       
       toast({
         title: '🎉 Collection Setup Complete!',
-        description: 'You can now start minting NFTs from your collection.',
+        description: isExistingCollection 
+          ? 'Your collection settings have been updated!'
+          : 'You can now start minting NFTs from your collection.',
       });
       
       // DON'T clear imagePreview or formData - Step 3 needs them for display
