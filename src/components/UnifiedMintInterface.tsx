@@ -1232,68 +1232,69 @@ export const UnifiedMintInterface = () => {
                       <ChevronLeft className="h-4 w-4" />
                       Back to Step 1
                     </Button>
-                    <Button 
-                      type="button"
-                      onClick={handleCompleteSetup}
-                      disabled={creating}
-                      className="flex items-center gap-2"
-                    >
-                      {creating ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Setting up...
-                        </>
-          ) : currentStep === 3 ? (
-            /* Step 3: Mint NFTs */
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-6 w-6" />
-                    Step 3: Mint Your NFTs
-                    <Badge variant="default" className="bg-green-600">Ready to Mint!</Badge>
-                  </CardTitle>
-                  <p className="text-muted-foreground">
-                    🎉 Congratulations! Your collection "<strong>{formData.name}</strong>" is now fully configured and ready for minting. Create individual NFTs that will be part of this collection.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {/* Navigation Buttons */}
-                  <div className="flex justify-between mb-6 pb-4 border-b">
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={handlePreviousStep}
-                      className="flex items-center gap-2"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Back to Configuration
-                    </Button>
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={resetCollection}
-                      className="flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Create Another Collection
-                    </Button>
-                  </div>
-                  
-                  {/* Minting Interface */}
-                  {createdCollectionId && (
-                    <MintingInterface collectionId={createdCollectionId} />
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-                        <>
-                          <Settings className="h-4 w-4" />
-                          Complete Setup & Go to Minting
-                        </>
-                      )}
-                    </Button>
+{currentStep === 3 ? (
+  /* Step 3: Mint NFTs */
+  <div className="space-y-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Zap className="h-6 w-6" />
+          Step 3: Mint Your NFTs
+          <Badge variant="default" className="bg-green-600">Ready to Mint!</Badge>
+        </CardTitle>
+        <p className="text-muted-foreground">
+          🎉 Congratulations! Your collection "<strong>{formData.name}</strong>" is now fully configured and ready for minting. Create individual NFTs that will be part of this collection.
+        </p>
+      </CardHeader>
+      <CardContent>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mb-6 pb-4 border-b">
+          <Button 
+            type="button"
+            variant="outline"
+            onClick={handlePreviousStep}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back to Configuration
+          </Button>
+          <Button 
+            type="button"
+            variant="outline"
+            onClick={resetCollection}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Create Another Collection
+          </Button>
+        </div>
+        {/* Minting Interface */}
+        {createdCollectionId && (
+          <MintingInterface collectionId={createdCollectionId} />
+        )}
+      </CardContent>
+    </Card>
+  </div>
+) : (
+  <Button 
+    type="button"
+    onClick={handleCompleteSetup}
+    disabled={creating}
+    className="flex items-center gap-2"
+  >
+    {creating ? (
+      <>
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Setting up...
+      </>
+    ) : (
+      <>
+        <Settings className="h-4 w-4" />
+        Complete Setup & Go to Minting
+      </>
+    )}
+  </Button>
+)}
                   </div>
                 </form>
               </CardContent>
