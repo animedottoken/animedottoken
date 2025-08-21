@@ -615,6 +615,8 @@ export const UnifiedMintInterface = () => {
               treasury_wallet: formData.treasury_wallet || publicKey || '',
               whitelist_enabled: formData.whitelist_enabled || false,
               onchain_description: formData.onchain_description || null,
+              max_supply: formData.max_supply,
+              royalty_percentage: formData.royalty_percentage,
             }
           }
         });
@@ -653,7 +655,7 @@ export const UnifiedMintInterface = () => {
         enable_primary_sales: true,
         image_file: imageFile || undefined, // Only include if we have a new file
         mint_price: formData.mint_price || 0,
-        max_supply: formData.max_supply || 1000,
+        max_supply: formData.max_supply || 100, // Require explicit input, no 1000 default
         royalty_percentage: Math.min(Math.max(formData.royalty_percentage || 5, 0), 50), // Ensure it's within bounds
         treasury_wallet: formData.treasury_wallet || publicKey || '',
       });
@@ -1075,21 +1077,21 @@ export const UnifiedMintInterface = () => {
         </Card>
 
         {/* Per-NFT Details (Optional) */}
-        <Collapsible>
+        <Collapsible defaultOpen={false}>
           <Card>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover:bg-muted/20">
                 <CardTitle className="text-xl font-bold flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileImage className="h-5 w-5" />
-                    Individual NFT Artwork & Details (Optional)
+                    Batch NFT Artwork & Details (Optional)
                     <Badge variant="outline" className="ml-2">Batch Metadata</Badge>
                   </div>
                   <ChevronDown className="h-5 w-5" />
                 </CardTitle>
                 <div className="text-left space-y-2">
                   <p className="text-muted-foreground">
-                    Configure specific artwork and metadata that will be applied to all NFTs in your mint batch.
+                    Configure specific artwork and metadata that will be applied to all NFTs in your mint batch. Not related to Standalone NFTs.
                   </p>
                   <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border-l-4 border-blue-400">
                     <p className="text-sm text-blue-700 dark:text-blue-300">

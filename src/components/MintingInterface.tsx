@@ -64,14 +64,23 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
 
       if (data && data.length > 0) {
         setCollection(data[0]);
+      } else if (collectionId && collectionId !== '123e4567-e89b-12d3-a456-426614174000') {
+        // Don't create sample collection when a real collectionId is provided
+        console.error('Collection not found for ID:', collectionId);
+        setCollection(null);
       } else {
         console.log('No collection found, creating sample collection');
-        // Create sample collection if none exists
+        // Create sample collection if none exists (only for default/demo ID)
         await createSampleCollection();
       }
     } catch (error) {
       console.error('Error loading collection:', error);
-      await createSampleCollection();
+      if (collectionId && collectionId !== '123e4567-e89b-12d3-a456-426614174000') {
+        // Don't create sample collection when a real collectionId is provided
+        setCollection(null);
+      } else {
+        await createSampleCollection();
+      }
     } finally {
       setCollectionLoading(false);
     }
@@ -287,7 +296,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   </Button>
                   
                   <div className="text-sm text-muted-foreground">
-                    Max: {maxPerJob}
+                    Max per job: {maxPerJob}
                   </div>
                 </div>
                 
