@@ -750,36 +750,7 @@ export const UnifiedMintInterface = () => {
 
               <Button 
                 type="button"
-                onClick={async () => {
-                  // Validate required fields
-                  if (!formData.symbol || !imageFile) {
-                    toast({
-                      title: 'Missing required fields',
-                      description: 'Please add Symbol and Avatar before enabling minting',
-                      variant: 'destructive',
-                    });
-                    return;
-                  }
-                  
-                  // Update collection with minting details
-                  const result = await createCollection({
-                    ...formData,
-                    symbol: formData.symbol,
-                    enable_primary_sales: true,
-                    image_file: imageFile || undefined,
-                    mint_price: formData.mint_price || 0.1,
-                    max_supply: formData.max_supply || 1000,
-                    royalty_percentage: formData.royalty_percentage || 5,
-                    treasury_wallet: formData.treasury_wallet || publicKey || '',
-                  });
-                  
-                  if (result?.success) {
-                    toast({
-                      title: 'Collection setup complete!',
-                      description: 'You can now mint NFTs.',
-                    });
-                  }
-                }}
+                onClick={handleCompleteSetup}
                 disabled={creating}
                 className="w-full h-12 text-lg font-semibold"
               >
@@ -791,7 +762,7 @@ export const UnifiedMintInterface = () => {
                 ) : (
                   <>
                     <Settings className="mr-2 h-5 w-5" />
-                    Complete Setup & Enable Minting
+                    Mint Collection and Continue to Step 3
                   </>
                 )}
               </Button>
