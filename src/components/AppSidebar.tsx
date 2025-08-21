@@ -52,8 +52,8 @@ const navigationItems = [
     type: "route" as const
   },
   { 
-    title: "🎨Create & Trade NFTs on Solana", 
-    icon: ShoppingCart,
+    title: "🎨 Create & Trade NFTs on Solana", 
+    icon: Coins,
     hash: "nft-supporter-section",
     type: "section" as const
   },
