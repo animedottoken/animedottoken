@@ -568,10 +568,10 @@ export const UnifiedMintInterface = () => {
       });
       return;
     }
-    if (currentStep === 2 && !isCollectionSetupComplete) {
+    if (currentStep === 2 && !isCollectionSetupComplete && !step3Collection?.collection_mint_address) {
       toast({
-        title: 'Complete Setup First',
-        description: 'Please complete the collection setup before proceeding to minting.',
+        title: 'Complete Step 2 First',
+        description: 'Mint the collection on-chain (demo) to proceed to Step 3.',
         variant: 'destructive',
       });
       return;
@@ -1990,11 +1990,14 @@ export const UnifiedMintInterface = () => {
                               });
 
                               if (data?.success) {
+                                setIsCollectionSetupComplete(true);
+                                setStep3Collection(prev => prev ? { ...prev, collection_mint_address: mockMintAddress } : prev);
                                 await loadStep3Collection();
                                 toast({
                                   title: '✅ Collection Minted Successfully!',
                                   description: `Your collection is now live on-chain (demo)`,
                                 });
+                                setCurrentStep(3);
                               } else {
                                 toast({
                                   title: 'Demo Update Failed',
