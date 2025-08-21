@@ -67,7 +67,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">The Anime Art Marketplace</CardTitle>
             <CardDescription className="text-base">
-              Discover and collect unique digital art from talented creators in the ANIME community. Every piece on our marketplace is verified on the Solana blockchain, guaranteeing its authenticity. Whether you're a seasoned collector or buying your first piece, this is your trusted home for high-quality, anime-inspired art.
+              Discover and collect unique digital art from talented creators in the ANIME community. Every piece is verified on the Solana blockchain for authenticity and quality.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
