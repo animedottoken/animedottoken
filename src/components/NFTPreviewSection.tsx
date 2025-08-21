@@ -27,7 +27,7 @@ export function NFTPreviewSection() {
             </div>
             <CardTitle className="text-2xl">Mint Your NFTs</CardTitle>
             <CardDescription className="text-base">
-              Create unique anime-inspired NFTs with special powers and rarity traits
+              Create unique anime-inspired NFTs with <strong>unlockable content</strong> and rarity traits
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
