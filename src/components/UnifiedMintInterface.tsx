@@ -668,6 +668,19 @@ export const UnifiedMintInterface = () => {
             </Button>
           </CardHeader>
         </Card>
+
+        {/* Collection Banner - Show if uploaded */}
+        {bannerPreview && (
+          <Card className="overflow-hidden">
+            <AspectRatio ratio={16/5}>
+              <img
+                src={bannerPreview}
+                alt={`${formData.name} banner`}
+                className="w-full h-full object-cover"
+              />
+            </AspectRatio>
+          </Card>
+        )}
         
         {/* Collection Setup Form */}
         <Card>
