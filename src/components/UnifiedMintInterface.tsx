@@ -41,8 +41,9 @@ export const UnifiedMintInterface = () => {
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState<'collection' | 'standalone'>('collection');
-  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [createdCollectionId, setCreatedCollectionId] = useState<string | null>(null);
+  const [isCollectionSetupComplete, setIsCollectionSetupComplete] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [formData, setFormData] = useState<CreateCollectionData>({
@@ -104,7 +105,11 @@ export const UnifiedMintInterface = () => {
         {Array.from({ length: totalSteps }, (_, i) => {
           const stepNumber = i + 1;
           const isActive = stepNumber === currentStep;
-          const isCompleted = stepNumber < currentStep || (stepNumber === 1 && createdCollectionId);
+          const isCompleted = stepNumber < currentStep || 
+            (stepNumber === 1 && createdCollectionId) ||
+            (stepNumber === 2 && isCollectionSetupComplete);
+          
+          const stepNames = ['Create Collection', 'Configure Minting', 'Mint NFTs'];
           
           return (
             <div key={stepNumber} className="flex items-center">
@@ -128,12 +133,12 @@ export const UnifiedMintInterface = () => {
                   Step {stepNumber}
                 </div>
                 <div className={`text-xs ${isActive ? 'text-muted-foreground' : 'text-muted-foreground/70'}`}>
-                  {stepNumber === 1 ? 'Create Collection' : 'Configure Minting'}
+                  {stepNames[i]}
                 </div>
               </div>
               {stepNumber < totalSteps && (
                 <ChevronRight className={`w-5 h-5 mx-4 ${
-                  stepNumber < currentStep || createdCollectionId 
+                  stepNumber < currentStep || (stepNumber === 1 && createdCollectionId) || (stepNumber === 2 && isCollectionSetupComplete)
                     ? 'text-primary' 
                     : 'text-muted-foreground/50'
                 }`} />
@@ -370,6 +375,7 @@ export const UnifiedMintInterface = () => {
   const resetCollection = () => {
     setCreatedCollectionId(null);
     setCurrentStep(1);
+    setIsCollectionSetupComplete(false);
     setFormData({
       name: '',
       symbol: undefined,
@@ -402,11 +408,76 @@ export const UnifiedMintInterface = () => {
       });
       return;
     }
-    setCurrentStep(2);
+    if (currentStep === 2 && !isCollectionSetupComplete) {
+      toast({
+        title: 'Complete Setup First',
+        description: 'Please complete the collection setup before proceeding to minting.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setCurrentStep(prev => Math.min(prev + 1, 3) as 1 | 2 | 3);
   };
 
   const handlePreviousStep = () => {
-    setCurrentStep(1);
+    setCurrentStep(prev => Math.max(prev - 1, 1) as 1 | 2 | 3);
+  };
+
+  const handleCompleteSetup = async () => {
+    // Validate required fields
+    if (!formData.symbol || !imageFile) {
+      toast({
+        title: 'Missing required fields',
+        description: 'Please add Symbol and Avatar before completing setup',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Update collection with minting details
+    const result = await createCollection({
+      ...formData,
+      symbol: formData.symbol,
+      enable_primary_sales: true,
+      image_file: imageFile || undefined,
+      mint_price: formData.mint_price || 0,
+      max_supply: formData.max_supply || 1000,
+      royalty_percentage: formData.royalty_percentage || 5,
+      treasury_wallet: formData.treasury_wallet || publicKey || '',
+    });
+    
+    if (result?.success) {
+      setIsCollectionSetupComplete(true);
+      setCurrentStep(3);
+      
+      toast({
+        title: '🎉 Collection Setup Complete!',
+        description: 'You can now start minting NFTs from your collection.',
+      });
+      
+      // Clear form data to prevent confusion
+      setFormData({
+        name: formData.name, // Keep name for reference
+        symbol: formData.symbol, // Keep symbol for reference  
+        site_description: '',
+        onchain_description: '',
+        external_links: [],
+        category: '',
+        explicit_content: false,
+        enable_primary_sales: true,
+        mint_price: undefined,
+        max_supply: undefined,
+        royalty_percentage: undefined,
+        treasury_wallet: publicKey || '',
+        whitelist_enabled: false,
+      });
+      
+      // Clear image files
+      setImageFile(null);
+      setImagePreview(null);
+      setBannerFile(null);
+      setBannerPreview(null);
+    }
   };
 
   if (!connected) {
@@ -742,7 +813,7 @@ export const UnifiedMintInterface = () => {
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'collection' | 'standalone')}>
         <TabsContent value="collection">
           {/* Step Indicator */}
-          <StepIndicator currentStep={currentStep} totalSteps={2} />
+          <StepIndicator currentStep={currentStep} totalSteps={3} />
           
           {currentStep === 1 ? (
             /* Step 1: Collection Creation */
@@ -1135,36 +1206,7 @@ export const UnifiedMintInterface = () => {
                     </Button>
                     <Button 
                       type="button"
-                      onClick={async () => {
-                        // Validate required fields
-                        if (!formData.symbol || !imageFile) {
-                          toast({
-                            title: 'Missing required fields',
-                            description: 'Please add Symbol and Avatar before enabling minting',
-                            variant: 'destructive',
-                          });
-                          return;
-                        }
-                        
-                        // Update collection with minting details
-                        const result = await createCollection({
-                          ...formData,
-                          symbol: formData.symbol,
-                          enable_primary_sales: true,
-                          image_file: imageFile || undefined,
-                          mint_price: formData.mint_price || 0.1,
-                          max_supply: formData.max_supply || 1000,
-                          royalty_percentage: formData.royalty_percentage || 5,
-                          treasury_wallet: formData.treasury_wallet || publicKey || '',
-                        });
-                        
-                        if (result?.success) {
-                          toast({
-                            title: 'Collection setup complete!',
-                            description: 'You can now mint NFTs.',
-                          });
-                        }
-                      }}
+                      onClick={handleCompleteSetup}
                       disabled={creating}
                       className="flex items-center gap-2"
                     >
@@ -1173,10 +1215,54 @@ export const UnifiedMintInterface = () => {
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Setting up...
                         </>
-                      ) : (
+          ) : currentStep === 3 ? (
+            /* Step 3: Mint NFTs */
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-6 w-6" />
+                    Step 3: Mint Your NFTs
+                    <Badge variant="default" className="bg-green-600">Ready to Mint!</Badge>
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    🎉 Congratulations! Your collection "<strong>{formData.name}</strong>" is now fully configured and ready for minting. Create individual NFTs that will be part of this collection.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {/* Navigation Buttons */}
+                  <div className="flex justify-between mb-6 pb-4 border-b">
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={handlePreviousStep}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Back to Configuration
+                    </Button>
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={resetCollection}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Create Another Collection
+                    </Button>
+                  </div>
+                  
+                  {/* Minting Interface */}
+                  {createdCollectionId && (
+                    <MintingInterface collectionId={createdCollectionId} />
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
                         <>
                           <Settings className="h-4 w-4" />
-                          Complete Setup & Enable Minting
+                          Complete Setup & Go to Minting
                         </>
                       )}
                     </Button>
