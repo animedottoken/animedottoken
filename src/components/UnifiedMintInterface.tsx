@@ -618,7 +618,7 @@ export const UnifiedMintInterface = () => {
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Collections are optional containers that help organize your NFTs. You can mint NFTs immediately without creating a collection first.
+            A Collection is the official **Master Blueprint** for your art series. It groups all of your individual NFTs together, proves their authenticity to buyers, and allows you to set on-chain rules like a maximum supply. For any serious project, creating a Collection is the most important first step.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
@@ -648,11 +648,11 @@ export const UnifiedMintInterface = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Plus className="h-6 w-6" />
-                Create Collection Series
+                Create a Collection
                 <Badge variant="secondary" className="ml-2">Recommended</Badge>
               </CardTitle>
               <p className="text-muted-foreground">
-                Create a simple folder to organize your NFTs. You can add minting details later when you're ready to sell.
+                Start here by creating a professional collection for your art series. You will only set up the basic details now; you can add the on-chain rules like max supply and royalties in the next step.
               </p>
             </CardHeader>
             
@@ -674,7 +674,7 @@ export const UnifiedMintInterface = () => {
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      placeholder="e.g., My Art Series"
+                      placeholder="e.g., Cyber Samurai Chronicles"
                       minLength={3}
                       maxLength={32}
                       required
@@ -690,7 +690,7 @@ export const UnifiedMintInterface = () => {
                       id="site-description"
                       value={formData.site_description}
                       onChange={(e) => setFormData({...formData, site_description: e.target.value})}
-                      placeholder="Describe your collection..."
+                      placeholder="Tell the story behind your art series..."
                       className="h-24"
                       maxLength={2000}
                     />
@@ -792,7 +792,7 @@ export const UnifiedMintInterface = () => {
                   ) : (
                     <>
                       <Plus className="mr-2 h-5 w-5" />
-                      Create Collection Folder
+                      Create Collection
                     </>
                   )}
                 </Button>

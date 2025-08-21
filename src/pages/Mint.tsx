@@ -20,7 +20,7 @@ export default function Mint() {
               Mint NFTs & Collections
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Create collections and mint exclusive digital collectibles on Solana. Lightning-fast transactions and minimal fees for every creator.
+              Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
             </p>
           </div>
 
