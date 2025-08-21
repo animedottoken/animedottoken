@@ -3,7 +3,9 @@ import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { Zap, Coins, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 export default function Mint() {
+  const { connected } = useSolanaWallet();
   return (
     <>
       <Helmet>
@@ -24,10 +26,23 @@ export default function Mint() {
             </p>
           </div>
 
+          {/* Intro: wallet connect gate */}
+          {!connected && (
+            <Card className="max-w-3xl mx-auto mb-12">
+              <CardContent className="py-10 text-center">
+                <h2 className="text-2xl font-bold mb-2">Connect Your Wallet</h2>
+                <p className="text-muted-foreground mb-6">Connect your Solana wallet to start creating NFT collections and minting NFTs.</p>
+                <SolanaWalletButton />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Unified Mint Interface */}
-          <div className="flex justify-center mb-12">
-            <UnifiedMintInterface />
-          </div>
+          {connected && (
+            <div className="flex justify-center mb-12">
+              <UnifiedMintInterface />
+            </div>
+          )}
 
           {/* Features Grid */}
           <div className="grid md:grid-cols-3 gap-8">

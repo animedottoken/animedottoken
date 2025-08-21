@@ -128,10 +128,15 @@ export function AppSidebar() {
       if (location.pathname !== '/') {
         navigate(`/#${item.hash}`);
       } else {
-        // Scroll to section if already on home
+        // Scroll to section if already on home with header offset
         const element = document.getElementById(item.hash!) || 
-                       document.querySelector(`.${item.hash!}`);
-        element?.scrollIntoView({ behavior: 'smooth' });
+                        document.querySelector(`.${item.hash!}`);
+        if (element) {
+          const headerOffset = 80;
+          const y = (element as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          history.replaceState(null, '', `#${item.hash}`);
+        }
       }
     }
   };

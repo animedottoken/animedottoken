@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 export function NFTPreviewSection() {
   return (
-    <section id="nft-preview-section" className="mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+    <section id="nft-preview-section" className="mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎨</span>
