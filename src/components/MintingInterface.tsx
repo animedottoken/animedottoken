@@ -42,9 +42,10 @@ interface NFTDetails {
 interface MintingInterfaceProps {
   collectionId?: string;
   nftDetails?: NFTDetails;
+  embedded?: boolean; // Hide header and left preview when embedded
 }
 
-export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000', nftDetails }: MintingInterfaceProps) => {
+export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-426614174000', nftDetails, embedded = false }: MintingInterfaceProps) => {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [collectionLoading, setCollectionLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -202,61 +203,65 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   }
 
   return (
-    <div className="w-full max-w-6xl space-y-6">
+    <div className={embedded ? "space-y-6" : "w-full max-w-6xl space-y-6"}>
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              🔥 {collection.name} - Collection NFTs
-            </CardTitle>
-            <div className="flex gap-2">
-              {isLive && <Badge className="bg-green-500 text-white">LIVE</Badge>}
-              {isSoldOut && <Badge variant="destructive">SOLD OUT</Badge>}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-lg bg-muted relative">
-                <img 
-                  src={nftDetails?.nftImagePreview || collection.image_url || collection.banner_image_url || "/placeholder.svg"} 
-                  alt={nftDetails?.nftName || collection.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const img = e.currentTarget as HTMLImageElement;
-                    if (img.src !== "/placeholder.svg") {
-                      img.src = "/placeholder.svg";
-                    }
-                  }}
-                />
-                {!nftDetails?.nftImagePreview && !collection.image_url && (
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm text-center p-4">
-                    <div>
-                      <div className="mb-2">Your artwork preview</div>
-                      <div className="text-xs">Upload artwork in the section above</div>
-                    </div>
-                  </div>
-                )}
+        {!embedded && (
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                🔥 {collection.name} - Collection NFTs
+              </CardTitle>
+              <div className="flex gap-2">
+                {isLive && <Badge className="bg-green-500 text-white">LIVE</Badge>}
+                {isSoldOut && <Badge variant="destructive">SOLD OUT</Badge>}
               </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Price per NFT:</span>
-                  <div className="font-bold text-lg text-green-600">
-                    {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
-                  </div>
-                  {collection.mint_price === 0 && (
-                    <div className="text-xs text-muted-foreground">+ gas fees (~$0.01 each)</div>
+            </div>
+          </CardHeader>
+        )}
+        <CardContent className="space-y-6">
+          <div className={embedded ? "space-y-6" : "grid grid-cols-1 lg:grid-cols-2 gap-8"}>
+            {!embedded && (
+              <div className="space-y-4">
+                <div className="aspect-square overflow-hidden rounded-lg bg-muted relative">
+                  <img 
+                    src={nftDetails?.nftImagePreview || collection.image_url || collection.banner_image_url || "/placeholder.svg"} 
+                    alt={nftDetails?.nftName || collection.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      if (img.src !== "/placeholder.svg") {
+                        img.src = "/placeholder.svg";
+                      }
+                    }}
+                  />
+                  {!nftDetails?.nftImagePreview && !collection.image_url && (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm text-center p-4">
+                      <div>
+                        <div className="mb-2">Your artwork preview</div>
+                        <div className="text-xs">Upload artwork in the section above</div>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <div>
-                  <span className="text-muted-foreground">Supply:</span>
-                  <div className="font-bold">{collection.max_supply.toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">{remainingSupply.toLocaleString()} remaining</div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Price per NFT:</span>
+                    <div className="font-bold text-lg text-green-600">
+                      {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
+                    </div>
+                    {collection.mint_price === 0 && (
+                      <div className="text-xs text-muted-foreground">+ gas fees (~$0.01 each)</div>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Supply:</span>
+                    <div className="font-bold">{collection.max_supply.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">{remainingSupply.toLocaleString()} remaining</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-6">
               <div>
