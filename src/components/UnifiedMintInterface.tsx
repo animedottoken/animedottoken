@@ -85,6 +85,13 @@ export const UnifiedMintInterface = () => {
     }
   }, [publicKey]);
 
+  // Scroll to top when collection is created successfully
+  React.useEffect(() => {
+    if (createdCollectionId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [createdCollectionId]);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
