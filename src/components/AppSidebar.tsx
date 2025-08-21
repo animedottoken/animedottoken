@@ -52,6 +52,12 @@ const navigationItems = [
     type: "route" as const
   },
   { 
+    title: "🎨Create & Trade NFTs on Solana", 
+    icon: ShoppingCart,
+    hash: "create-trade-nfts",
+    type: "section" as const
+  },
+  { 
     title: "Community Showcase", 
     icon: Users,
     hash: "featured-community-content",
