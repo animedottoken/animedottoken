@@ -23,7 +23,8 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Check
+  Check,
+  Info
 } from 'lucide-react';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
@@ -681,6 +682,34 @@ export const UnifiedMintInterface = () => {
             </AspectRatio>
           </Card>
         )}
+
+        {/* Collection Details from Step 1 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              Collection Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Collection Name</label>
+                <p className="text-sm font-semibold">{formData.name || 'Not set'}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Category</label>
+                <p className="text-sm">{formData.category || 'Not set'}</p>
+              </div>
+            </div>
+            {formData.site_description && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <p className="text-sm">{formData.site_description}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
         
         {/* Collection Setup Form */}
         <Card>
