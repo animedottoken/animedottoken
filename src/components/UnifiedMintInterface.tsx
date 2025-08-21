@@ -462,12 +462,12 @@ export const UnifiedMintInterface = () => {
                       id="symbol"
                       value={formData.symbol || ''}
                       onChange={(e) => setFormData({...formData, symbol: e.target.value.toUpperCase()})}
-                      placeholder="e.g., ANIMEFS"
+                      placeholder="e.g., ANIMF"
                       maxLength={10}
                       className="h-12 text-lg"
                       required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">A short, 5-10 character 'ticker' for your NFT series (e.g., ANIMEFS)</p>
+                    <p className="text-xs text-muted-foreground mt-1">A short, unique 'ticker' for your NFT series (5-10 characters, e.g., ANIMF). This is permanent and cannot be changed after setup.</p>
                   </div>
                   
                   <div>
