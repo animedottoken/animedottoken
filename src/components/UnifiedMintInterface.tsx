@@ -536,12 +536,53 @@ export const UnifiedMintInterface = () => {
           </CardHeader>
         </Card>
 
+        {/* Collection Info Banner */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {imagePreview && (
+                  <img 
+                    src={imagePreview} 
+                    alt={formData.name}
+                    className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
+                  />
+                )}
+                <div>
+                  <h3 className="text-xl font-bold">{formData.name}</h3>
+                  <p className="text-sm text-muted-foreground">Symbol: {formData.symbol || 'Not set'}</p>
+                </div>
+              </div>
+            </CardTitle>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              <div className="text-center p-3 bg-background/50 rounded-lg">
+                <div className="font-bold text-lg text-green-600">
+                  {formData.mint_price === 0 ? 'FREE' : `${formData.mint_price} SOL`}
+                </div>
+                <div className="text-xs text-muted-foreground">Mint Price</div>
+              </div>
+              <div className="text-center p-3 bg-background/50 rounded-lg">
+                <div className="font-bold text-lg">{formData.max_supply?.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">Max Supply</div>
+              </div>
+              <div className="text-center p-3 bg-background/50 rounded-lg">
+                <div className="font-bold text-lg">{formData.royalty_percentage || 0}%</div>
+                <div className="text-xs text-muted-foreground">Royalties</div>
+              </div>
+              <div className="text-center p-3 bg-background/50 rounded-lg">
+                <div className="font-bold text-lg text-primary">LIVE</div>
+                <div className="text-xs text-muted-foreground">Status</div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
         {/* Minting Interface */}
         <Card>
           <CardHeader className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold flex items-center gap-2">
               <Zap className="h-5 w-5" />
-              Mint Your NFTs
+              Create NFTs in this Collection
             </CardTitle>
             <Button variant="outline" onClick={handlePreviousStep} className="flex items-center gap-2">
               <ChevronLeft className="h-4 w-4" />
