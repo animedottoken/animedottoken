@@ -576,13 +576,25 @@ export const UnifiedMintInterface = () => {
 
         {/* Collection Banner */}
         {step3Collection?.banner_image_url && (
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden relative">
             <AspectRatio ratio={16/5}>
               <img
                 src={step3Collection.banner_image_url}
                 alt={`${step3Collection.name} banner`}
                 className="w-full h-full object-cover"
               />
+              {/* Collection Avatar Overlay */}
+              {(step3Collection?.image_url || imagePreview) && (
+                <div className="absolute bottom-4 left-4">
+                  <div className="w-20 h-20 rounded-lg overflow-hidden border-4 border-background shadow-lg">
+                    <img 
+                      src={step3Collection?.image_url || imagePreview!}
+                      alt={`${step3Collection?.name || formData.name} avatar`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
             </AspectRatio>
           </Card>
         )}
