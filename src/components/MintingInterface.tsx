@@ -275,7 +275,9 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
 
             <div className="space-y-6">
               <div>
+                <div className="text-xs text-muted-foreground/60 mb-1">Collection Name</div>
                 <h3 className="font-semibold mb-2">{collection.name}</h3>
+                <div className="text-xs text-muted-foreground/60 mb-1">Collection Description</div>
                 <p className="text-muted-foreground text-sm">{collection.description}</p>
               </div>
 
@@ -382,7 +384,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
         </CardContent>
       </Card>
 
-      {/* Queue Status - Only show if embedded */}
+      {/* Queue Status - Only show when NOT embedded */}
       {!embedded && (
         <MintQueueStatus 
           jobs={jobs} 
