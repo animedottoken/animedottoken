@@ -771,7 +771,7 @@ export const UnifiedMintInterface = () => {
                 🎉 Collection Setup Complete!
               </CardTitle>
               <p className="text-muted-foreground">
-                Your collection "<strong>{formData.name}</strong>" has been successfully minted on-chain! You can now upload artwork and mint individual NFTs.
+                Your collection "<strong>{step3Collection?.name || formData.name}</strong>" has been successfully minted on-chain! Individual NFTs can now be created and sold.
               </p>
             </div>
             <Button variant="outline" onClick={resetCollection}>
@@ -1228,28 +1228,28 @@ export const UnifiedMintInterface = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-muted/50 rounded-lg">
-                        <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-                        <div className="font-bold">{createdCollectionId ? '1000' : 'TBD'}</div>
-                        <div className="text-sm text-muted-foreground">Total Supply</div>
-                      </div>
-                      <div className="text-center p-4 bg-muted/50 rounded-lg">
-                        <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
-                        <div className="font-bold">Live Now</div>
-                        <div className="text-sm text-muted-foreground">Mint Status</div>
-                      </div>
-                      <div className="text-center p-4 bg-muted/50 rounded-lg">
-                        <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
-                        <div className="font-bold">Queue System</div>
-                        <div className="text-sm text-muted-foreground">Professional</div>
-                      </div>
-                      <div className="text-center p-4 bg-muted/50 rounded-lg">
-                        <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
-                        <div className="font-bold">5%</div>
-                        <div className="text-sm text-muted-foreground">Royalties</div>
-                      </div>
-                    </div>
+                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                       <div className="text-center p-4 bg-muted/50 rounded-lg">
+                         <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
+                         <div className="font-bold">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.() || 'TBD'}</div>
+                         <div className="text-sm text-muted-foreground">Total Supply</div>
+                       </div>
+                       <div className="text-center p-4 bg-muted/50 rounded-lg">
+                         <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
+                         <div className="font-bold">Live Now</div>
+                         <div className="text-sm text-muted-foreground">Mint Status</div>
+                       </div>
+                       <div className="text-center p-4 bg-muted/50 rounded-lg">
+                         <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
+                         <div className="font-bold">Queue System</div>
+                         <div className="text-sm text-muted-foreground">Professional</div>
+                       </div>
+                       <div className="text-center p-4 bg-muted/50 rounded-lg">
+                         <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
+                         <div className="font-bold">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
+                         <div className="text-sm text-muted-foreground">Royalties</div>
+                       </div>
+                     </div>
 
                     <div className="mt-6 space-y-3">
                       <h4 className="font-semibold">Features & Benefits</h4>
@@ -1299,15 +1299,14 @@ export const UnifiedMintInterface = () => {
                     </p>
                   </div>
 
-                  {/* NFT Attributes - MOVED HERE after NFT Description */}
-                  <div className="space-y-4">
-                    <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Add metadata attributes that will be applied to all NFTs in this mint batch.
-                    </div>
+                   {/* NFT Attributes */}
+                   <div className="space-y-4">
+                     <div className="flex items-center justify-between">
+                       <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
+                     </div>
+                     <div className="text-sm text-muted-foreground">
+                       Add metadata attributes that will be applied to all NFTs in this mint batch.
+                     </div>
                     
                     {nftDetails.nftAttributes.length > 0 ? (
                       <div className="space-y-3">
