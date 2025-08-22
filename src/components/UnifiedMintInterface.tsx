@@ -642,57 +642,97 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
     console.log('🔥 handleCompleteSetup called in Step 2');
     console.log('🔥 createdCollectionId:', createdCollectionId);
     console.log('🔥 currentStep:', currentStep);
-    
-    // For Step 1, we only validate and save form data, then go to Step 2
-    // No minting happens in Step 1 anymore
-    
-    // Validate required fields for Step 1
-    if (!formData.name.trim()) {
-      toast({
-        title: 'Missing required fields',
-        description: 'Please add Collection Name before continuing',
-        variant: 'destructive',
+
+    if (!createdCollectionId) {
+      // Safety: If somehow Step 2 is shown without a collection, create it first
+      const result = await createCollection({
+        ...formData,
+        enable_primary_sales: false,
+        image_file: imageFile || undefined,
+        banner_file: bannerFile || undefined,
       });
+
+      if (result && (result as any).success && (result as any).collection) {
+        const collectionId = (result as any).collection.id;
+        setCreatedCollectionId(collectionId);
+        toast({
+          title: 'Collection created!',
+          description: 'Now saving rules and minting (demo)...',
+        });
+      } else {
+        toast({
+          title: 'Failed to create collection',
+          description: ((result as any)?.error?.message) || 'Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
+    // Validate Step 2 required fields
+    if (!imagePreview) {
+      toast({ title: 'Avatar required', description: 'Please upload a collection avatar', variant: 'destructive' });
+      return;
+    }
+    if (!formData.symbol || formData.symbol.trim().length < 2 || formData.symbol.trim().length > 10) {
+      toast({ title: 'Invalid symbol', description: 'Symbol must be 2-10 characters', variant: 'destructive' });
+      return;
+    }
+    if (formData.max_supply === undefined || formData.max_supply < 1 || formData.max_supply > 100000) {
+      toast({ title: 'Invalid max supply', description: 'Max supply must be between 1 and 100,000', variant: 'destructive' });
+      return;
+    }
+    if (formData.royalty_percentage === undefined || formData.royalty_percentage < 0 || formData.royalty_percentage > 50) {
+      toast({ title: 'Invalid royalties', description: 'Royalties must be between 0% and 50%', variant: 'destructive' });
+      return;
+    }
+    if (formData.mint_price === undefined || formData.mint_price < 0) {
+      toast({ title: 'Invalid mint price', description: 'Mint price cannot be negative', variant: 'destructive' });
+      return;
+    }
+    if (!formData.treasury_wallet || !formData.treasury_wallet.trim()) {
+      toast({ title: 'Treasury wallet required', description: 'Please set the wallet that will receive funds', variant: 'destructive' });
       return;
     }
 
-    // If collection already created, just go to Step 2
-    if (createdCollectionId) {
-      console.log('🔥 Collection exists, marking as setup complete and going to Step 3');
+    try {
+      const mockMintAddress = `Demo${(createdCollectionId as string).slice(-8)}Mock`;
+      const { data, error } = await supabase.functions.invoke('update-collection', {
+        body: {
+          collection_id: createdCollectionId,
+          updates: {
+            symbol: formData.symbol.toUpperCase(),
+            mint_price: Number(formData.mint_price),
+            max_supply: Number(formData.max_supply),
+            items_available: Number(formData.max_supply),
+            royalty_percentage: Number(formData.royalty_percentage),
+            treasury_wallet: formData.treasury_wallet,
+            whitelist_enabled: !!formData.whitelist_enabled,
+            onchain_description: formData.onchain_description || null,
+            is_active: true,
+            is_live: true,
+            collection_mint_address: mockMintAddress,
+          }
+        }
+      });
+
+      if (error || !data?.success) {
+        throw new Error(error?.message || 'Failed to save collection rules');
+      }
+
       setIsCollectionSetupComplete(true);
+      setStep3Collection(prev => prev ? { ...prev, collection_mint_address: mockMintAddress, max_supply: formData.max_supply!, mint_price: formData.mint_price ?? 0 } : prev);
+      await loadStep3Collection();
+
+      toast({
+        title: '✅ Rules saved & collection minted (demo)',
+        description: 'Your collection settings were saved and it is now ready for NFT minting.',
+      });
+
       setCurrentStep(3);
-      toast({
-        title: '✅ Collection Ready!',
-        description: 'Your collection is now ready for NFT minting',
-      });
-      return;
-    }
-
-    console.log('🔥 Creating new collection...');
-    // Create collection (but don't mint on-chain yet)
-    const result = await createCollection({
-      ...formData,
-      enable_primary_sales: false, // Not enabling sales yet
-      image_file: imageFile || undefined,
-      banner_file: bannerFile || undefined,
-    });
-
-    if (result && (result as any).success && (result as any).collection) {
-      const collectionId = (result as any).collection.id;
-      setCreatedCollectionId(collectionId);
-      
-      toast({
-        title: 'Collection created successfully!',
-        description: 'Now continue to Step 2 to mint it on-chain.',
-      });
-      
-      // Auto-navigate to Step 2 (happens via useEffect when createdCollectionId is set)
-    } else {
-      toast({
-        title: 'Failed to create collection',
-        description: ((result as any)?.error?.message) || 'Please try again.',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Failed to save', description: msg, variant: 'destructive' });
     }
   };
 
