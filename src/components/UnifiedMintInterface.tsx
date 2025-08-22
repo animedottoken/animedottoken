@@ -890,198 +890,231 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
         )}
 
 
-        {/* Collection Details Header */}
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10">
+        {/* Collection Details from Step 1 & 2 */}
+        <Card>
           <CardHeader>
-            <div className="space-y-6">
-              {/* Collection Name & Symbol */}
-              <div className="space-y-3">
-                <h2 className="text-2xl font-bold">Collection Overview</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Name</label>
-                    <p className="text-xl font-bold mt-1">{step3Collection?.name || formData.name}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Symbol</label>
-                    <p className="text-xl font-bold mt-1">{step3Collection?.symbol || formData.symbol || '—'}</p>
-                  </div>
-                </div>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              Collection Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Collection Name</label>
+                <p className="text-sm font-semibold">{step3Collection?.name || formData.name || 'Not set'}</p>
               </div>
-
-              {/* Step 3 Title moved here */}
-              <div className="text-center pt-6 border-t">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
-                  Step 3: Add artworks & mint NFTs
-                </h1>
-                <p className="text-muted-foreground">
-                  Your collection is set up and ready. Configure individual NFT details and start minting.
-                </p>
-              </div>
-
-              {/* Collection Configuration - Locked & Editable Fields */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Mint Price - Editable */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <EditMintPriceDialog 
-                        currentPrice={formData.mint_price ?? step3Collection?.mint_price ?? 0}
-                        collectionId={step3Collection?.id}
-                        onSave={(newPrice) => {
-                          setFormData(prev => ({ ...prev, mint_price: newPrice }));
-                        }}
-                      >
-                        <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <Edit2 className="h-3 w-3 text-green-600" />
-                            <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                          </div>
-                          <div className="font-bold text-lg text-green-600">
-                            {((formData.mint_price ?? step3Collection?.mint_price) === 0)
-                              ? 'FREE'
-                              : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
-                          </div>
-                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
-                        </div>
-                      </EditMintPriceDialog>
-                    </TooltipTrigger>
-                    <TooltipContent>Click to edit mint price</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* Max Supply - Locked */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <Lock className="h-3 w-3 text-orange-600" />
-                          <span className="text-xs text-orange-600 font-medium">LOCKED</span>
-                        </div>
-                        <div className="font-bold text-lg">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.()}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Max Supply</div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>Cannot be changed after creation</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* Royalties - Locked */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-orange-200 dark:border-orange-800">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <Lock className="h-3 w-3 text-orange-600" />
-                          <span className="text-xs text-orange-600 font-medium">LOCKED</span>
-                        </div>
-                        <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Royalties</div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>Cannot be changed after creation</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* Status - Show current */}
-                <div className="text-center p-4 bg-background/50 rounded-lg">
-                  <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Status</div>
-                </div>
-              </div>
-
-              {/* Collection Advanced Settings - Editable */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Treasury Wallet - Editable */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <EditTreasuryWalletDialog 
-                        currentWallet={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
-                        collectionId={step3Collection?.id}
-                        onSave={(newWallet) => {
-                          setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
-                        }}
-                      >
-                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
-                            <div className="flex items-center gap-1">
-                              <Edit2 className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                            </div>
-                          </div>
-                          <div className="font-mono break-all text-sm">
-                            {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
-                          </div>
-                        </div>
-                      </EditTreasuryWalletDialog>
-                    </TooltipTrigger>
-                    <TooltipContent>Click to edit treasury wallet</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* Whitelist - Editable */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <EditWhitelistDialog 
-                        currentEnabled={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
-                        collectionId={step3Collection?.id}
-                        onSave={(enabled) => {
-                          setFormData(prev => ({ ...prev, whitelist_enabled: enabled }));
-                        }}
-                      >
-                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
-                            <div className="flex items-center gap-1">
-                              <Edit2 className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                            </div>
-                          </div>
-                          <div className="text-sm font-semibold">
-                            {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
-                          </div>
-                        </div>
-                      </EditWhitelistDialog>
-                    </TooltipTrigger>
-                    <TooltipContent>Click to edit whitelist setting</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                {/* On-chain Description - Editable */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <EditDescriptionDialog 
-                        currentDescription={formData.onchain_description || step3Collection?.description || ''}
-                        collectionId={step3Collection?.id}
-                        onSave={(description) => {
-                          setFormData(prev => ({ ...prev, onchain_description: description }));
-                        }}
-                      >
-                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
-                            <div className="flex items-center gap-1">
-                              <Edit2 className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                            </div>
-                          </div>
-                          <div className="text-sm line-clamp-2">
-                            {formData.onchain_description || step3Collection?.description || '—'}
-                          </div>
-                        </div>
-                      </EditDescriptionDialog>
-                    </TooltipTrigger>
-                    <TooltipContent>Click to edit on-chain description</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Collection Symbol</label>
+                <p className="text-sm font-semibold">{step3Collection?.symbol || formData.symbol || 'Not set'}</p>
               </div>
             </div>
+            {(formData.site_description || step3Collection?.description) && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <p className="text-sm">{formData.site_description || step3Collection?.description}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Collection Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-6 w-6" />
+              Step 3: Add artworks & mint NFTs
+              <Badge variant="secondary">Collection Ready</Badge>
+            </CardTitle>
+            <p className="text-muted-foreground">
+              Your collection is set up and ready. Configure individual NFT details and start minting.
+            </p>
           </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Key Settings */}
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-muted/50 rounded-lg hover:bg-muted">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  <span className="font-semibold">Key Settings</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Mint Price - Editable */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <EditMintPriceDialog 
+                          currentPrice={formData.mint_price ?? step3Collection?.mint_price ?? 0}
+                          collectionId={step3Collection?.id}
+                          onSave={(newPrice) => {
+                            setFormData(prev => ({ ...prev, mint_price: newPrice }));
+                          }}
+                        >
+                          <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                            </div>
+                            <div className="font-bold text-lg text-green-600">
+                              {((formData.mint_price ?? step3Collection?.mint_price) === 0)
+                                ? 'FREE'
+                                : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
+                            </div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Mint Price</div>
+                          </div>
+                        </EditMintPriceDialog>
+                      </TooltipTrigger>
+                      <TooltipContent>Click to edit mint price</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {/* Max Supply - Locked */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Lock className="h-3 w-3 text-orange-600" />
+                            <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                          </div>
+                          <div className="font-bold text-lg">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.()}</div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Max Supply</div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>Cannot be changed after creation</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {/* Royalties - Locked */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Lock className="h-3 w-3 text-orange-600" />
+                            <span className="text-xs text-orange-600 font-medium">LOCKED</span>
+                          </div>
+                          <div className="font-bold text-lg">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Royalties</div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>Cannot be changed after creation</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {/* Status - Show current */}
+                  <div className="text-center p-4 bg-background rounded-lg border">
+                    <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Status</div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Advanced Settings */}
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-muted/50 rounded-lg hover:bg-muted">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  <span className="font-semibold">Advanced Settings</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Treasury Wallet - Editable */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <EditTreasuryWalletDialog 
+                          currentWallet={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
+                          collectionId={step3Collection?.id}
+                          onSave={(newWallet) => {
+                            setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
+                          }}
+                        >
+                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Treasury Wallet</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="font-mono break-all text-sm">
+                              {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
+                            </div>
+                          </div>
+                        </EditTreasuryWalletDialog>
+                      </TooltipTrigger>
+                      <TooltipContent>Click to edit treasury wallet</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {/* Whitelist - Editable */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <EditWhitelistDialog 
+                          currentEnabled={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
+                          collectionId={step3Collection?.id}
+                          onSave={(enabled) => {
+                            setFormData(prev => ({ ...prev, whitelist_enabled: enabled }));
+                          }}
+                        >
+                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Whitelist</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="text-sm font-semibold">
+                              {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                            </div>
+                          </div>
+                        </EditWhitelistDialog>
+                      </TooltipTrigger>
+                      <TooltipContent>Click to edit whitelist setting</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  {/* On-chain Description - Editable */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <EditDescriptionDialog 
+                          currentDescription={formData.onchain_description || step3Collection?.description || ''}
+                          collectionId={step3Collection?.id}
+                          onSave={(description) => {
+                            setFormData(prev => ({ ...prev, onchain_description: description }));
+                          }}
+                        >
+                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">On-chain Description</div>
+                              <div className="flex items-center gap-1">
+                                <Edit2 className="h-3 w-3 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                              </div>
+                            </div>
+                            <div className="text-sm line-clamp-2">
+                              {formData.onchain_description || step3Collection?.description || '—'}
+                            </div>
+                          </div>
+                        </EditDescriptionDialog>
+                      </TooltipTrigger>
+                      <TooltipContent>Click to edit on-chain description</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
         </Card>
 
         {/* Combined Mint Interface */}
