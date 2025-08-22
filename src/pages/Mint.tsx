@@ -55,7 +55,18 @@ export default function Mint() {
 
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Create Collection & Mint NFT */}
-                <Card className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50">
+                <Card 
+                  className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate('/mint/collection')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate('/mint/collection');
+                    }
+                  }}
+                >
                   <CardContent className="p-8 text-center h-full flex flex-col">
                     <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
                       <Layers className="h-10 w-10 text-primary" />
@@ -70,7 +81,10 @@ export default function Mint() {
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={() => navigate('/mint/collection')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate('/mint/collection');
+                      }}
                     >
                       Start Collection Creation
                     </Button>
@@ -78,7 +92,18 @@ export default function Mint() {
                 </Card>
 
                 {/* Mint NFT Now */}
-                <Card className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50">
+                <Card 
+                  className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate('/mint/nft')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate('/mint/nft');
+                    }
+                  }}
+                >
                   <CardContent className="p-8 text-center h-full flex flex-col">
                     <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
                       <FileImage className="h-10 w-10 text-accent" />
@@ -94,7 +119,10 @@ export default function Mint() {
                       size="lg" 
                       variant="outline"
                       className="w-full"
-                      onClick={() => navigate('/mint/nft')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate('/mint/nft');
+                      }}
                     >
                       Mint Single NFT
                     </Button>
