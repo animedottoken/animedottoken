@@ -19,7 +19,7 @@ interface PropertiesEditorProps {
 }
 
 const DISPLAY_TYPES = [
-  { value: '', label: 'Text' },
+  { value: 'text', label: 'Text' },
   { value: 'number', label: 'Number' },
   { value: 'boost_percentage', label: 'Boost Percentage' },
   { value: 'boost_number', label: 'Boost Number' },
