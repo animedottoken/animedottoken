@@ -11,6 +11,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ShareNFT from "./pages/ShareNFT";
 import Mint from "./pages/Mint";
+import MintCollection from "./pages/MintCollection";
+import MintNFT from "./pages/MintNFT";
 import CollectionDetail from "./pages/CollectionDetail";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
@@ -48,6 +50,8 @@ const AppLayout = () => {
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
             <Route path="/mint" element={<Mint />} />
+            <Route path="/mint/collection" element={<MintCollection />} />
+            <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/profile" element={<Profile />} />
@@ -73,6 +77,8 @@ const AppLayout = () => {
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
             <Route path="/mint" element={<Mint />} />
+            <Route path="/mint/collection" element={<MintCollection />} />
+            <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/profile" element={<Profile />} />

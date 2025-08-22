@@ -41,13 +41,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { validateImageFile, validateCollectionData, areRequiredFieldsValid, validateStandaloneNFTData } from '@/utils/validation';
 import { useStandaloneMint, type StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { supabase } from '@/integrations/supabase/client';
-export const UnifiedMintInterface = () => {
+interface UnifiedMintInterfaceProps {
+  mode?: 'collection' | 'standalone';
+}
+
+export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) => {
   const { connected, publicKey } = useSolanaWallet();
   const { creating, createCollection } = useCollections();
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<'collection' | 'standalone'>('collection');
+  const [activeTab, setActiveTab] = useState<'collection' | 'standalone'>(mode || 'collection');
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [createdCollectionId, setCreatedCollectionId] = useState<string | null>(null);
   const [isCollectionSetupComplete, setIsCollectionSetupComplete] = useState(false);
@@ -1726,8 +1730,8 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Choose Your Path Banner - Only show on Step 1 */}
-      {currentStep === 1 && (
+      {/* Choose Your Path Banner - Only show on Step 1 and when no mode is specified */}
+      {currentStep === 1 && !mode && (
         <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>

@@ -1,11 +1,13 @@
 import { Helmet } from "react-helmet-async";
-import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { Zap, Coins, Users } from "lucide-react";
+import { Zap, Coins, Users, Layers, FileImage } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useNavigate } from "react-router-dom";
 export default function Mint() {
   const { connected } = useSolanaWallet();
+  const navigate = useNavigate();
   return (
     <>
       <Helmet>
@@ -39,10 +41,66 @@ export default function Mint() {
             </Card>
           )}
 
-          {/* Unified Mint Interface */}
+          {/* Choose Your Path */}
           {connected && (
-            <div className="flex justify-center mb-12">
-              <UnifiedMintInterface />
+            <div className="max-w-4xl mx-auto mb-12">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+                  Choose Your Path
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                  Select how you want to create your anime NFTs on Solana
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Create Collection & Mint NFT */}
+                <Card className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50">
+                  <CardContent className="p-8 text-center h-full flex flex-col">
+                    <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                      <Layers className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">Create Collection & Mint NFT</h3>
+                    <div className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit mx-auto">
+                      RECOMMENDED
+                    </div>
+                    <p className="text-muted-foreground mb-6 flex-1">
+                      Launch a full collection with multiple NFTs, royalties, and professional branding. Perfect for serious creators and projects.
+                    </p>
+                    <Button 
+                      size="lg" 
+                      className="w-full"
+                      onClick={() => navigate('/mint/collection')}
+                    >
+                      Start Collection Creation
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Mint NFT Now */}
+                <Card className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50">
+                  <CardContent className="p-8 text-center h-full flex flex-col">
+                    <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
+                      <FileImage className="h-10 w-10 text-accent" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">Mint NFT Now</h3>
+                    <div className="text-muted-foreground text-xs font-medium px-3 py-1 mb-4">
+                      Without Collection
+                    </div>
+                    <p className="text-muted-foreground mb-6 flex-1">
+                      Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection.
+                    </p>
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => navigate('/mint/nft')}
+                    >
+                      Mint Single NFT
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           )}
 
