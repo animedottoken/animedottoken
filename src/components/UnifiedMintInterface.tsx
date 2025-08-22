@@ -52,6 +52,7 @@ export const UnifiedMintInterface = () => {
   const [createdCollectionId, setCreatedCollectionId] = useState<string | null>(null);
   const [isCollectionSetupComplete, setIsCollectionSetupComplete] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showWelcomeHeader, setShowWelcomeHeader] = useState(true);
 
   // Move the header into this component to have access to state
   const renderCompactHeader = () => {
@@ -1725,8 +1726,8 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Header - show full header on initial state */}
-      {activeTab === 'collection' && currentStep === 1 ? (
+      {/* Header - show only on welcome screen before a path is chosen */}
+      {showWelcomeHeader && (
         <div className="text-center mb-8 pt-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
             Mint NFTs & Collections
@@ -1735,16 +1736,7 @@ export const UnifiedMintInterface = () => {
             Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
           </p>
         </div>
-      ) : activeTab === 'standalone' ? (
-        <div className="text-center mb-8 pt-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-            Mint NFTs & Collections
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
-          </p>
-        </div>
-      ) : null}
+      )}
       
       {/* Choose Your Path Banner */}
       <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
@@ -1756,7 +1748,7 @@ export const UnifiedMintInterface = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
               variant={activeTab === 'collection' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('collection')}
+              onClick={() => { setActiveTab('collection'); setShowWelcomeHeader(false); }}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -1765,7 +1757,7 @@ export const UnifiedMintInterface = () => {
             </Button>
             <Button 
               variant={activeTab === 'standalone' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('standalone')}
+              onClick={() => { setActiveTab('standalone'); setShowWelcomeHeader(false); }}
               className="flex items-center gap-2"
             >
               <Zap className="h-4 w-4" />
