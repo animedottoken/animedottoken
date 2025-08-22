@@ -1745,7 +1745,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
               >
                 <Plus className="h-4 w-4" />
                 Create Collection & Mint
-                <Badge variant="secondary" className="ml-2">Recommended</Badge>
               </Button>
               <Button 
                 variant={activeTab === 'standalone' ? 'default' : 'outline'}
@@ -1772,7 +1771,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <Plus className="h-6 w-6" />
                   Step 1: Basics (off-chain)
-                  <Badge variant="secondary" className="ml-2">Recommended</Badge>
+                  
                 </CardTitle>
                 <p className="text-muted-foreground">
                   Provide the basics for your collection. This is not on-chain yet — it's just for visitor orientation. You will mint the collection and lock rules in Step 2.
@@ -1826,7 +1825,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     <div>
                       <Label htmlFor="category">Category (Optional)</Label>
                       <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-12 text-lg font-medium border-2 hover:border-primary/50 focus:border-primary focus:shadow-primary/20 focus:shadow-lg transition-all duration-200 bg-background/80 backdrop-blur-sm">
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2290,7 +2289,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     <div>
                       <Label htmlFor="standalone-category">Category</Label>
                       <Select value={standaloneData.category} onValueChange={(value) => setStandaloneData({...standaloneData, category: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-12 text-lg font-medium border-2 hover:border-primary/50 focus:border-primary focus:shadow-primary/20 focus:shadow-lg transition-all duration-200 bg-background/80 backdrop-blur-sm">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>

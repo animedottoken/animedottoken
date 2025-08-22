@@ -8,7 +8,10 @@ export const MintInput = React.forwardRef<HTMLInputElement, React.ComponentProps
   ({ className, ...props }, ref) => {
     return (
       <Input
-        className={cn(className)}
+        className={cn(
+          "h-12 text-lg font-medium border-2 hover:border-primary/50 focus:border-primary focus:shadow-primary/20 focus:shadow-lg transition-all duration-200 bg-background/80 backdrop-blur-sm",
+          className
+        )}
         autoComplete="off"
         data-form-type="other"
         data-lpignore="true"
@@ -26,7 +29,10 @@ export const MintTextarea = React.forwardRef<HTMLTextAreaElement, React.Componen
   ({ className, ...props }, ref) => {
     return (
       <Textarea
-        className={cn(className)}
+        className={cn(
+          "min-h-[120px] text-lg font-medium border-2 hover:border-primary/50 focus:border-primary focus:shadow-primary/20 focus:shadow-lg transition-all duration-200 bg-background/80 backdrop-blur-sm resize-none",
+          className
+        )}
         autoComplete="off"
         data-form-type="other"
         data-lpignore="true"
