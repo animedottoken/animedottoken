@@ -54,8 +54,8 @@ export const UnifiedMintInterface = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Move the header into this component to have access to state
-  const renderHeader = () => {
-    // Show compact header during collection steps 2 & 3
+  const renderCompactHeader = () => {
+    // Only show compact header during collection steps 2 & 3
     if (activeTab === 'collection' && currentStep > 1) {
       return (
         <div className="text-center mb-6">
@@ -65,17 +65,7 @@ export const UnifiedMintInterface = () => {
         </div>
       );
     }
-    // Show full header for initial state and standalone minting
-    return (
-      <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-          Mint NFTs & Collections
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
-        </p>
-      </div>
-    );
+    return null;
   };
 
   const [formData, setFormData] = useState<CreateCollectionData>({
@@ -805,8 +795,8 @@ export const UnifiedMintInterface = () => {
     }
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Header - compact for step 3 */}
-        {renderHeader()}
+        {/* Header - compact for step 3 only */}
+        {renderCompactHeader()}
         
         {/* Congratulations Banner */}
         <Card>
@@ -1420,8 +1410,8 @@ export const UnifiedMintInterface = () => {
   if (createdCollectionId) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Header - compact for step 2 */}
-        {renderHeader()}
+        {/* Header - compact for step 2 only */}
+        {renderCompactHeader()}
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -1735,8 +1725,26 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Header */}
-      {renderHeader()}
+      {/* Header - show full header on initial state */}
+      {activeTab === 'collection' && currentStep === 1 ? (
+        <div className="text-center mb-8 pt-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+            Mint NFTs & Collections
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
+          </p>
+        </div>
+      ) : activeTab === 'standalone' ? (
+        <div className="text-center mb-8 pt-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+            Mint NFTs & Collections
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
+          </p>
+        </div>
+      ) : null}
       
       {/* Choose Your Path Banner */}
       <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
