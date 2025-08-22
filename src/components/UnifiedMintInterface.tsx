@@ -355,15 +355,29 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="explicit_content" className="text-base font-medium">
-                  Explicit Content
-                </Label>
-                <Switch
-                  id="explicit_content"
-                  checked={formData.explicit_content}
-                  onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
-                />
+              {/* Content & Listing Options */}
+              <div className="space-y-4 pt-4 border-t">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="explicit_content"
+                    checked={formData.explicit_content}
+                    onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                  />
+                  <Label htmlFor="explicit_content" className="text-base font-medium">
+                    Contains explicit or sensitive content
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="enable_primary_sales"
+                    checked={formData.enable_primary_sales}
+                    onCheckedChange={(checked) => setFormData({ ...formData, enable_primary_sales: checked })}
+                  />
+                  <Label htmlFor="enable_primary_sales" className="text-base font-medium">
+                    Enable primary sales (list NFTs for sale immediately after minting)
+                  </Label>
+                </div>
               </div>
 
               <div className="flex justify-between pt-6">

@@ -20,7 +20,8 @@ import { toast } from 'sonner';
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
   { number: 2, title: 'NFT Details', icon: FileText },
-  { number: 3, title: 'Review & Mint', icon: CheckCircle }
+  { number: 3, title: 'Review & Mint', icon: CheckCircle },
+  { number: 4, title: 'Success!', icon: CheckCircle }
 ];
 
 export const StandaloneMintWizard = () => {
@@ -86,7 +87,7 @@ export const StandaloneMintWizard = () => {
       toast.error('Please enter an NFT name');
       return;
     }
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    setCurrentStep(prev => Math.min(prev + 1, 4));
   };
 
   const handleBack = () => {
@@ -101,25 +102,8 @@ export const StandaloneMintWizard = () => {
 
     const result = await mintStandaloneNFT(formData);
     if (result.success) {
-      // Reset form after successful mint
-      setFormData({
-        name: '',
-        symbol: 'NFT',
-        description: '',
-        image_file: undefined,
-        quantity: 1,
-        royalty_percentage: 0,
-        category: '',
-        external_links: [],
-        attributes: [],
-        explicit_content: false,
-        list_after_mint: false,
-        initial_price: undefined
-      });
-      setQuantityInput('1');
-      setRoyaltyInput('0');
-      setPriceInput('');
-      setCurrentStep(1);
+      // Move to success screen instead of resetting
+      setCurrentStep(4);
     }
   };
 
@@ -515,6 +499,96 @@ export const StandaloneMintWizard = () => {
                 {minting ? 'Minting...' : !publicKey ? 'Connect Wallet' : `Mint NFT${(formData.quantity || 1) > 1 ? 's' : ''}`}
                 {!minting && <CheckCircle className="ml-2 h-4 w-4" />}
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 4: Success Screen */}
+      {currentStep === 4 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="h-6 w-6" />
+              Congratulations! 🎉
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">NFT Minted Successfully!</h3>
+                <p className="text-muted-foreground">
+                  Your {formData.quantity > 1 ? `${formData.quantity} NFTs` : 'NFT'} "{formData.name}" {formData.quantity > 1 ? 'have' : 'has'} been created on the Solana blockchain.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-semibold mb-2">NFT Details:</h4>
+              <div className="space-y-1 text-sm">
+                <div><strong>Name:</strong> {formData.name}</div>
+                <div><strong>Quantity:</strong> {formData.quantity}</div>
+                {formData.list_after_mint && (
+                  <div><strong>Listed for:</strong> {formData.initial_price} SOL</div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-semibold">What's next?</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button 
+                  onClick={() => {
+                    // Reset form and go to step 1
+                    setFormData({
+                      name: '',
+                      symbol: 'NFT',
+                      description: '',
+                      image_file: undefined,
+                      quantity: 1,
+                      royalty_percentage: 0,
+                      category: '',
+                      external_links: [],
+                      attributes: [],
+                      collection_id: selectedCollectionId || undefined,
+                      explicit_content: false,
+                      list_after_mint: false,
+                      initial_price: undefined
+                    });
+                    setQuantityInput('1');
+                    setRoyaltyInput('0');
+                    setPriceInput('');
+                    setCurrentStep(1);
+                  }}
+                  className="flex-1"
+                >
+                  🎨 Mint Another NFT
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/mint/collection')}
+                  className="flex-1"
+                >
+                  📦 Create Collection
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/profile')}
+                  className="flex-1"
+                >
+                  👤 Go to Profile
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/marketplace')}
+                  className="flex-1"
+                >
+                  🛒 Browse Marketplace
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -15,10 +15,12 @@ import { useUserActivity } from "@/hooks/useUserActivity";
 import { useMintQueue } from "@/hooks/useMintQueue";
 import { MintQueueStatus } from "@/components/MintQueueStatus";
 import { CollectionEditor } from "@/components/CollectionEditor";
+import { useUserNFTs } from "@/hooks/useUserNFTs";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
   const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
+  const { nfts, loading: nftsLoading, refreshNFTs } = useUserNFTs();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -104,10 +106,14 @@ export default function Profile() {
 
       {/* Profile Tabs */}
       <Tabs defaultValue={defaultTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-1">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="collections" className="flex items-center gap-2">
             <Grid3X3 className="h-4 w-4" />
             Collections ({collections.length})
+          </TabsTrigger>
+          <TabsTrigger value="nfts" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            My NFTs ({nfts.length})
           </TabsTrigger>
         </TabsList>
 
@@ -250,6 +256,104 @@ export default function Profile() {
                       <span className="ml-1 font-medium text-green-600">
                         {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
                       </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* My NFTs Tab */}
+        <TabsContent value="nfts" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">My NFTs</h3>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshNFTs}
+                disabled={nftsLoading}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${nftsLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button asChild size="sm">
+                <Link to="/mint/nft">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Mint NFT
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {nftsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-t-lg" />
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted rounded mb-2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : nfts.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <User className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No NFTs Yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Mint your first NFT to get started.
+                </p>
+                <Button asChild>
+                  <Link to="/mint/nft">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Mint Your First NFT
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {nfts.map((nft) => (
+                <Card key={nft.id} className="group hover:shadow-lg transition-shadow">
+                  <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
+                    <img
+                      src={nft.image_url || "/placeholder.svg"}
+                      alt={nft.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (img.src !== "/placeholder.svg") {
+                          img.src = "/placeholder.svg";
+                        }
+                      }}
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-lg">{nft.name}</h4>
+                      {nft.symbol && (
+                        <Badge variant="outline" className="text-xs">
+                          {nft.symbol}
+                        </Badge>
+                      )}
+                    </div>
+                    {nft.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {nft.description}
+                      </p>
+                    )}
+                    {nft.collection_name && (
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Collection:</span>
+                        <span className="ml-1 font-medium">{nft.collection_name}</span>
+                      </div>
+                    )}
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      Minted: {new Date(nft.created_at).toLocaleDateString()}
                     </div>
                   </CardContent>
                 </Card>
