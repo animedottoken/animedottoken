@@ -240,7 +240,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 (stepNumber === 1 && createdCollectionId) ||
                 (stepNumber === 2 && isCollectionSetupComplete);
               
-              const stepNames = ['Basics (off-chain)', 'Mint Collection (On-Chain)', 'Mint NFTs from Collection'];
+              const stepNames = ['Basics (off-chain)', 'Mint Collection (on-chain)', 'Mint NFTs from Collection'];
               
               return (
                 <div key={stepNumber} className="flex items-center">
@@ -1005,11 +1005,54 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </Tooltip>
                   </TooltipProvider>
                   
-                  {/* Status - Show current */}
-                  <div className="text-center p-4 bg-background rounded-lg border">
-                    <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Status</div>
-                  </div>
+                  {/* Status - Editable Toggle */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-center justify-center gap-2 mb-2">
+                            <Switch 
+                              checked={step3Collection?.is_live ?? true}
+                              onCheckedChange={async (checked) => {
+                                try {
+                                  if (step3Collection?.id) {
+                                    const { data, error } = await supabase.functions.invoke('update-collection', {
+                                      body: {
+                                        collection_id: step3Collection.id,
+                                        updates: { is_live: checked }
+                                      }
+                                    });
+                                    
+                                    if (data?.success) {
+                                      setStep3Collection(prev => prev ? { ...prev, is_live: checked } : prev);
+                                      toast({
+                                        title: checked ? 'Collection is now LIVE' : 'Collection paused',
+                                        description: checked ? 'Users can now mint NFTs' : 'Minting has been paused',
+                                      });
+                                    }
+                                  }
+                                } catch (error) {
+                                  toast({
+                                    title: 'Failed to update status',
+                                    description: 'Please try again',
+                                    variant: 'destructive',
+                                  });
+                                }
+                              }}
+                              className="scale-125"
+                            />
+                            <div className="flex items-center gap-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                            </div>
+                          </div>
+                          <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Status</div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>Toggle to pause/resume minting</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -1036,7 +1079,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
                           }}
                         >
-                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Treasury Wallet</div>
                               <div className="flex items-center gap-1">
@@ -1065,7 +1108,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, whitelist_enabled: enabled }));
                           }}
                         >
-                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Whitelist</div>
                               <div className="flex items-center gap-1">
@@ -1083,32 +1126,52 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </Tooltip>
                   </TooltipProvider>
                   
-                  {/* On-chain Description - Editable */}
+                  {/* On-chain Description - Conditionally Editable */}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <EditDescriptionDialog 
-                          currentDescription={formData.onchain_description || step3Collection?.description || ''}
-                          collectionId={step3Collection?.id}
-                          onSave={(description) => {
-                            setFormData(prev => ({ ...prev, onchain_description: description }));
-                          }}
-                        >
-                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                        {step3Collection?.items_redeemed && step3Collection.items_redeemed > 0 ? (
+                          <div className="p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[100px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">On-chain Description</div>
                               <div className="flex items-center gap-1">
-                                <Edit2 className="h-3 w-3 text-green-600" />
-                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                                <Lock className="h-3 w-3 text-orange-600" />
+                                <span className="text-xs text-orange-600 font-medium">LOCKED</span>
                               </div>
                             </div>
                             <div className="text-sm line-clamp-2">
                               {formData.onchain_description || step3Collection?.description || '—'}
                             </div>
                           </div>
-                        </EditDescriptionDialog>
+                        ) : (
+                          <EditDescriptionDialog 
+                            currentDescription={formData.onchain_description || step3Collection?.description || ''}
+                            collectionId={step3Collection?.id}
+                            onSave={(description) => {
+                              setFormData(prev => ({ ...prev, onchain_description: description }));
+                            }}
+                          >
+                            <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">On-chain Description</div>
+                                <div className="flex items-center gap-1">
+                                  <Edit2 className="h-3 w-3 text-green-600" />
+                                  <span className="text-xs text-green-600 font-medium">EDITABLE</span>
+                                </div>
+                              </div>
+                              <div className="text-sm line-clamp-2">
+                                {formData.onchain_description || step3Collection?.description || '—'}
+                              </div>
+                            </div>
+                          </EditDescriptionDialog>
+                        )}
                       </TooltipTrigger>
-                      <TooltipContent>Click to edit on-chain description</TooltipContent>
+                      <TooltipContent>
+                        {step3Collection?.items_redeemed && step3Collection.items_redeemed > 0 
+                          ? 'Cannot edit after NFTs have been minted' 
+                          : 'Click to edit on-chain description'
+                        }
+                      </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -1608,7 +1671,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 </div>
                 
                 <div>
-                  <Label htmlFor="onchain-description" className="text-lg font-semibold">On-Chain Description (Optional)</Label>
+                  <Label htmlFor="onchain-description" className="text-lg font-semibold">On-chain Description (Optional)</Label>
                   <Textarea
                     id="onchain-description"
                     value={formData.onchain_description || ''}
@@ -1870,7 +1933,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="h-6 w-6" />
-                  Step 2: Mint Collection On-Chain
+                  Step 2: Mint Collection (on-chain)
                   <Badge variant="secondary">Creates Collection NFT</Badge>
                   {/* Demo Mode Badge */}
                   <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800">
@@ -2029,7 +2092,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                         ) : (
                           <>
                             <Zap className="h-5 w-5" />
-                            Mint Collection On-Chain (Demo)
+                            Mint Collection (on-chain) - Demo
                           </>
                         )}
                       </Button>
