@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from "@/components/ui/slider"
+import { Slider } from "@/components/ui/slider";
+import { FileUpload } from '@/components/ui/file-upload';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -380,16 +381,15 @@ export const UnifiedMintInterface = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Label htmlFor="image_file" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Collection Avatar
                 </Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    setFormData({ ...formData, image_file: file });
-                  }}
+                <FileUpload
+                  onFileSelect={(file) => setFormData({ ...formData, image_file: file })}
+                  currentFile={formData.image_file}
+                  placeholder="Click to upload collection logo"
+                  aspectRatio={1}
+                  maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
                 />
                 <div className="text-xs text-muted-foreground">
                   Upload a logo for your collection
@@ -397,16 +397,15 @@ export const UnifiedMintInterface = () => {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="banner_file" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Collection Banner
                 </Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    setFormData({ ...formData, banner_file: file });
-                  }}
+                <FileUpload
+                  onFileSelect={(file) => setFormData({ ...formData, banner_file: file })}
+                  currentFile={formData.banner_file}
+                  placeholder="Click to upload banner image"
+                  aspectRatio={3}
+                  maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
                 />
                 <div className="text-xs text-muted-foreground">
                   Upload a banner image for your collection
@@ -432,17 +431,36 @@ export const UnifiedMintInterface = () => {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="royalty_percentage" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Royalties (%)
                 </Label>
-                <Slider
-                  defaultValue={[formData.royalty_percentage]}
-                  max={10}
-                  step={0.5}
-                  onValueChange={(value) => setFormData({ ...formData, royalty_percentage: value[0] })}
-                />
+                <div className="space-y-3">
+                  <Slider
+                    value={[formData.royalty_percentage]}
+                    max={20}
+                    step={0.01}
+                    onValueChange={(value) => setFormData({ ...formData, royalty_percentage: value[0] })}
+                    className="w-full"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.01"
+                      value={formData.royalty_percentage.toFixed(2)}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        const clamped = Math.max(0, Math.min(20, value));
+                        setFormData({ ...formData, royalty_percentage: clamped });
+                      }}
+                      className="w-20 text-center"
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </div>
                 <div className="text-xs text-muted-foreground">
-                  Percentage of royalties on secondary sales
+                  Percentage of royalties on secondary sales (0-20%)
                 </div>
               </div>
 

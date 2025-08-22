@@ -8,6 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Slider } from '@/components/ui/slider';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Upload, Image as ImageIcon, Loader2, Plus, Palette, Settings, Coins } from 'lucide-react';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -34,7 +36,6 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
   });
   
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Update treasury wallet when wallet connects
   React.useEffect(() => {
@@ -43,14 +44,8 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
     }
   }, [publicKey]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
+  const handleImageSelect = (file: File | null) => {
+    setImageFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +73,6 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
         whitelist_enabled: false,
       });
       setImageFile(null);
-      setImagePreview(null);
 
       toast({
         title: 'Collection created',
@@ -137,32 +131,12 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="image-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors">
-                    <AspectRatio ratio={1}>
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt="Collection artwork preview (square)"
-                          className="h-full w-full object-cover rounded-md"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-center">
-                          <div>
-                            <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-sm text-muted-foreground">Click to upload square artwork</p>
-                          </div>
-                        </div>
-                      )}
-                    </AspectRatio>
-                  </div>
-                </Label>
-                <Input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
+                <FileUpload
+                  onFileSelect={handleImageSelect}
+                  currentFile={imageFile}
+                  placeholder="Click to upload square artwork"
+                  aspectRatio={1}
+                  maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
                 />
               </div>
               
@@ -277,19 +251,31 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
               
               <div>
                 <Label htmlFor="royalty_percentage">Royalties (%)</Label>
-                <Input
-                  id="royalty_percentage"
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.5"
-                  value={formData.royalty_percentage}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(',', '.');
-                    setFormData({...formData, royalty_percentage: parseFloat(value) || 0});
-                  }}
-                  placeholder="5"
-                />
+                <div className="space-y-3">
+                  <Slider
+                    value={[formData.royalty_percentage]}
+                    max={20}
+                    step={0.01}
+                    onValueChange={(value) => setFormData({...formData, royalty_percentage: value[0]})}
+                    className="w-full"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.01"
+                      value={formData.royalty_percentage.toFixed(2)}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value) || 0;
+                        const clamped = Math.max(0, Math.min(20, value));
+                        setFormData({...formData, royalty_percentage: clamped});
+                      }}
+                      className="w-20 text-center"
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   0-20% on secondary sales
                 </p>
