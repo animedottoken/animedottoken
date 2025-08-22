@@ -41,6 +41,16 @@ serve(async (req) => {
     const body: CreateCollectionRequest = await req.json();
     console.log('Create-collection request body:', body);
 
+    // Normalize and apply defaults BEFORE validation
+    const maxSupply = body.max_supply != null && Number(body.max_supply) > 0
+      ? Number(body.max_supply)
+      : 1000;
+    const mintPrice = body.mint_price != null && Number(body.mint_price) >= 0
+      ? Number(body.mint_price)
+      : 0;
+    const royalty = body.royalty_percentage != null && Number(body.royalty_percentage) >= 0
+      ? Number(body.royalty_percentage)
+      : 0;
 
     if (!body || !body.name || !body.creator_address) {
       return new Response(
@@ -66,7 +76,7 @@ serve(async (req) => {
     }
 
     if (body.enable_primary_sales) {
-      if (!body.max_supply || body.max_supply < 1 || body.max_supply > 100000) {
+      if (!maxSupply || maxSupply < 1 || maxSupply > 100000) {
         return new Response(
           JSON.stringify({ error: "Max supply must be between 1 and 100000 when primary sales are enabled" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -78,17 +88,13 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (body.royalty_percentage != null && (body.royalty_percentage < 0 || body.royalty_percentage > 50)) {
+      if (royalty < 0 || royalty > 50) {
         return new Response(
           JSON.stringify({ error: "Royalty must be between 0 and 50" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
     }
-
-    const maxSupply = body.max_supply != null ? Number(body.max_supply) : null;
-    const mintPrice = body.mint_price != null ? Number(body.mint_price) : null;
-    const royalty = body.royalty_percentage != null ? Number(body.royalty_percentage) : null;
 
     const insertData: any = {
       id: body.id,
