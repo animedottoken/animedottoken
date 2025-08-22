@@ -198,9 +198,9 @@ export default function CollectionDetail() {
                   </div>
 
                   {/* External Links */}
-                  {collection.external_links && collection.external_links.length > 0 && (
+                  {collection.external_links && Array.isArray(collection.external_links) && collection.external_links.length > 0 && (
                     <div className="flex gap-2 mb-4">
-                      {collection.external_links.map((link: any, index: number) => (
+                      {(collection.external_links as any[]).map((link: any, index: number) => (
                         <Button
                           key={index}
                           variant="outline"

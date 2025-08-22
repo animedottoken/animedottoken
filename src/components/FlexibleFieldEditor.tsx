@@ -35,7 +35,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   const [editingField, setEditingField] = useState<string | null>(null);
   const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
 
-  const lockedFields = collection.locked_fields || [];
+  // Safely handle locked_fields as it might be Json type from Supabase
+  const lockedFields = Array.isArray(collection.locked_fields) ? collection.locked_fields as string[] : [];
   const itemsRedeemed = collection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
 

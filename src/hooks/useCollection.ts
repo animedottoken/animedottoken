@@ -1,31 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-
-interface Collection {
-  id: string;
-  name: string;
-  symbol?: string;
-  description?: string;
-  image_url?: string;
-  banner_image_url?: string;
-  mint_price?: number;
-  max_supply?: number;
-  items_available?: number;
-  items_redeemed?: number;
-  is_active: boolean;
-  is_live: boolean;
-  whitelist_enabled?: boolean;
-  go_live_date?: string | null;
-  royalty_percentage?: number;
-  creator_address: string;
-  treasury_wallet?: string;
-  slug?: string;
-  external_links?: any;
-  collection_mint_address?: string;
-  verified?: boolean;
-  category?: string;
-  explicit_content?: boolean;
-}
+import type { Collection } from '@/types/collection';
 
 export const useCollection = (collectionId: string) => {
   const [collection, setCollection] = useState<Collection | null>(null);
@@ -48,7 +23,8 @@ export const useCollection = (collectionId: string) => {
         setError(error.message);
         setCollection(null);
       } else if (data && data.length > 0) {
-        setCollection(data[0]);
+        // Cast the data to Collection type safely
+        setCollection(data[0] as Collection);
         setError(null);
       } else {
         setError('Collection not found');

@@ -3,60 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { toast } from 'sonner';
+import type { Collection, CreateCollectionData } from '@/types/collection';
 
-export interface Collection {
-  id: string;
-  name: string;
-  symbol?: string;
-  description?: string;
-  image_url?: string;
-  banner_image_url?: string;
-  creator_address: string;
-  treasury_wallet?: string;
-  mint_price?: number;
-  max_supply?: number;
-  items_available?: number;
-  items_redeemed?: number;
-  royalty_percentage?: number;
-  is_active: boolean;
-  is_live: boolean;
-  whitelist_enabled: boolean;
-  go_live_date?: string | null;
-  created_at: string;
-  updated_at: string;
-  candy_machine_id?: string;
-  slug?: string;
-  external_links?: any;
-  collection_mint_address?: string;
-  verified?: boolean;
-  category?: string;
-  explicit_content?: boolean;
-  supply_mode?: string;
-  locked_fields?: string[];
-  mint_end_at?: string | null;
-}
-
-export interface CreateCollectionData {
-  name: string;
-  symbol?: string;
-  site_description?: string;
-  onchain_description?: string;
-  image_file?: File;
-  banner_file?: File;
-  external_links?: { type: string; url: string }[];
-  category?: string;
-  explicit_content?: boolean;
-  supply_mode?: string;
-  enable_primary_sales?: boolean;
-  mint_price?: number;
-  max_supply?: number;
-  royalty_percentage?: number;
-  treasury_wallet?: string;
-  whitelist_enabled?: boolean;
-  go_live_date?: string;
-  mint_end_at?: string;
-  locked_fields?: string[];
-}
+export type { Collection, CreateCollectionData };
 
 export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: boolean } = {}) => {
   const { autoLoad = true, suppressErrors = false } = options;

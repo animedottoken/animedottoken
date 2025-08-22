@@ -1,33 +1,24 @@
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  User, 
-  Settings, 
-  Grid3X3, 
-  Clock, 
-  Edit, 
-  ExternalLink,
-  Plus,
-  RefreshCw
-} from 'lucide-react';
-import { useCollections } from '@/hooks/useCollections';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { useUserActivity } from '@/hooks/useUserActivity';
-import { useMintQueue } from '@/hooks/useMintQueue';
-import { MintQueueStatus } from '@/components/MintQueueStatus';
-import { CollectionEditor } from '@/components/CollectionEditor';
-import { Link, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { useCollections } from "@/hooks/useCollections";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { Link, useSearchParams } from "react-router-dom";
+import { getCollectionDescription } from "@/types/collection";
+import { useUserActivity } from "@/hooks/useUserActivity";
+import { useMintQueue } from "@/hooks/useMintQueue";
+import { MintQueueStatus } from "@/components/MintQueueStatus";
+import { CollectionEditor } from "@/components/CollectionEditor";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
   const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
-  const { activities, loading: activitiesLoading } = useUserActivity();
-  const { jobs, loading: queueLoading, getJobProgress } = useMintQueue();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -113,18 +104,10 @@ export default function Profile() {
 
       {/* Profile Tabs */}
       <Tabs defaultValue={defaultTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="collections" className="flex items-center gap-2">
             <Grid3X3 className="h-4 w-4" />
             Collections ({collections.length})
-          </TabsTrigger>
-          <TabsTrigger value="queue" className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Mint Queue ({jobs.length})
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Activity ({activities.length})
           </TabsTrigger>
         </TabsList>
 
@@ -238,7 +221,7 @@ export default function Profile() {
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {collection.description || 'No description'}
+                      {getCollectionDescription(collection)}
                     </p>
                     <div className="flex items-center justify-between text-sm">
                       <div>
@@ -256,66 +239,6 @@ export default function Profile() {
                       <span className="text-muted-foreground">Price:</span>
                       <span className="ml-1 font-medium text-green-600">
                         {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        {/* Mint Queue Tab */}
-        <TabsContent value="queue">
-          <MintQueueStatus 
-            jobs={jobs} 
-            loading={queueLoading} 
-            getJobProgress={getJobProgress}
-          />
-        </TabsContent>
-
-        {/* Activity Tab */}
-        <TabsContent value="activity" className="space-y-4">
-          <h3 className="text-lg font-semibold">Recent Activity</h3>
-          
-          {activitiesLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-muted rounded mb-2" />
-                    <div className="h-3 bg-muted rounded w-2/3" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : activities.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Clock className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Activity Yet</h3>
-                <p className="text-muted-foreground">
-                  Your recent activity will appear here.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {activities.map((activity) => (
-                <Card key={activity.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">{activity.title}</h4>
-                        <p className="text-sm text-muted-foreground">{activity.description}</p>
-                        {activity.status && (
-                          <Badge variant="outline" className="mt-2">
-                            {activity.status}
-                          </Badge>
-                        )}
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(activity.timestamp).toLocaleDateString()}
                       </span>
                     </div>
                   </CardContent>
