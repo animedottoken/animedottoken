@@ -840,9 +840,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
     }
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Collection Creation Progress */}
-        <StepIndicator currentStep={3} totalSteps={3} />
-        
         {/* Congratulations Banner */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -859,6 +856,9 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
             </Button>
           </CardHeader>
         </Card>
+        
+        {/* Collection Creation Progress */}
+        <StepIndicator currentStep={3} totalSteps={3} />
 
         {/* Collection Banner */}
         {(step3Collection?.banner_image_url || bannerPreview) && (
@@ -1314,9 +1314,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
   if (createdCollectionId) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Collection Creation Progress */}
-        <StepIndicator currentStep={2} totalSteps={3} />
-        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -1332,6 +1329,9 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
             </Button>
           </CardHeader>
         </Card>
+        
+        {/* Collection Creation Progress */}
+        <StepIndicator currentStep={2} totalSteps={3} />
 
         {/* Collection Banner - Show if uploaded */}
         {bannerPreview && (
