@@ -240,7 +240,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 (stepNumber === 1 && createdCollectionId) ||
                 (stepNumber === 2 && isCollectionSetupComplete);
               
-              const stepNames = ['Basics (off-chain)', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
+              const stepNames = ['Basics (off-chain)', 'Mint Collection (On-Chain)', 'Mint NFTs from Collection'];
               
               return (
                 <div key={stepNumber} className="flex items-center">
@@ -1608,7 +1608,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 </div>
                 
                 <div>
-                  <Label htmlFor="onchain-description">On-Chain Description (Optional)</Label>
+                  <Label htmlFor="onchain-description" className="text-lg font-semibold">On-Chain Description (Optional)</Label>
                   <Textarea
                     id="onchain-description"
                     value={formData.onchain_description || ''}

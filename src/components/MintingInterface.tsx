@@ -218,7 +218,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   }
 
   return (
-    <div className={embedded ? "space-y-6" : "w-full max-w-6xl space-y-6"}>
+    <div className={embedded ? "space-y-6 -mr-4" : "w-full max-w-6xl space-y-6"}>
       <Card>
         {!embedded && (
           <CardHeader>
