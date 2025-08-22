@@ -323,7 +323,10 @@ export const CollectionEditor = ({ collection, onUpdate }: CollectionEditorProps
                       step="0.001"
                       min="0"
                       value={formData.mint_price}
-                      onChange={(e) => handleInputChange('mint_price', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(',', '.');
+                        handleInputChange('mint_price', parseFloat(value) || 0);
+                      }}
                     />
                   </div>
 
@@ -348,7 +351,10 @@ export const CollectionEditor = ({ collection, onUpdate }: CollectionEditorProps
                     min="0"
                     max="10"
                     value={formData.royalty_percentage}
-                    onChange={(e) => handleInputChange('royalty_percentage', parseFloat(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(',', '.');
+                      handleInputChange('royalty_percentage', parseFloat(value) || 0);
+                    }}
                   />
                 </div>
 

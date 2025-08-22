@@ -1502,102 +1502,102 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     <p className="text-xs text-muted-foreground mt-1">A short, unique 'ticker' for your NFT series (5-10 characters, e.g., ANIMF). This is permanent and cannot be changed after setup.</p>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="mint-price">Mint Price (SOL) <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="mint-price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.mint_price !== undefined ? formData.mint_price : ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === '') {
-                          setFormData({...formData, mint_price: undefined});
-                        } else {
-                          const numValue = parseFloat(value);
-                          if (!isNaN(numValue) && numValue >= 0) {
-                            setFormData({...formData, mint_price: numValue});
-                          }
-                        }
-                      }}
-                      placeholder="0 for free minting"
-                      className="h-12 text-lg"
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">Set to 0 for a FREE mint, or any amount in SOL. This price is for the initial, primary sale only. After an NFT is owned, the holder can list it for any new price on the secondary market.</p>
-                  </div>
+                   <div>
+                     <Label htmlFor="mint-price" className="text-lg font-semibold">Mint Price (SOL) <span className="text-destructive">*</span></Label>
+                     <Input
+                       id="mint-price"
+                       type="number"
+                       step="0.01"
+                       min="0"
+                       value={formData.mint_price !== undefined ? formData.mint_price : ''}
+                       onChange={(e) => {
+                         const value = e.target.value.replace(',', '.');
+                         if (value === '') {
+                           setFormData({...formData, mint_price: undefined});
+                         } else {
+                           const numValue = parseFloat(value);
+                           if (!isNaN(numValue) && numValue >= 0) {
+                             setFormData({...formData, mint_price: numValue});
+                           }
+                         }
+                       }}
+                       placeholder="0 for free minting"
+                       className="h-12 text-lg"
+                       required
+                     />
+                     <p className="text-xs text-muted-foreground mt-1">Set to 0 for a FREE mint, or any amount in SOL. This price is for the initial, primary sale only. After an NFT is owned, the holder can list it for any new price on the secondary market.</p>
+                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="max-supply">
-                      Max Supply <span className="text-destructive">*</span>
-                    </Label>
-                      <Input
-                        id="max-supply"
-                        type="number"
-                        min="1"
-                        max="100000"
-                        value={formData.max_supply !== undefined ? formData.max_supply : ''}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          if (v === '') {
-                            setFormData({ ...formData, max_supply: undefined });
-                          } else {
-                            const num = parseInt(v, 10);
-                            if (!isNaN(num)) {
-                              setFormData({ ...formData, max_supply: num });
-                            }
-                          }
-                        }}
-                        className="h-12 text-lg"
-                        required
-                      />
-                    <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
-                  </div>
+                   <div>
+                     <Label htmlFor="max-supply" className="text-lg font-semibold">
+                       Max Supply <span className="text-destructive">*</span>
+                     </Label>
+                       <Input
+                         id="max-supply"
+                         type="number"
+                         min="1"
+                         max="100000"
+                         value={formData.max_supply !== undefined ? formData.max_supply : ''}
+                         onChange={(e) => {
+                           const v = e.target.value;
+                           if (v === '') {
+                             setFormData({ ...formData, max_supply: undefined });
+                           } else {
+                             const num = parseInt(v, 10);
+                             if (!isNaN(num)) {
+                               setFormData({ ...formData, max_supply: num });
+                             }
+                           }
+                         }}
+                         className="h-12 text-lg"
+                         required
+                       />
+                     <p className="text-xs text-muted-foreground mt-1">The total number of identical NFTs that can ever be created in this collection. Value must be between 1 and 100,000. This is permanent and cannot be changed after setup.</p>
+                   </div>
                   
-                  <div>
-                    <Label htmlFor="royalties">Royalties (%) <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="royalties"
-                      type="number"
-                      min="0"
-                      max="50"
-                      step="0.1"
-                        value={formData.royalty_percentage !== undefined ? formData.royalty_percentage : ''}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          if (v === '') {
-                            setFormData({ ...formData, royalty_percentage: undefined });
-                          } else {
-                            const num = parseFloat(v);
-                            if (!isNaN(num) && num >= 0 && num <= 50) {
-                              setFormData({ ...formData, royalty_percentage: num });
-                            }
-                          }
-                        }}
-                      className="h-12 text-lg"
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 50%.</p>
-                  </div>
+                   <div>
+                     <Label htmlFor="royalties" className="text-lg font-semibold">Royalties (%) <span className="text-destructive">*</span></Label>
+                     <Input
+                       id="royalties"
+                       type="number"
+                       min="0"
+                       max="50"
+                       step="0.1"
+                         value={formData.royalty_percentage !== undefined ? formData.royalty_percentage : ''}
+                         onChange={(e) => {
+                           const v = e.target.value.replace(',', '.');
+                           if (v === '') {
+                             setFormData({ ...formData, royalty_percentage: undefined });
+                           } else {
+                             const num = parseFloat(v);
+                             if (!isNaN(num) && num >= 0 && num <= 50) {
+                               setFormData({ ...formData, royalty_percentage: num });
+                             }
+                           }
+                         }}
+                       className="h-12 text-lg"
+                       required
+                     />
+                     <p className="text-xs text-muted-foreground mt-1">Set the permanent royalty percentage for all NFTs in this collection. This rule is set once and cannot be changed later. Value can be from 0% to 50%.</p>
+                   </div>
                 </div>
                 
-                <div>
-                  <Label htmlFor="treasury">
-                    Treasury Wallet <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="treasury"
-                    value={formData.treasury_wallet || publicKey || ''}
-                    onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
-                    placeholder="Wallet address for payments"
-                    className="h-12 text-lg"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">The Solana wallet address that will receive your initial sales and future royalties</p>
-                </div>
+                 <div>
+                   <Label htmlFor="treasury" className="text-lg font-semibold">
+                     Treasury Wallet <span className="text-destructive">*</span>
+                   </Label>
+                   <Input
+                     id="treasury"
+                     value={formData.treasury_wallet || publicKey || ''}
+                     onChange={(e) => setFormData({...formData, treasury_wallet: e.target.value})}
+                     placeholder="Wallet address for payments"
+                     className="h-12 text-lg"
+                     required
+                   />
+                   <p className="text-xs text-muted-foreground mt-1">The Solana wallet address that will receive your initial sales and future royalties</p>
+                 </div>
               </div>
 
               {/* Optional Settings */}
@@ -2144,19 +2144,19 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <Label className="text-lg font-semibold">Basic Information</Label>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="standalone-name" className="required-field">
-                        NFT Name <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="standalone-name"
-                        value={standaloneData.name}
-                        onChange={(e) => setStandaloneData({...standaloneData, name: e.target.value})}
-                        placeholder="e.g., My Awesome NFT"
-                        maxLength={100}
-                        className="h-12 text-lg"
-                        required
-                      />
+                     <div>
+                       <Label htmlFor="standalone-name" className="text-lg font-semibold">
+                         NFT Name <span className="text-destructive">*</span>
+                       </Label>
+                       <Input
+                         id="standalone-name"
+                         value={standaloneData.name}
+                         onChange={(e) => setStandaloneData({...standaloneData, name: e.target.value})}
+                         placeholder="e.g., My Awesome NFT"
+                         maxLength={100}
+                         className="h-12 text-lg"
+                         required
+                       />
                       <p className="text-xs text-muted-foreground mt-1">
                         {(standaloneData.name || '').length}/100 characters
                       </p>

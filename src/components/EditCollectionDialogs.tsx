@@ -73,7 +73,10 @@ export const EditMintPriceDialog = ({ children, currentPrice, collectionId, onSa
               step="0.01"
               min="0"
               value={price}
-              onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+              onChange={(e) => {
+                const value = e.target.value.replace(',', '.');
+                setPrice(parseFloat(value) || 0);
+              }}
               autoComplete="off"
               data-form-type="other"
               data-lpignore="true"

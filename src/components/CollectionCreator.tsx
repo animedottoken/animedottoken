@@ -240,7 +240,10 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                   min="0"
                   step="0.01"
                   value={formData.mint_price}
-                  onChange={(e) => setFormData({...formData, mint_price: parseFloat(e.target.value) || 0})}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(',', '.');
+                    setFormData({...formData, mint_price: parseFloat(value) || 0});
+                  }}
                   placeholder="0.5"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -271,7 +274,10 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                   max="20"
                   step="0.5"
                   value={formData.royalty_percentage}
-                  onChange={(e) => setFormData({...formData, royalty_percentage: parseFloat(e.target.value) || 0})}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(',', '.');
+                    setFormData({...formData, royalty_percentage: parseFloat(value) || 0});
+                  }}
                   placeholder="5"
                 />
                 <p className="text-xs text-muted-foreground mt-1">

@@ -279,20 +279,9 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
             )}
 
             <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Minted</span>
-                  <span>{collection.items_redeemed.toLocaleString()} / {collection.max_supply.toLocaleString()}</span>
-                </div>
-                <Progress value={mintProgress} className="h-2" />
-                <div className="text-xs text-muted-foreground text-center">
-                  {(100 - mintProgress).toFixed(1)}% remaining
-                </div>
-              </div>
-
-              {/* Quantity Selector */}
+              {/* Quantity Selector - Main section */}
               <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                <Label htmlFor="quantity" className="text-sm font-medium">
+                <Label htmlFor="quantity" className="text-lg font-semibold">
                   Quantity to Mint
                 </Label>
                 <div className="flex items-center gap-3">
@@ -336,9 +325,21 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                     Collection Max Supply: {collection.max_supply.toLocaleString()} • Remaining: {remainingSupply.toLocaleString()}
                   </div>
                 </div>
+
+                {/* Minted progress - moved under quantity */}
+                <div className="space-y-2 pt-3 border-t">
+                  <div className="flex justify-between text-sm">
+                    <span>Minted</span>
+                    <span>{collection.items_redeemed.toLocaleString()} / {collection.max_supply.toLocaleString()}</span>
+                  </div>
+                  <Progress value={mintProgress} className="h-2" />
+                  <div className="text-xs text-muted-foreground text-center">
+                    {(100 - mintProgress).toFixed(1)}% remaining
+                  </div>
+                </div>
                 
                 {/* Total Cost */}
-                <div className="flex justify-between items-center pt-2 border-t">
+                <div className="flex justify-between items-center pt-3 border-t">
                   <span className="font-medium">Total Cost:</span>
                   <span className="font-bold text-lg">
                     {totalCost === 0 ? 'FREE' : `${totalCost.toFixed(4)} SOL`}
