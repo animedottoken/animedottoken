@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
@@ -38,6 +39,8 @@ export const StandaloneMintWizard = () => {
     attributes: [],
     collection_id: collectionId || undefined
   });
+  const [quantityInput, setQuantityInput] = useState(String((1)));
+  const [royaltyInput, setRoyaltyInput] = useState(String((0)));
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { publicKey } = useSolanaWallet();
@@ -211,33 +214,16 @@ export const StandaloneMintWizard = () => {
               <Label htmlFor="image" className="text-base font-medium">
                 NFT Image
               </Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  setFormData({ ...formData, image_file: file });
+              <FileUpload
+                onFileSelect={(file) => {
+                  setFormData({ ...formData, image_file: file || undefined });
                 }}
-                className="cursor-pointer"
+                accept="image/*"
+                placeholder="Click to upload image"
+                maxSizeText="JPEG, PNG, GIF supported"
+                className="w-full"
               />
-              <p className="text-sm text-muted-foreground">
-                Upload your NFT artwork (JPEG, PNG, GIF supported)
-              </p>
             </div>
-
-            {formData.image_file && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Preview:</p>
-                <div className="w-32 h-32 rounded-lg overflow-hidden bg-muted">
-                  <img
-                    src={URL.createObjectURL(formData.image_file)}
-                    alt="NFT Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
 
             <div className="flex justify-end pt-4">
               <Button onClick={handleNext} disabled={!formData.image_file}>
@@ -330,8 +316,18 @@ export const StandaloneMintWizard = () => {
                   type="number"
                   min="1"
                   max="100"
-                  value={formData.quantity || 1}
-                  onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+                  value={quantityInput}
+                  onChange={(e) => setQuantityInput(e.target.value)}
+                  onBlur={(e) => {
+                    const val = e.target.value.trim();
+                    if (val === '') {
+                      setFormData({ ...formData, quantity: undefined });
+                      return;
+                    }
+                    const n = Math.max(1, Math.min(100, parseInt(val, 10) || 1));
+                    setQuantityInput(String(n));
+                    setFormData({ ...formData, quantity: n });
+                  }}
                 />
               </div>
 
@@ -345,8 +341,19 @@ export const StandaloneMintWizard = () => {
                   min="0"
                   max="10"
                   step="0.5"
-                  value={formData.royalty_percentage || 0}
-                  onChange={(e) => setFormData({ ...formData, royalty_percentage: parseFloat(e.target.value) || 0 })}
+                  value={royaltyInput}
+                  onChange={(e) => setRoyaltyInput(e.target.value)}
+                  onBlur={(e) => {
+                    const raw = e.target.value.trim().replace(',', '.');
+                    if (raw === '') {
+                      setFormData({ ...formData, royalty_percentage: undefined });
+                      return;
+                    }
+                    const r = Math.max(0, Math.min(10, parseFloat(raw)));
+                    const fixed = Number.isNaN(r) ? 0 : r;
+                    setRoyaltyInput(String(fixed));
+                    setFormData({ ...formData, royalty_percentage: fixed });
+                  }}
                 />
               </div>
             </div>
