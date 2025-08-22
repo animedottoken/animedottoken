@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -43,6 +43,16 @@ export const UnifiedMintInterface = () => {
   const [step3Collection, setStep3Collection] = useState(null);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey } = useSolanaWallet();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeStep]);
 
   // Step indicator component
   const TOTAL_STEPS = 3;
@@ -148,7 +158,7 @@ export const UnifiedMintInterface = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div ref={containerRef} className="max-w-4xl mx-auto">
       {activeStep <= TOTAL_STEPS && <StepIndicator />}
       
       {activeStep === 1 && (
