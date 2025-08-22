@@ -6,9 +6,13 @@ interface SolanaWalletContextType {
   connected: boolean;
   connecting: boolean;
   publicKey: string | null;
+  balance: number;
+  network: string;
+  airdropping: boolean;
   connect: (providerId?: string) => Promise<void>;
   connectWith: (providerId: string) => Promise<void>;
   disconnect: () => void;
+  airdrop: () => Promise<void>;
   listProviders: () => { id: string; name: string }[];
 }
 
@@ -16,9 +20,13 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   connected: false,
   connecting: false,
   publicKey: null,
+  balance: 0,
+  network: 'devnet',
+  airdropping: false,
   connect: async () => {},
   connectWith: async () => {},
   disconnect: () => {},
+  airdrop: async () => {},
   listProviders: () => [],
 });
 
@@ -55,6 +63,9 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [balance, setBalance] = useState(0);
+  const [airdropping, setAirdropping] = useState(false);
+  const network = 'devnet'; // Force devnet for zero-cost testing
 
   // Do NOT auto-connect. Only ensure we clear state on external disconnects.
   useEffect(() => {
@@ -124,6 +135,62 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
     setPublicKey(null);
   }, []);
 
+  const updateBalance = useCallback(async () => {
+    if (!publicKey) return;
+    try {
+      const response = await fetch('https://api.devnet.solana.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getBalance',
+          params: [publicKey, { commitment: 'confirmed' }]
+        })
+      });
+      const data = await response.json();
+      const balanceInSOL = (data.result?.value || 0) / 1_000_000_000;
+      setBalance(balanceInSOL);
+    } catch (error) {
+      console.error('Failed to fetch balance:', error);
+    }
+  }, [publicKey]);
+
+  const airdrop = useCallback(async () => {
+    if (!publicKey || airdropping) return;
+    try {
+      setAirdropping(true);
+      const response = await fetch('https://api.devnet.solana.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'requestAirdrop',
+          params: [publicKey, 1_000_000_000] // 1 SOL
+        })
+      });
+      const data = await response.json();
+      if (data.result) {
+        // Wait a moment then update balance
+        setTimeout(updateBalance, 2000);
+      }
+    } catch (error) {
+      console.error('Airdrop failed:', error);
+    } finally {
+      setAirdropping(false);
+    }
+  }, [publicKey, airdropping, updateBalance]);
+
+  // Update balance when connected
+  useEffect(() => {
+    if (connected && publicKey) {
+      updateBalance();
+      const interval = setInterval(updateBalance, 30000); // Update every 30s
+      return () => clearInterval(interval);
+    }
+  }, [connected, publicKey, updateBalance]);
+
   const listProviders = useCallback(() => detectProviders().map(w => ({ id: w.id, name: w.name })), []);
 
   return (
@@ -132,9 +199,13 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
         connected,
         connecting,
         publicKey,
+        balance,
+        network,
+        airdropping,
         connect,
         connectWith,
         disconnect,
+        airdrop,
         listProviders,
       }}
     >
