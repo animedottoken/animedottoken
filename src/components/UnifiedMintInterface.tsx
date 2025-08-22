@@ -52,7 +52,7 @@ export const UnifiedMintInterface = () => {
   const [createdCollectionId, setCreatedCollectionId] = useState<string | null>(null);
   const [isCollectionSetupComplete, setIsCollectionSetupComplete] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showWelcomeHeader, setShowWelcomeHeader] = useState(true);
+  
 
   // Move the header into this component to have access to state
   const renderCompactHeader = () => {
@@ -796,8 +796,8 @@ export const UnifiedMintInterface = () => {
     }
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Header - compact for step 3 only */}
-        {renderCompactHeader()}
+        {/* Collection Creation Progress */}
+        <StepIndicator currentStep={3} totalSteps={3} />
         
         {/* Congratulations Banner */}
         <Card>
@@ -1411,8 +1411,8 @@ export const UnifiedMintInterface = () => {
   if (createdCollectionId) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Header - compact for step 2 only */}
-        {renderCompactHeader()}
+        {/* Collection Creation Progress */}
+        <StepIndicator currentStep={2} totalSteps={3} />
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -1726,46 +1726,36 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Header - show only on welcome screen before a path is chosen */}
-      {showWelcomeHeader && (
-        <div className="text-center mb-8 pt-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-            Mint NFTs & Collections
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
-          </p>
-        </div>
-      )}
-      
-      {/* Choose Your Path Banner */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            A Collection is the official **Master Blueprint** for your art series. It groups all of your individual NFTs together, proves their authenticity to buyers, and allows you to set on-chain rules like a maximum supply. For any serious project, creating a Collection is the most important first step.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button 
-              variant={activeTab === 'collection' ? 'default' : 'outline'}
-              onClick={() => { setActiveTab('collection'); setShowWelcomeHeader(false); }}
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create Collection & Mint
-              <Badge variant="secondary" className="ml-2">Recommended</Badge>
-            </Button>
-            <Button 
-              variant={activeTab === 'standalone' ? 'default' : 'outline'}
-              onClick={() => { setActiveTab('standalone'); setShowWelcomeHeader(false); }}
-              className="flex items-center gap-2"
-            >
-              <Zap className="h-4 w-4" />
-              Skip & Mint NFT Now
-            </Button>
+      {/* Choose Your Path Banner - Only show on Step 1 */}
+      {currentStep === 1 && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-2">Choose Your Path</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              A Collection is the official **Master Blueprint** for your art series. It groups all of your individual NFTs together, proves their authenticity to buyers, and allows you to set on-chain rules like a maximum supply. For any serious project, creating a Collection is the most important first step.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                variant={activeTab === 'collection' ? 'default' : 'outline'}
+                onClick={() => setActiveTab('collection')}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create Collection & Mint
+                <Badge variant="secondary" className="ml-2">Recommended</Badge>
+              </Button>
+              <Button 
+                variant={activeTab === 'standalone' ? 'default' : 'outline'}
+                onClick={() => setActiveTab('standalone')}
+                className="flex items-center gap-2"
+              >
+                <Zap className="h-4 w-4" />
+                Skip & Mint NFT Now
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'collection' | 'standalone')}>
         <TabsContent value="collection">
