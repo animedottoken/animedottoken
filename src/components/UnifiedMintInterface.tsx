@@ -219,7 +219,7 @@ export const UnifiedMintInterface = () => {
                 (stepNumber === 1 && createdCollectionId) ||
                 (stepNumber === 2 && isCollectionSetupComplete);
               
-              const stepNames = ['Create Collection', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
+              const stepNames = ['Basics (off-chain)', 'Mint Collection On-Chain', 'Mint NFTs from Collection'];
               
               return (
                 <div key={stepNumber} className="flex items-center">
