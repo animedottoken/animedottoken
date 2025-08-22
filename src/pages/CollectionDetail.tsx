@@ -17,7 +17,9 @@ import {
   Coins,
   Users,
   Image as ImageIcon,
-  Heart
+  Heart,
+  Trash2,
+  Flame
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
@@ -258,13 +260,48 @@ export default function CollectionDetail() {
                     </Button>
                   )}
                   
-                  {connected && mints.length === 0 && (
-                    <Button variant="outline" size="lg" asChild>
-                      <Link to={`/mint?edit=${collection.id}`}>
-                        <Settings className="w-4 h-4 mr-2" />
-                        Edit Collection
-                      </Link>
-                    </Button>
+                  {connected && publicKey === collection.creator_address && (
+                    <>
+                      <Button variant="outline" size="lg" asChild>
+                        <Link to={`/mint?edit=${collection.id}`}>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Edit Collection
+                        </Link>
+                      </Button>
+                      
+                      {mints.length === 0 && (
+                        <Button 
+                          variant="destructive" 
+                          size="lg"
+                          onClick={async () => {
+                            if (!confirm(`Are you sure you want to delete "${collection.name}"? This action cannot be undone.`)) {
+                              return;
+                            }
+                            
+                            try {
+                              const { data, error } = await supabase.functions.invoke('delete-collection', {
+                                body: {
+                                  collection_id: collection.id,
+                                  wallet_address: publicKey
+                                }
+                              });
+                              
+                              if (data?.success) {
+                                toast.success('Collection deleted successfully');
+                                navigate('/profile');
+                              } else {
+                                toast.error(data?.error || 'Failed to delete collection');
+                              }
+                            } catch (error) {
+                              toast.error('Failed to delete collection');
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Collection
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -339,8 +376,43 @@ export default function CollectionDetail() {
                               Owner: {nft.owner_address.slice(0, 8)}...{nft.owner_address.slice(-4)}
                             </p>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
+                          <div className="flex items-center justify-between">
+                            <div className="text-xs text-muted-foreground">
+                              Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
+                            </div>
+                            {connected && publicKey === nft.owner_address && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={async () => {
+                                  if (!confirm(`Are you sure you want to burn "${nft.name}"? This action cannot be undone.`)) {
+                                    return;
+                                  }
+                                  
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                      body: {
+                                        nft_id: nft.id,
+                                        wallet_address: publicKey
+                                      }
+                                    });
+                                    
+                                    if (data?.success) {
+                                      toast.success('NFT burned successfully');
+                                      // Refresh the page to update the mints list
+                                      window.location.reload();
+                                    } else {
+                                      toast.error(data?.error || 'Failed to burn NFT');
+                                    }
+                                  } catch (error) {
+                                    toast.error('Failed to burn NFT');
+                                  }
+                                }}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Flame className="w-3 h-3" />
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CardContent>

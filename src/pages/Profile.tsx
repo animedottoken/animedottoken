@@ -197,6 +197,16 @@ export default function Profile() {
                             View
                           </Link>
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          asChild
+                        >
+                          <Link to={`/mint?collection=${collection.id}`}>
+                            <Plus className="h-4 w-4 mr-1" />
+                            Mint
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   </div>

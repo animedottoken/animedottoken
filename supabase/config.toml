@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.update-collection]
 verify_jwt = false
+
+[functions.burn-nft]
+verify_jwt = false
+
+[functions.delete-collection]
+verify_jwt = false
