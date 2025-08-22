@@ -1242,7 +1242,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 {/* NFT Details moved to top right */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="nft-name">NFT Name Template (Optional)</Label>
+                    <Label htmlFor="nft-name" className="text-lg font-semibold">NFT Name Template (Optional)</Label>
                     <Input
                       id="nft-name"
                       value={nftDetails.nftName}
@@ -1256,7 +1256,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   </div>
                   
                   <div>
-                    <Label htmlFor="nft-description">NFT Description (Optional)</Label>
+                    <Label htmlFor="nft-description" className="text-lg font-semibold">NFT Description (Optional)</Label>
                     <Textarea
                       id="nft-description"
                       value={nftDetails.nftDescription}
@@ -1273,7 +1273,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                    {/* NFT Attributes */}
                    <div className="space-y-4">
                      <div className="flex items-center justify-between">
-                       <Label className="text-base font-semibold">NFT Attributes (Optional)</Label>
+                       <Label className="text-lg font-semibold">NFT Attributes (Optional)</Label>
                      </div>
                      <div className="text-sm text-muted-foreground">
                        Add metadata attributes that will be applied to all NFTs in this mint batch.
@@ -2163,7 +2163,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </div>
                     
                     <div>
-                      <Label htmlFor="standalone-symbol">Symbol (Optional)</Label>
+                      <Label htmlFor="standalone-symbol" className="text-lg font-semibold">Symbol (Optional)</Label>
                       <Input
                         id="standalone-symbol"
                         value={standaloneData.symbol}
@@ -2176,7 +2176,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   </div>
 
                   <div>
-                    <Label htmlFor="standalone-description">Description (Optional)</Label>
+                    <Label htmlFor="standalone-description" className="text-lg font-semibold">Description (Optional)</Label>
                     <Textarea
                       id="standalone-description"
                       value={standaloneData.description}
@@ -2192,7 +2192,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="standalone-quantity">Quantity</Label>
+                      <Label htmlFor="standalone-quantity" className="text-lg font-semibold">Quantity</Label>
                       <Input
                         id="standalone-quantity"
                         type="number"
@@ -2206,7 +2206,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </div>
 
                     <div>
-                      <Label htmlFor="standalone-royalty">Royalties (%)</Label>
+                      <Label htmlFor="standalone-royalty" className="text-lg font-semibold">Royalties (%)</Label>
                       <Input
                         id="standalone-royalty"
                         type="number"
@@ -2220,7 +2220,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </div>
 
                     <div>
-                      <Label htmlFor="standalone-category">Category</Label>
+                      <Label htmlFor="standalone-category" className="text-lg font-semibold">Category</Label>
                       <Select value={standaloneData.category} onValueChange={(value) => setStandaloneData({...standaloneData, category: value})}>
                         <SelectTrigger className="h-12 text-lg font-medium border-2 hover:border-primary/50 focus:border-primary focus:shadow-primary/20 focus:shadow-lg transition-all duration-200 bg-background/80 backdrop-blur-sm">
                           <SelectValue placeholder="Select category" />
@@ -2246,7 +2246,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <div className="space-y-4">
                   <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">NFT Attributes</Label>
                   <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold">Attributes (Optional)</Label>
+                    <Label className="text-lg font-semibold">Attributes (Optional)</Label>
                   </div>
                   
                   {standaloneData.attributes && standaloneData.attributes.length > 0 ? (
