@@ -1255,17 +1255,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                        </div>
                      </div>
 
-                    <div className="mt-6 space-y-3">
-                      <h4 className="font-semibold">Features & Benefits</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <Badge variant="secondary" className="justify-start p-2">✨ Unique Anime Art</Badge>
-                        <Badge variant="secondary" className="justify-start p-2">🎮 Gaming Integration</Badge>
-                        <Badge variant="secondary" className="justify-start p-2">💎 Rare Traits</Badge>
-                        <Badge variant="secondary" className="justify-start p-2">🏆 Community Access</Badge>
-                        <Badge variant="secondary" className="justify-start p-2">⚡ Queue Processing</Badge>
-                        <Badge variant="secondary" className="justify-start p-2">🔄 Auto Retry Logic</Badge>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
