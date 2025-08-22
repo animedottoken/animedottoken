@@ -25,11 +25,13 @@ import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useFavorites } from "@/hooks/useFavorites";
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
   const navigate = useNavigate();
-  const { connected } = useSolanaWallet();
+  const { connected, publicKey } = useSolanaWallet();
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
@@ -221,6 +223,41 @@ export default function CollectionDetail() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 min-w-[200px]">
+                  {/* Collection Owner Controls - Only show for owned collections */}
+                  {connected && publicKey === collection.creator_address && (
+                    <Button
+                      variant={collection.is_live ? "destructive" : "default"}
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const { data, error } = await supabase.functions.invoke('update-collection', {
+                            body: {
+                              collection_id: collection.id,
+                              updates: { is_live: !collection.is_live }
+                            }
+                          });
+                          
+                          if (data?.success) {
+                            // Refresh collection to show updated status
+                            refreshCollection();
+                            toast.success(
+                              collection.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                              {
+                                description: collection.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                              }
+                            );
+                          } else {
+                            toast.error('Failed to update collection status');
+                          }
+                        } catch (error) {
+                          toast.error('Failed to update collection status');
+                        }
+                      }}
+                    >
+                      {collection.is_live ? 'Pause Minting' : 'Go Live'}
+                    </Button>
+                  )}
+                  
                   {connected && mints.length === 0 && (
                     <Button variant="outline" size="lg" asChild>
                       <Link to={`/mint?edit=${collection.id}`}>

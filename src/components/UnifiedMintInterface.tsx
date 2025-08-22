@@ -206,7 +206,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
         max_supply: parseInt(formData.max_supply?.toString() || '0') || 0,
         items_redeemed: 0,
         royalty_percentage: parseFloat(formData.royalty_percentage?.toString() || '0') || 0,
-        is_live: true,
+        is_live: false, // Default to Draft status
         collection_mint_address: `Demo${createdCollectionId.slice(-8)}Mock`, // Mock address for testing
       });
     }
@@ -953,7 +953,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, mint_price: newPrice }));
                           }}
                         >
-                          <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
+                          <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-center">
                             <div className="flex items-center justify-center gap-1 mb-1">
                               <Edit2 className="h-3 w-3 text-green-600" />
                               <span className="text-xs text-green-600 font-medium">EDITABLE</span>
@@ -975,7 +975,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <Lock className="h-3 w-3 text-orange-600" />
                             <span className="text-xs text-orange-600 font-medium">LOCKED</span>
@@ -992,7 +992,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <Lock className="h-3 w-3 text-orange-600" />
                             <span className="text-xs text-orange-600 font-medium">LOCKED</span>
@@ -1005,52 +1005,20 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </Tooltip>
                   </TooltipProvider>
                   
-                  {/* Status - Editable Toggle */}
+                  {/* Status - Draft */}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer">
-                          <div className="flex items-center justify-center gap-2 mb-2">
-                            <Switch 
-                              checked={step3Collection?.is_live ?? true}
-                              onCheckedChange={async (checked) => {
-                                try {
-                                  if (step3Collection?.id) {
-                                    const { data, error } = await supabase.functions.invoke('update-collection', {
-                                      body: {
-                                        collection_id: step3Collection.id,
-                                        updates: { is_live: checked }
-                                      }
-                                    });
-                                    
-                                    if (data?.success) {
-                                      setStep3Collection(prev => prev ? { ...prev, is_live: checked } : prev);
-                                      toast({
-                                        title: checked ? 'Collection is now LIVE' : 'Collection paused',
-                                        description: checked ? 'Users can now mint NFTs' : 'Minting has been paused',
-                                      });
-                                    }
-                                  }
-                                } catch (error) {
-                                  toast({
-                                    title: 'Failed to update status',
-                                    description: 'Please try again',
-                                    variant: 'destructive',
-                                  });
-                                }
-                              }}
-                              className="scale-125"
-                            />
-                            <div className="flex items-center gap-1">
-                              <Edit2 className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                            </div>
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Clock className="h-3 w-3 text-orange-600" />
+                            <span className="text-xs text-orange-600 font-medium">DRAFT</span>
                           </div>
-                          <div className="font-bold text-lg text-primary">{(step3Collection?.is_live ?? true) ? 'LIVE' : 'PAUSED'}</div>
+                          <div className="font-bold text-lg text-orange-600">DRAFT</div>
                           <div className="text-xs text-muted-foreground uppercase tracking-wide">Status</div>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent>Toggle to pause/resume minting</TooltipContent>
+                      <TooltipContent>Collection created but not live yet. Make it live from your Profile.</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -1305,7 +1273,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 {/* NFT Details moved to top right */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="nft-name" className="text-lg font-semibold">NFT Name Template (Optional)</Label>
+                    <Label htmlFor="nft-name" className="text-lg font-semibold">NFT Name (Optional)</Label>
                     <Input
                       id="nft-name"
                       value={nftDetails.nftName}

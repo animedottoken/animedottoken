@@ -175,6 +175,7 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
           royalty_percentage: collectionData.royalty_percentage ?? 0,
           treasury_wallet: collectionData.treasury_wallet || publicKey,
           whitelist_enabled: collectionData.whitelist_enabled ?? false,
+          is_live: false, // Default to Draft status - can be changed later from Profile
           go_live_date: collectionData.go_live_date || null,
         }
       });

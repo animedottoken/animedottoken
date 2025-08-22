@@ -227,7 +227,8 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 🔥 {collection.name} - Collection NFTs
               </CardTitle>
               <div className="flex gap-2">
-                {isLive && <Badge className="bg-green-500 text-white">LIVE</Badge>}
+                {!collection.is_live && <Badge variant="secondary" className="bg-orange-500 text-white">PAUSED</Badge>}
+                {collection.is_live && !isSoldOut && <Badge className="bg-green-500 text-white">LIVE</Badge>}
                 {isSoldOut && <Badge variant="destructive">SOLD OUT</Badge>}
               </div>
             </div>

@@ -17,13 +17,14 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useMintQueue } from "@/hooks/useMintQueue";
 import { MintQueueStatus } from "@/components/MintQueueStatus";
 import { formatDistanceToNow } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'collections';
   
   const { connected, publicKey, disconnect } = useSolanaWallet();
-  const { collections, loading: collectionsLoading } = useCollections();
+  const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
   const { activities, loading: activitiesLoading } = useUserActivity();
   const { favorites, removeFromFavorites } = useFavorites();
   const { jobs, loading: jobsLoading, getJobProgress } = useMintQueue();
@@ -299,6 +300,44 @@ export default function Profile() {
                                   </Link>
                                 </Button>
                               </div>
+                              
+                              {/* Collection Owner Controls - Only show for owned collections */}
+                              {connected && publicKey === collection.creator_address && (
+                                <div className="flex gap-2 mt-2">
+                                  <Button
+                                    variant={collection.is_live ? "destructive" : "default"}
+                                    size="sm"
+                                    className="flex-1"
+                                    onClick={async () => {
+                                      try {
+                                        const { data, error } = await supabase.functions.invoke('update-collection', {
+                                          body: {
+                                            collection_id: collection.id,
+                                            updates: { is_live: !collection.is_live }
+                                          }
+                                        });
+                                        
+                                        if (data?.success) {
+                                          // Refresh collections to show updated status
+                                          refreshCollections();
+                                          toast.success(
+                                            collection.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                                            {
+                                              description: collection.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                            }
+                                          );
+                                        } else {
+                                          toast.error('Failed to update collection status');
+                                        }
+                                      } catch (error) {
+                                        toast.error('Failed to update collection status');
+                                      }
+                                    }}
+                                  >
+                                    {collection.is_live ? 'Pause' : 'Go Live'}
+                                  </Button>
+                                </div>
+                              )}
                               
                               <div className="text-xs text-muted-foreground mt-2">
                                 Created {formatDistanceToNow(new Date(collection.created_at), { addSuffix: true })}
