@@ -53,6 +53,31 @@ export const UnifiedMintInterface = () => {
   const [isCollectionSetupComplete, setIsCollectionSetupComplete] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Move the header into this component to have access to state
+  const renderHeader = () => {
+    // Show compact header during collection steps 2 & 3
+    if (activeTab === 'collection' && currentStep > 1) {
+      return (
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+            Collection Creation - Step {currentStep}
+          </h1>
+        </div>
+      );
+    }
+    // Show full header for initial state and standalone minting
+    return (
+      <div className="text-center mb-8">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+          Mint NFTs & Collections
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          Welcome, Creator! This is your studio for launching original anime art on Solana. Start by creating a collection to organize your work, or mint a single NFT right away.
+        </p>
+      </div>
+    );
+  };
+
   const [formData, setFormData] = useState<CreateCollectionData>({
     name: '',
     symbol: undefined,
@@ -780,6 +805,9 @@ export const UnifiedMintInterface = () => {
     }
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
+        {/* Header - compact for step 3 */}
+        {renderHeader()}
+        
         {/* Congratulations Banner */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -1392,6 +1420,9 @@ export const UnifiedMintInterface = () => {
   if (createdCollectionId) {
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6">
+        {/* Header - compact for step 2 */}
+        {renderHeader()}
+        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -1704,6 +1735,9 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
+      {/* Header */}
+      {renderHeader()}
+      
       {/* Choose Your Path Banner */}
       <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 rounded-lg border border-border/20">
         <div className="text-center">
