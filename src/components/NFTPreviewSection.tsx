@@ -22,7 +22,7 @@ export function NFTPreviewSection() {
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Mint NFTs Card */}
         <Card 
-          className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -83,7 +83,7 @@ export function NFTPreviewSection() {
 
         {/* Marketplace Card */}
         <Card 
-          className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           role="button"
           tabIndex={0}
           onClick={() => navigate('/marketplace')}
