@@ -40,8 +40,42 @@ export const UnifiedMintInterface = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [step3Collection, setStep3Collection] = useState(null);
-  const { createCollection } = useCollections();
+  const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey } = useSolanaWallet();
+
+  // Step indicator component
+  const StepIndicator = () => (
+    <div className="flex items-center justify-center mb-8">
+      <div className="flex items-center space-x-4">
+        {[1, 2, 3].map((step) => (
+          <div key={step} className="flex items-center">
+            <div className={`
+              flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all
+              ${activeStep >= step 
+                ? 'bg-primary border-primary text-primary-foreground' 
+                : 'border-muted-foreground text-muted-foreground'
+              }
+            `}>
+              {activeStep > step ? (
+                <CheckCircle className="w-5 h-5" />
+              ) : (
+                <span className="font-semibold">{step}</span>
+              )}
+            </div>
+            {step < 3 && (
+              <div className={`
+                w-16 h-0.5 mx-2
+                ${activeStep > step ? 'bg-primary' : 'bg-muted-foreground/30'}
+              `} />
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="ml-6 text-sm text-muted-foreground">
+        Step {activeStep} of 3
+      </div>
+    </div>
+  );
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -113,6 +147,8 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <StepIndicator />
+      
       {activeStep === 1 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
