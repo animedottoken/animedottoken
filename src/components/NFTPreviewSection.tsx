@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function NFTPreviewSection() {
+  const navigate = useNavigate();
+
   return (
     <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
       <div className="text-center mb-12">
@@ -19,7 +21,22 @@ export function NFTPreviewSection() {
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Mint NFTs Card */}
-        <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20">
+        <Card 
+          className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            navigate('/mint');
+            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate('/mint');
+              setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            }
+          }}
+        >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Coins className="h-10 w-10 text-primary" />
@@ -49,22 +66,34 @@ export function NFTPreviewSection() {
               <Badge variant="secondary" className="mb-4">
                 🔥 Live Now
               </Badge>
-              <Link 
-                to="/mint" 
-                className="block"
-                onClick={() => setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100)}
+              <Button 
+                className="w-full group-hover:scale-105 transition-transform"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/mint');
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                }}
               >
-                <Button className="w-full group-hover:scale-105 transition-transform">
-                  Start Creating
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+                Start Creating
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Marketplace Card */}
-        <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20">
+        <Card 
+          className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('/marketplace')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate('/marketplace');
+            }
+          }}
+        >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ShoppingBag className="h-10 w-10 text-primary" />
@@ -94,12 +123,17 @@ export function NFTPreviewSection() {
               <Badge variant="outline" className="mb-4">
                 🛍️ Explore Now
               </Badge>
-              <Link to="/marketplace" className="block">
-                <Button variant="outline" className="w-full group-hover:scale-105 transition-transform">
-                  Explore the Marketplace
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full group-hover:scale-105 transition-transform"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/marketplace');
+                }}
+              >
+                Explore the Marketplace
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
