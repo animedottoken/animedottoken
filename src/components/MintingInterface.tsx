@@ -285,6 +285,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 <Label htmlFor="quantity" className="text-lg font-semibold">
                   Quantity to Mint
                 </Label>
+                {/* +/- buttons and input on one row */}
                 <div className="flex items-center gap-3">
                   <Button
                     variant="outline"
@@ -318,13 +319,12 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
-                  
-                  <div className="text-sm text-muted-foreground">
-                    Max per job (quantity cap): {maxPerJob}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Collection Max Supply: {collection.max_supply.toLocaleString()} • Remaining: {remainingSupply.toLocaleString()}
-                  </div>
+                </div>
+                
+                {/* Max per job and Collection details in new row with smaller text */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                  <div>Max per job: {maxPerJob}</div>
+                  <div>Collection Max Supply: {collection.max_supply.toLocaleString()} • Remaining: {remainingSupply.toLocaleString()}</div>
                 </div>
 
                 {/* Minted progress - moved under quantity */}

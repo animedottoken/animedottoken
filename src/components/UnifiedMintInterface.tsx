@@ -953,7 +953,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, mint_price: newPrice }));
                           }}
                         >
-                          <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-center">
+                          <div className="text-center p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-between">
                             <div className="flex items-center justify-center gap-1 mb-1">
                               <Edit2 className="h-3 w-3 text-green-600" />
                               <span className="text-xs text-green-600 font-medium">EDITABLE</span>
@@ -975,7 +975,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
+                         <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-between">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <Lock className="h-3 w-3 text-orange-600" />
                             <span className="text-xs text-orange-600 font-medium">LOCKED</span>
@@ -992,7 +992,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
+                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-between">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <Lock className="h-3 w-3 text-orange-600" />
                             <span className="text-xs text-orange-600 font-medium">LOCKED</span>
@@ -1005,22 +1005,24 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     </Tooltip>
                   </TooltipProvider>
                   
-                  {/* Status - Draft */}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="text-center p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <Clock className="h-3 w-3 text-orange-600" />
-                            <span className="text-xs text-orange-600 font-medium">DRAFT</span>
-                          </div>
-                          <div className="font-bold text-lg text-orange-600">DRAFT</div>
-                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Status</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>Collection created but not live yet. Make it live from your Profile.</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                   {/* Minted - Progress Tracker */}
+                   <TooltipProvider>
+                     <Tooltip>
+                       <TooltipTrigger>
+                         <div className="text-center p-4 bg-background rounded-lg border-2 border-blue-200 dark:border-blue-800 min-h-[110px] flex flex-col justify-between">
+                           <div className="flex items-center justify-center gap-1 mb-1">
+                             <Users className="h-3 w-3 text-blue-600" />
+                             <span className="text-xs text-blue-600 font-medium">MINTED</span>
+                           </div>
+                           <div className="font-bold text-lg">
+                             {(step3Collection?.items_redeemed ?? 0).toLocaleString()} / {(step3Collection?.max_supply ?? formData.max_supply ?? 0).toLocaleString()}
+                           </div>
+                           <div className="text-xs text-muted-foreground uppercase tracking-wide">Minted</div>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>Shows how many NFTs have been minted from this collection</TooltipContent>
+                     </Tooltip>
+                   </TooltipProvider>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -1047,7 +1049,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
                           }}
                         >
-                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
+                           <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Treasury Wallet</div>
                               <div className="flex items-center gap-1">
@@ -1076,7 +1078,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                             setFormData(prev => ({ ...prev, whitelist_enabled: enabled }));
                           }}
                         >
-                          <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
+                           <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Whitelist</div>
                               <div className="flex items-center gap-1">
@@ -1099,7 +1101,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     <Tooltip>
                       <TooltipTrigger>
                         {step3Collection?.items_redeemed && step3Collection.items_redeemed > 0 ? (
-                          <div className="p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[100px] flex flex-col justify-between">
+                          <div className="p-4 bg-background rounded-lg border-2 border-orange-200 dark:border-orange-800 min-h-[110px] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">On-chain Description</div>
                               <div className="flex items-center gap-1">
@@ -1119,7 +1121,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                               setFormData(prev => ({ ...prev, onchain_description: description }));
                             }}
                           >
-                            <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[100px] flex flex-col justify-between">
+                            <div className="p-4 bg-background rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-muted/50 cursor-pointer min-h-[110px] flex flex-col justify-between">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">On-chain Description</div>
                                 <div className="flex items-center gap-1">
