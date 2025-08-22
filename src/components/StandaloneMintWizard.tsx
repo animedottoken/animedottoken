@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, ExternalLink } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
+import { useCollections } from '@/hooks/useCollections';
 import { toast } from 'sonner';
 
 const STEPS = [
@@ -20,9 +21,11 @@ const STEPS = [
 ];
 
 export const StandaloneMintWizard = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const collectionId = searchParams.get('collection');
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(collectionId);
   const [formData, setFormData] = useState<StandaloneNFTData>({
     name: '',
     symbol: 'NFT',
@@ -32,12 +35,38 @@ export const StandaloneMintWizard = () => {
     royalty_percentage: 0,
     category: '',
     external_links: [],
-    attributes: []
+    attributes: [],
+    collection_id: collectionId || undefined
   });
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { publicKey } = useSolanaWallet();
-  const { collection, loading: collectionLoading } = useCollection(collectionId || '');
+  const { collections, loading: collectionsLoading } = useCollections({ autoLoad: true });
+  const { collection: selectedCollection } = useCollection(selectedCollectionId || '');
+
+  // Update formData when selectedCollectionId changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      collection_id: selectedCollectionId || undefined
+    }));
+  }, [selectedCollectionId]);
+
+  const handleCollectionChange = (value: string) => {
+    if (value === 'create-new') {
+      navigate('/mint/collection');
+      return;
+    }
+    
+    setSelectedCollectionId(value === 'none' ? null : value);
+    
+    // Update URL params
+    if (value === 'none') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ collection: value });
+    }
+  };
 
   const handleNext = () => {
     if (currentStep === 1 && !formData.image_file) {
@@ -81,34 +110,59 @@ export const StandaloneMintWizard = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Collection Context Banner */}
-      {collectionId && collection && (
-        <Card className="mb-6 border-primary/20 bg-primary/5">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              {collection.image_url && (
-                <img 
-                  src={collection.image_url} 
-                  alt={collection.name}
-                  className="w-12 h-12 rounded-lg object-cover"
-                />
-              )}
-              <div className="flex-1">
-                <p className="text-sm text-muted-foreground">Minting NFT for collection:</p>
-                <h3 className="font-semibold">{collection.name}</h3>
+      {/* Collection Selector */}
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="space-y-3">
+            <Label className="text-base font-medium">Collection</Label>
+            <Select
+              value={selectedCollectionId || 'none'}
+              onValueChange={handleCollectionChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select collection or create new" />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-background shadow-md">
+                <SelectItem value="none">No Collection (Standalone NFT)</SelectItem>
+                {collections?.map((collection) => (
+                  <SelectItem key={collection.id} value={collection.id}>
+                    <div className="flex items-center gap-2">
+                      {collection.image_url && (
+                        <img 
+                          src={collection.image_url} 
+                          alt={collection.name}
+                          className="w-4 h-4 rounded object-cover"
+                        />
+                      )}
+                      <span>{collection.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+                <SelectItem value="create-new">
+                  <div className="flex items-center gap-2 text-primary font-medium">
+                    <span>+ Create a new collection</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {selectedCollection && (
+              <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                {selectedCollection.image_url && (
+                  <img 
+                    src={selectedCollection.image_url} 
+                    alt={selectedCollection.name}
+                    className="w-8 h-8 rounded object-cover"
+                  />
+                )}
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">Selected collection:</p>
+                  <p className="font-medium">{selectedCollection.name}</p>
+                </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.location.href = '/mint/collection'}
-              >
-                <ExternalLink className="h-4 w-4 mr-1" />
-                Change
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Progress Steps */}
       <div className="flex justify-center mb-8">
