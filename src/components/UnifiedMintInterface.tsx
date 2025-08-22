@@ -112,22 +112,8 @@ export const UnifiedMintInterface = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-          <div className="text-xl font-bold text-gray-800 dark:text-white">
-            Create Collection
-          </div>
-          <nav>
-            <Button variant="outline" onClick={handleGoToProfile}>
-              Go to Profile
-            </Button>
-          </nav>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {activeStep === 1 && (
+    <div className="max-w-4xl mx-auto">
+      {activeStep === 1 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -333,9 +319,9 @@ export const UnifiedMintInterface = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+      )}
 
-        {activeStep === 2 && (
+      {activeStep === 2 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -453,9 +439,9 @@ export const UnifiedMintInterface = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+      )}
 
-        {activeStep === 3 && (
+      {activeStep === 3 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -523,9 +509,9 @@ export const UnifiedMintInterface = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+      )}
 
-        {activeStep === 4 && (
+      {activeStep === 4 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Collection Summary */}
             <div className="space-y-6">
@@ -595,15 +581,8 @@ export const UnifiedMintInterface = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        )}
-      </main>
-
-      <footer className="bg-gray-100 dark:bg-gray-900 py-6">
-        <div className="container mx-auto px-4 text-center text-gray-500 dark:text-gray-400">
-          &copy; 2024 NFT Platform. All rights reserved.
         </div>
-      </footer>
+      )}
     </div>
   );
 };

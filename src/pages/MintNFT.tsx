@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
+import { StandaloneMintWizard } from "@/components/StandaloneMintWizard";
 
 export default function MintNFT() {
   return (
@@ -21,9 +21,7 @@ export default function MintNFT() {
             </p>
           </div>
 
-          <div className="flex justify-center">
-            <UnifiedMintInterface />
-          </div>
+          <StandaloneMintWizard />
         </div>
       </main>
     </>
