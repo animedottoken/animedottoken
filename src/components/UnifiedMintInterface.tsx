@@ -1223,40 +1223,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   )}
                 </div>
                 
-                {/* Collection Details */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Info className="h-5 w-5" />
-                      Collection Details
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                       <div className="text-center p-4 bg-muted/50 rounded-lg">
-                         <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-                         <div className="font-bold">{(step3Collection?.max_supply ?? formData.max_supply)?.toLocaleString?.() || 'TBD'}</div>
-                         <div className="text-sm text-muted-foreground">Total Supply</div>
-                       </div>
-                       <div className="text-center p-4 bg-muted/50 rounded-lg">
-                         <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
-                         <div className="font-bold">Live Now</div>
-                         <div className="text-sm text-muted-foreground">Mint Status</div>
-                       </div>
-                       <div className="text-center p-4 bg-muted/50 rounded-lg">
-                         <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
-                         <div className="font-bold">Queue System</div>
-                         <div className="text-sm text-muted-foreground">Professional</div>
-                       </div>
-                       <div className="text-center p-4 bg-muted/50 rounded-lg">
-                         <Shield className="w-6 h-6 mx-auto mb-2 text-primary" />
-                         <div className="font-bold">{(formData.royalty_percentage ?? step3Collection?.royalty_percentage ?? 0)}%</div>
-                         <div className="text-sm text-muted-foreground">Royalties</div>
-                       </div>
-                     </div>
-
-                  </CardContent>
-                </Card>
               </div>
 
               {/* Right Column - NFT Details & Minting Interface */}
