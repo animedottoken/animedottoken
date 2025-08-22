@@ -258,7 +258,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                   type="number"
                   min="1"
                   max="100000"
-                  value={formData.max_supply}
+                  value={formData.max_supply === 0 ? '' : formData.max_supply}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === '') {
