@@ -12,15 +12,6 @@ export default function MintCollection() {
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="text-center mb-8 pt-4">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent leading-tight">
-              Create Collection & Mint NFT
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Create your anime NFT collection with our step-by-step process. Set up your collection details, customize settings, and launch your project.
-            </p>
-          </div>
-
           <div className="flex justify-center">
             <UnifiedMintInterface mode="collection" />
           </div>
