@@ -17,6 +17,7 @@ import { MintQueueStatus } from "@/components/MintQueueStatus";
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { useUserNFTs } from "@/hooks/useUserNFTs";
 import { useBurnNFT } from "@/hooks/useBurnNFT";
+import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function Profile() {
@@ -24,6 +25,7 @@ export default function Profile() {
   const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
   const { nfts, loading: nftsLoading, refreshNFTs } = useUserNFTs();
   const { burning, burnNFT } = useBurnNFT();
+  const { deleting, deleteCollection } = useDeleteCollection();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -52,6 +54,14 @@ export default function Profile() {
     if (result.success) {
       // Refresh the NFTs list to remove the burned NFT
       refreshNFTs();
+    }
+  };
+
+  const handleDeleteCollection = async (collectionId: string, collectionName: string) => {
+    const result = await deleteCollection(collectionId, collectionName);
+    if (result.success) {
+      // Refresh the collections list to remove the deleted collection
+      refreshCollections();
     }
   };
 
@@ -196,7 +206,7 @@ export default function Profile() {
                       }}
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap justify-center">
                         <Button
                           size="sm"
                           onClick={() => setSelectedCollection(collection)}
@@ -224,6 +234,38 @@ export default function Profile() {
                             Mint
                           </Link>
                         </Button>
+                        {(collection.items_redeemed || 0) === 0 && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                disabled={deleting}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteCollection(collection.id, collection.name)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  disabled={deleting}
+                                >
+                                  {deleting ? 'Deleting...' : 'Delete Collection'}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -342,32 +384,38 @@ export default function Profile() {
                         }
                       }}
                     />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="flex gap-2">
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-lg">{nft.name}</h4>
+                      <div className="flex items-center gap-2">
+                        {nft.symbol && (
+                          <Badge variant="outline" className="text-xs">
+                            {nft.symbol}
+                          </Badge>
+                        )}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               size="sm"
                               variant="destructive"
-                              className="bg-red-600 hover:bg-red-700"
+                              className="h-8 px-2"
                             >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Burn
+                              <Trash2 className="h-3 w-3" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure you want to burn this NFT?</AlertDialogTitle>
+                              <AlertDialogTitle>Burn NFT</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This action permanently destroys "{nft.name}" from the blockchain. 
-                                This cannot be undone and the NFT will be lost forever.
+                                Are you sure you want to burn "{nft.name}"? This action permanently destroys the NFT from the blockchain and cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleBurnNFT(nft.id, nft.mint_address || '')}
-                                className="bg-red-600 hover:bg-red-700"
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 disabled={burning}
                               >
                                 {burning ? 'Burning...' : 'Burn NFT'}
@@ -376,16 +424,6 @@ export default function Profile() {
                           </AlertDialogContent>
                         </AlertDialog>
                       </div>
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-lg">{nft.name}</h4>
-                      {nft.symbol && (
-                        <Badge variant="outline" className="text-xs">
-                          {nft.symbol}
-                        </Badge>
-                      )}
                     </div>
                     {nft.description && (
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -402,18 +440,15 @@ export default function Profile() {
                       <div className="mt-2">
                         <div className="text-xs text-muted-foreground mb-1">Properties:</div>
                         <div className="flex flex-wrap gap-1">
-                          {nft.metadata.slice(0, 3).map((attr: any, idx: number) => (
-                            <span
-                              key={idx}
-                              className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md"
-                            >
+                          {nft.metadata.slice(0, 3).map((attr: any, index: number) => (
+                            <Badge key={index} variant="outline" className="text-xs">
                               {attr.trait_type}: {attr.value}
-                            </span>
+                            </Badge>
                           ))}
                           {nft.metadata.length > 3 && (
-                            <span className="text-xs text-muted-foreground">
+                            <Badge variant="outline" className="text-xs">
                               +{nft.metadata.length - 3} more
-                            </span>
+                            </Badge>
                           )}
                         </div>
                       </div>

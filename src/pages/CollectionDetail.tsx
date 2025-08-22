@@ -28,7 +28,9 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -37,6 +39,7 @@ export default function CollectionDetail() {
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { deleting, deleteCollection } = useDeleteCollection();
 
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version
@@ -270,36 +273,41 @@ export default function CollectionDetail() {
                       </Button>
                       
                       {mints.length === 0 && (
-                        <Button 
-                          variant="destructive" 
-                          size="lg"
-                          onClick={async () => {
-                            if (!confirm(`Are you sure you want to delete "${collection.name}"? This action cannot be undone.`)) {
-                              return;
-                            }
-                            
-                            try {
-                              const { data, error } = await supabase.functions.invoke('delete-collection', {
-                                body: {
-                                  collection_id: collection.id,
-                                  wallet_address: publicKey
-                                }
-                              });
-                              
-                              if (data?.success) {
-                                toast.success('Collection deleted successfully');
-                                navigate('/profile');
-                              } else {
-                                toast.error(data?.error || 'Failed to delete collection');
-                              }
-                            } catch (error) {
-                              toast.error('Failed to delete collection');
-                            }
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete Collection
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="destructive" 
+                              size="lg"
+                              disabled={deleting}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Collection
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={async () => {
+                                  const result = await deleteCollection(collection.id, collection.name);
+                                  if (result.success) {
+                                    navigate('/profile');
+                                  }
+                                }}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                disabled={deleting}
+                              >
+                                {deleting ? 'Deleting...' : 'Delete Collection'}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       )}
                     </>
                   )}
