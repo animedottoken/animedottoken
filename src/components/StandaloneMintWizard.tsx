@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -37,10 +39,14 @@ export const StandaloneMintWizard = () => {
     category: '',
     external_links: [],
     attributes: [],
-    collection_id: collectionId || undefined
+    collection_id: collectionId || undefined,
+    explicit_content: false,
+    list_after_mint: false,
+    initial_price: undefined
   });
   const [quantityInput, setQuantityInput] = useState(String((1)));
   const [royaltyInput, setRoyaltyInput] = useState(String((0)));
+  const [priceInput, setPriceInput] = useState('');
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { publicKey } = useSolanaWallet();
@@ -105,8 +111,14 @@ export const StandaloneMintWizard = () => {
         royalty_percentage: 0,
         category: '',
         external_links: [],
-        attributes: []
+        attributes: [],
+        explicit_content: false,
+        list_after_mint: false,
+        initial_price: undefined
       });
+      setQuantityInput('1');
+      setRoyaltyInput('0');
+      setPriceInput('');
       setCurrentStep(1);
     }
   };
@@ -163,6 +175,12 @@ export const StandaloneMintWizard = () => {
                   {selectedCollection.description && (
                     <p className="text-sm text-muted-foreground mt-1">{selectedCollection.description}</p>
                   )}
+                  <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                    {selectedCollection.mint_price > 0 && (
+                      <span>Collection mint price: {selectedCollection.mint_price} SOL</span>
+                    )}
+                    <span>Available: {selectedCollection.items_available}/{selectedCollection.max_supply}</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -366,6 +384,63 @@ export const StandaloneMintWizard = () => {
               </div>
             </div>
 
+            {/* Content & Listing Options */}
+            <div className="space-y-6 pt-4 border-t">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="explicit-content"
+                  checked={formData.explicit_content || false}
+                  onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                />
+                <Label htmlFor="explicit-content" className="text-base font-medium">
+                  Contains explicit or sensitive content
+                </Label>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="list-after-mint"
+                    checked={formData.list_after_mint || false}
+                    onCheckedChange={(checked) => setFormData({ ...formData, list_after_mint: !!checked })}
+                  />
+                  <Label htmlFor="list-after-mint" className="text-base font-medium">
+                    List for sale immediately after minting
+                  </Label>
+                </div>
+
+                {formData.list_after_mint && (
+                  <div className="ml-6 space-y-3">
+                    <Label htmlFor="price" className="text-base font-medium">
+                      Price (SOL) *
+                    </Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      min="0"
+                      step="0.001"
+                      placeholder="0.1"
+                      value={priceInput}
+                      onChange={(e) => setPriceInput(e.target.value)}
+                      onBlur={(e) => {
+                        const raw = e.target.value.trim();
+                        if (raw === '') {
+                          setFormData({ ...formData, initial_price: undefined });
+                          return;
+                        }
+                        const price = Math.max(0, parseFloat(raw) || 0);
+                        setPriceInput(String(price));
+                        setFormData({ ...formData, initial_price: price });
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Set the initial listing price for your NFT(s)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -415,6 +490,14 @@ export const StandaloneMintWizard = () => {
                   {formData.category && <div><strong>Category:</strong> {formData.category}</div>}
                   <div><strong>Quantity:</strong> {formData.quantity}</div>
                   <div><strong>Royalties:</strong> {formData.royalty_percentage}%</div>
+                  {formData.explicit_content && (
+                    <div className="text-amber-600"><strong>⚠️ Explicit Content:</strong> Yes</div>
+                  )}
+                  {formData.list_after_mint && (
+                    <div className="text-green-600">
+                      <strong>✓ List After Mint:</strong> {formData.initial_price} SOL
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

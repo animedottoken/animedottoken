@@ -119,8 +119,17 @@ export const validateStandaloneNFTData = (data: any, imageFile?: File | null): V
   }
 
   // Quantity validation
-  if (data.quantity && (data.quantity < 1 || data.quantity > 10)) {
-    errors.push({ field: 'quantity', message: 'Quantity must be between 1 and 10' });
+  if (data.quantity && (data.quantity < 1 || data.quantity > 1000)) {
+    errors.push({ field: 'quantity', message: 'Quantity must be between 1 and 1000' });
+  }
+
+  // Price validation (when listing after mint)
+  if (data.list_after_mint && data.initial_price !== undefined) {
+    if (data.initial_price < 0) {
+      errors.push({ field: 'initial_price', message: 'Price cannot be negative' });
+    } else if (data.initial_price > 1000000) {
+      errors.push({ field: 'initial_price', message: 'Price cannot exceed 1,000,000 SOL' });
+    }
   }
 
   // Royalty validation

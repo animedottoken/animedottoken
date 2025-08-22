@@ -14,6 +14,9 @@ export interface StandaloneNFTData {
   external_links?: { type: string; url: string }[];
   attributes?: { trait_type: string; value: string }[];
   collection_id?: string; // Optional: assign to existing collection
+  explicit_content?: boolean;
+  list_after_mint?: boolean;
+  initial_price?: number;
 }
 
 export const useStandaloneMint = () => {
@@ -153,10 +156,11 @@ export const useStandaloneMint = () => {
             minted_at: new Date().toISOString(),
             standalone: true,
             quantity_index: j + 1,
-            total_quantity: quantity
+            total_quantity: quantity,
+            explicit_content: nftData.explicit_content || false
           },
-          is_listed: false,
-          price: null
+          is_listed: nftData.list_after_mint || false,
+          price: nftData.list_after_mint ? nftData.initial_price : null
         });
       }
       nftBatches.push(batch);
