@@ -41,6 +41,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { validateImageFile, validateCollectionData, areRequiredFieldsValid, validateStandaloneNFTData } from '@/utils/validation';
 import { useStandaloneMint, type StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { supabase } from '@/integrations/supabase/client';
+import { EditMintPriceDialog, EditTreasuryWalletDialog, EditWhitelistDialog, EditDescriptionDialog } from '@/components/EditCollectionDialogs';
 interface UnifiedMintInterfaceProps {
   mode?: 'collection' | 'standalone';
 }
@@ -924,70 +925,26 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                            <div className="flex items-center justify-center gap-1 mb-1">
-                              <Edit2 className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                            </div>
-                            <div className="font-bold text-lg text-green-600">
-                              {((formData.mint_price ?? step3Collection?.mint_price) === 0)
-                                ? 'FREE'
-                                : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
-                            </div>
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
+                      <EditMintPriceDialog 
+                        currentPrice={formData.mint_price ?? step3Collection?.mint_price ?? 0}
+                        collectionId={step3Collection?.id}
+                        onSave={(newPrice) => {
+                          setFormData(prev => ({ ...prev, mint_price: newPrice }));
+                        }}
+                      >
+                        <div className="text-center p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Edit2 className="h-3 w-3 text-green-600" />
+                            <span className="text-xs text-green-600 font-medium">EDITABLE</span>
                           </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Mint Price</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Label htmlFor="edit-mint-price" className="required-field">Mint Price (SOL) *</Label>
-                            <Input
-                              id="edit-mint-price"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              defaultValue={formData.mint_price ?? step3Collection?.mint_price ?? 0}
-                              autoComplete="off"
-                              data-form-type="other"
-                              data-lpignore="true"
-                              data-1p-ignore
-                            />
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm"
-                                onClick={() => {
-                                  const input = document.getElementById('edit-mint-price') as HTMLInputElement;
-                                  const newPrice = parseFloat(input.value) || 0;
-                                  setFormData(prev => ({ ...prev, mint_price: newPrice }));
-                                  toast({ title: "Price updated", description: `Mint price set to ${newPrice} SOL` });
-                                  const dialog = input.closest('[role="dialog"]');
-                                  if (dialog) {
-                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                  }
-                                }}
-                              >
-                                Save
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  const dialog = document.getElementById('edit-mint-price')?.closest('[role="dialog"]');
-                                  if (dialog) {
-                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                  }
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
+                          <div className="font-bold text-lg text-green-600">
+                            {((formData.mint_price ?? step3Collection?.mint_price) === 0)
+                              ? 'FREE'
+                              : `${formData.mint_price ?? step3Collection?.mint_price ?? ''} SOL`}
                           </div>
-                        </DialogContent>
-                      </Dialog>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wide">Collection Mint Price</div>
+                        </div>
+                      </EditMintPriceDialog>
                     </TooltipTrigger>
                     <TooltipContent>Click to edit mint price</TooltipContent>
                   </Tooltip>
@@ -1040,63 +997,26 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
-                              <div className="flex items-center gap-1">
-                                <Edit2 className="h-3 w-3 text-green-600" />
-                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                              </div>
-                            </div>
-                            <div className="font-mono break-all text-sm">
-                              {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
-                            </div>
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Treasury Wallet</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Label htmlFor="edit-treasury" className="required-field">Treasury Wallet Address *</Label>
-                            <Input
-                              id="edit-treasury"
-                              defaultValue={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
-                            />
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm"
-                                onClick={() => {
-                                  const input = document.getElementById('edit-treasury') as HTMLInputElement;
-                                  const newWallet = input.value.trim();
-                                  setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
-                                  toast({ title: "Treasury updated", description: "Treasury wallet address updated" });
-                                  const dialog = input.closest('[role="dialog"]');
-                                  if (dialog) {
-                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                  }
-                                }}
-                              >
-                                Save
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  const dialog = document.getElementById('edit-treasury')?.closest('[role="dialog"]');
-                                  if (dialog) {
-                                    (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                  }
-                                }}
-                              >
-                                Cancel
-                              </Button>
+                      <EditTreasuryWalletDialog 
+                        currentWallet={formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || ''}
+                        collectionId={step3Collection?.id}
+                        onSave={(newWallet) => {
+                          setFormData(prev => ({ ...prev, treasury_wallet: newWallet }));
+                        }}
+                      >
+                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Treasury Wallet</div>
+                            <div className="flex items-center gap-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
                             </div>
                           </div>
-                        </DialogContent>
-                      </Dialog>
+                          <div className="font-mono break-all text-sm">
+                            {formData.treasury_wallet || publicKey || step3Collection?.treasury_wallet || '—'}
+                          </div>
+                        </div>
+                      </EditTreasuryWalletDialog>
                     </TooltipTrigger>
                     <TooltipContent>Click to edit treasury wallet</TooltipContent>
                   </Tooltip>
@@ -1106,69 +1026,26 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
-                              <div className="flex items-center gap-1">
-                                <Edit2 className="h-3 w-3 text-green-600" />
-                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                              </div>
-                            </div>
-                            <div className="text-sm font-semibold">
-                              {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
-                            </div>
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Whitelist Setting</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Label htmlFor="edit-whitelist" className="required-field">Enable Whitelist *</Label>
-                            <div className="flex items-center justify-between">
-                              <Switch
-                                id="edit-whitelist"
-                                defaultChecked={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
-                                onCheckedChange={(checked) => {
-                                  // Store the temporary value
-                                  (document.getElementById('edit-whitelist') as any).__tempValue = checked;
-                                }}
-                              />
-                              <div className="flex gap-2 ml-4">
-                                <Button 
-                                  size="sm"
-                                  onClick={() => {
-                                    const switchEl = document.getElementById('edit-whitelist') as any;
-                                    const checked = switchEl.__tempValue !== undefined ? switchEl.__tempValue : (switchEl.getAttribute('data-state') === 'checked');
-                                    setFormData(prev => ({ ...prev, whitelist_enabled: checked }));
-                                    toast({ title: "Whitelist updated", description: `Whitelist ${checked ? 'enabled' : 'disabled'}` });
-                                    const dialog = switchEl.closest('[role="dialog"]');
-                                    if (dialog) {
-                                      (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                    }
-                                  }}
-                                >
-                                  Save
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => {
-                                    const dialog = document.getElementById('edit-whitelist')?.closest('[role="dialog"]');
-                                    if (dialog) {
-                                      (dialog.querySelector('button[aria-label="Close"]') as HTMLElement)?.click();
-                                    }
-                                  }}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
+                      <EditWhitelistDialog 
+                        currentEnabled={formData.whitelist_enabled ?? step3Collection?.whitelist_enabled ?? false}
+                        collectionId={step3Collection?.id}
+                        onSave={(enabled) => {
+                          setFormData(prev => ({ ...prev, whitelist_enabled: enabled }));
+                        }}
+                      >
+                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection Whitelist</div>
+                            <div className="flex items-center gap-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
                             </div>
                           </div>
-                        </DialogContent>
-                      </Dialog>
+                          <div className="text-sm font-semibold">
+                            {(formData.whitelist_enabled ?? step3Collection?.whitelist_enabled) ? 'Enabled' : 'Disabled'}
+                          </div>
+                        </div>
+                      </EditWhitelistDialog>
                     </TooltipTrigger>
                     <TooltipContent>Click to edit whitelist setting</TooltipContent>
                   </Tooltip>
@@ -1178,44 +1055,26 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
-                              <div className="flex items-center gap-1">
-                                <Edit2 className="h-3 w-3 text-green-600" />
-                                <span className="text-xs text-green-600 font-medium">EDITABLE</span>
-                              </div>
-                            </div>
-                            <div className="text-sm line-clamp-2">
-                              {formData.onchain_description || step3Collection?.description || '—'}
+                      <EditDescriptionDialog 
+                        currentDescription={formData.onchain_description || step3Collection?.description || ''}
+                        collectionId={step3Collection?.id}
+                        onSave={(description) => {
+                          setFormData(prev => ({ ...prev, onchain_description: description }));
+                        }}
+                      >
+                        <div className="p-4 bg-background/50 rounded-lg border-2 border-green-200 dark:border-green-800 hover:bg-background/70 cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Collection On-chain Description</div>
+                            <div className="flex items-center gap-1">
+                              <Edit2 className="h-3 w-3 text-green-600" />
+                              <span className="text-xs text-green-600 font-medium">EDITABLE</span>
                             </div>
                           </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit On-chain Description</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Label htmlFor="edit-description">On-chain Description</Label>
-                            <Textarea
-                              id="edit-description"
-                              autoComplete="off"
-                              data-form-type="other"
-                              data-lpignore="true"
-                              data-1p-ignore
-                              defaultValue={formData.onchain_description || step3Collection?.description || ''}
-                              maxLength={200}
-                              onBlur={(e) => {
-                                const newDescription = e.target.value.trim();
-                                setFormData(prev => ({ ...prev, onchain_description: newDescription }));
-                                toast({ title: "Description updated", description: "On-chain description updated" });
-                              }}
-                            />
+                          <div className="text-sm line-clamp-2">
+                            {formData.onchain_description || step3Collection?.description || '—'}
                           </div>
-                        </DialogContent>
-                      </Dialog>
+                        </div>
+                      </EditDescriptionDialog>
                     </TooltipTrigger>
                     <TooltipContent>Click to edit on-chain description</TooltipContent>
                   </Tooltip>
@@ -1440,6 +1299,7 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                     collectionId={createdCollectionId} 
                     nftDetails={nftDetails}
                     embedded={true}
+                    key={`${createdCollectionId}-${JSON.stringify(formData)}`} // Force refresh when formData changes
                   />
                 )}
               </div>
