@@ -124,6 +124,11 @@ export const StandaloneMintWizard = () => {
               </SelectTrigger>
               <SelectContent className="z-50 bg-background shadow-md">
                 <SelectItem value="none">No Collection (Standalone NFT)</SelectItem>
+                <SelectItem value="create-new">
+                  <div className="flex items-center gap-2 text-primary font-medium">
+                    <span>+ Create a new collection</span>
+                  </div>
+                </SelectItem>
                 {collections?.map((collection) => (
                   <SelectItem key={collection.id} value={collection.id}>
                     <div className="flex items-center gap-2">
@@ -138,11 +143,6 @@ export const StandaloneMintWizard = () => {
                     </div>
                   </SelectItem>
                 ))}
-                <SelectItem value="create-new">
-                  <div className="flex items-center gap-2 text-primary font-medium">
-                    <span>+ Create a new collection</span>
-                  </div>
-                </SelectItem>
               </SelectContent>
             </Select>
             {selectedCollection && (
@@ -157,6 +157,9 @@ export const StandaloneMintWizard = () => {
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">Selected collection:</p>
                   <p className="font-medium">{selectedCollection.name}</p>
+                  {selectedCollection.description && (
+                    <p className="text-sm text-muted-foreground mt-1">{selectedCollection.description}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -166,31 +169,31 @@ export const StandaloneMintWizard = () => {
 
       {/* Progress Steps */}
       <div className="flex justify-center mb-8">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center">
           {STEPS.map((step, index) => {
-            const Icon = step.icon;
             const isActive = currentStep === step.number;
             const isCompleted = currentStep > step.number;
             
             return (
               <div key={step.number} className="flex items-center">
-                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                   isActive ? 'bg-primary text-primary-foreground' :
-                  isCompleted ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
+                  isCompleted ? 'bg-green-500 text-white' :
                   'bg-muted text-muted-foreground'
                 }`}>
-                  <Icon className="h-4 w-4" />
-                  <span className="font-medium">{step.title}</span>
-                  <Badge variant={isActive ? 'secondary' : 'outline'}>
-                    {step.number}
-                  </Badge>
+                  {step.number}
                 </div>
                 {index < STEPS.length - 1 && (
-                  <ArrowRight className="h-4 w-4 text-muted-foreground mx-2" />
+                  <div className={`w-12 h-0.5 mx-2 ${
+                    currentStep > step.number ? 'bg-green-500' : 'bg-muted'
+                  }`} />
                 )}
               </div>
             );
           })}
+        </div>
+        <div className="text-right ml-4">
+          <p className="text-sm text-muted-foreground">Step {currentStep} of {STEPS.length}</p>
         </div>
       </div>
 
