@@ -238,7 +238,7 @@ export default function Profile() {
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {collection.description || collection.site_description || 'No description'}
+                      {collection.description || 'No description'}
                     </p>
                     <div className="flex items-center justify-between text-sm">
                       <div>
