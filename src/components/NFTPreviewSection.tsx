@@ -49,7 +49,11 @@ export function NFTPreviewSection() {
               <Badge variant="secondary" className="mb-4">
                 🔥 Live Now
               </Badge>
-              <Link to="/mint" className="block">
+              <Link 
+                to="/mint" 
+                className="block"
+                onClick={() => setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100)}
+              >
                 <Button className="w-full group-hover:scale-105 transition-transform">
                   Start Creating
                   <ArrowRight className="ml-2 h-4 w-4" />

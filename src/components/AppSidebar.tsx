@@ -123,6 +123,8 @@ export function AppSidebar() {
   const handleNavigation = (item: typeof navigationItems[0]) => {
     if (item.type === "route") {
       navigate(item.path!);
+      // Scroll to top when navigating to a route
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     } else {
       // For sections, navigate to home first if not there
       if (location.pathname !== '/') {
