@@ -129,6 +129,17 @@ export function AppSidebar() {
       // For sections, navigate to home first if not there
       if (location.pathname !== '/') {
         navigate(`/#${item.hash}`);
+        // After navigation, attempt to scroll to the section
+        setTimeout(() => {
+          const element = document.getElementById(item.hash!) || document.querySelector(`.${item.hash!}`);
+          if (element) {
+            const headerOffset = 80;
+            const y = (element as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 150);
       } else {
         // Scroll to section if already on home with header offset
         const element = document.getElementById(item.hash!) || 
