@@ -96,7 +96,7 @@ const navigationItems = [
   { 
     title: "Create NFTs", 
     icon: Coins,
-    hash: "home-top",
+    hash: "create-nfts",
     type: "section" as const
   },
   { 
@@ -126,18 +126,6 @@ export function AppSidebar() {
       // Scroll to top when navigating to a route
       setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     } else {
-      // Special handling for "Create NFTs" - always scroll to absolute top
-      if (item.hash === "home-top") {
-        if (location.pathname !== '/') {
-          navigate('/');
-        }
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          history.replaceState(null, '', '/');
-        }, location.pathname !== '/' ? 150 : 50);
-        return;
-      }
-      
       // For sections, navigate to home first if not there
       if (location.pathname !== '/') {
         navigate(`/#${item.hash}`);

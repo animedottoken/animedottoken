@@ -155,17 +155,15 @@ const Index = () => {
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     if (hash) {
-      // Special handling for "Create NFTs" navigation
-      if (hash === "home-top") {
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          history.replaceState(null, '', '/');
-        }, 120);
-        return;
-      }
+      // Backward compatibility mapping
+      const hashMap: Record<string, string> = {
+        'nft-preview-section': 'create-nfts',
+        'home-top': 'create-nfts'
+      };
+      const targetHash = hashMap[hash] || hash;
       
       setTimeout(() => {
-        const el = document.getElementById(hash) || document.querySelector(`.${hash}`);
+        const el = document.getElementById(targetHash) || document.querySelector(`.${targetHash}`);
         if (el) {
           const headerOffset = 80;
           const y = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
