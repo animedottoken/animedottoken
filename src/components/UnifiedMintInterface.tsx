@@ -356,7 +356,7 @@ export const UnifiedMintInterface = () => {
               </div>
 
               {/* Content & Listing Options */}
-              <div className="space-y-4 pt-4 border-t">
+              <div className="space-y-6 pt-4 border-t">
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="explicit_content"
@@ -368,15 +368,37 @@ export const UnifiedMintInterface = () => {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="enable_primary_sales"
-                    checked={formData.enable_primary_sales}
-                    onCheckedChange={(checked) => setFormData({ ...formData, enable_primary_sales: checked })}
-                  />
-                  <Label htmlFor="enable_primary_sales" className="text-base font-medium">
-                    Enable primary sales (list NFTs for sale immediately after minting)
-                  </Label>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="enable_primary_sales"
+                      checked={formData.enable_primary_sales}
+                      onCheckedChange={(checked) => setFormData({ ...formData, enable_primary_sales: checked })}
+                    />
+                    <Label htmlFor="enable_primary_sales" className="text-base font-medium">
+                      List for sale immediately after minting
+                    </Label>
+                  </div>
+
+                  {formData.enable_primary_sales && (
+                    <div className="ml-6 space-y-3">
+                      <Label htmlFor="mint_price_input" className="text-base font-medium">
+                        Price (SOL) *
+                      </Label>
+                      <Input
+                        id="mint_price_input"
+                        type="number"
+                        min="0"
+                        step="0.001"
+                        placeholder="0.1"
+                        value={formData.mint_price}
+                        onChange={(e) => setFormData({ ...formData, mint_price: parseFloat(e.target.value) || 0 })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Set the initial listing price for NFTs from this collection
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

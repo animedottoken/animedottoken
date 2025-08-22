@@ -34,17 +34,54 @@ export const useUserNFTs = () => {
     setError(null);
 
     try {
-      // For now, return empty array since nfts table may not exist yet
-      // This will be populated when NFT minting is fully implemented
-      setNfts([]);
-      
-      // TODO: Replace with actual NFT query when database schema is ready
-      // const { data, error: queryError } = await supabase
-      //   .from('user_nfts')
-      //   .select('*')
-      //   .eq('owner_address', publicKey)
-      //   .order('created_at', { ascending: false });
-      
+      // Query for NFTs owned by the user
+      const { data, error: queryError } = await supabase
+        .from('nfts')
+        .select(`
+          id,
+          name,
+          symbol,
+          description,
+          image_url,
+          mint_address,
+          collection_id,
+          owner_address,
+          attributes,
+          created_at,
+          updated_at,
+          collections (
+            name
+          )
+        `)
+        .eq('owner_address', publicKey)
+        .order('created_at', { ascending: false });
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      // Transform the data to include collection name
+      const transformedNFTs: UserNFT[] = (data || []).map(nft => {
+        // Handle the case where nft might have joined collections data
+        const collectionName = (nft as any).collections?.name || undefined;
+        
+        return {
+          id: nft.id,
+          name: nft.name,
+          symbol: nft.symbol,
+          description: nft.description,
+          image_url: nft.image_url,
+          mint_address: nft.mint_address,
+          collection_id: nft.collection_id,
+          owner_address: nft.owner_address,
+          metadata: nft.attributes,
+          created_at: nft.created_at,
+          updated_at: nft.updated_at,
+          collection_name: collectionName
+        };
+      });
+
+      setNfts(transformedNFTs);
     } catch (err) {
       console.error('Error fetching user NFTs:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch NFTs';
