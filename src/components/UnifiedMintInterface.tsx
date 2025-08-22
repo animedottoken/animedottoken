@@ -47,7 +47,7 @@ interface UnifiedMintInterfaceProps {
 
 export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) => {
   const { connected, publicKey } = useSolanaWallet();
-  const { creating, createCollection } = useCollections();
+  const { creating, createCollection } = useCollections({ autoLoad: false, suppressErrors: true });
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { toast } = useToast();
   
@@ -261,7 +261,6 @@ export const UnifiedMintInterface = ({ mode }: UnifiedMintInterfaceProps = {}) =
                   <div className="ml-3 text-sm">
                     <div className={`font-bold ${isActive ? 'text-primary text-lg' : 'text-muted-foreground'}`}>
                       Step {stepNumber}
-                      {isActive && <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">CURRENT</span>}
                     </div>
                     <div className={`text-xs ${isActive ? 'text-foreground font-medium' : 'text-muted-foreground/70'}`}>
                       {stepNames[i]}

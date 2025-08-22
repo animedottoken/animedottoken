@@ -52,7 +52,8 @@ export interface CreateCollectionData {
   go_live_date?: string;
 }
 
-export const useCollections = () => {
+export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: boolean } = {}) => {
+  const { autoLoad = true, suppressErrors = false } = options;
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -72,14 +73,18 @@ export const useCollections = () => {
 
       if (error) {
         console.error('Error loading collections:', error);
-        toast.error('Failed to load collections');
+        if (!suppressErrors) {
+          toast.error('Failed to load collections');
+        }
         return;
       }
 
       setCollections((data || []) as Collection[]);
     } catch (error) {
       console.error('Unexpected error loading collections:', error);
-      toast.error('Failed to load collections');
+      if (!suppressErrors) {
+        toast.error('Failed to load collections');
+      }
     } finally {
       setLoading(false);
     }
@@ -224,12 +229,12 @@ export const useCollections = () => {
 
   // Load collections on wallet connection
   useEffect(() => {
-    if (publicKey) {
+    if (publicKey && autoLoad) {
       loadCollections();
     } else {
       setCollections([]);
     }
-  }, [publicKey, loadCollections]);
+  }, [publicKey, loadCollections, autoLoad]);
 
   return {
     collections,
