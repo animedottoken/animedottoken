@@ -254,7 +254,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                 <div className="space-y-3">
                   <Slider
                     value={[formData.royalty_percentage]}
-                    max={20}
+                    max={50}
                     step={0.01}
                     onValueChange={(value) => setFormData({...formData, royalty_percentage: value[0]})}
                     className="w-full"
@@ -263,12 +263,12 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                     <Input
                       type="number"
                       min="0"
-                      max="20"
+                      max="50"
                       step="0.01"
                       value={formData.royalty_percentage.toFixed(2)}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value) || 0;
-                        const clamped = Math.max(0, Math.min(20, value));
+                        const clamped = Math.max(0, Math.min(50, value));
                         setFormData({...formData, royalty_percentage: clamped});
                       }}
                       className="w-20 text-center"
@@ -277,7 +277,7 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  0-20% on secondary sales
+                  0-50% on secondary sales
                 </p>
               </div>
             </div>

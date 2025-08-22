@@ -45,6 +45,7 @@ export const UnifiedMintInterface = () => {
   const { publicKey } = useSolanaWallet();
 
   // Step indicator component
+  const TOTAL_STEPS = 3;
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
       <div className="flex items-center space-x-4">
@@ -73,7 +74,7 @@ export const UnifiedMintInterface = () => {
         ))}
       </div>
       <div className="ml-6 text-sm text-muted-foreground">
-        Step {activeStep} of 3
+        Step {activeStep} of {TOTAL_STEPS}
       </div>
     </div>
   );
@@ -148,7 +149,7 @@ export const UnifiedMintInterface = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <StepIndicator />
+      {activeStep <= TOTAL_STEPS && <StepIndicator />}
       
       {activeStep === 1 && (
           <Card className="max-w-2xl mx-auto">
@@ -437,7 +438,7 @@ export const UnifiedMintInterface = () => {
                 <div className="space-y-3">
                   <Slider
                     value={[formData.royalty_percentage]}
-                    max={20}
+                    max={50}
                     step={0.01}
                     onValueChange={(value) => setFormData({ ...formData, royalty_percentage: value[0] })}
                     className="w-full"
@@ -446,12 +447,12 @@ export const UnifiedMintInterface = () => {
                     <Input
                       type="number"
                       min="0"
-                      max="20"
+                      max="50"
                       step="0.01"
                       value={formData.royalty_percentage.toFixed(2)}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value) || 0;
-                        const clamped = Math.max(0, Math.min(20, value));
+                        const clamped = Math.max(0, Math.min(50, value));
                         setFormData({ ...formData, royalty_percentage: clamped });
                       }}
                       className="w-20 text-center"
@@ -460,7 +461,7 @@ export const UnifiedMintInterface = () => {
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Percentage of royalties on secondary sales (0-20%)
+                  Percentage of royalties on secondary sales (0-50%)
                 </div>
               </div>
 
@@ -506,7 +507,7 @@ export const UnifiedMintInterface = () => {
       )}
 
       {activeStep === 3 && (
-          <Card className="max-w-2xl mx-auto">
+          <Card className="max-w-4xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-6 w-6 text-green-500" />
@@ -516,57 +517,101 @@ export const UnifiedMintInterface = () => {
                 Please review the details of your collection before submitting.
               </p>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Collection Name</Label>
-                <div className="text-sm">{formData.name}</div>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Collection Details */}
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-base font-medium">Collection Name</Label>
+                      <div className="text-lg font-semibold">{formData.name}</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-base font-medium">Symbol</Label>
+                      <div className="text-sm text-muted-foreground">{formData.symbol}</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-base font-medium">Category</Label>
+                      <div className="text-sm">{formData.category}</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-base font-medium">Description (Website)</Label>
+                      <div className="text-sm text-muted-foreground leading-relaxed">{formData.site_description}</div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-base font-medium">Description (On-Chain)</Label>
+                      <div className="text-sm text-muted-foreground leading-relaxed">{formData.onchain_description}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Right Column - Settings & Images */}
+                <div className="space-y-6">
+                  {/* Collection Images */}
+                  <div className="space-y-4">
+                    {formData.image_file && (
+                      <div>
+                        <Label className="text-base font-medium">Collection Avatar</Label>
+                        <img 
+                          src={URL.createObjectURL(formData.image_file)} 
+                          alt="Collection avatar preview"
+                          className="w-20 h-20 rounded-lg object-cover mt-2"
+                        />
+                      </div>
+                    )}
+                    
+                    {formData.banner_file && (
+                      <div>
+                        <Label className="text-base font-medium">Collection Banner</Label>
+                        <img 
+                          src={URL.createObjectURL(formData.banner_file)} 
+                          alt="Collection banner preview"
+                          className="w-full h-20 rounded-lg object-cover mt-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Key Settings Grid */}
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Mint Price</Label>
+                      <div className="font-semibold">{formData.mint_price} SOL</div>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Royalties</Label>
+                      <div className="font-semibold">{formData.royalty_percentage.toFixed(2)}%</div>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Supply</Label>
+                      <div className="font-semibold">
+                        {formData.supply_mode === 'open' ? '∞ Open' : `${formData.max_supply} Max`}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Whitelist</Label>
+                      <div className="font-semibold">{formData.whitelist_enabled ? 'Enabled' : 'Disabled'}</div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-base font-medium">Treasury Wallet</Label>
+                    <div className="text-xs font-mono bg-muted/50 p-2 rounded mt-1">
+                      {formData.treasury_wallet || publicKey}
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Symbol</Label>
-                <div className="text-sm">{formData.symbol}</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Description (Website)</Label>
-                <div className="text-sm">{formData.site_description}</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Description (On-Chain)</Label>
-                <div className="text-sm">{formData.onchain_description}</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Category</Label>
-                <div className="text-sm">{formData.category}</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Mint Price</Label>
-                <div className="text-sm">{formData.mint_price} SOL</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Royalties</Label>
-                <div className="text-sm">{formData.royalty_percentage}%</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Treasury Wallet</Label>
-                <div className="text-sm">{formData.treasury_wallet}</div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Whitelist Enabled</Label>
-                <div className="text-sm">{formData.whitelist_enabled ? 'Yes' : 'No'}</div>
-              </div>
-
-              <div className="flex justify-between pt-6">
+              
+              <div className="flex justify-between pt-8 border-t mt-8">
                 <Button variant="outline" onClick={() => setActiveStep(2)}>
                   Back
                 </Button>
-                <Button onClick={handleSubmit}>
+                <Button onClick={handleSubmit} size="lg">
                   Create Collection
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -635,7 +680,7 @@ export const UnifiedMintInterface = () => {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Next Steps</CardTitle>
+                  <CardTitle>Next Step</CardTitle>
                   <CardDescription>What would you like to do next?</CardDescription>
                 </CardHeader>
                 <CardContent>
