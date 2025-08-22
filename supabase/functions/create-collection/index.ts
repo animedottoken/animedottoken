@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -17,6 +18,7 @@ interface CreateCollectionRequest {
   external_links?: any[] | null;
   category?: string | null;
   explicit_content?: boolean;
+  supply_mode?: string;
   enable_primary_sales?: boolean;
   mint_price?: number | null;
   max_supply?: number | null;
@@ -24,6 +26,8 @@ interface CreateCollectionRequest {
   treasury_wallet?: string | null;
   whitelist_enabled?: boolean;
   go_live_date?: string | null;
+  mint_end_at?: string | null;
+  locked_fields?: string[];
   creator_address: string; // wallet address
 }
 
@@ -41,23 +45,21 @@ serve(async (req) => {
     const body: CreateCollectionRequest = await req.json();
     console.log('Create-collection request body:', body);
 
-    // Normalize and apply defaults BEFORE validation
-    const maxSupply = body.max_supply != null && Number(body.max_supply) > 0
-      ? Number(body.max_supply)
-      : 1000;
-    const mintPrice = body.mint_price != null && Number(body.mint_price) >= 0
-      ? Number(body.mint_price)
-      : 0;
-    const royalty = body.royalty_percentage != null && Number(body.royalty_percentage) >= 0
-      ? Number(body.royalty_percentage)
-      : 0;
-
     if (!body || !body.name || !body.creator_address) {
       return new Response(
         JSON.stringify({ error: "Missing required fields: name, creator_address" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Handle supply mode
+    const supplyMode = body.supply_mode || 'fixed';
+    const maxSupply = supplyMode === 'open' ? 0 : (body.max_supply != null && Number(body.max_supply) > 0 ? Number(body.max_supply) : 1000);
+    const itemsAvailable = supplyMode === 'open' ? 0 : maxSupply;
+
+    // Normalize other values
+    const mintPrice = body.mint_price != null && Number(body.mint_price) >= 0 ? Number(body.mint_price) : 0;
+    const royalty = body.royalty_percentage != null && Number(body.royalty_percentage) >= 0 ? Number(body.royalty_percentage) : 0;
 
     // Basic validations
     if (body.name.trim().length < 3 || body.name.trim().length > 32) {
@@ -75,10 +77,18 @@ serve(async (req) => {
       );
     }
 
+    // Supply mode validations
+    if (!['fixed', 'open'].includes(supplyMode)) {
+      return new Response(
+        JSON.stringify({ error: "Supply mode must be 'fixed' or 'open'" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (body.enable_primary_sales) {
-      if (!maxSupply || maxSupply < 1 || maxSupply > 100000) {
+      if (supplyMode === 'fixed' && (!maxSupply || maxSupply < 1 || maxSupply > 100000)) {
         return new Response(
-          JSON.stringify({ error: "Max supply must be between 1 and 100000 when primary sales are enabled" }),
+          JSON.stringify({ error: "Max supply must be between 1 and 100000 when primary sales are enabled with fixed supply" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -99,25 +109,27 @@ serve(async (req) => {
     const insertData: any = {
       id: body.id,
       name: body.name,
-      symbol: body.symbol && body.symbol.trim() ? body.symbol : null, // optional
+      symbol: body.symbol && body.symbol.trim() ? body.symbol : null,
       description: body.site_description || null,
       site_description: body.site_description || null,
       onchain_description: body.onchain_description || null,
       image_url: body.image_url || null,
       banner_image_url: body.banner_image_url || null,
       creator_address: body.creator_address,
-      treasury_wallet: body.treasury_wallet || body.creator_address, // ALWAYS set (NOT NULL)
+      treasury_wallet: body.treasury_wallet || body.creator_address,
       external_links: body.external_links || [],
       category: body.category || null,
       explicit_content: body.explicit_content ?? false,
-      // Always satisfy NOT NULL + CHECK constraints
-      max_supply: maxSupply ?? 1000,
-      items_available: maxSupply ?? 1000,
+      supply_mode: supplyMode,
+      max_supply: maxSupply,
+      items_available: itemsAvailable,
       items_redeemed: 0,
-      mint_price: mintPrice ?? 0,
-      royalty_percentage: royalty ?? 0,
+      mint_price: mintPrice,
+      royalty_percentage: royalty,
       whitelist_enabled: body.whitelist_enabled ?? false,
       go_live_date: body.go_live_date || null,
+      mint_end_at: body.mint_end_at || null,
+      locked_fields: body.locked_fields || [],
       is_active: true,
       is_live: true,
       verified: false,

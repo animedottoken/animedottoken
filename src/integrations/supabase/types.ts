@@ -74,13 +74,16 @@ export type Database = {
           is_live: boolean
           items_available: number
           items_redeemed: number
+          locked_fields: Json
           max_supply: number
+          mint_end_at: string | null
           mint_price: number
           name: string
           onchain_description: string | null
           royalty_percentage: number
           site_description: string | null
           slug: string | null
+          supply_mode: string
           symbol: string | null
           treasury_wallet: string
           updated_at: string
@@ -104,13 +107,16 @@ export type Database = {
           is_live?: boolean
           items_available?: number
           items_redeemed?: number
+          locked_fields?: Json
           max_supply?: number
+          mint_end_at?: string | null
           mint_price?: number
           name: string
           onchain_description?: string | null
           royalty_percentage?: number
           site_description?: string | null
           slug?: string | null
+          supply_mode?: string
           symbol?: string | null
           treasury_wallet: string
           updated_at?: string
@@ -134,13 +140,16 @@ export type Database = {
           is_live?: boolean
           items_available?: number
           items_redeemed?: number
+          locked_fields?: Json
           max_supply?: number
+          mint_end_at?: string | null
           mint_price?: number
           name?: string
           onchain_description?: string | null
           royalty_percentage?: number
           site_description?: string | null
           slug?: string | null
+          supply_mode?: string
           symbol?: string | null
           treasury_wallet?: string
           updated_at?: string

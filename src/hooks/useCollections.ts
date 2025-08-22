@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -30,19 +31,22 @@ export interface Collection {
   verified?: boolean;
   category?: string;
   explicit_content?: boolean;
+  supply_mode?: string;
+  locked_fields?: string[];
+  mint_end_at?: string | null;
 }
 
 export interface CreateCollectionData {
   name: string;
   symbol?: string;
-  site_description?: string;  // For marketplace display (up to 2000 chars)
-  onchain_description?: string;  // For on-chain metadata (up to 200 chars)
+  site_description?: string;
+  onchain_description?: string;
   image_file?: File;
   banner_file?: File;
   external_links?: { type: string; url: string }[];
   category?: string;
   explicit_content?: boolean;
-  // Advanced settings (for primary sales)
+  supply_mode?: string;
   enable_primary_sales?: boolean;
   mint_price?: number;
   max_supply?: number;
@@ -50,6 +54,8 @@ export interface CreateCollectionData {
   treasury_wallet?: string;
   whitelist_enabled?: boolean;
   go_live_date?: string;
+  mint_end_at?: string;
+  locked_fields?: string[];
 }
 
 export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: boolean } = {}) => {
@@ -155,7 +161,11 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
         }
       }
 
-      // Call secure edge function to create collection (bypasses RLS with service role)
+      // Handle supply mode logic
+      const supplyMode = collectionData.supply_mode || 'fixed';
+      const maxSupply = supplyMode === 'open' ? 0 : (collectionData.max_supply || 1000);
+
+      // Call secure edge function to create collection
       const { data, error } = await supabase.functions.invoke('create-collection', {
         body: {
           id: collectionId,
@@ -169,14 +179,17 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
           external_links: collectionData.external_links || [],
           category: collectionData.category || null,
           explicit_content: collectionData.explicit_content || false,
+          supply_mode: supplyMode,
           enable_primary_sales: collectionData.enable_primary_sales ?? false,
           mint_price: collectionData.mint_price ?? 0,
-          max_supply: collectionData.max_supply ?? 0,
+          max_supply: maxSupply,
           royalty_percentage: collectionData.royalty_percentage ?? 0,
           treasury_wallet: collectionData.treasury_wallet || publicKey,
           whitelist_enabled: collectionData.whitelist_enabled ?? false,
-          is_live: false, // Default to Draft status - can be changed later from Profile
+          is_live: false,
           go_live_date: collectionData.go_live_date || null,
+          mint_end_at: collectionData.mint_end_at || null,
+          locked_fields: collectionData.locked_fields || [],
         }
       });
 
@@ -187,7 +200,6 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
         return { success: false, error: errorMessage };
       }
 
-      // Refresh collections (may be empty due to RLS, but we continue)
       await loadCollections();
 
       toast.success(`Collection "${collectionData.name}" created successfully!`);
@@ -228,6 +240,39 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
     }
   };
 
+  // Update collection with field locking and supply mode
+  const updateCollection = async (collectionId: string, updates: Partial<CreateCollectionData & { locked_fields: string[] }>) => {
+    try {
+      // Use edge function for secure updates
+      const { data, error } = await supabase.functions.invoke('update-collection', {
+        body: {
+          collection_id: collectionId,
+          updates: {
+            ...updates,
+            // Handle supply mode changes
+            max_supply: updates.supply_mode === 'open' ? 0 : updates.max_supply,
+          }
+        }
+      });
+
+      if (error || !data?.success) {
+        console.error('Error updating collection:', error || data);
+        const errorMessage = data?.error || error?.message || 'Failed to update collection';
+        toast.error(errorMessage);
+        return { success: false, error: errorMessage };
+      }
+
+      await loadCollections();
+      toast.success('Collection updated successfully!');
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating collection:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update collection';
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
   // Load collections on wallet connection
   useEffect(() => {
     if (publicKey && autoLoad) {
@@ -243,6 +288,7 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
     creating,
     createCollection,
     updateCollectionStatus,
+    updateCollection,
     refreshCollections: loadCollections
   };
 };
