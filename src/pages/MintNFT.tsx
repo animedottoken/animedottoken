@@ -22,7 +22,7 @@ export default function MintNFT() {
           </div>
 
           <div className="flex justify-center">
-            <UnifiedMintInterface mode="standalone" />
+            <UnifiedMintInterface />
           </div>
         </div>
       </main>

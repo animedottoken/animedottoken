@@ -274,8 +274,8 @@ export default function CollectionDetail() {
           {/* Collection Editor */}
           <div className="mb-8">
             <CollectionEditor 
-              collection={collection as any} 
-              onUpdate={handleCollectionUpdate}
+              collection={collection as any}
+              onClose={() => {}}
             />
           </div>
 

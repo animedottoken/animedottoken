@@ -11,6 +11,20 @@ import { Lock, Unlock, Info, Infinity } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collection } from '@/hooks/useCollections';
 
+interface FieldRule {
+  label: string;
+  type: string;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  canEdit: () => boolean;
+  badge: string;
+  help?: string;
+  hidden?: () => boolean;
+  options?: string[] | { value: string; label: string }[];
+}
+
 interface FlexibleFieldEditorProps {
   collection: Collection;
   onUpdate: (updates: any) => Promise<void>;
@@ -26,7 +40,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   const hasMintedNFTs = itemsRedeemed > 0;
 
   // Define field rules
-  const fieldRules = {
+  const fieldRules: Record<string, FieldRule> = {
     // Always editable
     name: { 
       label: 'Collection Name', 
@@ -129,7 +143,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   };
 
   const isFieldLocked = (fieldName: string) => {
-    const rule = fieldRules[fieldName as keyof typeof fieldRules];
+    const rule = fieldRules[fieldName];
     if (!rule) return true;
     
     const creatorLocked = lockedFields.includes(fieldName);
@@ -139,7 +153,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   };
 
   const getFieldBadge = (fieldName: string) => {
-    const rule = fieldRules[fieldName as keyof typeof fieldRules];
+    const rule = fieldRules[fieldName];
     if (!rule) return null;
     
     const creatorLocked = lockedFields.includes(fieldName);
@@ -182,7 +196,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   };
 
   const renderField = (fieldName: string) => {
-    const rule = fieldRules[fieldName as keyof typeof fieldRules];
+    const rule = fieldRules[fieldName];
     if (!rule || rule.hidden?.()) return null;
 
     const value = collection[fieldName as keyof Collection];

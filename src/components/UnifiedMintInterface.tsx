@@ -8,11 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from "@/components/ui/slider"
-import { FileInput } from "@/components/ui/file-input"
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { ArrowRight, CheckCircle, Palette, Users, Infinity } from 'lucide-react';
+import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface FormData {
@@ -352,8 +351,13 @@ export const UnifiedMintInterface = () => {
                 <Label htmlFor="image_file" className="text-base font-medium">
                   Collection Avatar
                 </Label>
-                <FileInput
-                  onChange={(file) => setFormData({ ...formData, image_file: file })}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setFormData({ ...formData, image_file: file });
+                  }}
                 />
                 <div className="text-xs text-muted-foreground">
                   Upload a logo for your collection
@@ -364,8 +368,13 @@ export const UnifiedMintInterface = () => {
                 <Label htmlFor="banner_file" className="text-base font-medium">
                   Collection Banner
                 </Label>
-                <FileInput
-                  onChange={(file) => setFormData({ ...formData, banner_file: file })}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setFormData({ ...formData, banner_file: file });
+                  }}
                 />
                 <div className="text-xs text-muted-foreground">
                   Upload a banner image for your collection
@@ -513,7 +522,7 @@ export const UnifiedMintInterface = () => {
                 </Button>
               </div>
             </CardContent>
-          </div>
+          </Card>
         )}
 
         {activeStep === 4 && (

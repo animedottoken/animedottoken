@@ -13,7 +13,7 @@ export default function MintCollection() {
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="flex justify-center">
-            <UnifiedMintInterface mode="collection" />
+            <UnifiedMintInterface />
           </div>
         </div>
       </main>
