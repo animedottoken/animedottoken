@@ -259,7 +259,17 @@ export const CollectionCreator = ({ onCollectionCreated }: CollectionCreatorProp
                   min="1"
                   max="100000"
                   value={formData.max_supply}
-                  onChange={(e) => setFormData({...formData, max_supply: parseInt(e.target.value) || 1})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setFormData({...formData, max_supply: 0});
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue)) {
+                        setFormData({...formData, max_supply: numValue});
+                      }
+                    }
+                  }}
                   placeholder="1000"
                   required
                 />
