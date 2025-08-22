@@ -315,7 +315,7 @@ export const StandaloneMintWizard = () => {
                   id="quantity"
                   type="number"
                   min="1"
-                  max="100"
+                  max="1000"
                   value={quantityInput}
                   onChange={(e) => setQuantityInput(e.target.value)}
                   onBlur={(e) => {
@@ -324,11 +324,19 @@ export const StandaloneMintWizard = () => {
                       setFormData({ ...formData, quantity: undefined });
                       return;
                     }
-                    const n = Math.max(1, Math.min(100, parseInt(val, 10) || 1));
+                    const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
                     setQuantityInput(String(n));
                     setFormData({ ...formData, quantity: n });
                   }}
                 />
+                <p className="text-xs text-muted-foreground">
+                  {(formData.quantity || 1) > 100 
+                    ? selectedCollectionId 
+                      ? "Large quantities will be processed in the background"
+                      : "Large quantities will be processed in batches"
+                    : "Up to 1000 NFTs with automatic numbering (#1, #2, etc.)"
+                  }
+                </p>
               </div>
 
               <div className="space-y-3">
