@@ -321,22 +321,9 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                   </Button>
                 </div>
                 
-                {/* Max per job and Collection details in new row with smaller text */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                {/* Max per job info */}
+                <div className="text-sm text-muted-foreground">
                   <div>Max per job: {maxPerJob}</div>
-                  <div>Collection Max Supply: {collection.max_supply.toLocaleString()} • Remaining: {remainingSupply.toLocaleString()}</div>
-                </div>
-
-                {/* Minted progress - moved under quantity */}
-                <div className="space-y-2 pt-3 border-t">
-                  <div className="flex justify-between text-sm">
-                    <span>Minted</span>
-                    <span>{collection.items_redeemed.toLocaleString()} / {collection.max_supply.toLocaleString()}</span>
-                  </div>
-                  <Progress value={mintProgress} className="h-2" />
-                  <div className="text-xs text-muted-foreground text-center">
-                    {(100 - mintProgress).toFixed(1)}% remaining
-                  </div>
                 </div>
                 
                 {/* Total Cost */}
