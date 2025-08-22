@@ -695,7 +695,15 @@ export const UnifiedMintInterface = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <Button onClick={handleGoToProfile}>Go to Profile</Button>
+                    <Button 
+                      onClick={() => navigate(`/mint/nft?collection=${step3Collection?.id}`)}
+                      className="w-full"
+                    >
+                      🎨 Mint your NFT from this collection
+                    </Button>
+                    <Button variant="outline" onClick={handleGoToProfile} className="w-full">
+                      Go to Profile
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, ExternalLink } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useCollection } from '@/hooks/useCollection';
 import { toast } from 'sonner';
 
 const STEPS = [
@@ -18,6 +20,8 @@ const STEPS = [
 ];
 
 export const StandaloneMintWizard = () => {
+  const [searchParams] = useSearchParams();
+  const collectionId = searchParams.get('collection');
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<StandaloneNFTData>({
     name: '',
@@ -33,6 +37,7 @@ export const StandaloneMintWizard = () => {
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
   const { publicKey } = useSolanaWallet();
+  const { collection, loading: collectionLoading } = useCollection(collectionId || '');
 
   const handleNext = () => {
     if (currentStep === 1 && !formData.image_file) {
@@ -76,6 +81,35 @@ export const StandaloneMintWizard = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Collection Context Banner */}
+      {collectionId && collection && (
+        <Card className="mb-6 border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              {collection.image_url && (
+                <img 
+                  src={collection.image_url} 
+                  alt={collection.name}
+                  className="w-12 h-12 rounded-lg object-cover"
+                />
+              )}
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground">Minting NFT for collection:</p>
+                <h3 className="font-semibold">{collection.name}</h3>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = '/mint/collection'}
+              >
+                <ExternalLink className="h-4 w-4 mr-1" />
+                Change
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Progress Steps */}
       <div className="flex justify-center mb-8">
         <div className="flex items-center space-x-4">

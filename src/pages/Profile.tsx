@@ -202,7 +202,7 @@ export default function Profile() {
                           variant="secondary"
                           asChild
                         >
-                          <Link to={`/mint?collection=${collection.id}`}>
+                          <Link to={`/mint/nft?collection=${collection.id}`}>
                             <Plus className="h-4 w-4 mr-1" />
                             Mint
                           </Link>
