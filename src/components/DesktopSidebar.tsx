@@ -35,7 +35,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
-  { type: "section", title: "Create NFTs", icon: Coins, hash: "nft-preview-section" },
+  { type: "section", title: "Create NFTs", icon: Coins, hash: "home-top" },
   { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote-section" },
 ];
 
@@ -70,6 +70,18 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
       navigate(item.path);
       setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     } else {
+      // Special handling for "Create NFTs" - always scroll to absolute top
+      if (item.hash === "home-top") {
+        if (location.pathname !== "/") {
+          navigate("/");
+        }
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          history.replaceState(null, '', '/');
+        }, location.pathname !== "/" ? 150 : 50);
+        return;
+      }
+      
       // Section navigation: navigate to home with hash if not on home
       if (location.pathname !== "/") {
         navigate(`/#${item.hash}`);

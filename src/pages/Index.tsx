@@ -155,6 +155,15 @@ const Index = () => {
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     if (hash) {
+      // Special handling for "Create NFTs" navigation
+      if (hash === "home-top") {
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          history.replaceState(null, '', '/');
+        }, 120);
+        return;
+      }
+      
       setTimeout(() => {
         const el = document.getElementById(hash) || document.querySelector(`.${hash}`);
         if (el) {
