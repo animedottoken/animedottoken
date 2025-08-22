@@ -16,6 +16,7 @@ import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
 import { useCollections } from '@/hooks/useCollections';
 import { toast } from 'sonner';
+import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
@@ -424,6 +425,13 @@ export const StandaloneMintWizard = () => {
                 )}
               </div>
             </div>
+
+            {/* Properties Section */}
+            <PropertiesEditor
+              properties={formData.attributes || []}
+              onChange={(properties) => setFormData({ ...formData, attributes: properties })}
+              className="mt-6"
+            />
 
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleBack}>

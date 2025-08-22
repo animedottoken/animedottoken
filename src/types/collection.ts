@@ -3,6 +3,12 @@ import type { Database } from '@/integrations/supabase/types';
 // Use the Supabase-generated type as the base
 export type Collection = Database['public']['Tables']['collections']['Row'];
 
+export interface Property {
+  trait_type: string;
+  value: string;
+  display_type?: string;
+}
+
 // Create collection data interface for creation/updates
 export interface CreateCollectionData {
   name: string;
@@ -24,6 +30,7 @@ export interface CreateCollectionData {
   go_live_date?: string;
   mint_end_at?: string;
   locked_fields?: string[];
+  attributes?: Property[];
 }
 
 // Helper function to get the best available description

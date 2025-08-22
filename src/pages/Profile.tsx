@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus } from "lucide-react";
+import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
 import { getCollectionDescription } from "@/types/collection";
@@ -16,11 +16,14 @@ import { useMintQueue } from "@/hooks/useMintQueue";
 import { MintQueueStatus } from "@/components/MintQueueStatus";
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { useUserNFTs } from "@/hooks/useUserNFTs";
+import { useBurnNFT } from "@/hooks/useBurnNFT";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
   const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
   const { nfts, loading: nftsLoading, refreshNFTs } = useUserNFTs();
+  const { burning, burnNFT } = useBurnNFT();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -42,6 +45,14 @@ export default function Profile() {
     toast.info('Refreshing collections...');
     await refreshCollections();
     toast.success('Collections refreshed!');
+  };
+
+  const handleBurnNFT = async (nftId: string, mintAddress: string) => {
+    const result = await burnNFT(nftId, mintAddress);
+    if (result.success) {
+      // Refresh the NFTs list to remove the burned NFT
+      refreshNFTs();
+    }
   };
 
   if (!connected) {
@@ -331,6 +342,41 @@ export default function Profile() {
                         }
                       }}
                     />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="flex gap-2">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Burn
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure you want to burn this NFT?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action permanently destroys "{nft.name}" from the blockchain. 
+                                This cannot be undone and the NFT will be lost forever.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleBurnNFT(nft.id, nft.mint_address || '')}
+                                className="bg-red-600 hover:bg-red-700"
+                                disabled={burning}
+                              >
+                                {burning ? 'Burning...' : 'Burn NFT'}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
                   </div>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
@@ -350,6 +396,26 @@ export default function Profile() {
                       <div className="text-sm">
                         <span className="text-muted-foreground">Collection:</span>
                         <span className="ml-1 font-medium">{nft.collection_name}</span>
+                      </div>
+                    )}
+                    {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
+                      <div className="mt-2">
+                        <div className="text-xs text-muted-foreground mb-1">Properties:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {nft.metadata.slice(0, 3).map((attr: any, idx: number) => (
+                            <span
+                              key={idx}
+                              className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md"
+                            >
+                              {attr.trait_type}: {attr.value}
+                            </span>
+                          ))}
+                          {nft.metadata.length > 3 && (
+                            <span className="text-xs text-muted-foreground">
+                              +{nft.metadata.length - 3} more
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
                     <div className="mt-2 text-xs text-muted-foreground">

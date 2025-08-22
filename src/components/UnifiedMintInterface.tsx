@@ -14,6 +14,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 
 interface FormData {
   name: string;
@@ -35,6 +36,7 @@ interface FormData {
   go_live_date: string;
   mint_end_at: string; // Add mint end date
   locked_fields: string[]; // Add locked fields
+  attributes: Property[]; // Add properties for collections
 }
 
 export const UnifiedMintInterface = () => {
@@ -109,6 +111,7 @@ export const UnifiedMintInterface = () => {
     go_live_date: '',
     mint_end_at: '', // Add mint end date
     locked_fields: [], // Add locked fields
+    attributes: [], // Add properties for collections
   });
 
   const handleSubmit = async () => {
@@ -145,6 +148,7 @@ export const UnifiedMintInterface = () => {
       mint_end_at: formData.mint_end_at,
       supply_mode: formData.supply_mode,
       locked_fields: formData.locked_fields,
+      attributes: formData.attributes,
     });
 
     if (result.success && result.collection) {
@@ -401,6 +405,13 @@ export const UnifiedMintInterface = () => {
                   )}
                 </div>
               </div>
+
+              {/* Properties Section */}
+              <PropertiesEditor
+                properties={formData.attributes}
+                onChange={(properties) => setFormData({ ...formData, attributes: properties })}
+                className="mt-6"
+              />
 
               <div className="flex justify-between pt-6">
                 <Button variant="outline" onClick={() => setActiveStep(0)}>
