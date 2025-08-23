@@ -454,38 +454,86 @@ export const UnifiedMintInterface = () => {
                   </Popover>
                   
                    <div className="flex items-center gap-2">
-                     <Input
-                       id="mint_end_time"
-                       type="time"
-                       step={60}
-                       className="w-28"
-                       value={formData.mint_end_at ? new Date(formData.mint_end_at).toTimeString().slice(0,5) : ''}
-                       onChange={(e) => {
-                         const value = e.target.value; // HH:MM
-                         if (!value) {
-                           setFormData({ ...formData, mint_end_at_error: 'Please select a time' });
-                           return;
-                         }
-                         const [h, m] = value.split(':');
-                         // Use existing date if set, otherwise today
-                         const base = formData.mint_end_at ? new Date(formData.mint_end_at) : new Date();
-                         base.setHours(parseInt(h), parseInt(m), 0, 0);
+                     {/* Hours */}
+                     <Select
+                       value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getHours()).padStart(2, '0') : '23'}
+                       onValueChange={(hour) => {
+                         const date = formData.mint_end_at ? new Date(formData.mint_end_at) : new Date();
+                         const minutes = date.getMinutes() || 59;
+                         date.setHours(parseInt(hour), minutes, 0, 0);
+                         
+                         // Validate combined date+time with 1-hour buffer
                          const now = new Date();
                          const minEnd = new Date(now.getTime() + 60 * 60 * 1000);
-                         if (base <= minEnd) {
-                           setFormData({
-                             ...formData,
+                         if (date <= minEnd) {
+                           setFormData({ 
+                             ...formData, 
                              mint_end_at_error: 'End time must be at least 1 hour in the future'
                            });
                            return;
                          }
-                         setFormData({
-                           ...formData,
-                           mint_end_at: base.toISOString(),
-                           mint_end_at_error: undefined,
+                         
+                         setFormData({ 
+                           ...formData, 
+                           mint_end_at: date.toISOString(),
+                           mint_end_at_error: undefined
                          });
                        }}
-                     />
+                     >
+                       <SelectTrigger className="w-20">
+                         <SelectValue placeholder="HH" />
+                       </SelectTrigger>
+                       <SelectContent className="z-50 max-h-60">
+                         {Array.from({ length: 24 }).map((_, i) => {
+                           const v = String(i).padStart(2, '0');
+                           return (
+                             <SelectItem key={v} value={v}>{v}</SelectItem>
+                           );
+                         })}
+                       </SelectContent>
+                     </Select>
+ 
+                     <span className="text-muted-foreground">:</span>
+ 
+                     {/* Minutes */}
+                     <Select
+                       value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getMinutes()).padStart(2, '0') : '59'}
+                       onValueChange={(minute) => {
+                         const date = formData.mint_end_at ? new Date(formData.mint_end_at) : new Date();
+                         const hours = date.getHours() || 23;
+                         date.setHours(hours, parseInt(minute), 0, 0);
+                         
+                         // Validate combined date+time with 1-hour buffer
+                         const now = new Date();
+                         const minEnd = new Date(now.getTime() + 60 * 60 * 1000);
+                         if (date <= minEnd) {
+                           setFormData({ 
+                             ...formData, 
+                             mint_end_at_error: 'End time must be at least 1 hour in the future'
+                           });
+                           return;
+                         }
+                         
+                         setFormData({ 
+                           ...formData, 
+                           mint_end_at: date.toISOString(),
+                           mint_end_at_error: undefined
+                         });
+                       }}
+                     >
+                       <SelectTrigger className="w-20">
+                         <SelectValue placeholder="MM" />
+                       </SelectTrigger>
+                       <SelectContent className="z-50 max-h-60">
+                         {Array.from({ length: 60 }).map((_, i) => {
+                           const v = String(i).padStart(2, '0');
+                           return (
+                             <SelectItem key={v} value={v}>{v}</SelectItem>
+                           );
+                         })}
+                       </SelectContent>
+                     </Select>
+                     
                      <span className="text-xs text-muted-foreground ml-2">
                        {Intl.DateTimeFormat().resolvedOptions().timeZone}
                      </span>
