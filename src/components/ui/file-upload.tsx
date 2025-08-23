@@ -34,6 +34,15 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
       }
     }, [previewUrl])
 
+    // Handle currentFile changes to maintain preview across navigation
+    React.useEffect(() => {
+      if (currentFile && !preview) {
+        const objectUrl = URL.createObjectURL(currentFile)
+        setPreview(objectUrl)
+        return () => URL.revokeObjectURL(objectUrl)
+      }
+    }, [currentFile, preview])
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
       if (file) {

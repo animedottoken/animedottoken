@@ -252,7 +252,7 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-base font-medium">
-                  Collection Name <span className="text-destructive">*</span> <Badge variant="secondary">On-Chain</Badge>
+                  Collection Name <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <Input
                   id="name"
