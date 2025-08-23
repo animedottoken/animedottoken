@@ -3,10 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, X, Hash, Type, Palette, Calendar, AlertCircle, Info } from 'lucide-react';
+import { Plus, X, Hash, Type, Palette, Calendar, AlertCircle, Info, CalendarIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, parse } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export interface Property {
   trait_type: string;
@@ -187,7 +191,7 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Properties
+            Properties <span className="text-xs text-muted-foreground">(Optional)</span>
             <Tooltip>
               <TooltipTrigger>
                 <Info className="h-4 w-4 text-muted-foreground" />
@@ -196,6 +200,7 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                 <p>Properties help describe unique traits and enable filtering in marketplaces</p>
               </TooltipContent>
             </Tooltip>
+            <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-1 rounded">On-Chain</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Add traits and attributes that make your NFT unique
@@ -219,20 +224,46 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                 <div className="flex items-center gap-2 flex-1">
                   {getDisplayIcon(property.display_type)}
                   <div className="flex-1 grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder={getPlaceholder(property.display_type || 'text', false)}
-                      value={property.trait_type}
-                      onChange={(e) => updateProperty(index, 'trait_type', e.target.value)}
-                      className="text-sm"
-                    />
                      <Input
-                       type={getInputType(property.display_type || 'text')}
-                       placeholder={getPlaceholder(property.display_type || 'text', true)}
-                       value={property.value}
-                       onChange={(e) => updateProperty(index, 'value', e.target.value)}
+                       placeholder={getPlaceholder(property.display_type || 'text', false)}
+                       value={property.trait_type}
+                       onChange={(e) => updateProperty(index, 'trait_type', e.target.value)}
                        className="text-sm"
-                       {...getInputAttributes(property.display_type || 'text')}
                      />
+                      {(property.display_type || 'text') === 'date' ? (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal text-sm",
+                                !property.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {property.value ? format(parse(property.value, 'yyyy-MM-dd', new Date()), 'PPP') : "Pick a date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarComponent
+                              mode="single"
+                              selected={property.value ? parse(property.value, 'yyyy-MM-dd', new Date()) : undefined}
+                              onSelect={(date) => updateProperty(index, 'value', date ? format(date, 'yyyy-MM-dd') : '')}
+                              className={cn("p-3 pointer-events-auto")}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <Input
+                          type={getInputType(property.display_type || 'text')}
+                          placeholder={getPlaceholder(property.display_type || 'text', true)}
+                          value={property.value}
+                          onChange={(e) => updateProperty(index, 'value', e.target.value)}
+                          className="text-sm"
+                          {...getInputAttributes(property.display_type || 'text')}
+                        />
+                      )}
                   </div>
                   <Select
                     value={property.display_type || ''}
@@ -303,21 +334,52 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="trait_value" className="text-xs">Value</Label>
-            <Input
-              id="trait_value"
-              type={getInputType(newProperty.display_type || 'text')}
-              placeholder={getPlaceholder(newProperty.display_type || 'text', true)}
-              value={newProperty.value}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setNewProperty({ ...newProperty, value: newValue });
-                // Real-time validation
-                const error = validateValue(newValue, newProperty.display_type || 'text');
-                setValidationError(error);
-              }}
-              className={validationError ? 'border-destructive' : ''}
-              {...getInputAttributes(newProperty.display_type || 'text')}
-            />
+            {(newProperty.display_type || 'text') === 'date' ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newProperty.value && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newProperty.value ? format(parse(newProperty.value, 'yyyy-MM-dd', new Date()), 'PPP') : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={newProperty.value ? parse(newProperty.value, 'yyyy-MM-dd', new Date()) : undefined}
+                    onSelect={(date) => {
+                      const dateValue = date ? format(date, 'yyyy-MM-dd') : '';
+                      setNewProperty({ ...newProperty, value: dateValue });
+                      const error = validateValue(dateValue, newProperty.display_type || 'text');
+                      setValidationError(error);
+                    }}
+                    className={cn("p-3 pointer-events-auto")}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <Input
+                id="trait_value"
+                type={getInputType(newProperty.display_type || 'text')}
+                placeholder={getPlaceholder(newProperty.display_type || 'text', true)}
+                value={newProperty.value}
+                onChange={(e) => {
+                  const newValue = e.target.value;
+                  setNewProperty({ ...newProperty, value: newValue });
+                  // Real-time validation
+                  const error = validateValue(newValue, newProperty.display_type || 'text');
+                  setValidationError(error);
+                }}
+                className={validationError ? 'border-destructive' : ''}
+                {...getInputAttributes(newProperty.display_type || 'text')}
+              />
+            )}
             {validationError && (
               <div className="flex items-center gap-1 text-xs text-destructive">
                 <AlertCircle className="h-3 w-3" />

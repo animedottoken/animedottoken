@@ -18,6 +18,7 @@ import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { format, parse } from 'date-fns';
 
 interface FormData {
   name: string;
@@ -42,6 +43,8 @@ interface FormData {
   attributes: Property[]; // Add properties for collections
   // Error fields for validation
   mint_end_at_error?: string;
+  image_preview_url: string | null;
+  banner_preview_url: string | null;
 }
 
 export const UnifiedMintInterface = () => {
@@ -119,6 +122,8 @@ export const UnifiedMintInterface = () => {
     mint_end_at: '', // Add mint end date
     locked_fields: [], // Add locked fields
     attributes: [], // Add properties for collections
+    image_preview_url: null,
+    banner_preview_url: null,
   });
 
   // Keep raw string for price input to allow typing values like "0.1"
@@ -683,8 +688,15 @@ export const UnifiedMintInterface = () => {
                   Collection Avatar <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <FileUpload
-                  onFileSelect={(file) => setFormData({ ...formData, image_file: file })}
+                  onFileSelect={(file) => {
+                    if (formData.image_preview_url) {
+                      URL.revokeObjectURL(formData.image_preview_url);
+                    }
+                    const previewUrl = file ? URL.createObjectURL(file) : null;
+                    setFormData({ ...formData, image_file: file, image_preview_url: previewUrl });
+                  }}
                   currentFile={formData.image_file}
+                  previewUrl={formData.image_preview_url}
                   placeholder="Click to upload collection logo"
                   aspectRatio={1}
                   maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
@@ -699,8 +711,15 @@ export const UnifiedMintInterface = () => {
                   Collection Banner <span className="text-xs text-muted-foreground">(Optional)</span> <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <FileUpload
-                  onFileSelect={(file) => setFormData({ ...formData, banner_file: file })}
+                  onFileSelect={(file) => {
+                    if (formData.banner_preview_url) {
+                      URL.revokeObjectURL(formData.banner_preview_url);
+                    }
+                    const previewUrl = file ? URL.createObjectURL(file) : null;
+                    setFormData({ ...formData, banner_file: file, banner_preview_url: previewUrl });
+                  }}
                   currentFile={formData.banner_file}
+                  previewUrl={formData.banner_preview_url}
                   placeholder="Click to upload banner image"
                   aspectRatio={3}
                   maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
@@ -844,30 +863,54 @@ export const UnifiedMintInterface = () => {
                  
                  {/* Right Column - Settings & Images */}
                 <div className="space-y-6">
-                  {/* Collection Images */}
-                  <div className="space-y-4">
-                    {formData.image_file && (
-                      <div>
-                        <Label className="text-base font-medium">Collection Avatar</Label>
-                        <img 
-                          src={URL.createObjectURL(formData.image_file)} 
-                          alt="Collection avatar preview"
-                          className="w-20 h-20 rounded-lg object-cover mt-2"
-                        />
-                      </div>
-                    )}
-                    
-                    {formData.banner_file && (
-                      <div>
-                        <Label className="text-base font-medium">Collection Banner</Label>
-                        <img 
-                          src={URL.createObjectURL(formData.banner_file)} 
-                          alt="Collection banner preview"
-                          className="w-full h-20 rounded-lg object-cover mt-2"
-                        />
-                      </div>
-                    )}
-                  </div>
+                   {/* Collection Images */}
+                   <div className="space-y-4">
+                     {(formData.image_file || formData.image_preview_url) && (
+                       <div>
+                         <Label className="text-base font-medium">Collection Avatar</Label>
+                         <img 
+                           src={formData.image_preview_url || (formData.image_file ? URL.createObjectURL(formData.image_file) : '')}
+                           alt="Collection avatar preview"
+                           className="w-20 h-20 rounded-lg object-cover mt-2"
+                         />
+                       </div>
+                     )}
+                     
+                     {(formData.banner_file || formData.banner_preview_url) && (
+                       <div>
+                         <Label className="text-base font-medium">Collection Banner</Label>
+                         <img 
+                           src={formData.banner_preview_url || (formData.banner_file ? URL.createObjectURL(formData.banner_file) : '')} 
+                           alt="Collection banner preview"
+                           className="w-full h-20 rounded-lg object-cover mt-2"
+                         />
+                       </div>
+                     )}
+                   </div>
+                   
+                   {/* Properties Section */}
+                   {formData.attributes.length > 0 && (
+                     <div className="space-y-3">
+                       <Label className="text-base font-medium">Properties ({formData.attributes.length})</Label>
+                       <div className="grid gap-2">
+                         {formData.attributes.map((attr, index) => (
+                           <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg text-sm">
+                             <span className="font-medium">{attr.trait_type}</span>
+                             <div className="text-right">
+                               <div>{attr.display_type === 'date' && attr.value ? format(parse(attr.value, 'yyyy-MM-dd', new Date()), 'PPP') : attr.value}</div>
+                               <div className="text-muted-foreground text-xs">
+                                 {attr.display_type === 'text' ? 'Text' : 
+                                  attr.display_type === 'number' ? 'Number' :
+                                  attr.display_type === 'boost_percentage' ? 'Bonus (%)' :
+                                  attr.display_type === 'boost_number' ? 'Bonus (number)' :
+                                  attr.display_type === 'date' ? 'Date' : 'Text'}
+                               </div>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                   )}
                   
                   {/* Key Settings Grid */}
                   <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
