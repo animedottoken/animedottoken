@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import type { UserNFT } from "@/hooks/useUserNFTs";
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const fromFavorites = searchParams.get('from') === 'favorites';
   const [nft, setNft] = useState<UserNFT | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,8 +100,8 @@ export default function NFTDetail() {
               The NFT you're looking for doesn't exist or has been removed.
             </p>
             <Button asChild>
-              <Link to="/profile?tab=nfts">
-                Back to My NFTs
+              <Link to={fromFavorites ? "/profile?tab=favorites" : "/profile?tab=nfts"}>
+                Back to {fromFavorites ? 'Favorites' : 'My NFTs'}
               </Link>
             </Button>
           </CardContent>
@@ -117,9 +119,9 @@ export default function NFTDetail() {
 
       {/* Back Button */}
       <Button variant="outline" asChild className="mb-6">
-        <Link to="/profile?tab=nfts">
+        <Link to={fromFavorites ? "/profile?tab=favorites" : "/profile?tab=nfts"}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to My NFTs
+          Back to {fromFavorites ? 'Favorites' : 'My NFTs'}
         </Link>
       </Button>
 

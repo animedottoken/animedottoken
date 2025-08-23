@@ -751,7 +751,7 @@ export default function Profile() {
                                   variant="outline"
                                   asChild
                                 >
-                                  <Link to={`/collection/${favorite.id}`}>
+                                  <Link to={`/collection/${favorite.id}?from=favorites`}>
                                     <ExternalLink className="h-4 w-4 mr-1" />
                                     View
                                   </Link>
@@ -809,7 +809,7 @@ export default function Profile() {
                                   variant="outline"
                                   asChild
                                 >
-                                  <Link to={`/nft/${favorite.id}`}>
+                                  <Link to={`/nft/${favorite.id}?from=favorites`}>
                                     <ExternalLink className="h-4 w-4 mr-1" />
                                     View
                                   </Link>

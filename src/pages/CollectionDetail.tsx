@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromFavorites = searchParams.get('from') === 'favorites';
   const { connected, publicKey } = useSolanaWallet();
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
@@ -74,8 +76,8 @@ export default function CollectionDetail() {
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               The collection you're looking for doesn't exist or you don't have access to it.
             </p>
-            <Button onClick={() => navigate('/profile')}>
-              Back to Profile
+            <Button onClick={() => navigate(fromFavorites ? '/profile?tab=favorites' : '/profile')}>
+              Back to {fromFavorites ? 'Favorites' : 'Profile'}
             </Button>
           </div>
         </div>
@@ -94,9 +96,9 @@ export default function CollectionDetail() {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(fromFavorites ? '/profile?tab=favorites' : '/profile')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Profile
+              {fromFavorites ? 'Back to Favorites' : 'Back to Profile'}
             </Button>
           </div>
 
@@ -297,7 +299,7 @@ export default function CollectionDetail() {
                                 onClick={async () => {
                                   const result = await deleteCollection(collection.id, collection.name);
                                   if (result.success) {
-                                    navigate('/profile');
+                                    navigate(fromFavorites ? '/profile?tab=favorites' : '/profile');
                                   }
                                 }}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
