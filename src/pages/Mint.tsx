@@ -76,7 +76,7 @@ export default function Mint() {
                       RECOMMENDED
                     </div>
                     <p className="text-muted-foreground mb-6 flex-1">
-                      Launch a full collection with multiple NFTs, royalties, and professional branding. Perfect for serious creators and projects.
+                      Launch a full collection with multiple NFTs, royalties, and professional branding. <strong>FREE minting</strong> - you only pay minimal Solana network fees.
                     </p>
                     <Button 
                       size="lg" 
@@ -113,7 +113,7 @@ export default function Mint() {
                       Without Collection
                     </div>
                     <p className="text-muted-foreground mb-6 flex-1">
-                      Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection.
+                      Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection. <strong>FREE minting</strong> - only pay network fees.
                     </p>
                     <Button 
                       size="lg" 
@@ -147,9 +147,9 @@ export default function Mint() {
             <Card className="text-center border border-border/50 bg-card/30 backdrop-blur-sm">
               <CardContent className="pt-6">
                 <Coins className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Low Fees</h3>
+                <h3 className="text-xl font-semibold mb-2">FREE Minting</h3>
                 <p className="text-sm text-muted-foreground">
-                  Pay fractions of a cent in transaction fees.
+                  Mint for free - pay only minimal Solana network fees (fractions of a cent).
                 </p>
               </CardContent>
             </Card>
