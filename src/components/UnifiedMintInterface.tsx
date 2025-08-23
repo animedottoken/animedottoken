@@ -121,6 +121,9 @@ export const UnifiedMintInterface = () => {
     attributes: [], // Add properties for collections
   });
 
+  // Keep raw string for price input to allow typing values like "0.1"
+  const [mintPriceInput, setMintPriceInput] = useState<string>('');
+
   const handleSubmit = async () => {
     if (!publicKey) {
       toast.error('Please connect your wallet first');
@@ -407,38 +410,41 @@ export const UnifiedMintInterface = () => {
                             });
                           }
                         }}
-                        disabled={(date) => date <= new Date()}
-                        fromDate={new Date()} // Prevent browsing past dates
+                         disabled={(date) => { const today = new Date(); today.setHours(0,0,0,0); return date < today; }}
+                         fromDate={new Date(new Date().setHours(0,0,0,0))} // Prevent browsing past dates
                         initialFocus
                         className="p-3 pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>
                   
-                  <Input
-                    type="time"
-                    value={formData.mint_end_at ? new Date(formData.mint_end_at).toTimeString().slice(0, 5) : '23:59'}
-                    onChange={(e) => {
-                      if (formData.mint_end_at) {
-                        const date = new Date(formData.mint_end_at);
-                        const [hours, minutes] = e.target.value.split(':');
-                        date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                        
-                        const now = new Date();
-                        if (date <= now) {
-                          toast.error('Date and time must be in the future');
-                          return;
-                        }
-                        
-                        setFormData({ 
-                          ...formData, 
-                          mint_end_at: date.toISOString().slice(0, 16)
-                        });
-                      }
-                    }}
-                    className="w-32"
-                    placeholder="23:59"
-                  />
+                   <Input
+                     type="time"
+                     step="60"
+                     inputMode="numeric"
+                     pattern="[0-9]{2}:[0-9]{2}"
+                     value={formData.mint_end_at ? new Date(formData.mint_end_at).toTimeString().slice(0, 5) : '23:59'}
+                     onChange={(e) => {
+                       if (formData.mint_end_at) {
+                         const date = new Date(formData.mint_end_at);
+                         const [hours, minutes] = e.target.value.split(':');
+                         date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                         
+                         const now = new Date();
+                         if (date <= now) {
+                           toast.error('Date and time must be in the future');
+                           return;
+                         }
+                         
+                         setFormData({ 
+                           ...formData, 
+                           mint_end_at: date.toISOString().slice(0, 16)
+                         });
+                       }
+                     }}
+                     className="w-32"
+                     placeholder="23:59"
+                   />
                 </div>
                 {formData.mint_end_at_error && (
                   <div className="text-sm text-destructive">
@@ -515,21 +521,18 @@ export const UnifiedMintInterface = () => {
                         type="text"
                         inputMode="decimal"
                         placeholder="0.1"
-                        value={formData.mint_price === 0 ? '' : formData.mint_price.toString()}
+                        value={mintPriceInput}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          // Allow empty, digits, and decimal point
-                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                            const numValue = value === '' ? 0 : parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
-                              setFormData({ ...formData, mint_price: numValue });
-                            }
+                          const val = e.target.value.replace(',', '.');
+                          if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                            setMintPriceInput(val);
                           }
                         }}
-                        onBlur={(e) => {
-                          // Format the number on blur
-                          const value = parseFloat(e.target.value) || 0;
-                          setFormData({ ...formData, mint_price: value });
+                        onBlur={() => {
+                          const parsed = parseFloat((mintPriceInput || '0').replace(',', '.'));
+                          const safe = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+                          setFormData({ ...formData, mint_price: safe });
+                          setMintPriceInput(safe.toString());
                         }}
                       />
                       <p className="text-xs text-muted-foreground">
@@ -604,36 +607,7 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="mint_price" className="text-base font-medium">
-                  Mint Price (SOL)
-                </Label>
-                      <Input
-                        id="mint_price_input"
-                        type="text"
-                        inputMode="decimal"
-                        placeholder="0.1"
-                        value={formData.mint_price === 0 ? '' : formData.mint_price.toString()}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          // Allow empty, digits, and decimal point
-                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                            const numValue = value === '' ? 0 : parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
-                              setFormData({ ...formData, mint_price: numValue });
-                            }
-                          }
-                        }}
-                        onBlur={(e) => {
-                          // Format the number on blur
-                          const value = parseFloat(e.target.value) || 0;
-                          setFormData({ ...formData, mint_price: value });
-                        }}
-                      />
-                <div className="text-xs text-muted-foreground">
-                  Price per NFT in SOL
-                </div>
-              </div>
+                {/* Mint price configured in Step 1 to avoid duplication */}
 
               <div className="space-y-3">
                 <Label className="text-base font-medium">
