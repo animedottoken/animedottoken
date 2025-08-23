@@ -34,7 +34,7 @@ serve(async (req) => {
     if (!nftId || !bidAmount || !tokenMint || !bidderWallet || !txSignature) {
       return new Response(
         JSON.stringify({ success: false, error: 'Missing required fields' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -49,21 +49,43 @@ serve(async (req) => {
       console.error('NFT fetch error:', nftError);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to verify NFT' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (!nft) {
       return new Response(
         JSON.stringify({ success: false, error: 'NFT not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (nft.owner_address !== bidderWallet) {
       return new Response(
         JSON.stringify({ success: false, error: 'Only the NFT owner can boost this item' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check for existing active boost for this NFT to avoid RLS trigger error
+    const { data: existing, error: existingErr } = await supabase
+      .from('boosted_listings')
+      .select('id, end_time')
+      .eq('nft_id', nftId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (existingErr) {
+      console.error('Existing boost check error:', existingErr);
+    }
+
+    if (existing) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `An active boost already exists for this NFT${existing.end_time ? ` (ends at ${existing.end_time})` : ''}` 
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -86,7 +108,7 @@ serve(async (req) => {
       console.error('Boost insert error:', insertError);
       return new Response(
         JSON.stringify({ success: false, error: insertError.message }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -98,7 +120,7 @@ serve(async (req) => {
     console.error('Unhandled error in create-boost:', e);
     return new Response(
       JSON.stringify({ success: false, error: 'Unexpected error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

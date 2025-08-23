@@ -28,20 +28,19 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
 
   const getTierIcon = (tier: string) => {
     switch (tier) {
-      case 'god': return <Crown className="h-4 w-4 text-yellow-500" />;
-      case 'top': return <Rocket className="h-4 w-4 text-gray-400" />;
-      default: return <TrendingUp className="h-4 w-4 text-blue-500" />;
+      case 'god': return <Crown className="h-4 w-4" />;
+      case 'top': return <Rocket className="h-4 w-4" />;
+      default: return <TrendingUp className="h-4 w-4" />;
     }
   };
 
-  const getTierColor = (tier: string) => {
+  const getTierStyles = (tier: string) => {
     switch (tier) {
-      case 'god': return 'border-yellow-500 bg-yellow-50';
-      case 'top': return 'border-gray-400 bg-gray-50';
-      default: return 'border-blue-500 bg-blue-50';
+      case 'god': return 'bg-primary/5 border-primary/20';
+      case 'top': return 'bg-accent/5 border-accent/20';
+      default: return 'bg-muted border-border';
     }
   };
-
   const handleSubmit = async () => {
     const amount = parseFloat(bidAmount);
     if (!amount || amount <= 0) {
@@ -124,10 +123,10 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
             
             {/* Cost Summary Box */}
             {bidAmount && parseFloat(bidAmount) > 0 && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">You will pay:</span>
-                  <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                  <span className="text-lg font-bold text-primary">
                     {parseFloat(bidAmount).toLocaleString()} $ANIME
                   </span>
                 </div>
@@ -159,11 +158,11 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
                 )}
               </Button>
             </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+            <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
+              <p className="text-sm font-medium text-primary">
                 💡 Boost Cost: Minimum 1 $ANIME • Duration: 24 hours
               </p>
-              <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Higher bids get better placement in the boosted section
               </p>
             </div>
@@ -180,13 +179,13 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
               </Card>
             ) : (
               <div className="space-y-2 max-h-60 overflow-y-auto">
-                {topBids.map((bid, index) => (
-                  <Card key={bid.id} className={`${getTierColor(bid.tier)}`}>
+                {topBids.map((bid) => (
+                  <Card key={bid.id} className={`${getTierStyles(bid.tier)} border rounded-xl`}>
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1">
-                            <span className="font-bold text-lg">#{bid.bid_rank}</span>
+                          <div className="flex items-center gap-2 min-w-[56px]">
+                            <span className="font-semibold">#{bid.bid_rank}</span>
                             {getTierIcon(bid.tier)}
                           </div>
                           <img 
@@ -205,9 +204,9 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">{bid.bid_amount} $ANIME</p>
-                          <Badge variant="outline" className="text-xs">
-                            {bid.tier.toUpperCase()}
+                          <div className="text-base font-semibold">{Number(bid.bid_amount).toLocaleString()} $ANIME</div>
+                          <Badge variant="secondary" className="text-2xs uppercase tracking-wide mt-1">
+                            {bid.tier}
                           </Badge>
                         </div>
                       </div>
@@ -224,19 +223,19 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
               <h5 className="font-medium mb-3">Boost Tiers</h5>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-yellow-500" />
-                  <span className="font-medium">God Tier (Rank 1-3):</span>
-                  <span className="text-muted-foreground">Gold border, crown icon</span>
+                  <Crown className="h-4 w-4" />
+                  <span className="font-medium">God Tier (Rank 1–3):</span>
+                  <span className="text-muted-foreground">Premium placement with crown icon</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Rocket className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium">Top Tier (Rank 4-10):</span>
-                  <span className="text-muted-foreground">Silver border, rocket icon</span>
+                  <Rocket className="h-4 w-4" />
+                  <span className="font-medium">Top Tier (Rank 4–10):</span>
+                  <span className="text-muted-foreground">High placement with rocket icon</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-blue-500" />
+                  <TrendingUp className="h-4 w-4" />
                   <span className="font-medium">Boosted Tier (Rank 11+):</span>
-                  <span className="text-muted-foreground">Blue border, boosted label</span>
+                  <span className="text-muted-foreground">Visible in boosted section</span>
                 </div>
               </div>
             </CardContent>
