@@ -55,8 +55,8 @@ serve(async (req) => {
 
     // Handle supply mode
     const supplyMode = body.supply_mode || 'fixed';
-    const maxSupply = supplyMode === 'open' ? 0 : (body.max_supply != null && Number(body.max_supply) > 0 ? Number(body.max_supply) : 1000);
-    const itemsAvailable = supplyMode === 'open' ? 0 : maxSupply;
+    const maxSupply = supplyMode === 'open' ? 999999999 : (body.max_supply != null && Number(body.max_supply) > 0 ? Number(body.max_supply) : 1000);
+    const itemsAvailable = supplyMode === 'open' ? 999999999 : maxSupply;
 
     // Normalize other values
     const mintPrice = body.mint_price != null && Number(body.mint_price) >= 0 ? Number(body.mint_price) : 0;

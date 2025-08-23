@@ -371,16 +371,19 @@ export const UnifiedMintInterface = () => {
                       const now = new Date();
                       
                       let errorMessage = '';
+                      let validValue = value;
                       
                       if (year < 1000 || year > 9999) {
                         errorMessage = 'Year must be exactly 4 digits (YYYY)';
+                        validValue = ''; // Don't store invalid dates
                       } else if (date <= now) {
                         errorMessage = 'Date must be in the future';
+                        validValue = ''; // Don't store past dates
                       }
                       
                        setFormData({ 
                          ...formData, 
-                         mint_end_at: value,
+                         mint_end_at: validValue,
                          mint_end_at_error: errorMessage 
                        });
                     } else {
@@ -468,8 +471,14 @@ export const UnifiedMintInterface = () => {
                         min="0"
                         step="0.001"
                         placeholder="0.1"
-                        value={formData.mint_price}
-                        onChange={(e) => setFormData({ ...formData, mint_price: parseFloat(e.target.value) || 0 })}
+                        value={formData.mint_price || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            mint_price: value === '' ? 0 : parseFloat(value) || 0 
+                          });
+                        }}
                       />
                       <p className="text-xs text-muted-foreground">
                         Set the initial listing price for NFTs from this collection
