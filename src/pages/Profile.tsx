@@ -248,10 +248,10 @@ export default function Profile() {
                           variant="outline"
                           asChild
                         >
-                          <Link to={`/collection/${collection.id}`}>
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            View
-                          </Link>
+                                   <Link to={`/collection/${collection.id}?from=collections&nav=${encodeURIComponent(JSON.stringify(collections.map(c => c.id)))}`}>
+                                     <ExternalLink className="h-4 w-4 mr-1" />
+                                     View
+                                   </Link>
                         </Button>
                         <Button
                           size="sm"
@@ -542,16 +542,16 @@ export default function Profile() {
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="flex gap-2 flex-wrap justify-center">
                         <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          asChild
-                        >
-                          <Link to={`/nft/${nft.id}`}>
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            View
-                          </Link>
-                        </Button>
+                         <Button
+                           size="sm"
+                           variant="outline"
+                           asChild
+                         >
+                           <Link to={`/nft/${nft.id}?from=nfts&nav=${encodeURIComponent(JSON.stringify(nfts.map(n => n.id)))}`}>
+                             <ExternalLink className="h-4 w-4 mr-1" />
+                             View
+                           </Link>
+                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
@@ -751,10 +751,10 @@ export default function Profile() {
                                   variant="outline"
                                   asChild
                                 >
-                                  <Link to={`/collection/${favorite.id}?from=favorites`}>
-                                    <ExternalLink className="h-4 w-4 mr-1" />
-                                    View
-                                  </Link>
+                                   <Link to={`/collection/${favorite.id}?from=favorites&nav=${encodeURIComponent(JSON.stringify(favorites.filter(f => f.type === 'collection').map(f => f.id)))}`}>
+                                     <ExternalLink className="h-4 w-4 mr-1" />
+                                     View
+                                   </Link>
                                 </Button>
                                 <Button
                                   size="sm"
@@ -809,10 +809,10 @@ export default function Profile() {
                                   variant="outline"
                                   asChild
                                 >
-                                  <Link to={`/nft/${favorite.id}?from=favorites`}>
-                                    <ExternalLink className="h-4 w-4 mr-1" />
-                                    View
-                                  </Link>
+                                   <Link to={`/nft/${favorite.id}?from=favorites&nav=${encodeURIComponent(JSON.stringify(favorites.filter(f => f.type === 'nft').map(f => f.id)))}`}>
+                                     <ExternalLink className="h-4 w-4 mr-1" />
+                                     View
+                                   </Link>
                                 </Button>
                                 <Button
                                   size="sm"

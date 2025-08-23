@@ -8,6 +8,8 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import {
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   Plus, 
   ExternalLink,
   Eye,
@@ -31,6 +33,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useNavigationContext } from "@/hooks/useNavigationContext";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -42,6 +45,9 @@ export default function CollectionDetail() {
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { deleting, deleteCollection } = useDeleteCollection();
+  
+  // Navigation context for moving between collections
+  const navigation = useNavigationContext(collectionId!, 'collection');
 
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version
@@ -76,8 +82,15 @@ export default function CollectionDetail() {
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               The collection you're looking for doesn't exist or you don't have access to it.
             </p>
-            <Button onClick={() => navigate(fromFavorites ? '/profile?tab=favorites' : '/profile')}>
-              Back to {fromFavorites ? 'Favorites' : 'Profile'}
+            <Button onClick={() => {
+              const backUrl = navigation.source === 'favorites' 
+                ? '/profile?tab=favorites' 
+                : navigation.source === 'collections' 
+                ? '/profile?tab=collections' 
+                : '/profile';
+              navigate(backUrl);
+            }}>
+              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : 'Profile'}
             </Button>
           </div>
         </div>
@@ -96,10 +109,42 @@ export default function CollectionDetail() {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="sm" onClick={() => navigate(fromFavorites ? '/profile?tab=favorites' : '/profile')}>
+            <Button variant="ghost" size="sm" onClick={() => {
+              const backUrl = navigation.source === 'favorites' 
+                ? '/profile?tab=favorites' 
+                : navigation.source === 'collections' 
+                ? '/profile?tab=collections' 
+                : '/profile';
+              navigate(backUrl);
+            }}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {fromFavorites ? 'Back to Favorites' : 'Back to Profile'}
+              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : 'Profile'}
             </Button>
+            
+            {/* Navigation arrows */}
+            {navigation.canNavigate && (
+              <div className="flex items-center gap-2 ml-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigation.navigatePrev}
+                  disabled={!navigation.hasPrev}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground px-2">
+                  {navigation.currentIndex} of {navigation.totalItems}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigation.navigateNext}
+                  disabled={!navigation.hasNext}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Collection Banner */}
@@ -299,7 +344,12 @@ export default function CollectionDetail() {
                                 onClick={async () => {
                                   const result = await deleteCollection(collection.id, collection.name);
                                   if (result.success) {
-                                    navigate(fromFavorites ? '/profile?tab=favorites' : '/profile');
+                                  const backUrl = navigation.source === 'favorites' 
+                                    ? '/profile?tab=favorites' 
+                                    : navigation.source === 'collections' 
+                                    ? '/profile?tab=collections' 
+                                    : '/profile';
+                                  navigate(backUrl);
                                   }
                                 }}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

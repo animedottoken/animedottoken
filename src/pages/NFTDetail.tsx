@@ -5,9 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, Calendar, Hash, Image } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
+import { useNavigationContext } from "@/hooks/useNavigationContext";
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +16,9 @@ export default function NFTDetail() {
   const fromFavorites = searchParams.get('from') === 'favorites';
   const [nft, setNft] = useState<UserNFT | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Navigation context for moving between NFTs
+  const navigation = useNavigationContext(id!, 'nft');
 
   useEffect(() => {
     const fetchNFT = async () => {
@@ -100,8 +104,12 @@ export default function NFTDetail() {
               The NFT you're looking for doesn't exist or has been removed.
             </p>
             <Button asChild>
-              <Link to={fromFavorites ? "/profile?tab=favorites" : "/profile?tab=nfts"}>
-                Back to {fromFavorites ? 'Favorites' : 'My NFTs'}
+              <Link to={navigation.source === 'favorites' 
+                ? "/profile?tab=favorites" 
+                : navigation.source === 'nfts' 
+                ? "/profile?tab=nfts" 
+                : "/profile?tab=nfts"}>
+                Back to {navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
               </Link>
             </Button>
           </CardContent>
@@ -117,13 +125,44 @@ export default function NFTDetail() {
         <meta name="description" content={nft.description || `View details for ${nft.name} NFT`} />
       </Helmet>
 
-      {/* Back Button */}
-      <Button variant="outline" asChild className="mb-6">
-        <Link to={fromFavorites ? "/profile?tab=favorites" : "/profile?tab=nfts"}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to {fromFavorites ? 'Favorites' : 'My NFTs'}
-        </Link>
-      </Button>
+      {/* Back Button and Navigation */}
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="outline" asChild>
+          <Link to={navigation.source === 'favorites' 
+            ? "/profile?tab=favorites" 
+            : navigation.source === 'nfts' 
+            ? "/profile?tab=nfts" 
+            : "/profile?tab=nfts"}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
+          </Link>
+        </Button>
+        
+        {/* Navigation arrows */}
+        {navigation.canNavigate && (
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={navigation.navigatePrev}
+              disabled={!navigation.hasPrev}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground px-2">
+              {navigation.currentIndex} of {navigation.totalItems}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={navigation.navigateNext}
+              disabled={!navigation.hasNext}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* NFT Image */}
