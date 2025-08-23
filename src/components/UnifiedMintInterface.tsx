@@ -696,7 +696,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label className="text-base font-medium">
-                  Collection Banner <Badge variant="outline">Optional</Badge> <Badge variant="outline">Off-Chain</Badge>
+                  Collection Banner <span className="text-xs text-muted-foreground">(Optional)</span> <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => setFormData({ ...formData, banner_file: file })}
