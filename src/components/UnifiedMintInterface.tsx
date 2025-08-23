@@ -930,9 +930,9 @@ export const UnifiedMintInterface = () => {
                    </div>
                    
                    {/* Properties Section */}
-                   {formData.attributes.length > 0 && (
-                     <div className="space-y-3">
-                       <Label className="text-base font-medium">Properties ({formData.attributes.length})</Label>
+                   <div className="space-y-3">
+                     <Label className="text-base font-medium">Properties</Label>
+                     {formData.attributes.length > 0 ? (
                        <div className="grid gap-2">
                          {formData.attributes.map((attr, index) => (
                            <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg text-sm">
@@ -950,8 +950,30 @@ export const UnifiedMintInterface = () => {
                            </div>
                          ))}
                        </div>
+                     ) : (
+                       <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                         No properties added
+                       </div>
+                     )}
+                   </div>
+
+                   {/* Explicit/Sensitive Content */}
+                   <div className="space-y-3">
+                     <Label className="text-base font-medium">Content Rating</Label>
+                     <div className="p-3 bg-muted/30 rounded-lg">
+                       <div className="flex items-center gap-2">
+                         <div className={`w-2 h-2 rounded-full ${formData.explicit_content ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+                         <span className="text-sm font-medium">
+                           {formData.explicit_content ? 'Contains Explicit/Sensitive Content' : 'Safe for All Audiences'}
+                         </span>
+                       </div>
+                       {formData.explicit_content && (
+                         <div className="text-xs text-muted-foreground mt-1">
+                           This collection contains mature or explicit content
+                         </div>
+                       )}
                      </div>
-                   )}
+                   </div>
                   
                   {/* Key Settings Grid */}
                   <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
