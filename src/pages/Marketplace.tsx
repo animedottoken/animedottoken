@@ -242,7 +242,11 @@ export default function Marketplace() {
             <Card 
               key={nft.id}
               className="group hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => navigate(`/nft/${nft.id}`)}
+              onClick={() => {
+                const navIds = sortedNfts.map(n => n.id);
+                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                navigate(`/nft/${nft.id}?${queryString}`);
+              }}
             >
               <div className="aspect-square overflow-hidden rounded-t-lg">
                 <ImageLazyLoad

@@ -5,10 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
+import { BoostModal } from "@/components/BoostModal";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +18,8 @@ export default function NFTDetail() {
   const fromFavorites = searchParams.get('from') === 'favorites';
   const [nft, setNft] = useState<UserNFT | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isBoostModalOpen, setIsBoostModalOpen] = useState(false);
+  const { publicKey } = useSolanaWallet();
   
   // Navigation context for moving between NFTs
   const navigation = useNavigationContext(id!, 'nft');
@@ -104,12 +108,14 @@ export default function NFTDetail() {
               The NFT you're looking for doesn't exist or has been removed.
             </p>
             <Button asChild>
-              <Link to={navigation.source === 'favorites' 
+              <Link to={navigation.source === 'marketplace' 
+                ? "/marketplace" 
+                : navigation.source === 'favorites' 
                 ? "/profile?tab=favorites" 
                 : navigation.source === 'nfts' 
                 ? "/profile?tab=nfts" 
                 : "/profile?tab=nfts"}>
-                Back to {navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
+                Back to {navigation.source === 'marketplace' ? 'Marketplace' : navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
               </Link>
             </Button>
           </CardContent>
@@ -128,13 +134,15 @@ export default function NFTDetail() {
       {/* Back Button and Navigation */}
       <div className="flex items-center gap-4 mb-6">
         <Button variant="outline" asChild>
-          <Link to={navigation.source === 'favorites' 
+          <Link to={navigation.source === 'marketplace' 
+            ? "/marketplace" 
+            : navigation.source === 'favorites' 
             ? "/profile?tab=favorites" 
             : navigation.source === 'nfts' 
             ? "/profile?tab=nfts" 
             : "/profile?tab=nfts"}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
+            Back to {navigation.source === 'marketplace' ? 'Marketplace' : navigation.source === 'favorites' ? 'Favorites' : 'My NFTs'}
           </Link>
         </Button>
         
@@ -289,9 +297,43 @@ export default function NFTDetail() {
                 </div>
               </CardContent>
             </Card>
+           )}
+
+          {/* Boost Button for Owner */}
+          {publicKey === nft.owner_address && (
+            <Card>
+              <CardContent className="p-4">
+                <Button 
+                  onClick={() => setIsBoostModalOpen(true)}
+                  className="w-full"
+                  variant="outline"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Boost Item
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Boost your NFT for premium visibility in the marketplace
+                </p>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>
+      
+      {/* Boost Modal */}
+      {nft && (
+        <BoostModal
+          isOpen={isBoostModalOpen}
+          onClose={() => setIsBoostModalOpen(false)}
+          nftId={nft.id}
+          nftName={nft.name}
+          nftImage={nft.image_url || "/placeholder.svg"}
+          onBoostCreated={() => {
+            // Optionally refresh data or show success message
+            toast.success(`Successfully boosted ${nft.name}!`);
+          }}
+        />
+      )}
     </div>
   );
 }

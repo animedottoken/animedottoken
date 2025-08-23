@@ -93,7 +93,7 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
   };
 
   const handleViewDetails = () => {
-    navigate(`/nft/${listing.nft_id}`);
+    navigate(`/nft/${listing.nft_id}?from=marketplace`);
   };
 
   return (
