@@ -6,7 +6,7 @@ export default function MintCollection() {
   return (
     <>
       <Helmet>
-        <title>Create Collection & Mint NFT | Anime Token - Launch Your NFT Collection</title>
+        <title>Mint Collection + NFT | Anime Token - Launch Your NFT Collection</title>
         <meta name="description" content="Create and launch your anime NFT collection on Solana. Set up royalties, pricing, and collection details." />
         <meta name="keywords" content="NFT collection, create collection, Solana NFT, anime collection, blockchain" />
       </Helmet>

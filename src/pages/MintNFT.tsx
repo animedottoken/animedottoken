@@ -6,7 +6,7 @@ export default function MintNFT() {
   return (
     <>
       <Helmet>
-        <title>Mint NFT | Anime Token - Create Your Digital Art</title>
+        <title>Mint Standalone NFT | Anime Token - Create Your Digital Art</title>
         <meta name="description" content="Mint your anime NFT directly on Solana blockchain. Upload your art and create unique digital collectibles." />
         <meta name="keywords" content="mint NFT, create NFT, Solana NFT, anime art, digital collectibles" />
       </Helmet>
@@ -17,7 +17,7 @@ export default function MintNFT() {
           
           <div className="text-center mb-8 pt-4">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-              Mint Your NFT
+              Mint Standalone NFT
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Create your standalone anime NFT quickly and easily. Upload your artwork and mint directly to the Solana blockchain.

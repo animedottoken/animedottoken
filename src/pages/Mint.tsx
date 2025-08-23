@@ -71,7 +71,7 @@ export default function Mint() {
                     <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
                       <Layers className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3">Create Collection & Mint NFT</h3>
+                    <h3 className="text-xl font-bold mb-3">Mint Collection + NFT</h3>
                     <div className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit mx-auto">
                       RECOMMENDED
                     </div>
@@ -86,7 +86,7 @@ export default function Mint() {
                         navigate('/mint/collection');
                       }}
                     >
-                      Start Collection Creation
+                      Start Collection Mint
                     </Button>
                   </CardContent>
                 </Card>
@@ -108,7 +108,7 @@ export default function Mint() {
                     <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
                       <FileImage className="h-10 w-10 text-accent" />
                     </div>
-                    <h3 className="text-xl font-bold mb-3">Mint NFT Now</h3>
+                    <h3 className="text-xl font-bold mb-3">Mint Standalone NFT</h3>
                     <div className="text-muted-foreground text-xs font-medium px-3 py-1 mb-4">
                       Without Collection
                     </div>
@@ -124,7 +124,7 @@ export default function Mint() {
                         navigate('/mint/nft');
                       }}
                     >
-                      Mint Single NFT
+                      Mint Standalone NFT
                     </Button>
                   </CardContent>
                 </Card>
