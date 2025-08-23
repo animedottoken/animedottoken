@@ -136,6 +136,11 @@ export const UnifiedMintInterface = () => {
       return;
     }
 
+    if (!formData.image_file) {
+      toast.error('Collection avatar is required');
+      return;
+    }
+
     // Enforce 1-hour buffer if end time is set
     if (formData.mint_end_at) {
       const end = new Date(formData.mint_end_at);
@@ -279,7 +284,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="site_description" className="text-base font-medium">
-                  Public description (shown on your collection page — not on-chain)
+                  Public Description <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <Textarea
                   id="site_description"
@@ -295,7 +300,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="onchain_description" className="text-base font-medium">
-                  Short description (on-chain metadata)
+                  Short Description <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <Textarea
                   id="onchain_description"
@@ -540,8 +545,8 @@ export const UnifiedMintInterface = () => {
                    </div>
                 </div>
                 {formData.mint_end_at_error && (
-                  <div className="text-sm text-destructive">
-                    {formData.mint_end_at_error}
+                  <div className="text-sm text-destructive font-medium">
+                    ⚠️ Important: {formData.mint_end_at_error}
                   </div>
                 )}
                 <div className="text-xs text-muted-foreground">
@@ -653,7 +658,7 @@ export const UnifiedMintInterface = () => {
                   Back
                 </Button>
                 <Button onClick={() => setActiveStep(2)} disabled={!formData.name.trim()}>
-                  Next: Settings
+                  Next: Upload Images
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -675,7 +680,7 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-base font-medium">
-                  Collection Avatar
+                  Collection Avatar <Badge variant="destructive">Required</Badge> <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => setFormData({ ...formData, image_file: file })}
@@ -691,7 +696,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label className="text-base font-medium">
-                  Collection Banner
+                  Collection Banner <Badge variant="outline">Optional</Badge> <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => setFormData({ ...formData, banner_file: file })}
@@ -773,7 +778,7 @@ export const UnifiedMintInterface = () => {
                 <Button variant="outline" onClick={() => setActiveStep(1)}>
                   Back
                 </Button>
-                <Button onClick={() => setActiveStep(3)}>
+                <Button onClick={() => setActiveStep(3)} disabled={!formData.image_file}>
                   Next: Review
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -822,10 +827,22 @@ export const UnifiedMintInterface = () => {
                       <Label className="text-base font-medium">Description (On-Chain)</Label>
                       <div className="text-sm text-muted-foreground leading-relaxed">{formData.onchain_description}</div>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Right Column - Settings & Images */}
+                   </div>
+
+                   {/* Mint End Time Warning */}
+                   {formData.mint_end_at && (
+                     <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                       <div className="flex items-start gap-2">
+                         <div className="text-warning font-medium">⚠️ Important:</div>
+                         <div className="text-sm">
+                           Mint will automatically close at {new Date(formData.mint_end_at).toLocaleString()}
+                         </div>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+                 
+                 {/* Right Column - Settings & Images */}
                 <div className="space-y-6">
                   {/* Collection Images */}
                   <div className="space-y-4">
@@ -887,11 +904,11 @@ export const UnifiedMintInterface = () => {
                 <Button variant="outline" onClick={() => setActiveStep(2)}>
                   Back
                 </Button>
-                <Button 
-                  onClick={handleSubmit} 
-                  size="lg"
-                  disabled={!!formData.mint_end_at_error || isMinting}
-                >
+                 <Button 
+                   onClick={handleSubmit} 
+                   size="lg"
+                   disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
+                 >
                   {isMinting ? 'Creating & Minting...' : 'Create Collection + Mint NFT'}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
