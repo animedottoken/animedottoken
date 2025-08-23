@@ -69,7 +69,7 @@ export const UnifiedMintInterface = () => {
   // Step indicator component
   const TOTAL_STEPS = 3;
   const StepIndicator = () => (
-    <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
+    <div className="flex flex-col sm:flex-row items-center justify-center mb-6 sm:mb-8 gap-2 sm:gap-0 px-4">
       <div className="flex items-center space-x-2 sm:space-x-4">
         {[1, 2, 3].map((step) => (
           <div key={step} className="flex items-center">
@@ -305,24 +305,24 @@ export const UnifiedMintInterface = () => {
   };
 
   return (
-    <div ref={containerRef} className="max-w-4xl mx-auto">
+    <div ref={containerRef} className="w-full px-4 sm:px-6 lg:px-8">
       {activeStep <= TOTAL_STEPS && <StepIndicator />}
       
       {activeStep === 1 && (
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-6 w-6" />
+          <Card className="w-full max-w-2xl mx-auto">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                <Palette className="h-5 w-5 sm:h-6 sm:w-6" />
                 Collection Basics
               </CardTitle>
-              <p className="text-muted-foreground">
+              <CardDescription className="text-sm sm:text-base">
                 Start by setting up your collection's basic information and branding.
-              </p>
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label htmlFor="name" className="text-base font-medium">
-                  Collection Name <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary">On-Chain</Badge>
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="name" className="text-sm sm:text-base font-medium">
+                  Collection Name <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <Input
                   id="name"
@@ -330,15 +330,16 @@ export const UnifiedMintInterface = () => {
                   placeholder="My Awesome NFT Collection"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="text-sm sm:text-base"
                 />
                 <div className="text-xs text-muted-foreground">
                   Name of your collection (visible on marketplaces)
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="symbol" className="text-base font-medium">
-                  Symbol <Badge variant="secondary">On-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="symbol" className="text-sm sm:text-base font-medium">
+                  Symbol <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <Input
                   id="symbol"
@@ -346,15 +347,16 @@ export const UnifiedMintInterface = () => {
                   placeholder="AWESOME"
                   value={formData.symbol}
                   onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+                  className="text-sm sm:text-base"
                 />
                 <div className="text-xs text-muted-foreground">
                   Short symbol for your collection (e.g., AWESOME)
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="site_description" className="text-base font-medium">
-                  Public Description <Badge variant="outline">Off-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="site_description" className="text-sm sm:text-base font-medium">
+                  Public Description <Badge variant="outline" className="ml-1">Off-Chain</Badge>
                 </Label>
                 <Textarea
                   id="site_description"
@@ -362,15 +364,16 @@ export const UnifiedMintInterface = () => {
                   value={formData.site_description}
                   onChange={(e) => setFormData({ ...formData, site_description: e.target.value })}
                   maxLength={2000}
+                  className="min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
                 />
                 <div className="text-xs text-muted-foreground">
                   This appears on your public collection page in this app. Good for long details, roadmap, utilities, links. ({formData.site_description.length}/2000)
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="onchain_description" className="text-base font-medium">
-                  Short Description <Badge variant="secondary">On-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="onchain_description" className="text-sm sm:text-base font-medium">
+                  Short Description <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <Textarea
                   id="onchain_description"
@@ -378,6 +381,7 @@ export const UnifiedMintInterface = () => {
                   value={formData.onchain_description}
                   onChange={(e) => setFormData({ ...formData, onchain_description: e.target.value })}
                   maxLength={200}
+                  className="min-h-[60px] sm:min-h-[80px] text-sm sm:text-base"
                 />
                 <div className="text-xs text-muted-foreground">
                   Stored on-chain and shown in wallets/marketplaces. Keep it brief. ({formData.onchain_description.length}/200)
@@ -385,8 +389,8 @@ export const UnifiedMintInterface = () => {
               </div>
 
               {/* Supply Mode Selection */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Supply Mode</Label>
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm sm:text-base font-medium">Supply Mode</Label>
                 <Select 
                   value={formData.supply_mode} 
                   onValueChange={(value) => setFormData({ 
@@ -395,7 +399,7 @@ export const UnifiedMintInterface = () => {
                     max_supply: value === 'open' ? 0 : formData.max_supply
                   })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -403,7 +407,7 @@ export const UnifiedMintInterface = () => {
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
                         <div>
-                          <div className="font-medium">Fixed Supply</div>
+                          <div className="font-medium text-sm">Fixed Supply</div>
                           <div className="text-xs text-muted-foreground">Set a specific number of NFTs</div>
                         </div>
                       </div>
@@ -412,7 +416,7 @@ export const UnifiedMintInterface = () => {
                       <div className="flex items-center gap-2">
                         <Infinity className="h-4 w-4" />
                         <div>
-                          <div className="font-medium">Open Edition ∞</div>
+                          <div className="font-medium text-sm">Open Edition ∞</div>
                           <div className="text-xs text-muted-foreground">Unlimited NFTs (like major drops)</div>
                         </div>
                       </div>
@@ -429,9 +433,9 @@ export const UnifiedMintInterface = () => {
 
               {/* Max Supply - only show for fixed mode */}
               {formData.supply_mode === 'fixed' && (
-                <div className="space-y-3">
-                  <Label htmlFor="max_supply" className="text-base font-medium">
-                    Max Supply <Badge variant="secondary">On-Chain</Badge>
+                <div className="space-y-2 sm:space-y-3">
+                  <Label htmlFor="max_supply" className="text-sm sm:text-base font-medium">
+                    Max Supply <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                   </Label>
                   <Input
                     id="max_supply"
@@ -451,6 +455,7 @@ export const UnifiedMintInterface = () => {
                       }
                     }}
                     placeholder="1000"
+                    className="text-sm sm:text-base"
                   />
                   <div className="text-xs text-muted-foreground">
                     Total number of NFTs that can be minted (1-100,000)
@@ -459,17 +464,17 @@ export const UnifiedMintInterface = () => {
               )}
 
               {/* Optional Mint End Date */}
-              <div className="space-y-3">
-                <Label htmlFor="mint_end_at" className="text-base font-medium">
-                  Mint End Date & Time (Optional) <Badge variant="outline">Off-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="mint_end_at" className="text-sm sm:text-base font-medium">
+                  Mint End Date & Time (Optional) <Badge variant="outline" className="ml-1">Off-Chain</Badge>
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "flex-1 justify-start text-left font-normal",
+                          "w-full sm:flex-1 justify-start text-left font-normal text-sm sm:text-base",
                           !formData.mint_end_at && "text-muted-foreground"
                         )}
                       >
@@ -528,7 +533,7 @@ export const UnifiedMintInterface = () => {
                     </PopoverContent>
                   </Popover>
                   
-                   <div className="flex items-center gap-2">
+                   <div className="flex items-center gap-2 justify-center sm:justify-start">
                      {/* Hours */}
                      <Select
                        value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getHours()).padStart(2, '0') : '23'}
@@ -555,7 +560,7 @@ export const UnifiedMintInterface = () => {
                          });
                        }}
                      >
-                       <SelectTrigger className="w-20">
+                       <SelectTrigger className="w-16 sm:w-20 text-sm">
                          <SelectValue placeholder="HH" />
                        </SelectTrigger>
                        <SelectContent className="z-50 max-h-60">
@@ -596,7 +601,7 @@ export const UnifiedMintInterface = () => {
                          });
                        }}
                      >
-                       <SelectTrigger className="w-20">
+                       <SelectTrigger className="w-16 sm:w-20 text-sm">
                          <SelectValue placeholder="MM" />
                        </SelectTrigger>
                        <SelectContent className="z-50 max-h-60">
@@ -609,7 +614,7 @@ export const UnifiedMintInterface = () => {
                        </SelectContent>
                      </Select>
                      
-                     <span className="text-xs text-muted-foreground ml-2">
+                     <span className="text-xs text-muted-foreground ml-1 hidden sm:inline">
                        {Intl.DateTimeFormat().resolvedOptions().timeZone}
                      </span>
                    </div>
@@ -632,15 +637,15 @@ export const UnifiedMintInterface = () => {
                 )}
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="category" className="text-base font-medium">
-                  Category <Badge variant="outline">Off-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="category" className="text-sm sm:text-base font-medium">
+                  Category <Badge variant="outline" className="ml-1">Off-Chain</Badge>
                 </Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm sm:text-base">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -660,34 +665,36 @@ export const UnifiedMintInterface = () => {
               </div>
 
               {/* Content & Listing Options */}
-              <div className="space-y-6 pt-4 border-t">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-4 sm:space-y-6 pt-4 border-t">
+                <div className="flex items-start space-x-3">
                   <Switch
                     id="explicit_content"
                     checked={formData.explicit_content}
                     onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                    className="mt-0.5"
                   />
-                  <Label htmlFor="explicit_content" className="text-base font-medium">
+                  <Label htmlFor="explicit_content" className="text-sm sm:text-base font-medium leading-tight">
                     Contains explicit or sensitive content
                   </Label>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-start space-x-3">
                     <Switch
                       id="enable_primary_sales"
                       checked={formData.enable_primary_sales}
                       onCheckedChange={(checked) => setFormData({ ...formData, enable_primary_sales: checked })}
+                      className="mt-0.5"
                     />
-                    <Label htmlFor="enable_primary_sales" className="text-base font-medium">
+                    <Label htmlFor="enable_primary_sales" className="text-sm sm:text-base font-medium leading-tight">
                       List for sale immediately after minting
                     </Label>
                   </div>
 
                   {formData.enable_primary_sales && (
-                    <div className="ml-6 space-y-3">
-                      <Label htmlFor="mint_price_input" className="text-base font-medium">
-                        Price (SOL) <span className="text-destructive">*</span> <Badge variant="secondary">On-Chain</Badge>
+                    <div className="ml-6 space-y-2 sm:space-y-3">
+                      <Label htmlFor="mint_price_input" className="text-sm sm:text-base font-medium">
+                        Price (SOL) <span className="text-destructive">*</span> <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                       </Label>
                       <Input
                         id="mint_price_input"
@@ -707,6 +714,7 @@ export const UnifiedMintInterface = () => {
                           setFormData({ ...formData, mint_price: safe });
                           setMintPriceInput(safe.toString());
                         }}
+                        className="text-sm sm:text-base"
                       />
                       <p className="text-xs text-muted-foreground">
                         Set the initial listing price for NFTs from this collection
@@ -717,17 +725,19 @@ export const UnifiedMintInterface = () => {
               </div>
 
               {/* Properties Section */}
-              <PropertiesEditor
-                properties={formData.attributes}
-                onChange={(properties) => setFormData({ ...formData, attributes: properties })}
-                className="mt-6"
-              />
+              <div className="pt-4 border-t">
+                <PropertiesEditor
+                  properties={formData.attributes}
+                  onChange={(properties) => setFormData({ ...formData, attributes: properties })}
+                  className="w-full"
+                />
+              </div>
 
-              <div className="flex justify-between pt-6">
-                <Button variant="outline" onClick={() => setActiveStep(0)}>
+              <div className="flex flex-col sm:flex-row justify-between gap-3 pt-6">
+                <Button variant="outline" onClick={() => setActiveStep(0)} className="w-full sm:w-auto">
                   Back
                 </Button>
-                <Button onClick={() => setActiveStep(2)} disabled={!formData.name.trim()}>
+                <Button onClick={() => setActiveStep(2)} disabled={!formData.name.trim()} className="w-full sm:w-auto">
                   Next: Upload Images
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -737,20 +747,20 @@ export const UnifiedMintInterface = () => {
       )}
 
       {activeStep === 2 && (
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-6 w-6" />
+          <Card className="w-full max-w-2xl mx-auto">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
                 Collection Settings
               </CardTitle>
-              <p className="text-muted-foreground">
+              <CardDescription className="text-sm sm:text-base">
                 Configure advanced settings for your collection.
-              </p>
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-base font-medium">
-                  Collection Avatar <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary">On-Chain</Badge>
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm sm:text-base font-medium">
+                  Collection Avatar <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => {
@@ -771,9 +781,9 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label className="text-base font-medium">
-                  Collection Banner <span className="text-xs text-muted-foreground">(Optional)</span> <Badge variant="outline">Off-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm sm:text-base font-medium">
+                  Collection Banner <span className="text-xs text-muted-foreground">(Optional)</span> <Badge variant="outline" className="ml-1">Off-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => {
@@ -796,9 +806,9 @@ export const UnifiedMintInterface = () => {
 
                 {/* Mint price configured in Step 1 to avoid duplication */}
 
-              <div className="space-y-3">
-                <Label className="text-base font-medium">
-                  Royalties (%) <Badge variant="secondary">On-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label className="text-sm sm:text-base font-medium">
+                  Royalties (%) <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <div className="space-y-3">
                   <Slider
@@ -820,7 +830,7 @@ export const UnifiedMintInterface = () => {
                         const clamped = Math.max(0, Math.min(50, value));
                         setFormData({ ...formData, royalty_percentage: clamped });
                       }}
-                      className="w-20 text-center"
+                      className="w-20 text-center text-sm sm:text-base"
                     />
                     <span className="text-sm text-muted-foreground">%</span>
                   </div>
@@ -830,9 +840,9 @@ export const UnifiedMintInterface = () => {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="treasury_wallet" className="text-base font-medium">
-                  Treasury Wallet <Badge variant="secondary">On-Chain</Badge>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="treasury_wallet" className="text-sm sm:text-base font-medium">
+                  Treasury Wallet <Badge variant="secondary" className="ml-1">On-Chain</Badge>
                 </Label>
                 <Input
                   id="treasury_wallet"
@@ -841,28 +851,30 @@ export const UnifiedMintInterface = () => {
                   value={formData.treasury_wallet || publicKey || ''}
                   onChange={(e) => setFormData({ ...formData, treasury_wallet: e.target.value })}
                   disabled={!!publicKey}
+                  className="text-xs sm:text-sm font-mono"
                 />
                 <div className="text-xs text-muted-foreground">
                   Wallet address to receive royalties
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="whitelist_enabled" className="text-base font-medium">
-                  Whitelist Enabled
-                </Label>
+              <div className="flex items-start space-x-3">
                 <Switch
                   id="whitelist_enabled"
                   checked={formData.whitelist_enabled}
                   onCheckedChange={(checked) => setFormData({ ...formData, whitelist_enabled: checked })}
+                  className="mt-0.5"
                 />
+                <Label htmlFor="whitelist_enabled" className="text-sm sm:text-base font-medium leading-tight">
+                  Whitelist Enabled
+                </Label>
               </div>
 
-              <div className="flex justify-between pt-6">
-                <Button variant="outline" onClick={() => setActiveStep(1)}>
+              <div className="flex flex-col sm:flex-row justify-between gap-3 pt-6">
+                <Button variant="outline" onClick={() => setActiveStep(1)} className="w-full sm:w-auto">
                   Back
                 </Button>
-                <Button onClick={() => setActiveStep(3)} disabled={!formData.image_file}>
+                <Button onClick={() => setActiveStep(3)} disabled={!formData.image_file} className="w-full sm:w-auto">
                   Next: Review
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -872,26 +884,26 @@ export const UnifiedMintInterface = () => {
       )}
 
       {activeStep === 3 && (
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+          <Card className="w-full max-w-4xl mx-auto">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
                 Review Collection Details
               </CardTitle>
-              <p className="text-muted-foreground">
+              <CardDescription className="text-sm sm:text-base">
                 Please review the details of your collection before submitting.
-              </p>
+              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               {/* Collection Header */}
-              <div className="bg-muted/30 rounded-lg p-6 mb-8">
-                <div className="flex items-start gap-6">
+              <div className="bg-muted/30 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                   {/* Collection Avatar */}
                   {(formData.image_file || formData.image_preview_url) && (
                     <img 
                       src={formData.image_preview_url || (formData.image_file ? URL.createObjectURL(formData.image_file) : '')}
                       alt="Collection avatar preview"
-                      className="w-24 h-24 rounded-xl object-cover border-2 border-border"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-2 border-border mx-auto sm:mx-0"
                       onError={(e) => {
                         // Fallback if preview URL fails
                         if (formData.image_file && !e.currentTarget.src.startsWith('blob:')) {
@@ -900,17 +912,28 @@ export const UnifiedMintInterface = () => {
                       }}
                     />
                   )}
-                  
-                  {/* Collection Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold">{formData.name}</h2>
-                        <p className="text-lg text-muted-foreground">{formData.symbol}</p>
-                        <p className="text-sm text-muted-foreground mt-1">{formData.category}</p>
-                      </div>
-                      
-                      {/* Content Rating Badge */}
+                  <div className="flex-1 text-center sm:text-left">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2">{formData.name}</h2>
+                    {formData.symbol && (
+                      <Badge variant="secondary" className="mb-3">{formData.symbol}</Badge>
+                    )}
+                    {formData.onchain_description && (
+                      <p className="text-sm sm:text-base text-muted-foreground mb-3">{formData.onchain_description}</p>
+                    )}
+                   </div>
+                 </div>
+               </div>
+
+               {/* Collection Info */}
+               <div className="flex-1">
+                 <div className="flex items-start justify-between">
+                   <div>
+                     <h2 className="text-2xl font-bold">{formData.name}</h2>
+                     <p className="text-lg text-muted-foreground">{formData.symbol}</p>
+                     <p className="text-sm text-muted-foreground mt-1">{formData.category}</p>
+                   </div>
+                   
+                   {/* Content Rating Badge */}
                       <div className="flex items-center gap-2 bg-background px-3 py-1 rounded-full">
                         <div className={`w-2 h-2 rounded-full ${formData.explicit_content ? 'bg-orange-500' : 'bg-green-500'}`}></div>
                         <span className="text-xs font-medium">
@@ -1050,26 +1073,26 @@ export const UnifiedMintInterface = () => {
                   </div>
                 </div>
               </div>
-              
-              <div className="flex justify-between pt-8 border-t mt-8">
-                <Button variant="outline" onClick={() => setActiveStep(2)}>
-                  Back
-                </Button>
-                 <Button 
-                   onClick={handleSubmit} 
-                   size="lg"
-                   disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
-                 >
-                  {isMinting ? 'Creating & Minting...' : 'Create Collection + Mint NFT'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-      )}
+               <div className="flex flex-col sm:flex-row justify-between gap-3 pt-6 sm:pt-8 border-t mt-6 sm:mt-8">
+                 <Button variant="outline" onClick={() => setActiveStep(2)} className="w-full sm:w-auto">
+                   Back
+                 </Button>
+                  <Button 
+                    onClick={handleSubmit} 
+                    size="lg"
+                    disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
+                    className="w-full sm:w-auto"
+                  >
+                   {isMinting ? 'Creating & Minting...' : 'Create Collection + Mint NFT'}
+                   <ArrowRight className="ml-2 h-4 w-4" />
+                 </Button>
+               </div>
+             </CardContent>
+           </Card>
+       )}
 
-      {activeStep === 4 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+       {activeStep === 4 && (
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Left Column - Collection Summary */}
             <div className="space-y-6">
               <Card>
