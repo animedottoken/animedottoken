@@ -119,32 +119,54 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
           </Card>
 
           {/* Bid Input */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             <label className="text-sm font-medium">Your Bid Amount ($ANIME)</label>
+            
+            {/* Cost Summary Box */}
+            {bidAmount && parseFloat(bidAmount) > 0 && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">You will pay:</span>
+                  <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                    {parseFloat(bidAmount).toLocaleString()} $ANIME
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  This amount will be deducted from your wallet
+                </p>
+              </div>
+            )}
+
             <div className="flex gap-2">
               <Input
                 type="number"
-                placeholder="Enter bid amount"
+                placeholder="Enter amount you want to spend"
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
-                min="0"
-                step="0.01"
+                min="1"
+                step="1"
+                className="text-lg"
               />
               <Button 
                 onClick={handleSubmit} 
-                disabled={submitting || !bidAmount}
+                disabled={submitting || !bidAmount || parseFloat(bidAmount) < 1}
                 className="px-8"
               >
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  'Boost Now'
+                  `Pay ${bidAmount || '0'} $ANIME`
                 )}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Minimum bid: 1 $ANIME • Duration: 24 hours
-            </p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                💡 Boost Cost: Minimum 1 $ANIME • Duration: 24 hours
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                Higher bids get better placement in the boosted section
+              </p>
+            </div>
           </div>
 
           {/* Current Top Bids */}
