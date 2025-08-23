@@ -346,8 +346,8 @@ export default function Profile() {
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{collection.name}</h4>
                       <div className="flex items-center gap-1">
-                        {collection.is_live ? (
-                          <TooltipProvider>
+                        <TooltipProvider>
+                          {collection.is_live ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="default" className="bg-green-500 text-white text-xs">
@@ -358,9 +358,7 @@ export default function Profile() {
                                 <p>Collection is live and accepting mints</p>
                               </TooltipContent>
                             </Tooltip>
-                          </TooltipProvider>
-                        ) : (
-                          <TooltipProvider>
+                          ) : (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="secondary" className="text-xs">
@@ -371,10 +369,8 @@ export default function Profile() {
                                 <p>Collection is in draft mode</p>
                               </TooltipContent>
                             </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        {collection.verified && (
-                          <TooltipProvider>
+                          )}
+                          {collection.verified && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="outline" className="text-xs">
@@ -385,9 +381,7 @@ export default function Profile() {
                                 <p>Verified collection</p>
                               </TooltipContent>
                             </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        <TooltipProvider>
+                          )}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -435,6 +429,7 @@ export default function Profile() {
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
+                      </div>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
