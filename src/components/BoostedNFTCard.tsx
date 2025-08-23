@@ -1,11 +1,11 @@
-
+import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Crown, Rocket, TrendingUp, Eye, Heart } from 'lucide-react';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNavigate } from 'react-router-dom';
-
+import { supabase } from '@/integrations/supabase/client';
 interface BoostedListing {
   id: string;
   nft_id: string;
@@ -25,6 +25,29 @@ interface BoostedNFTCardProps {
 export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const navigate = useNavigate();
+  const [nftPrice, setNftPrice] = useState<number | null>(null);
+  const [listed, setListed] = useState<boolean>(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('nfts')
+      .select('price,is_listed')
+      .eq('id', listing.nft_id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error('Error loading NFT price:', error);
+          setNftPrice(null);
+          setListed(false);
+          return;
+        }
+        setNftPrice(data?.price ?? null);
+        setListed(!!data?.is_listed);
+      });
+    return () => { cancelled = true; };
+  }, [listing.nft_id]);
 
   const getTierIcon = () => {
     switch (listing.tier) {
@@ -79,19 +102,6 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
     }
   };
 
-  const timeLeft = () => {
-    const endTime = new Date(listing.end_time);
-    const now = new Date();
-    const diff = endTime.getTime() - now.getTime();
-    
-    if (diff <= 0) return 'Expired';
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
-    return `${hours}h ${minutes}m left`;
-  };
-
   const handleViewDetails = () => {
     navigate(`/nft/${listing.nft_id}?from=marketplace`);
   };
@@ -109,10 +119,12 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
           {getTierBadge()}
         </div>
 
-        {/* Boost Info - Amount Display - Top Right */}
-        <div className="absolute top-3 right-3 z-20 bg-background border-2 border-primary text-primary font-bold text-sm px-3 py-1 rounded-full shadow-lg">
-          {Number(listing.bid_amount).toLocaleString()} $ANIME
-        </div>
+        {/* Price Overlay - Top Right */}
+        {listed && nftPrice !== null && (
+          <div className="absolute top-3 right-3 z-20 bg-primary text-primary-foreground font-bold text-sm px-3 py-1 rounded-full shadow-lg">
+            {nftPrice} SOL
+          </div>
+        )}
 
         {/* Image Container */}
         <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg overflow-hidden">
@@ -154,9 +166,13 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
             </Button>
           </div>
 
-          {/* Boost timer */}
-          <div className="text-xs text-center py-1 px-2 bg-muted rounded mb-3">
-            ⏰ {timeLeft()}
+          {/* Price row inside card */}
+          <div className="mt-2 mb-3">
+            {listed && nftPrice !== null ? (
+              <div className="text-lg font-bold text-primary">{nftPrice} SOL</div>
+            ) : (
+              <div className="text-sm text-muted-foreground">Not for sale</div>
+            )}
           </div>
 
           <Button className="w-full" variant="outline" onClick={(e) => {e.stopPropagation(); handleViewDetails()}}>
