@@ -103,34 +103,34 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
       }`}
       onClick={handleViewDetails}
     >
-      <CardContent className="p-0">
-        {/* Boost Badge */}
-        <div className="absolute top-2 left-2 z-10">
+      <CardContent className="p-0 relative">
+        {/* Boost Badge - Top Left */}
+        <div className="absolute top-3 left-3 z-20">
           {getTierBadge()}
         </div>
 
-        {/* Boost Info - Amount Display */}
-        <div className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded shadow-lg">
+        {/* Boost Info - Amount Display - Top Right */}
+        <div className="absolute top-3 right-3 z-20 bg-background border-2 border-primary text-primary font-bold text-sm px-3 py-1 rounded-full shadow-lg">
           {Number(listing.bid_amount).toLocaleString()} $ANIME
         </div>
 
-        {/* Image */}
-        <div className={`aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center text-6xl group-hover:scale-105 transition-transform relative ${
-          listing.tier === 'god' ? 'bg-gradient-to-br from-yellow-400/20 to-yellow-600/20' : ''
-        }`}>
+        {/* Image Container */}
+        <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg overflow-hidden">
           <img 
             src={listing.nft_image_url} 
             alt={listing.nft_name}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.src = '/images/og-anime.jpg';
             }}
           />
           
-          {/* Boost tier icon overlay */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="bg-black/70 p-3 rounded-full">
-              {getTierIcon()}
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="bg-black/70 p-3 rounded-full">
+                {getTierIcon()}
+              </div>
             </div>
           </div>
         </div>
