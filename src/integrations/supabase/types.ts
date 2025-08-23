@@ -359,8 +359,10 @@ export type Database = {
           creator_address: string
           currency: string | null
           description: string | null
+          featured_at: string | null
           id: string
           image_url: string | null
+          is_featured: boolean
           is_listed: boolean
           listing_receipt: string | null
           metadata_uri: string | null
@@ -370,6 +372,7 @@ export type Database = {
           price: number | null
           symbol: string | null
           updated_at: string
+          views: number
         }
         Insert: {
           attributes?: Json | null
@@ -379,8 +382,10 @@ export type Database = {
           creator_address: string
           currency?: string | null
           description?: string | null
+          featured_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           is_listed?: boolean
           listing_receipt?: string | null
           metadata_uri?: string | null
@@ -390,6 +395,7 @@ export type Database = {
           price?: number | null
           symbol?: string | null
           updated_at?: string
+          views?: number
         }
         Update: {
           attributes?: Json | null
@@ -399,8 +405,10 @@ export type Database = {
           creator_address?: string
           currency?: string | null
           description?: string | null
+          featured_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           is_listed?: boolean
           listing_receipt?: string | null
           metadata_uri?: string | null
@@ -410,6 +418,7 @@ export type Database = {
           price?: number | null
           symbol?: string | null
           updated_at?: string
+          views?: number
         }
         Relationships: [
           {
