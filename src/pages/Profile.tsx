@@ -584,13 +584,17 @@ export default function Profile() {
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{nft.name}</h4>
                       <div className="flex items-center gap-1">
-                        <Badge variant="secondary" className="text-xs">
-                          NFT
-                        </Badge>
-                        {nft.symbol && (
-                          <Badge variant="outline" className="text-xs">
-                            {nft.symbol}
-                          </Badge>
+                        {nft.symbol && nft.symbol.toUpperCase() !== 'NFT' ? (
+                          <>
+                            <Badge variant="secondary" className="text-xs">
+                              NFT
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {nft.symbol}
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">NFT</Badge>
                         )}
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -652,7 +656,7 @@ export default function Profile() {
                       <div>
                         <span className="text-muted-foreground">Minted:</span>
                         <span className="ml-1 font-medium">
-                          {new Date(nft.created_at).toLocaleDateString()}
+                          {new Date(nft.created_at).toLocaleDateString('cs-CZ')}
                         </span>
                       </div>
                     </div>
