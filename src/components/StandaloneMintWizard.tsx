@@ -21,8 +21,7 @@ import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
   { number: 2, title: 'NFT Details', icon: FileText },
-  { number: 3, title: 'Review & Mint', icon: CheckCircle },
-  { number: 4, title: 'Congratulations!', icon: CheckCircle }
+  { number: 3, title: 'Review & Mint', icon: CheckCircle }
 ];
 
 export const StandaloneMintWizard = () => {
@@ -253,29 +252,9 @@ export const StandaloneMintWizard = () => {
           })}
         </div>
         <div className="sm:ml-4 text-center sm:text-right">
-          <p className="text-xs sm:text-sm text-muted-foreground">Step {currentStep} of {STEPS.length}</p>
-          
-          {/* Quick Navigation */}
-          <div className="flex gap-2 mt-2 text-xs">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/profile')} 
-              className="h-6 text-xs px-2"
-              title="Go to My NFTs"
-            >
-              📂 My NFTs
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/mint/collection')}
-              className="h-6 text-xs px-2"
-              title="Create new collection"
-            >
-              + Collection
-            </Button>
-          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {currentStep <= 3 ? `Step ${currentStep} of ${STEPS.length}` : 'Complete!'}
+          </p>
         </div>
       </div>
 
@@ -303,6 +282,8 @@ export const StandaloneMintWizard = () => {
                   maxSizeText="JPEG, PNG, GIF supported"
                   className="w-full"
                   aspectRatio={1}
+                  currentFile={formData.image_file}
+                  previewUrl={formData.image_file ? URL.createObjectURL(formData.image_file) : undefined}
                 />
                 
                 {/* Option to use collection avatar */}
@@ -753,7 +734,7 @@ export const StandaloneMintWizard = () => {
                 
                 {/* View Your NFTs */}
                 <Button
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate('/profile?tab=nfts')}
                   className="flex items-center justify-center gap-2 h-auto p-4"
                   variant="default"
                 >
