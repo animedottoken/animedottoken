@@ -262,7 +262,7 @@ export default function Profile() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div>
+                                <span>
                                   <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                       <Button
@@ -293,7 +293,7 @@ export default function Profile() {
                                       </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>
-                                </div>
+                                </span>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Ready to burn - no NFTs in this collection</p>
@@ -304,7 +304,7 @@ export default function Profile() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div>
+                                <span>
                                   <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                       <Button
@@ -335,7 +335,7 @@ export default function Profile() {
                                       </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>
-                                </div>
+                                </span>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Burn all NFTs first, then you can burn the collection</p>
