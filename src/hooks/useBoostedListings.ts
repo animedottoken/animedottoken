@@ -25,6 +25,8 @@ export const useBoostedListings = () => {
   const [loading, setLoading] = useState(false);
   const { publicKey } = useSolanaWallet();
 
+  const ANIME_TOKEN_MINT = 'GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump';
+
   const loadBoostedListings = useCallback(async () => {
     try {
       setLoading(true);
@@ -56,25 +58,24 @@ export const useBoostedListings = () => {
     if (!publicKey) return { success: false, error: 'Wallet not connected' };
 
     try {
-      const { data, error } = await supabase
-        .from('boosted_listings')
-        .insert({
-          nft_id: nftId,
-          bidder_wallet: publicKey,
-          bid_amount: bidAmount,
-          token_mint: 'ANIME_TOKEN_MINT', // TODO: Replace with actual $ANIME token mint
-          tx_signature: txSignature
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke('create-boost', {
+        body: {
+          nftId,
+          bidAmount,
+          tokenMint: ANIME_TOKEN_MINT,
+          bidderWallet: publicKey,
+          txSignature,
+        },
+      });
 
-      if (error) {
-        console.error('Error creating boost:', error);
-        return { success: false, error: error.message };
+      if (error || !data?.success) {
+        const msg = (error as any)?.message || data?.error || 'Failed to create boost';
+        console.error('Error creating boost:', msg);
+        return { success: false, error: msg };
       }
 
       await loadBoostedListings(); // Refresh the list
-      return { success: true, data };
+      return { success: true, data: data.data };
     } catch (error) {
       console.error('Error creating boost:', error);
       return { success: false, error: 'Failed to create boost' };

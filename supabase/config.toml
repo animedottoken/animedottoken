@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.delete-collection]
 verify_jwt = false
+
+[functions.create-boost]
+verify_jwt = false
