@@ -13,6 +13,9 @@ export interface UserNFT {
   collection_id?: string;
   collection_name?: string;
   owner_address: string;
+  creator_address?: string;
+  price?: number;
+  is_listed?: boolean;
   metadata?: any;
   created_at: string;
   updated_at: string;
@@ -47,6 +50,9 @@ export const useUserNFTs = () => {
           collection_id,
           owner_address,
           attributes,
+          price,
+          is_listed,
+          creator_address,
           created_at,
           updated_at,
           collections (
@@ -74,6 +80,9 @@ export const useUserNFTs = () => {
           mint_address: nft.mint_address,
           collection_id: nft.collection_id,
           owner_address: nft.owner_address,
+          creator_address: nft.creator_address,
+          price: nft.price,
+          is_listed: nft.is_listed,
           metadata: nft.attributes,
           created_at: nft.created_at,
           updated_at: nft.updated_at,
