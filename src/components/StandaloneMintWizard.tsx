@@ -21,8 +21,7 @@ import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
   { number: 2, title: 'NFT Details', icon: FileText },
-  { number: 3, title: 'Review & Mint', icon: CheckCircle },
-  { number: 4, title: 'Success!', icon: CheckCircle }
+  { number: 3, title: 'Review & Mint', icon: CheckCircle }
 ];
 
 export const StandaloneMintWizard = () => {
@@ -55,13 +54,31 @@ export const StandaloneMintWizard = () => {
   const { collections, loading: collectionsLoading } = useCollections({ autoLoad: true });
   const { collection: selectedCollection } = useCollection(selectedCollectionId || '');
 
-  // Update formData when selectedCollectionId changes
+  // Update formData when selectedCollectionId changes and populate from collection
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      collection_id: selectedCollectionId || undefined
-    }));
-  }, [selectedCollectionId]);
+    if (selectedCollection) {
+      setFormData(prev => ({
+        ...prev,
+        collection_id: selectedCollectionId || undefined,
+        category: prev.category || selectedCollection.category || '',
+        royalty_percentage: prev.royalty_percentage || selectedCollection.royalty_percentage || 0,
+        initial_price: prev.initial_price || selectedCollection.mint_price || undefined
+      }));
+      
+      // Update input fields to match
+      if (!royaltyInput || royaltyInput === '0') {
+        setRoyaltyInput(String(selectedCollection.royalty_percentage || 0));
+      }
+      if (!priceInput && selectedCollection.mint_price > 0) {
+        setPriceInput(String(selectedCollection.mint_price));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        collection_id: selectedCollectionId || undefined
+      }));
+    }
+  }, [selectedCollectionId, selectedCollection]);
 
   const handleCollectionChange = (value: string) => {
     if (value === 'create-new') {
@@ -88,7 +105,13 @@ export const StandaloneMintWizard = () => {
       toast.error('Please enter an NFT name');
       return;
     }
-    setCurrentStep(prev => Math.min(prev + 1, 4));
+    
+    setCurrentStep(prev => {
+      const nextStep = Math.min(prev + 1, 3);
+      // Scroll to top when moving to next step
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+      return nextStep;
+    });
   };
 
   const handleBack = () => {
@@ -103,8 +126,32 @@ export const StandaloneMintWizard = () => {
 
     const result = await mintStandaloneNFT(formData);
     if (result.success) {
-      // Move to success screen instead of resetting
-      setCurrentStep(4);
+      // Show success toast and reset form
+      toast.success(`${formData.quantity > 1 ? `${formData.quantity} NFTs` : 'NFT'} minted successfully!`);
+      
+      // Reset form and go back to step 1
+      setFormData({
+        name: '',
+        symbol: 'NFT', 
+        description: '',
+        image_file: undefined,
+        quantity: 1,
+        royalty_percentage: selectedCollection?.royalty_percentage || 0,
+        category: selectedCollection?.category || '',
+        external_links: [],
+        attributes: [],
+        collection_id: selectedCollectionId || undefined,
+        explicit_content: false,
+        list_after_mint: false,
+        initial_price: selectedCollection?.mint_price || undefined
+      });
+      setQuantityInput('1');
+      setRoyaltyInput(String(selectedCollection?.royalty_percentage || 0));
+      setPriceInput(selectedCollection?.mint_price ? String(selectedCollection.mint_price) : '');
+      setCurrentStep(1);
+      
+      // Scroll to top
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     }
   };
 
@@ -200,6 +247,26 @@ export const StandaloneMintWizard = () => {
         </div>
         <div className="sm:ml-4 text-center sm:text-right">
           <p className="text-xs sm:text-sm text-muted-foreground">Step {currentStep} of {STEPS.length}</p>
+          
+          {/* Quick Actions */}
+          <div className="flex gap-2 mt-2 text-xs">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/profile')} 
+              className="h-6 text-xs px-2"
+            >
+              📂 My NFTs
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/mint/collection')}
+              className="h-6 text-xs px-2"
+            >
+              + Collection
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -217,15 +284,49 @@ export const StandaloneMintWizard = () => {
               <Label htmlFor="image" className="text-base font-medium">
                 NFT Image
               </Label>
-              <FileUpload
-                onFileSelect={(file) => {
-                  setFormData({ ...formData, image_file: file || undefined });
-                }}
-                accept="image/*"
-                placeholder="Click to upload image"
-                maxSizeText="JPEG, PNG, GIF supported"
-                className="w-full"
-              />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <FileUpload
+                  onFileSelect={(file) => {
+                    setFormData({ ...formData, image_file: file || undefined });
+                  }}
+                  accept="image/*"
+                  placeholder="Click to upload image"
+                  maxSizeText="JPEG, PNG, GIF supported"
+                  className="w-full"
+                  aspectRatio={1}
+                />
+                
+                {/* Option to use collection avatar */}
+                {selectedCollection?.image_url && (
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Or use collection avatar:</Label>
+                    <div 
+                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group"
+                      onClick={() => {
+                        fetch(selectedCollection.image_url!)
+                          .then(response => response.blob())
+                          .then(blob => {
+                            const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
+                            setFormData({ ...formData, image_file: file });
+                            toast.success('Collection avatar loaded!');
+                          })
+                          .catch(() => toast.error('Failed to load collection avatar'));
+                      }}
+                    >
+                      <div className="flex flex-col items-center text-center space-y-2">
+                        <img
+                          src={selectedCollection.image_url}
+                          alt={selectedCollection.name}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                        <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+                          Use Collection Avatar
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end pt-4">
@@ -255,10 +356,15 @@ export const StandaloneMintWizard = () => {
                 </Label>
                 <Input
                   id="name"
-                  placeholder="My Awesome NFT"
+                  placeholder={selectedCollection ? `${selectedCollection.name} #1` : "My Awesome NFT"}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
+                {selectedCollection && (
+                  <p className="text-xs text-muted-foreground">
+                    💡 Leave empty to auto-generate names from collection: {selectedCollection.name} #1, #2, etc.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-3">
@@ -297,7 +403,7 @@ export const StandaloneMintWizard = () => {
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={selectedCollection?.category ? `From collection: ${selectedCollection.category}` : "Select category"} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Art">Art</SelectItem>
@@ -308,6 +414,11 @@ export const StandaloneMintWizard = () => {
                     <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
+                {selectedCollection?.category && !formData.category && (
+                  <p className="text-xs text-muted-foreground">
+                    💡 Will use collection category: {selectedCollection.category}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-3">
@@ -352,12 +463,15 @@ export const StandaloneMintWizard = () => {
                   min="0"
                   max="10"
                   step="0.5"
+                  placeholder={selectedCollection?.royalty_percentage ? `Collection default: ${selectedCollection.royalty_percentage}%` : "0"}
                   value={royaltyInput}
                   onChange={(e) => setRoyaltyInput(e.target.value)}
                   onBlur={(e) => {
                     const raw = e.target.value.trim().replace(',', '.');
                     if (raw === '') {
-                      setFormData({ ...formData, royalty_percentage: undefined });
+                      const defaultRoyalty = selectedCollection?.royalty_percentage || 0;
+                      setFormData({ ...formData, royalty_percentage: defaultRoyalty });
+                      setRoyaltyInput(String(defaultRoyalty));
                       return;
                     }
                     const r = Math.max(0, Math.min(10, parseFloat(raw)));
@@ -366,6 +480,11 @@ export const StandaloneMintWizard = () => {
                     setFormData({ ...formData, royalty_percentage: fixed });
                   }}
                 />
+                {selectedCollection?.royalty_percentage && royaltyInput === String(selectedCollection.royalty_percentage) && (
+                  <p className="text-xs text-muted-foreground">
+                    💡 Using collection royalty: {selectedCollection.royalty_percentage}%
+                  </p>
+                )}
               </div>
             </div>
 
@@ -384,10 +503,10 @@ export const StandaloneMintWizard = () => {
 
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox
+                  <Switch
                     id="list-after-mint"
                     checked={formData.list_after_mint || false}
-                    onCheckedChange={(checked) => setFormData({ ...formData, list_after_mint: !!checked })}
+                    onCheckedChange={(checked) => setFormData({ ...formData, list_after_mint: checked })}
                   />
                   <Label htmlFor="list-after-mint" className="text-base font-medium">
                     List for sale immediately after minting
@@ -404,13 +523,15 @@ export const StandaloneMintWizard = () => {
                       type="number"
                       min="0"
                       step="0.001"
-                      placeholder="0.1"
+                      placeholder={selectedCollection?.mint_price ? `Collection price: ${selectedCollection.mint_price}` : "0.1"}
                       value={priceInput}
                       onChange={(e) => setPriceInput(e.target.value)}
                       onBlur={(e) => {
                         const raw = e.target.value.trim();
                         if (raw === '') {
-                          setFormData({ ...formData, initial_price: undefined });
+                          const defaultPrice = selectedCollection?.mint_price || undefined;
+                          setFormData({ ...formData, initial_price: defaultPrice });
+                          if (defaultPrice) setPriceInput(String(defaultPrice));
                           return;
                         }
                         const price = Math.max(0, parseFloat(raw) || 0);
@@ -420,6 +541,7 @@ export const StandaloneMintWizard = () => {
                     />
                     <p className="text-xs text-muted-foreground">
                       Set the initial listing price for your NFT(s)
+                      {selectedCollection?.mint_price && ` (Collection default: ${selectedCollection.mint_price} SOL)`}
                     </p>
                   </div>
                 )}
@@ -457,12 +579,12 @@ export const StandaloneMintWizard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* NFT Preview */}
               <div className="space-y-4">
-                <h3 className="font-semibold">NFT Preview</h3>
+                <h3 className="text-lg font-semibold">NFT Preview</h3>
                 {formData.image_file && (
-                  <div className="w-full max-w-sm rounded-lg overflow-hidden bg-muted">
+                  <div className="w-full max-w-sm rounded-xl overflow-hidden bg-muted border-2 border-border">
                     <img
                       src={URL.createObjectURL(formData.image_file)}
                       alt="NFT Preview"
@@ -470,26 +592,87 @@ export const StandaloneMintWizard = () => {
                     />
                   </div>
                 )}
+                
+                {selectedCollection && (
+                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                    <h4 className="font-medium text-sm mb-2">Part of Collection:</h4>
+                    <div className="flex items-center gap-3">
+                      {selectedCollection.image_url && (
+                        <img 
+                          src={selectedCollection.image_url} 
+                          alt={selectedCollection.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{selectedCollection.name}</p>
+                        <p className="text-xs text-muted-foreground">{selectedCollection.symbol}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* NFT Details Summary */}
+              {/* Complete NFT Details Summary */}
               <div className="space-y-4">
-                <h3 className="font-semibold">Details Summary</h3>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Name:</strong> {formData.name}</div>
-                  <div><strong>Symbol:</strong> {formData.symbol}</div>
-                  {formData.description && <div><strong>Description:</strong> {formData.description}</div>}
-                  {formData.category && <div><strong>Category:</strong> {formData.category}</div>}
-                  <div><strong>Quantity:</strong> {formData.quantity}</div>
-                  <div><strong>Royalties:</strong> {formData.royalty_percentage}%</div>
-                  {formData.explicit_content && (
-                    <div className="text-amber-600"><strong>⚠️ Explicit Content:</strong> Yes</div>
-                  )}
-                  {formData.list_after_mint && (
-                    <div className="text-green-600">
-                      <strong>✓ List After Mint:</strong> {formData.initial_price} SOL
+                <h3 className="text-lg font-semibold">Complete Review</h3>
+                <div className="space-y-4">
+                  
+                  {/* Basic Information */}
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                    <h4 className="font-medium text-sm text-primary">Basic Information</h4>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Name:</strong> {formData.name || (selectedCollection ? `${selectedCollection.name} #1` : 'Untitled')}</div>
+                      <div><strong>Symbol:</strong> {formData.symbol || 'NFT'}</div>
+                      {(formData.description || selectedCollection?.description) && (
+                        <div><strong>Description:</strong> {formData.description || selectedCollection?.description}</div>
+                      )}
+                      <div><strong>Category:</strong> {formData.category || selectedCollection?.category || 'Not specified'}</div>
+                    </div>
+                  </div>
+
+                  {/* Minting Details */}
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                    <h4 className="font-medium text-sm text-primary">Minting Details</h4>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Quantity:</strong> {formData.quantity || 1} {(formData.quantity || 1) > 1 ? 'NFTs' : 'NFT'}</div>
+                      <div><strong>Creator Royalties:</strong> {formData.royalty_percentage || selectedCollection?.royalty_percentage || 0}%</div>
+                      {selectedCollection && (
+                        <div><strong>Collection:</strong> {selectedCollection.name}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Properties & Attributes */}
+                  {formData.attributes && formData.attributes.length > 0 && (
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                      <h4 className="font-medium text-sm text-primary">Properties</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.attributes.map((attr, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {attr.trait_type}: {attr.value}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                   )}
+
+                  {/* Content & Listing Settings */}
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                    <h4 className="font-medium text-sm text-primary">Settings</h4>
+                    <div className="space-y-1 text-sm">
+                      <div className={formData.explicit_content ? "text-amber-600" : ""}>
+                        <strong>Explicit Content:</strong> {formData.explicit_content ? '⚠️ Yes' : '✅ No'}
+                      </div>
+                      <div className={formData.list_after_mint ? "text-green-600" : ""}>
+                        <strong>List After Mint:</strong> {formData.list_after_mint 
+                          ? `✅ Yes (${formData.initial_price || selectedCollection?.mint_price || 0} SOL)` 
+                          : '❌ No'
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             </div>
@@ -502,105 +685,28 @@ export const StandaloneMintWizard = () => {
               <Button 
                 onClick={handleMint} 
                 disabled={minting || !publicKey}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[140px]"
+                size="lg"
               >
-                {minting ? 'Minting...' : !publicKey ? 'Connect Wallet' : `Mint NFT${(formData.quantity || 1) > 1 ? 's' : ''}`}
-                {!minting && <CheckCircle className="ml-2 h-4 w-4" />}
+                {minting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
+                    Minting...
+                  </>
+                ) : !publicKey ? (
+                  'Connect Wallet'
+                ) : (
+                  <>
+                    🎨 Mint {(formData.quantity || 1) > 1 ? `${formData.quantity} NFTs` : 'NFT'}
+                    <CheckCircle className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Step 4: Success Screen */}
-      {currentStep === 4 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-600">
-              <CheckCircle className="h-6 w-6" />
-              Congratulations! 🎉
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center space-y-4">
-              <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-10 w-10 text-green-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">NFT Minted Successfully!</h3>
-                <p className="text-muted-foreground">
-                  Your {formData.quantity > 1 ? `${formData.quantity} NFTs` : 'NFT'} "{formData.name}" {formData.quantity > 1 ? 'have' : 'has'} been created on the Solana blockchain.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">NFT Details:</h4>
-              <div className="space-y-1 text-sm">
-                <div><strong>Name:</strong> {formData.name}</div>
-                <div><strong>Quantity:</strong> {formData.quantity}</div>
-                {formData.list_after_mint && (
-                  <div><strong>Listed for:</strong> {formData.initial_price} SOL</div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-semibold">What's next?</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Button 
-                  onClick={() => {
-                    // Reset form and go to step 1
-                    setFormData({
-                      name: '',
-                      symbol: 'NFT',
-                      description: '',
-                      image_file: undefined,
-                      quantity: 1,
-                      royalty_percentage: 0,
-                      category: '',
-                      external_links: [],
-                      attributes: [],
-                      collection_id: selectedCollectionId || undefined,
-                      explicit_content: false,
-                      list_after_mint: false,
-                      initial_price: undefined
-                    });
-                    setQuantityInput('1');
-                    setRoyaltyInput('0');
-                    setPriceInput('');
-                    setCurrentStep(1);
-                  }}
-                  className="flex-1"
-                >
-                  🎨 Mint Another NFT
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/mint/collection')}
-                  className="flex-1"
-                >
-                  📦 Create Collection
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/profile')}
-                  className="flex-1"
-                >
-                  👤 Go to Profile
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/marketplace')}
-                  className="flex-1"
-                >
-                  🛒 Browse Marketplace
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
