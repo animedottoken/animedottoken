@@ -198,7 +198,7 @@ export const StandaloneMintWizard = () => {
                 ))}
               </SelectContent>
             </Select>
-            {selectedCollection && (
+            {selectedCollection && currentStep === 1 && (
               <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
                 {selectedCollection.image_url && (
                   <img 
@@ -720,11 +720,6 @@ export const StandaloneMintWizard = () => {
                   : 'Your NFT has been created'
                 } and {formData.list_after_mint ? 'listed for sale' : 'added to your collection'}.
               </p>
-              {selectedCollection && (
-                <p className="text-sm text-green-700">
-                  Added to collection: <strong>{selectedCollection.name}</strong>
-                </p>
-              )}
             </div>
 
             {/* What's Next */}
