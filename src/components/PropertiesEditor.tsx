@@ -45,9 +45,13 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
     
     switch (displayType) {
       case 'number':
-      case 'boost_number':
         if (!/^-?\d+(\.\d+)?$/.test(value)) {
           return 'Must be a valid number';
+        }
+        break;
+      case 'boost_number':
+        if (!/^[+-]?\d+(\.\d+)?$/.test(value)) {
+          return 'Must be a valid number (optionally with + prefix)';
         }
         break;
       case 'boost_percentage':
@@ -67,6 +71,57 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
         break;
     }
     return '';
+  };
+
+  const handleDisplayTypeChange = (newDisplayType: string) => {
+    const currentValue = newProperty.value;
+    let shouldClearValue = false;
+
+    // Clear value if it's not compatible with new display type
+    if (currentValue) {
+      const error = validateValue(currentValue, newDisplayType);
+      if (error) {
+        shouldClearValue = true;
+      }
+    }
+
+    setNewProperty({ 
+      ...newProperty, 
+      display_type: newDisplayType,
+      value: shouldClearValue ? '' : currentValue
+    });
+    setValidationError('');
+  };
+
+  const getInputType = (displayType: string): string => {
+    switch (displayType) {
+      case 'number':
+      case 'boost_number':
+      case 'boost_percentage':
+        return 'number';
+      case 'date':
+        return 'date';
+      default:
+        return 'text';
+    }
+  };
+
+  const getInputAttributes = (displayType: string) => {
+    const attributes: any = {};
+    
+    switch (displayType) {
+      case 'boost_percentage':
+        attributes.min = 0;
+        attributes.max = 100;
+        attributes.step = 0.1;
+        break;
+      case 'number':
+      case 'boost_number':
+        attributes.step = 'any';
+        break;
+    }
+    
+    return attributes;
   };
 
   const addProperty = () => {
@@ -161,12 +216,14 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                       onChange={(e) => updateProperty(index, 'trait_type', e.target.value)}
                       className="text-sm"
                     />
-                    <Input
-                      placeholder={getPlaceholder(property.display_type || 'text', true)}
-                      value={property.value}
-                      onChange={(e) => updateProperty(index, 'value', e.target.value)}
-                      className="text-sm"
-                    />
+                     <Input
+                       type={getInputType(property.display_type || 'text')}
+                       placeholder={getPlaceholder(property.display_type || 'text', true)}
+                       value={property.value}
+                       onChange={(e) => updateProperty(index, 'value', e.target.value)}
+                       className="text-sm"
+                       {...getInputAttributes(property.display_type || 'text')}
+                     />
                   </div>
                   <Select
                     value={property.display_type || ''}
@@ -214,57 +271,54 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="trait_value" className="text-xs">Value</Label>
-              <Input
-                id="trait_value"
-                placeholder={getPlaceholder(newProperty.display_type || 'text', true)}
-                value={newProperty.value}
-                onChange={(e) => {
-                  setNewProperty({ ...newProperty, value: e.target.value });
-                  setValidationError('');
-                }}
-                className={validationError ? 'border-destructive' : ''}
-              />
-              {validationError && (
-                <div className="flex items-center gap-1 text-xs text-destructive">
-                  <AlertCircle className="h-3 w-3" />
-                  {validationError}
-                </div>
-              )}
+              <Label className="text-xs">Display Type</Label>
+              <Select
+                value={newProperty.display_type || ''}
+                onValueChange={handleDisplayTypeChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select display type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DISPLAY_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      <div>
+                        <div>{type.label}</div>
+                        <div className="text-xs text-muted-foreground">{type.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-2">
-            <Label className="text-xs">Display Type</Label>
-            <Select
-              value={newProperty.display_type || ''}
-              onValueChange={(value) => setNewProperty({ ...newProperty, display_type: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select display type" />
-              </SelectTrigger>
-              <SelectContent>
-                {DISPLAY_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    <div>
-                      <div>{type.label}</div>
-                      <div className="text-xs text-muted-foreground">{type.description}</div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="mt-2">
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription className="text-xs">
-                  <strong>Bonus types</strong> are for "extra" values that could be filtered separately in marketplaces (like +10 attack or 15% luck boost)
-                </AlertDescription>
-              </Alert>
-            </div>
+            <Label htmlFor="trait_value" className="text-xs">Value</Label>
+            <Input
+              id="trait_value"
+              type={getInputType(newProperty.display_type || 'text')}
+              placeholder={getPlaceholder(newProperty.display_type || 'text', true)}
+              value={newProperty.value}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setNewProperty({ ...newProperty, value: newValue });
+                // Real-time validation
+                const error = validateValue(newValue, newProperty.display_type || 'text');
+                setValidationError(error);
+              }}
+              className={validationError ? 'border-destructive' : ''}
+              {...getInputAttributes(newProperty.display_type || 'text')}
+            />
+            {validationError && (
+              <div className="flex items-center gap-1 text-xs text-destructive">
+                <AlertCircle className="h-3 w-3" />
+                {validationError}
+              </div>
+            )}
           </div>
           <Button
             onClick={addProperty}
-            disabled={!newProperty.trait_type.trim() || !newProperty.value.trim()}
+            disabled={!newProperty.trait_type.trim() || !newProperty.value.trim() || !!validationError}
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
