@@ -12,7 +12,7 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings, Calendar as CalendarIcon, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 import { Calendar } from '@/components/ui/calendar';
@@ -237,6 +237,47 @@ export const UnifiedMintInterface = () => {
 
   const handleGoToProfile = () => {
     navigate('/profile');
+  };
+
+  const handleCopyAddress = async (address: string) => {
+    try {
+      await navigator.clipboard.writeText(address);
+      toast.success('Address copied to clipboard');
+    } catch (err) {
+      toast.error('Failed to copy address');
+    }
+  };
+
+  const handleCreateAnother = () => {
+    // Reset form and go back to step 1
+    setFormData({
+      name: '',
+      symbol: '',
+      site_description: '',
+      onchain_description: '',
+      image_file: null,
+      banner_file: null,
+      external_links: [],
+      category: '',
+      explicit_content: false,
+      enable_primary_sales: true,
+      mint_price: 0,
+      supply_mode: 'fixed',
+      max_supply: 1000,
+      royalty_percentage: 0,
+      treasury_wallet: '',
+      whitelist_enabled: false,
+      go_live_date: '',
+      mint_end_at: '',
+      locked_fields: [],
+      attributes: [],
+      image_preview_url: null,
+      banner_preview_url: null,
+    });
+    setMintPriceInput('');
+    setStep3Collection(null);
+    setActiveStep(1);
+    toast.success('Ready to create another collection!');
   };
 
   return (
@@ -1017,14 +1058,24 @@ export const UnifiedMintInterface = () => {
                       </div>
                     </div>
                     
-                    {step3Collection?.collection_mint_address && (
-                      <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                        <div className="text-sm text-muted-foreground">Collection Mint Address</div>
-                        <div className="font-mono text-xs break-all bg-background p-2 rounded border mt-1">
-                          {step3Collection.collection_mint_address}
-                        </div>
-                      </div>
-                    )}
+                     {step3Collection?.collection_mint_address && (
+                       <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                         <div className="flex items-center justify-between mb-2">
+                           <div className="text-sm text-muted-foreground">Collection Mint Address</div>
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => handleCopyAddress(step3Collection.collection_mint_address)}
+                             className="h-6 px-2"
+                           >
+                             <Copy className="h-3 w-3" />
+                           </Button>
+                         </div>
+                         <div className="font-mono text-xs break-all bg-background p-2 rounded border">
+                           {step3Collection.collection_mint_address}
+                         </div>
+                       </div>
+                     )}
                   </div>
                 </CardContent>
               </Card>
@@ -1037,19 +1088,22 @@ export const UnifiedMintInterface = () => {
                   <CardTitle>Next Step</CardTitle>
                   <CardDescription>What would you like to do next?</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <Button 
-                      onClick={() => navigate(`/mint/nft?collection=${step3Collection?.id}`)}
-                      className="w-full"
-                    >
-                      🎨 Mint your NFT from this collection
-                    </Button>
-                    <Button variant="outline" onClick={handleGoToProfile} className="w-full">
-                      Go to Profile
-                    </Button>
-                  </div>
-                </CardContent>
+                 <CardContent>
+                   <div className="space-y-4">
+                     <Button 
+                       onClick={() => navigate(`/mint/nft?collection=${step3Collection?.id}`)}
+                       className="w-full"
+                     >
+                       🎨 Mint your NFT from this collection
+                     </Button>
+                     <Button variant="outline" onClick={handleCreateAnother} className="w-full">
+                       Create Another Collection
+                     </Button>
+                     <Button variant="secondary" onClick={handleGoToProfile} className="w-full">
+                       Go to Profile
+                     </Button>
+                   </div>
+                 </CardContent>
               </Card>
             </div>
         </div>
