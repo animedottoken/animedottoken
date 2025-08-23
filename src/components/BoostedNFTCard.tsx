@@ -6,18 +6,20 @@ import { Crown, Rocket, TrendingUp, Eye, Heart } from 'lucide-react';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNavigate } from 'react-router-dom';
 
+interface BoostedListing {
+  id: string;
+  nft_id: string;
+  bid_amount: number;
+  bid_rank: number;
+  tier: 'god' | 'top' | 'boosted';
+  nft_name: string;
+  nft_image_url: string;
+  owner_address: string;
+  end_time: string;
+}
+
 interface BoostedNFTCardProps {
-  listing: {
-    id: string;
-    nft_id: string;
-    bid_amount: number;
-    bid_rank: number;
-    tier: 'god' | 'top' | 'boosted';
-    nft_name: string;
-    nft_image_url: string;
-    owner_address: string;
-    end_time: string;
-  };
+  listing: BoostedListing;
 }
 
 export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
@@ -163,6 +165,6 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
           </Button>
         </div>
       </CardContent>
-    </div>
+    </Card>
   );
 };
