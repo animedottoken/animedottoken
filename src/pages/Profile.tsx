@@ -648,28 +648,24 @@ export default function Profile() {
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                       {nft.description || 'No description'}
                     </p>
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Type:</span>
-                        <span className="ml-1 font-medium">NFT</span>
+                        <span className="text-muted-foreground">Supply:</span>
+                        <span className="ml-1 font-medium">1</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Minted:</span>
                         <span className="ml-1 font-medium">
-                          {new Date(nft.created_at).toLocaleDateString('cs-CZ')}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm mt-2">
-                      <div>
-                        <span className="text-muted-foreground">Collection:</span>
-                        <span className="ml-1 font-medium">
-                          {nft.collection_name || 'Standalone'}
+                          {new Date(nft.created_at).toLocaleDateString('cs-CZ').replace(/\./g, '. ').replace(/\s+/g, ' ').trim()}
                         </span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Owner:</span>
-                        <span className="ml-1 font-medium">You</span>
+                        <span className="text-muted-foreground">Price:</span>
+                        <span className="ml-1 font-medium">-</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Royalty:</span>
+                        <span className="ml-1 font-medium">-</span>
                       </div>
                     </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
