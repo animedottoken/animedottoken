@@ -378,17 +378,6 @@ export default function Profile() {
                         {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
                       </span>
                     </div>
-                    <div className="mt-2">
-                      {(collection.items_redeemed || 0) === 0 ? (
-                        <Badge variant="outline" className="text-xs text-green-600 border-green-600">
-                          🔥 Ready to burn
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-xs text-orange-600 border-orange-600">
-                          🔥 {collection.items_redeemed} NFTs to burn first
-                        </Badge>
-                      )}
-                    </div>
                   </CardContent>
                 </Card>
               ))}
