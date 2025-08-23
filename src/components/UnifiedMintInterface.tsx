@@ -358,59 +358,87 @@ export const UnifiedMintInterface = () => {
               {/* Optional Mint End Date */}
               <div className="space-y-3">
                 <Label htmlFor="mint_end_at" className="text-base font-medium">
-                  Mint End Date (Optional)
+                  Mint End Date & Time (Optional)
                 </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.mint_end_at && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.mint_end_at ? (
-                        new Date(formData.mint_end_at).toLocaleString()
-                      ) : (
-                        <span>Select end date and time</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.mint_end_at ? new Date(formData.mint_end_at) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          // Set time to end of day
-                          date.setHours(23, 59, 59, 999);
-                          const now = new Date();
-                          
-                          if (date <= now) {
-                            toast.error('Date must be in the future');
-                            return;
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "flex-1 justify-start text-left font-normal",
+                          !formData.mint_end_at && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {formData.mint_end_at ? (
+                          new Date(formData.mint_end_at).toLocaleDateString()
+                        ) : (
+                          <span>Select date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.mint_end_at ? new Date(formData.mint_end_at) : undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            const now = new Date();
+                            if (date <= now) {
+                              toast.error('Date must be in the future');
+                              return;
+                            }
+                            
+                            // Keep existing time or set to current time if new date
+                            let timeString = '23:59';
+                            if (formData.mint_end_at) {
+                              const existing = new Date(formData.mint_end_at);
+                              timeString = existing.toTimeString().slice(0, 5);
+                            }
+                            
+                            const [hours, minutes] = timeString.split(':');
+                            date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                            
+                            setFormData({ 
+                              ...formData, 
+                              mint_end_at: date.toISOString().slice(0, 16),
+                              mint_end_at_error: undefined
+                            });
                           }
-                          
-                          setFormData({ 
-                            ...formData, 
-                            mint_end_at: date.toISOString().slice(0, 16),
-                            mint_end_at_error: undefined
-                          });
-                        } else {
-                          setFormData({ 
-                            ...formData, 
-                            mint_end_at: '',
-                            mint_end_at_error: undefined
-                          });
+                        }}
+                        disabled={(date) => date <= new Date()}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  
+                  <Input
+                    type="time"
+                    value={formData.mint_end_at ? new Date(formData.mint_end_at).toTimeString().slice(0, 5) : '23:59'}
+                    onChange={(e) => {
+                      if (formData.mint_end_at) {
+                        const date = new Date(formData.mint_end_at);
+                        const [hours, minutes] = e.target.value.split(':');
+                        date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                        
+                        const now = new Date();
+                        if (date <= now) {
+                          toast.error('Date and time must be in the future');
+                          return;
                         }
-                      }}
-                      disabled={(date) => date <= new Date()}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+                        
+                        setFormData({ 
+                          ...formData, 
+                          mint_end_at: date.toISOString().slice(0, 16)
+                        });
+                      }
+                    }}
+                    className="w-32"
+                    placeholder="23:59"
+                  />
+                </div>
                 {formData.mint_end_at_error && (
                   <div className="text-sm text-destructive">
                     {formData.mint_end_at_error}
@@ -418,8 +446,8 @@ export const UnifiedMintInterface = () => {
                 )}
                 <div className="text-xs text-muted-foreground">
                   {formData.supply_mode === 'open' 
-                    ? "Set when to stop minting this open edition (future date only)"
-                    : "Optionally set a deadline for minting (future date only)"
+                    ? "Set exactly when to stop minting this open edition"
+                    : "Optionally set a deadline for minting with specific time"
                   }
                 </div>
               </div>
@@ -483,17 +511,24 @@ export const UnifiedMintInterface = () => {
                       </Label>
                       <Input
                         id="mint_price_input"
-                        type="number"
-                        min="0"
-                        step="0.001"
+                        type="text"
+                        inputMode="decimal"
                         placeholder="0.1"
-                        value={formData.mint_price || ''}
+                        value={formData.mint_price === 0 ? '' : formData.mint_price.toString()}
                         onChange={(e) => {
                           const value = e.target.value;
-                          setFormData({ 
-                            ...formData, 
-                            mint_price: value === '' ? 0 : parseFloat(value) || 0 
-                          });
+                          // Allow empty, digits, and decimal point
+                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                            const numValue = value === '' ? 0 : parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              setFormData({ ...formData, mint_price: numValue });
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // Format the number on blur
+                          const value = parseFloat(e.target.value) || 0;
+                          setFormData({ ...formData, mint_price: value });
                         }}
                       />
                       <p className="text-xs text-muted-foreground">
