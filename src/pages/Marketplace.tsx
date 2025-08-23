@@ -239,33 +239,48 @@ export default function Marketplace() {
           : "space-y-4"
         }>
           {sortedNfts.map((nft) => (
-            <Card 
-              key={nft.id}
-              className="group hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => {
-                const navIds = sortedNfts.map(n => n.id);
-                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-                navigate(`/nft/${nft.id}?${queryString}`);
-              }}
-            >
-              <div className="aspect-square overflow-hidden rounded-t-lg">
-                <ImageLazyLoad
-                  src={nft.image_url || "/placeholder.svg"}
-                  alt={nft.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                />
-              </div>
-              <CardContent className="p-4">
-                <h3 className="font-semibold truncate">{nft.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  {nft.is_listed && nft.price ? (
-                    <Badge variant="secondary">{nft.price} SOL</Badge>
-                  ) : (
-                    <Badge variant="outline">Not Listed</Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+             <Card 
+               key={nft.id}
+               className="group hover:shadow-lg transition-all cursor-pointer relative"
+               onClick={() => {
+                 const navIds = sortedNfts.map(n => n.id);
+                 const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                 navigate(`/nft/${nft.id}?${queryString}`);
+               }}
+             >
+               {/* Price Display - Top Right */}
+               {nft.is_listed && nft.price ? (
+                 <div className="absolute top-3 right-3 z-10 bg-primary text-primary-foreground font-bold text-sm px-3 py-1 rounded-full shadow-lg">
+                   {nft.price} SOL
+                 </div>
+               ) : (
+                 <div className="absolute top-3 right-3 z-10 bg-muted text-muted-foreground font-medium text-xs px-2 py-1 rounded-full">
+                   Not Listed
+                 </div>
+               )}
+
+               <div className="aspect-square overflow-hidden rounded-t-lg">
+                 <ImageLazyLoad
+                   src={nft.image_url || "/placeholder.svg"}
+                   alt={nft.name}
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                 />
+               </div>
+               <CardContent className="p-4">
+                 <h3 className="font-semibold truncate">{nft.name}</h3>
+                 <div className="flex items-center justify-between mt-2">
+                   {nft.is_listed && nft.price ? (
+                     <div className="text-lg font-bold text-primary">
+                       {nft.price} SOL
+                     </div>
+                   ) : (
+                     <div className="text-sm text-muted-foreground">
+                       Not for sale
+                     </div>
+                   )}
+                 </div>
+               </CardContent>
+             </Card>
           ))}
         </div>
       ) : (
