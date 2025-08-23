@@ -113,6 +113,12 @@ serve(async (req) => {
       const mintEndDate = new Date(body.mint_end_at);
       const year = mintEndDate.getFullYear();
       const now = new Date();
+      const minEnd = new Date(now.getTime() + 60 * 60 * 1000); // require at least 1 hour in the future
+
+      // Log server and received times for diagnostics
+      console.log('mint_end_at received (ISO):', body.mint_end_at);
+      console.log('mint_end_at parsed (UTC):', mintEndDate.toISOString(), 'timestamp:', mintEndDate.getTime());
+      console.log('server now (UTC):', now.toISOString(), 'min acceptable (UTC):', minEnd.toISOString());
       
       if (year < 1000 || year > 9999) {
         return new Response(
@@ -121,9 +127,14 @@ serve(async (req) => {
         );
       }
       
-      if (mintEndDate <= now) {
+      if (mintEndDate <= minEnd) {
         return new Response(
-          JSON.stringify({ error: "Mint end date must be in the future" }),
+          JSON.stringify({ 
+            error: "Mint end must be at least 1 hour in the future",
+            receivedUtc: mintEndDate.toISOString(),
+            serverNowUtc: now.toISOString(),
+            requiredMinUtc: minEnd.toISOString()
+          }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
