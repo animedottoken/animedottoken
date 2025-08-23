@@ -347,20 +347,38 @@ export default function Profile() {
                       <h4 className="font-semibold text-lg">{collection.name}</h4>
                       <div className="flex items-center gap-1">
                         {collection.is_live ? (
-                          <Badge variant="default" className="bg-green-500 text-white text-xs">
-                            Live
-                          </Badge>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="default" className="bg-green-500 text-white text-xs">
+                                  Live
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Collection is live and accepting mints</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         ) : (
-                          <Badge variant="secondary" className="text-xs">
-                            Draft
-                          </Badge>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="text-xs">
+                                  Draft
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Collection is in draft mode</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                         {collection.verified && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="outline" className="text-xs">
-                                  ✓
+                                  Verified
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
