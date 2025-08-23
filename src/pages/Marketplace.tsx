@@ -266,20 +266,9 @@ export default function Marketplace() {
                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                  />
                </div>
-               <CardContent className="p-4">
-                 <h3 className="font-semibold truncate">{nft.name}</h3>
-                 <div className="flex items-center justify-between mt-2">
-                   {nft.is_listed && nft.price ? (
-                     <div className="text-lg font-bold text-primary">
-                       {nft.price} SOL
-                     </div>
-                   ) : (
-                     <div className="text-sm text-muted-foreground">
-                       Not for sale
-                     </div>
-                   )}
-                 </div>
-               </CardContent>
+              <CardContent className="p-4">
+                <h3 className="font-semibold truncate">{nft.name}</h3>
+              </CardContent>
              </Card>
           ))}
         </div>

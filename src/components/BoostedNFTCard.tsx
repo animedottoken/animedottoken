@@ -120,9 +120,13 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
         </div>
 
         {/* Price Overlay - Top Right */}
-        {listed && nftPrice !== null && (
+        {listed && nftPrice !== null ? (
           <div className="absolute top-3 right-3 z-20 bg-primary text-primary-foreground font-bold text-sm px-3 py-1 rounded-full shadow-lg">
             {nftPrice} SOL
+          </div>
+        ) : (
+          <div className="absolute top-3 right-3 z-20 bg-muted text-muted-foreground font-medium text-xs px-2 py-1 rounded-full">
+            Not Listed
           </div>
         )}
 
