@@ -316,13 +316,15 @@ export default function CollectionDetail() {
             </CardContent>
           </Card>
 
-          {/* Collection Editor */}
-          <div className="mb-8">
-            <CollectionEditor 
-              collection={collection as any}
-              onClose={() => {}}
-            />
-          </div>
+          {/* Collection Editor - Only show for collection owner */}
+          {connected && publicKey === collection.creator_address && (
+            <div className="mb-8">
+              <CollectionEditor 
+                collection={collection as any}
+                onClose={() => {}}
+              />
+            </div>
+          )}
 
           {/* Minted NFTs Section */}
           <Card>
