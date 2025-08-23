@@ -19,6 +19,8 @@ import { CollectionEditor } from "@/components/CollectionEditor";
 import { useUserNFTs } from "@/hooks/useUserNFTs";
 import { useBurnNFT } from "@/hooks/useBurnNFT";
 import { useDeleteCollection } from "@/hooks/useDeleteCollection";
+import { useBurnAllNFTs } from "@/hooks/useBurnAllNFTs";
+import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function Profile() {
@@ -27,6 +29,7 @@ export default function Profile() {
   const { nfts, loading: nftsLoading, refreshNFTs } = useUserNFTs();
   const { burning, burnNFT } = useBurnNFT();
   const { deleting, deleteCollection } = useDeleteCollection();
+  const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -64,6 +67,21 @@ export default function Profile() {
       // Refresh the collections list to remove the deleted collection
       refreshCollections();
     }
+  };
+
+  const handleBurnAllNFTs = async (collectionId: string, collectionName: string) => {
+    const result = await burnAllNFTs(collectionId);
+    if (result.success && result.burned > 0) {
+      // Refresh both collections and NFTs lists
+      refreshCollections();
+      refreshNFTs();
+      toast.success(`All NFTs in "${collectionName}" have been burned! Collection is now ready to burn.`);
+    }
+  };
+
+  // Helper function to get NFT count for a collection
+  const getCollectionNFTCount = (collectionId: string) => {
+    return nfts.filter(nft => nft.collection_id === collectionId).length;
   };
 
   if (!connected) {
@@ -235,7 +253,7 @@ export default function Profile() {
                             Mint
                           </Link>
                         </Button>
-                        {(collection.items_redeemed || 0) === 0 && (
+                        {(collection.items_redeemed || 0) === 0 ? (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -247,14 +265,14 @@ export default function Profile() {
                                       disabled={deleting}
                                     >
                                       <Trash2 className="h-4 w-4 mr-1" />
-                                      Delete (empty)
+                                      Burn Collection
                                     </Button>
                                   </AlertDialogTrigger>
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
-                                      <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+                                      <AlertDialogTitle>Burn Collection</AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection.
+                                        Are you sure you want to burn "{collection.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -264,14 +282,54 @@ export default function Profile() {
                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                         disabled={deleting}
                                       >
-                                        {deleting ? 'Deleting...' : 'Delete Collection'}
+                                        {deleting ? 'Burning...' : 'Burn Collection'}
                                       </AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Only collections with no minted NFTs can be deleted</p>
+                                <p>Ready to burn - no NFTs in this collection</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={burningAll}
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" />
+                                      Burn NFTs
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Burn All NFTs</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This will burn all {collection.items_redeemed} NFTs in "{collection.name}". After burning all NFTs, you'll be able to burn the collection itself. This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleBurnAllNFTs(collection.id, collection.name)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        disabled={burningAll}
+                                      >
+                                        {burningAll ? 'Burning NFTs...' : `Burn ${collection.items_redeemed} NFTs`}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Burn all NFTs first, then you can burn the collection</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -319,6 +377,17 @@ export default function Profile() {
                       <span className="ml-1 font-medium text-green-600">
                         {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
                       </span>
+                    </div>
+                    <div className="mt-2">
+                      {(collection.items_redeemed || 0) === 0 ? (
+                        <Badge variant="outline" className="text-xs text-green-600 border-green-600">
+                          🔥 Ready to burn
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs text-orange-600 border-orange-600">
+                          🔥 {collection.items_redeemed} NFTs to burn first
+                        </Badge>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
