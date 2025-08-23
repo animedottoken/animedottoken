@@ -574,6 +574,7 @@ export type Database = {
       get_collection_details: {
         Args: { collection_id: string }
         Returns: {
+          attributes: Json
           banner_image_url: string
           candy_machine_id: string
           category: string
@@ -581,6 +582,7 @@ export type Database = {
           created_at: string
           creator_address: string
           description: string
+          enable_primary_sales: boolean
           explicit_content: boolean
           external_links: Json
           go_live_date: string
@@ -590,11 +592,16 @@ export type Database = {
           is_live: boolean
           items_available: number
           items_redeemed: number
+          locked_fields: Json
           max_supply: number
+          mint_end_at: string
           mint_price: number
           name: string
+          onchain_description: string
           royalty_percentage: number
+          site_description: string
           slug: string
+          supply_mode: string
           symbol: string
           treasury_wallet: string
           updated_at: string

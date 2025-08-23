@@ -262,36 +262,38 @@ export default function Profile() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button
-                                      size="sm"
-                                      variant="destructive"
-                                      disabled={deleting}
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-1" />
-                                      Burn Collection
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Burn Collection</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Are you sure you want to burn "{collection.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => handleDeleteCollection(collection.id, collection.name)}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                <div>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
                                         disabled={deleting}
                                       >
-                                        {deleting ? 'Burning...' : 'Burn Collection'}
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Burn Collection
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Burn Collection</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Are you sure you want to burn "{collection.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() => handleDeleteCollection(collection.id, collection.name)}
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          disabled={deleting}
+                                        >
+                                          {deleting ? 'Burning...' : 'Burn Collection'}
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Ready to burn - no NFTs in this collection</p>
@@ -302,36 +304,38 @@ export default function Profile() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={burningAll}
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-1" />
-                                      Burn NFTs
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Burn All NFTs</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        This will burn all {collection.items_redeemed} NFTs in "{collection.name}". After burning all NFTs, you'll be able to burn the collection itself. This action cannot be undone.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => handleBurnAllNFTs(collection.id, collection.name)}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                <div>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
                                         disabled={burningAll}
                                       >
-                                        {burningAll ? 'Burning NFTs...' : `Burn ${collection.items_redeemed} NFTs`}
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Burn NFTs
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Burn All NFTs</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          This will burn all {collection.items_redeemed} NFTs in "{collection.name}". After burning all NFTs, you'll be able to burn the collection itself. This action cannot be undone.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() => handleBurnAllNFTs(collection.id, collection.name)}
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          disabled={burningAll}
+                                        >
+                                          {burningAll ? 'Burning NFTs...' : `Burn ${collection.items_redeemed} NFTs`}
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Burn all NFTs first, then you can burn the collection</p>
