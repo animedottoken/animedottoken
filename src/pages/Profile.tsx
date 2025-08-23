@@ -379,6 +379,7 @@ export default function Profile() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
+                                  console.log('Heart clicked for collection:', collection.id);
                                   const favoriteData = {
                                     id: collection.id,
                                     name: collection.name,
@@ -387,14 +388,16 @@ export default function Profile() {
                                   };
                                   
                                   if (isFavorite(collection.id)) {
+                                    console.log('Removing from favorites');
                                     removeFromFavorites(collection.id);
                                   } else {
+                                    console.log('Adding to favorites');
                                     addToFavorites(favoriteData);
                                   }
                                 }}
                               >
                                 <Heart 
-                                  className={`h-3 w-3 ${
+                                  className={`h-4 w-4 ${
                                     isFavorite(collection.id) 
                                       ? 'fill-current text-red-500' 
                                       : 'text-muted-foreground'
