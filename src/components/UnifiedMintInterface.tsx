@@ -211,31 +211,33 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="site_description" className="text-base font-medium">
-                  Description (Website)
+                  Public description (shown on your collection page — not on-chain)
                 </Label>
                 <Textarea
                   id="site_description"
-                  placeholder="Detailed description of your collection for website display"
+                  placeholder="Explain your collection for collectors…"
                   value={formData.site_description}
                   onChange={(e) => setFormData({ ...formData, site_description: e.target.value })}
+                  maxLength={2000}
                 />
                 <div className="text-xs text-muted-foreground">
-                  Detailed description of your collection (visible on your website)
+                  This appears on your public collection page in this app. Good for long details, roadmap, utilities, links. ({formData.site_description.length}/2000)
                 </div>
               </div>
 
               <div className="space-y-3">
                 <Label htmlFor="onchain_description" className="text-base font-medium">
-                  Description (On-Chain)
+                  Short description (on-chain metadata)
                 </Label>
                 <Textarea
                   id="onchain_description"
                   placeholder="Short description for on-chain metadata"
                   value={formData.onchain_description}
                   onChange={(e) => setFormData({ ...formData, onchain_description: e.target.value })}
+                  maxLength={200}
                 />
                 <div className="text-xs text-muted-foreground">
-                  Short description stored on-chain (visible on marketplaces)
+                  Stored on-chain and shown in wallets/marketplaces. Keep it brief. ({formData.onchain_description.length}/200)
                 </div>
               </div>
 
@@ -595,7 +597,7 @@ export const UnifiedMintInterface = () => {
                     </div>
                     
                     <div>
-                      <Label className="text-base font-medium">Description (Website)</Label>
+                      <Label className="text-base font-medium">Public description</Label>
                       <div className="text-sm text-muted-foreground leading-relaxed">{formData.site_description}</div>
                     </div>
                     

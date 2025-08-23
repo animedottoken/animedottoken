@@ -51,7 +51,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       badge: 'Always Editable'
     },
     site_description: { 
-      label: 'Description (website)', 
+      label: 'Public description (not on-chain)', 
       type: 'textarea', 
       maxLength: 2000, 
       canEdit: () => true,
