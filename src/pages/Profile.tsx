@@ -487,12 +487,6 @@ export default function Profile() {
                 <RefreshCw className={`h-4 w-4 mr-2 ${nftsLoading ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
-              <Button asChild size="sm">
-                <Link to="/mint/nft">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Mint NFT
-                </Link>
-              </Button>
             </div>
           </div>
 
@@ -540,24 +534,38 @@ export default function Profile() {
                         }
                       }}
                     />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-lg">{nft.name}</h4>
-                      <div className="flex items-center gap-2">
-                        {nft.symbol && (
-                          <Badge variant="outline" className="text-xs">
-                            {nft.symbol}
-                          </Badge>
-                        )}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="flex gap-2 flex-wrap justify-center">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            // NFT editing functionality could be added here
+                            toast.info('NFT editing functionality coming soon!');
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            // NFT viewing functionality - could open a modal or navigate to detail page
+                            toast.info('NFT detail view coming soon!');
+                          }}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               size="sm"
                               variant="destructive"
-                              className="h-8 px-2"
                             >
-                              <Trash2 className="h-3 w-3" />
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Burn
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
@@ -581,17 +589,83 @@ export default function Profile() {
                         </AlertDialog>
                       </div>
                     </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-semibold text-lg">{nft.name}</h4>
+                      <div className="flex items-center gap-1">
+                        {nft.symbol && (
+                          <Badge variant="outline" className="text-xs">
+                            {nft.symbol}
+                          </Badge>
+                        )}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0"
+                                onClick={() => {
+                                  if (!connected) {
+                                    toast.error('Connect wallet to use favorites');
+                                    return;
+                                  }
+                                  if (isFavorite(nft.id)) {
+                                    removeFromFavorites(nft.id);
+                                  } else {
+                                    addToFavorites({
+                                      id: nft.id,
+                                      name: nft.name,
+                                      image_url: nft.image_url,
+                                      collection_name: nft.collection_name,
+                                      type: 'nft'
+                                    });
+                                  }
+                                }}
+                              >
+                                <Heart 
+                                  className={`h-4 w-4 ${
+                                    isFavorite(nft.id) 
+                                      ? 'fill-current text-red-500' 
+                                      : 'text-muted-foreground'
+                                  }`}
+                                />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {!connected 
+                                  ? 'Connect wallet to use favorites'
+                                  : isFavorite(nft.id) 
+                                    ? 'Remove from favorites' 
+                                    : 'Add to favorites'
+                                }
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
                     {nft.description && (
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                         {nft.description}
                       </p>
                     )}
-                    {nft.collection_name && (
-                      <div className="text-sm">
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
                         <span className="text-muted-foreground">Collection:</span>
-                        <span className="ml-1 font-medium">{nft.collection_name}</span>
+                        <span className="ml-1 font-medium">
+                          {nft.collection_name || 'Standalone'}
+                        </span>
                       </div>
-                    )}
+                      <div>
+                        <span className="text-muted-foreground">Minted:</span>
+                        <span className="ml-1 font-medium">
+                          {new Date(nft.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
                       <div className="mt-2">
                         <div className="text-xs text-muted-foreground mb-1">Properties:</div>
@@ -609,9 +683,6 @@ export default function Profile() {
                         </div>
                       </div>
                     )}
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      Minted: {new Date(nft.created_at).toLocaleDateString()}
-                    </div>
                   </CardContent>
                 </Card>
               ))}
