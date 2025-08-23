@@ -51,19 +51,20 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       badge: 'Always Editable'
     },
     site_description: { 
-      label: 'Public description (not on-chain)', 
+      label: 'Public Description', 
       type: 'textarea', 
       maxLength: 2000, 
       canEdit: () => true,
-      badge: 'Always Editable'
+      badge: 'Always Editable',
+      help: 'Off-Chain - This appears on your public collection page in this app. Good for long details, roadmap, utilities, links.'
     },
     onchain_description: { 
-      label: 'Collection Description (metadata)', 
+      label: 'Short Description', 
       type: 'textarea', 
       maxLength: 200, 
       canEdit: () => true,
       badge: 'Always Editable',
-      help: 'Stored in on-chain metadata for each NFT'
+      help: 'On-Chain - Stored on-chain and shown in wallets/marketplaces. Keep it brief.'
     },
     mint_price: { 
       label: 'Mint Price (SOL)', 
