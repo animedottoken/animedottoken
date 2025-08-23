@@ -59,33 +59,33 @@ export const UnifiedMintInterface = () => {
   // Step indicator component
   const TOTAL_STEPS = 3;
   const StepIndicator = () => (
-    <div className="flex items-center justify-center mb-8">
-      <div className="flex items-center space-x-4">
+    <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
+      <div className="flex items-center space-x-2 sm:space-x-4">
         {[1, 2, 3].map((step) => (
           <div key={step} className="flex items-center">
             <div className={`
-              flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all
+              flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all
               ${activeStep >= step 
                 ? 'bg-primary border-primary text-primary-foreground' 
                 : 'border-muted-foreground text-muted-foreground'
               }
             `}>
               {activeStep > step ? (
-                <CheckCircle className="w-5 h-5" />
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <span className="font-semibold">{step}</span>
+                <span className="font-semibold text-xs sm:text-sm">{step}</span>
               )}
             </div>
             {step < 3 && (
               <div className={`
-                w-16 h-0.5 mx-2
+                w-8 sm:w-16 h-0.5 mx-1 sm:mx-2
                 ${activeStep > step ? 'bg-primary' : 'bg-muted-foreground/30'}
               `} />
             )}
           </div>
         ))}
       </div>
-      <div className="ml-6 text-sm text-muted-foreground">
+      <div className="sm:ml-6 text-xs sm:text-sm text-muted-foreground">
         Step {activeStep} of {TOTAL_STEPS}
       </div>
     </div>

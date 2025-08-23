@@ -174,7 +174,7 @@ export const StandaloneMintWizard = () => {
       </Card>
 
       {/* Progress Steps */}
-      <div className="flex justify-center mb-8">
+      <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
         <div className="flex items-center">
           {STEPS.map((step, index) => {
             const isActive = currentStep === step.number;
@@ -182,7 +182,7 @@ export const StandaloneMintWizard = () => {
             
             return (
               <div key={step.number} className="flex items-center">
-                <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+                <div className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   isActive ? 'bg-primary text-primary-foreground' :
                   isCompleted ? 'bg-green-500 text-white' :
                   'bg-muted text-muted-foreground'
@@ -190,7 +190,7 @@ export const StandaloneMintWizard = () => {
                   {step.number}
                 </div>
                 {index < STEPS.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-2 ${
+                  <div className={`w-6 sm:w-12 h-0.5 mx-1 sm:mx-2 ${
                     currentStep > step.number ? 'bg-green-500' : 'bg-muted'
                   }`} />
                 )}
@@ -198,8 +198,8 @@ export const StandaloneMintWizard = () => {
             );
           })}
         </div>
-        <div className="text-right ml-4">
-          <p className="text-sm text-muted-foreground">Step {currentStep} of {STEPS.length}</p>
+        <div className="sm:ml-4 text-center sm:text-right">
+          <p className="text-xs sm:text-sm text-muted-foreground">Step {currentStep} of {STEPS.length}</p>
         </div>
       </div>
 
