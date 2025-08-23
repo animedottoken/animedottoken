@@ -646,16 +646,26 @@ export default function Profile() {
                     </p>
                     <div className="flex items-center justify-between text-sm">
                       <div>
-                        <span className="text-muted-foreground">Collection:</span>
-                        <span className="ml-1 font-medium">
-                          {nft.collection_name || 'Standalone'}
-                        </span>
+                        <span className="text-muted-foreground">Type:</span>
+                        <span className="ml-1 font-medium">NFT</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Minted:</span>
                         <span className="ml-1 font-medium">
                           {new Date(nft.created_at).toLocaleDateString()}
                         </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm mt-2">
+                      <div>
+                        <span className="text-muted-foreground">Collection:</span>
+                        <span className="ml-1 font-medium">
+                          {nft.collection_name || 'Standalone'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Owner:</span>
+                        <span className="ml-1 font-medium">You</span>
                       </div>
                     </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
