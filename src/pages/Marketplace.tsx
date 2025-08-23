@@ -1,3 +1,4 @@
+
 import { Helmet } from "react-helmet-async";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
@@ -7,16 +8,20 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, TrendingUp, Eye, Heart, Loader2 } from "lucide-react";
+import { Search, Filter, TrendingUp, Eye, Heart, Loader2, Crown, Rocket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useBoostedListings } from "@/hooks/useBoostedListings";
+import { BoostedNFTCard } from "@/components/BoostedNFTCard";
+import { BoostModal } from "@/components/BoostModal";
 
 export default function Marketplace() {
   const { connected } = useSolanaWallet();
   const navigate = useNavigate();
   const { favorites, addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { boostedListings, loading: boostedLoading } = useBoostedListings();
   
   const [nfts, setNfts] = useState<any[]>([]);
   const [filteredNfts, setFilteredNfts] = useState<any[]>([]);
@@ -26,6 +31,8 @@ export default function Marketplace() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("recent");
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
+  const [selectedNFTForBoost, setSelectedNFTForBoost] = useState<any>(null);
   const [stats, setStats] = useState({
     totalItems: 0,
     totalOwners: 0,
@@ -60,7 +67,7 @@ export default function Marketplace() {
 
         const totalVolume = activitiesData?.reduce((sum, activity) => sum + (Number(activity.price) || 0), 0) || 0;
 
-        setNfts(nftsData || []);
+        setNfTs(nftsData || []);
 
         // Calculate stats
         if (nftsData) {
@@ -186,6 +193,57 @@ export default function Marketplace() {
     return filtered;
   };
 
+  // Get boosted NFTs with their boost data
+  const getBoostedNFTs = () => {
+    const boostedNFTIds = new Set(boostedListings.map(boost => boost.nft_id));
+    const boostedNFTs = nfts
+      .filter(nft => boostedNFTIds.has(nft.id))
+      .map(nft => {
+        const boost = boostedListings.find(b => b.nft_id === nft.id);
+        return { nft, boost };
+      })
+      .filter(item => item.boost) // Ensure boost exists
+      .sort((a, b) => a.boost!.bid_rank - b.boost!.bid_rank);
+
+    return applyFiltersToList(boostedNFTs.map(item => item.nft))
+      .map(nft => {
+        const boost = boostedListings.find(b => b.nft_id === nft.id);
+        return { nft, boost };
+      })
+      .filter(item => item.boost);
+  };
+
+  // Get non-boosted NFTs
+  const getNonBoostedNFTs = () => {
+    const boostedNFTIds = new Set(boostedListings.map(boost => boost.nft_id));
+    return applyFiltersToList(nfts.filter(nft => !boostedNFTIds.has(nft.id)));
+  };
+
+  // Filter and sort logic
+  useEffect(() => {
+    const nonBoostedNFTs = getNonBoostedNFTs();
+
+    // Apply sorting to non-boosted NFTs
+    nonBoostedNFTs.sort((a, b) => {
+      switch (sortBy) {
+        case "recent":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "price-low":
+          const priceA = Number(a.price) || 0;
+          const priceB = Number(b.price) || 0;
+          return priceA - priceB;
+        case "price-high":
+          return Number(b.price || 0) - Number(a.price || 0);
+        case "popular":
+          return (b.views || 0) - (a.views || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredNfts(nonBoostedNFTs);
+  }, [nfts, searchTerm, priceRange, minPrice, maxPrice, sortBy, boostedListings]);
+
   // Get different views of NFTs with filters applied
   const featuredNFTs = applyFiltersToList(nfts.filter(nft => nft.is_featured));
   const newestNFTs = applyFiltersToList(nfts);
@@ -209,10 +267,17 @@ export default function Marketplace() {
 
   const handleViewDetails = (nft: any) => {
     // Create navigation params for left/right browsing
-    const allNFTIds = filteredNfts.map(n => ({ id: n.id, type: 'nft' }));
+    const allNFTIds = [...getBoostedNFTs().map(item => ({ id: item.nft.id, type: 'nft' })), ...filteredNfts.map(n => ({ id: n.id, type: 'nft' }))];
     const encodedNav = encodeURIComponent(JSON.stringify(allNFTIds));
     navigate(`/nft/${nft.id}?from=marketplace&nav=${encodedNav}`);
   };
+
+  const handleBoostNFT = (nft: any) => {
+    setSelectedNFTForBoost(nft);
+    setBoostModalOpen(true);
+  };
+
+  const boostedNFTs = getBoostedNFTs();
 
   return (
     <>
@@ -231,7 +296,7 @@ export default function Marketplace() {
                 NFT Marketplace
               </h1>
               <p className="text-lg text-muted-foreground">
-                Discover, buy and sell exclusive anime NFTs
+                Discover, buy and sell exclusive anime NFTs • Boost with $ANIME tokens for premium visibility
               </p>
             </div>
             <div className="pr-16">
@@ -263,8 +328,8 @@ export default function Marketplace() {
             </Card>
             <Card className="text-center">
               <CardContent className="pt-4">
-                <div className="text-2xl font-bold text-primary">{stats.totalVolume}</div>
-                <div className="text-sm text-muted-foreground">Volume (SOL)</div>
+                <div className="text-2xl font-bold text-primary">{boostedListings.length}</div>
+                <div className="text-sm text-muted-foreground">Boosted Items</div>
               </CardContent>
             </Card>
           </div>
@@ -334,6 +399,29 @@ export default function Marketplace() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Boosted Items Section */}
+          {boostedNFTs.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Crown className="h-6 w-6 text-yellow-500" />
+                <h2 className="text-2xl font-bold">Boosted Items</h2>
+                <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
+                  Premium Visibility
+                </Badge>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {boostedNFTs.map(({ nft, boost }) => (
+                  <BoostedNFTCard
+                    key={`boosted-${nft.id}`}
+                    nft={nft}
+                    boost={boost!}
+                    onViewDetails={handleViewDetails}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Tabs */}
           <Tabs defaultValue="all" className="mb-8">
@@ -641,6 +729,23 @@ export default function Marketplace() {
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Boost Modal */}
+        {selectedNFTForBoost && (
+          <BoostModal
+            isOpen={boostModalOpen}
+            onClose={() => {
+              setBoostModalOpen(false);
+              setSelectedNFTForBoost(null);
+            }}
+            nftId={selectedNFTForBoost.id}
+            nftName={selectedNFTForBoost.name}
+            nftImage={selectedNFTForBoost.image_url}
+            onBoostCreated={() => {
+              // Refresh boosted listings will happen automatically via the hook
+            }}
+          />
+        )}
       </main>
     </>
   );

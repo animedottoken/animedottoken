@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      boosted_listings: {
+        Row: {
+          bid_amount: number
+          bidder_wallet: string
+          created_at: string
+          end_time: string | null
+          id: string
+          is_active: boolean
+          nft_id: string
+          start_time: string
+          token_mint: string
+          tx_signature: string
+          updated_at: string
+        }
+        Insert: {
+          bid_amount: number
+          bidder_wallet: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          nft_id: string
+          start_time?: string
+          token_mint: string
+          tx_signature: string
+          updated_at?: string
+        }
+        Update: {
+          bid_amount?: number
+          bidder_wallet?: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          nft_id?: string
+          start_time?: string
+          token_mint?: string
+          tx_signature?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_boost_nft"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nfts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_whitelist: {
         Row: {
           collection_id: string | null
@@ -484,6 +534,33 @@ export type Database = {
       }
     }
     Views: {
+      boosted_leaderboard: {
+        Row: {
+          bid_amount: number | null
+          bid_rank: number | null
+          bidder_wallet: string | null
+          end_time: string | null
+          id: string | null
+          is_active: boolean | null
+          nft_id: string | null
+          nft_image_url: string | null
+          nft_name: string | null
+          owner_address: string | null
+          start_time: string | null
+          tier: string | null
+          token_mint: string | null
+          tx_signature: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_boost_nft"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nfts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collections_public: {
         Row: {
           banner_image_url: string | null
