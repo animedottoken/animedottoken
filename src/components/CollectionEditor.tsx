@@ -7,22 +7,29 @@ import { Settings, Image, DollarSign, Users, Info } from 'lucide-react';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useCollection } from '@/hooks/useCollection';
 
 interface CollectionEditorProps {
   collection: Collection;
   onClose: () => void;
 }
 
-export const CollectionEditor = ({ collection, onClose }: CollectionEditorProps) => {
+export const CollectionEditor = ({ collection: initialCollection, onClose }: CollectionEditorProps) => {
   const { updateCollection } = useCollections({ autoLoad: false });
   const { publicKey } = useSolanaWallet();
+  const { collection, refreshCollection } = useCollection(initialCollection.id);
   
-  const isOwner = publicKey === collection.creator_address;
-  const itemsRedeemed = collection.items_redeemed || 0;
+  // Use refreshed collection data if available, otherwise fallback to initial
+  const currentCollection = collection || initialCollection;
+  
+  const isOwner = publicKey === currentCollection.creator_address;
+  const itemsRedeemed = currentCollection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
 
   const handleUpdate = async (updates: any) => {
-    await updateCollection(collection.id, updates);
+    await updateCollection(currentCollection.id, updates);
+    // Refresh the collection data after successful update
+    refreshCollection();
   };
 
   if (!isOwner) {
@@ -52,8 +59,8 @@ export const CollectionEditor = ({ collection, onClose }: CollectionEditorProps)
               Collection Settings
             </div>
             <div className="flex gap-2">
-              <Badge variant={collection.is_live ? 'default' : 'secondary'}>
-                {collection.is_live ? 'Live' : 'Draft'}
+              <Badge variant={currentCollection.is_live ? 'default' : 'secondary'}>
+                {currentCollection.is_live ? 'Live' : 'Draft'}
               </Badge>
               {hasMintedNFTs && (
                 <Badge variant="outline">
@@ -68,15 +75,15 @@ export const CollectionEditor = ({ collection, onClose }: CollectionEditorProps)
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
               <div className="font-bold">
-                {collection.supply_mode === 'open' ? '∞' : collection.max_supply?.toLocaleString()}
+                {currentCollection.supply_mode === 'open' ? '∞' : currentCollection.max_supply?.toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">
-                {collection.supply_mode === 'open' ? 'Open Edition' : 'Max Supply'}
+                {currentCollection.supply_mode === 'open' ? 'Open Edition' : 'Max Supply'}
               </div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{collection.mint_price} SOL</div>
+              <div className="font-bold">{currentCollection.mint_price} SOL</div>
               <div className="text-sm text-muted-foreground">Mint Price</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
@@ -86,7 +93,7 @@ export const CollectionEditor = ({ collection, onClose }: CollectionEditorProps)
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Settings className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{collection.royalty_percentage}%</div>
+              <div className="font-bold">{currentCollection.royalty_percentage}%</div>
               <div className="text-sm text-muted-foreground">Royalties</div>
             </div>
           </div>
@@ -103,7 +110,7 @@ export const CollectionEditor = ({ collection, onClose }: CollectionEditorProps)
         </CardHeader>
         <CardContent>
           <FlexibleFieldEditor
-            collection={collection}
+            collection={currentCollection}
             onUpdate={handleUpdate}
             isOwner={isOwner}
           />

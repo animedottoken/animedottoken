@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
 import { getCollectionDescription } from "@/types/collection";
@@ -235,36 +236,45 @@ export default function Profile() {
                           </Link>
                         </Button>
                         {(collection.items_redeemed || 0) === 0 && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                disabled={deleting}
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Collection</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteCollection(collection.id, collection.name)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  disabled={deleting}
-                                >
-                                  {deleting ? 'Deleting...' : 'Delete Collection'}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      disabled={deleting}
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" />
+                                      Delete (empty)
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteCollection(collection.id, collection.name)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        disabled={deleting}
+                                      >
+                                        {deleting ? 'Deleting...' : 'Delete Collection'}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Only collections with no minted NFTs can be deleted</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                       </div>
                     </div>

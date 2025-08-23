@@ -404,6 +404,10 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
               <span>Can always be changed</span>
             </div>
             <div className="flex items-center gap-2">
+              <Badge variant="outline">Editable until first mint</Badge>
+              <span>Can edit until any NFT is minted</span>
+            </div>
+            <div className="flex items-center gap-2">
               <Badge variant="secondary">Locked after first mint</Badge>
               <span>Chain rule - locked automatically</span>
             </div>
