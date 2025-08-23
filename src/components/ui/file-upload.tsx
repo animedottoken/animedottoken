@@ -55,30 +55,31 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
       }
     }
 
-    const handleRemove = (e: React.MouseEvent) => {
-      e.stopPropagation()
-      if (preview && preview.startsWith('blob:')) {
-        URL.revokeObjectURL(preview)
-      }
-      setPreview(null)
-      onFileSelect(null)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    // Only revoke object URLs we created (blob URLs), not external URLs or prop-provided URLs
+    if (preview && preview.startsWith('blob:') && preview !== previewUrl) {
+      URL.revokeObjectURL(preview)
     }
+    setPreview(null)
+    onFileSelect(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
     const handleClick = () => {
       fileInputRef.current?.click()
     }
 
-    // Cleanup on unmount
+    // Cleanup on unmount - only revoke URLs we created
     React.useEffect(() => {
       return () => {
-        if (preview && preview.startsWith('blob:')) {
+        if (preview && preview.startsWith('blob:') && preview !== previewUrl) {
           URL.revokeObjectURL(preview)
         }
       }
-    }, [preview])
+    }, [preview, previewUrl])
 
     return (
       <div ref={ref} className={cn("relative", className)}>

@@ -892,6 +892,12 @@ export const UnifiedMintInterface = () => {
                       src={formData.image_preview_url || (formData.image_file ? URL.createObjectURL(formData.image_file) : '')}
                       alt="Collection avatar preview"
                       className="w-24 h-24 rounded-xl object-cover border-2 border-border"
+                      onError={(e) => {
+                        // Fallback if preview URL fails
+                        if (formData.image_file && !e.currentTarget.src.startsWith('blob:')) {
+                          e.currentTarget.src = URL.createObjectURL(formData.image_file);
+                        }
+                      }}
                     />
                   )}
                   
@@ -922,6 +928,12 @@ export const UnifiedMintInterface = () => {
                       src={formData.banner_preview_url || (formData.banner_file ? URL.createObjectURL(formData.banner_file) : '')} 
                       alt="Collection banner preview"
                       className="w-full h-32 rounded-lg object-cover"
+                      onError={(e) => {
+                        // Fallback if preview URL fails
+                        if (formData.banner_file && !e.currentTarget.src.startsWith('blob:')) {
+                          e.currentTarget.src = URL.createObjectURL(formData.banner_file);
+                        }
+                      }}
                     />
                   </div>
                 )}
