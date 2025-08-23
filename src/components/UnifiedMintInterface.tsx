@@ -129,6 +129,30 @@ export const UnifiedMintInterface = () => {
   // Keep raw string for price input to allow typing values like "0.1"
   const [mintPriceInput, setMintPriceInput] = useState<string>('');
 
+  // Cleanup preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (formData.image_preview_url) {
+        URL.revokeObjectURL(formData.image_preview_url);
+      }
+      if (formData.banner_preview_url) {
+        URL.revokeObjectURL(formData.banner_preview_url);
+      }
+    };
+  }, []);
+
+  // Maintain preview URLs when files exist but preview URLs are missing
+  useEffect(() => {
+    if (formData.image_file && !formData.image_preview_url) {
+      const previewUrl = URL.createObjectURL(formData.image_file);
+      setFormData(prev => ({ ...prev, image_preview_url: previewUrl }));
+    }
+    if (formData.banner_file && !formData.banner_preview_url) {
+      const previewUrl = URL.createObjectURL(formData.banner_file);
+      setFormData(prev => ({ ...prev, banner_preview_url: previewUrl }));
+    }
+  }, [formData.image_file, formData.banner_file, formData.image_preview_url, formData.banner_preview_url]);
+
   const handleSubmit = async () => {
     if (!publicKey) {
       toast.error('Please connect your wallet first');
@@ -859,147 +883,156 @@ export const UnifiedMintInterface = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column - Collection Details */}
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-base font-medium">Collection Name</Label>
-                      <div className="text-lg font-semibold">{formData.name}</div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-base font-medium">Symbol</Label>
-                      <div className="text-sm text-muted-foreground">{formData.symbol}</div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-base font-medium">Category</Label>
-                      <div className="text-sm">{formData.category}</div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-base font-medium">Public description</Label>
-                      <div className="text-sm text-muted-foreground leading-relaxed">{formData.site_description}</div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-base font-medium">Description (On-Chain)</Label>
-                      <div className="text-sm text-muted-foreground leading-relaxed">{formData.onchain_description}</div>
-                    </div>
-                   </div>
-
-                   {/* Mint End Time Warning */}
-                   {formData.mint_end_at && (
-                     <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                       <div className="flex items-start gap-2">
-                         <div className="text-warning font-medium">⚠️ Important:</div>
-                         <div className="text-sm">
-                           Mint will automatically close at {new Date(formData.mint_end_at).toLocaleString()}
-                         </div>
-                       </div>
-                     </div>
-                   )}
-                 </div>
-                 
-                 {/* Right Column - Settings & Images */}
-                <div className="space-y-6">
-                   {/* Collection Images */}
-                   <div className="space-y-4">
-                     {(formData.image_file || formData.image_preview_url) && (
-                       <div>
-                         <Label className="text-base font-medium">Collection Avatar</Label>
-                         <img 
-                           src={formData.image_preview_url || (formData.image_file ? URL.createObjectURL(formData.image_file) : '')}
-                           alt="Collection avatar preview"
-                           className="w-20 h-20 rounded-lg object-cover mt-2"
-                         />
-                       </div>
-                     )}
-                     
-                     {(formData.banner_file || formData.banner_preview_url) && (
-                       <div>
-                         <Label className="text-base font-medium">Collection Banner</Label>
-                         <img 
-                           src={formData.banner_preview_url || (formData.banner_file ? URL.createObjectURL(formData.banner_file) : '')} 
-                           alt="Collection banner preview"
-                           className="w-full h-20 rounded-lg object-cover mt-2"
-                         />
-                       </div>
-                     )}
-                   </div>
-                   
-                   {/* Properties Section */}
-                   <div className="space-y-3">
-                     <Label className="text-base font-medium">Properties</Label>
-                     {formData.attributes.length > 0 ? (
-                       <div className="grid gap-2">
-                         {formData.attributes.map((attr, index) => (
-                           <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg text-sm">
-                             <span className="font-medium">{attr.trait_type}</span>
-                             <div className="text-right">
-                               <div>{attr.display_type === 'date' && attr.value ? format(parse(attr.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : attr.value}</div>
-                               <div className="text-muted-foreground text-xs">
-                                 {attr.display_type === 'text' ? 'Text' : 
-                                  attr.display_type === 'number' ? 'Number' :
-                                  attr.display_type === 'boost_percentage' ? 'Bonus (%)' :
-                                  attr.display_type === 'boost_number' ? 'Bonus (number)' :
-                                  attr.display_type === 'date' ? 'Date' : 'Text'}
-                               </div>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
-                     ) : (
-                       <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
-                         No properties added
-                       </div>
-                     )}
-                   </div>
-
-                   {/* Explicit/Sensitive Content */}
-                   <div className="space-y-3">
-                     <Label className="text-base font-medium">Content Rating</Label>
-                     <div className="p-3 bg-muted/30 rounded-lg">
-                       <div className="flex items-center gap-2">
-                         <div className={`w-2 h-2 rounded-full ${formData.explicit_content ? 'bg-orange-500' : 'bg-green-500'}`}></div>
-                         <span className="text-sm font-medium">
-                           {formData.explicit_content ? 'Contains Explicit/Sensitive Content' : 'Safe for All Audiences'}
-                         </span>
-                       </div>
-                       {formData.explicit_content && (
-                         <div className="text-xs text-muted-foreground mt-1">
-                           This collection contains mature or explicit content
-                         </div>
-                       )}
-                     </div>
-                   </div>
+              {/* Collection Header */}
+              <div className="bg-muted/30 rounded-lg p-6 mb-8">
+                <div className="flex items-start gap-6">
+                  {/* Collection Avatar */}
+                  {(formData.image_file || formData.image_preview_url) && (
+                    <img 
+                      src={formData.image_preview_url || (formData.image_file ? URL.createObjectURL(formData.image_file) : '')}
+                      alt="Collection avatar preview"
+                      className="w-24 h-24 rounded-xl object-cover border-2 border-border"
+                    />
+                  )}
                   
-                  {/* Key Settings Grid */}
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <Label className="text-sm text-muted-foreground">Mint Price</Label>
-                      <div className="font-semibold">{formData.mint_price} SOL</div>
-                    </div>
-                    <div>
-                      <Label className="text-sm text-muted-foreground">Royalties</Label>
-                      <div className="font-semibold">{formData.royalty_percentage.toFixed(2)}%</div>
-                    </div>
-                    <div>
-                      <Label className="text-sm text-muted-foreground">Supply</Label>
-                      <div className="font-semibold">
-                        {formData.supply_mode === 'open' ? '∞ Open' : `${formData.max_supply} Max`}
+                  {/* Collection Info */}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h2 className="text-2xl font-bold">{formData.name}</h2>
+                        <p className="text-lg text-muted-foreground">{formData.symbol}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{formData.category}</p>
+                      </div>
+                      
+                      {/* Content Rating Badge */}
+                      <div className="flex items-center gap-2 bg-background px-3 py-1 rounded-full">
+                        <div className={`w-2 h-2 rounded-full ${formData.explicit_content ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+                        <span className="text-xs font-medium">
+                          {formData.explicit_content ? 'Explicit' : 'Safe'}
+                        </span>
                       </div>
                     </div>
-                    <div>
-                      <Label className="text-sm text-muted-foreground">Whitelist</Label>
-                      <div className="font-semibold">{formData.whitelist_enabled ? 'Enabled' : 'Disabled'}</div>
+                  </div>
+                </div>
+                
+                {/* Collection Banner */}
+                {(formData.banner_file || formData.banner_preview_url) && (
+                  <div className="mt-4">
+                    <img 
+                      src={formData.banner_preview_url || (formData.banner_file ? URL.createObjectURL(formData.banner_file) : '')} 
+                      alt="Collection banner preview"
+                      className="w-full h-32 rounded-lg object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                {/* Left Column - Descriptions */}
+                <div className="lg:col-span-2 space-y-6">
+                  <div>
+                    <Label className="text-base font-medium">Public Description</Label>
+                    <div className="text-sm text-muted-foreground leading-relaxed mt-2 p-4 bg-muted/30 rounded-lg">
+                      {formData.site_description || "No public description provided"}
                     </div>
                   </div>
                   
                   <div>
+                    <Label className="text-base font-medium">On-Chain Description</Label>
+                    <div className="text-sm text-muted-foreground leading-relaxed mt-2 p-4 bg-muted/30 rounded-lg">
+                      {formData.onchain_description || "No on-chain description provided"}
+                    </div>
+                  </div>
+                  
+                  {/* Properties Section */}
+                  <div>
+                    <Label className="text-base font-medium">Properties</Label>
+                    {formData.attributes.length > 0 ? (
+                      <div className="grid gap-2 mt-2">
+                        {formData.attributes.map((attr, index) => (
+                          <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg text-sm">
+                            <span className="font-medium">{attr.trait_type}</span>
+                            <div className="text-right">
+                              <div className="font-semibold">{attr.display_type === 'date' && attr.value ? format(parse(attr.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : attr.value}</div>
+                              <div className="text-muted-foreground text-xs">
+                                {attr.display_type === 'text' ? 'Text' : 
+                                 attr.display_type === 'number' ? 'Number' :
+                                 attr.display_type === 'boost_percentage' ? 'Bonus (%)' :
+                                 attr.display_type === 'boost_number' ? 'Bonus (number)' :
+                                 attr.display_type === 'date' ? 'Date' : 'Text'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground p-4 bg-muted/30 rounded-lg mt-2">
+                        No properties added
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Mint End Time Warning */}
+                  {formData.mint_end_at && (
+                    <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <div className="text-warning font-medium">⚠️ Important:</div>
+                        <div className="text-sm">
+                          Mint will automatically close at {new Date(formData.mint_end_at).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right Column - Settings */}
+                <div className="space-y-6">
+                  {/* Pricing & Supply */}
+                  <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                    <Label className="text-base font-medium">Pricing & Supply</Label>
+                    <div className="grid gap-3 mt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Mint Price</span>
+                        <span className="font-bold text-lg">{formData.mint_price} SOL</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Supply</span>
+                        <span className="font-semibold">
+                          {formData.supply_mode === 'open' ? '∞ Open' : `${formData.max_supply} Max`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Royalties</span>
+                        <span className="font-semibold">{formData.royalty_percentage.toFixed(2)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Settings */}
+                  <div className="bg-muted/30 p-4 rounded-lg">
+                    <Label className="text-base font-medium">Settings</Label>
+                    <div className="space-y-3 mt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Whitelist</span>
+                        <Badge variant={formData.whitelist_enabled ? 'default' : 'secondary'}>
+                          {formData.whitelist_enabled ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Primary Sales</span>
+                        <Badge variant={formData.enable_primary_sales ? 'default' : 'secondary'}>
+                          {formData.enable_primary_sales ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Treasury Wallet */}
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <Label className="text-base font-medium">Treasury Wallet</Label>
-                    <div className="text-xs font-mono bg-muted/50 p-2 rounded mt-1">
+                    <div className="text-xs font-mono bg-background p-3 rounded border mt-2 break-all">
                       {formData.treasury_wallet || publicKey}
                     </div>
                   </div>
