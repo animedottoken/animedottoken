@@ -450,11 +450,17 @@ export default function Profile() {
                         <span className="ml-1 font-medium">{collection.items_redeemed || 0}</span>
                       </div>
                     </div>
-                    <div className="mt-2 text-sm">
-                      <span className="text-muted-foreground">Price:</span>
-                      <span className="ml-1 font-medium text-green-600">
-                        {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
-                      </span>
+                    <div className="flex items-center justify-between text-sm mt-2">
+                      <div>
+                        <span className="text-muted-foreground">Price:</span>
+                        <span className="ml-1 font-medium text-green-600">
+                          {collection.mint_price === 0 ? 'FREE' : `${collection.mint_price} SOL`}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Royalty:</span>
+                        <span className="ml-1 font-medium">{collection.royalty_percentage || 0}%</span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
