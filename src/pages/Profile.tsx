@@ -32,7 +32,7 @@ export default function Profile() {
   const { burning, burnNFT } = useBurnNFT();
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -152,7 +152,7 @@ export default function Profile() {
 
       {/* Profile Tabs */}
       <Tabs defaultValue={defaultTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="collections" className="flex items-center gap-2">
             <Grid3X3 className="h-4 w-4" />
             Collections ({collections.length})
@@ -160,6 +160,10 @@ export default function Profile() {
           <TabsTrigger value="nfts" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             My NFTs ({nfts.length})
+          </TabsTrigger>
+          <TabsTrigger value="favorites" className="flex items-center gap-2">
+            <Heart className="h-4 w-4" />
+            Favorites
           </TabsTrigger>
         </TabsList>
 
@@ -650,6 +654,18 @@ export default function Profile() {
                     </p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                       <div>
+                        <span className="text-muted-foreground">Name:</span>
+                        <span className="ml-1 font-medium">
+                          {nft.name}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Symbol:</span>
+                        <span className="ml-1 font-medium">
+                          {nft.symbol || 'None'}
+                        </span>
+                      </div>
+                      <div>
                         <span className="text-muted-foreground">Collection:</span>
                         <span className="ml-1 font-medium">
                           {nft.collection_name || 'Standalone'}
@@ -660,10 +676,6 @@ export default function Profile() {
                         <span className="ml-1 font-medium">
                           {new Date(nft.created_at).toLocaleDateString('cs-CZ').replace(/\./g, '. ').replace(/\s+/g, ' ').trim()}
                         </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Price:</span>
-                        <span className="ml-1 font-medium">-</span>
                       </div>
                     </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
@@ -686,6 +698,153 @@ export default function Profile() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Favorites Tab */}
+        <TabsContent value="favorites" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">My Favorites</h3>
+            <Badge variant="outline" className="text-xs">
+              {favorites.length} items
+            </Badge>
+          </div>
+
+          {favorites.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Add collections and NFTs to your favorites by clicking the heart icon.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {/* Favorite Collections */}
+              {favorites.some(fav => fav.type === 'collection') && (
+                <div>
+                  <h4 className="font-medium mb-4 text-muted-foreground">Collections</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {favorites
+                      .filter(fav => fav.type === 'collection')
+                      .map((favorite) => (
+                        <Card key={favorite.id} className="group hover:shadow-lg transition-shadow">
+                          <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
+                            <img
+                              src={favorite.image_url || "/placeholder.svg"}
+                              alt={favorite.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const img = e.currentTarget as HTMLImageElement;
+                                if (img.src !== "/placeholder.svg") {
+                                  img.src = "/placeholder.svg";
+                                }
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  asChild
+                                >
+                                  <Link to={`/collection/${favorite.id}`}>
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    View
+                                  </Link>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeFromFavorites(favorite.id)}
+                                >
+                                  <Heart className="h-4 w-4 fill-current text-red-500" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-semibold text-lg">{favorite.name}</h4>
+                              <Badge variant="secondary" className="text-xs">Collection</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Added {new Date(favorite.added_at).toLocaleDateString('cs-CZ').replace(/\./g, '. ').replace(/\s+/g, ' ').trim()}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Favorite NFTs */}
+              {favorites.some(fav => fav.type === 'nft') && (
+                <div>
+                  <h4 className="font-medium mb-4 text-muted-foreground">NFTs</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {favorites
+                      .filter(fav => fav.type === 'nft')
+                      .map((favorite) => (
+                        <Card key={favorite.id} className="group hover:shadow-lg transition-shadow">
+                          <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
+                            <img
+                              src={favorite.image_url || "/placeholder.svg"}
+                              alt={favorite.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const img = e.currentTarget as HTMLImageElement;
+                                if (img.src !== "/placeholder.svg") {
+                                  img.src = "/placeholder.svg";
+                                }
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  asChild
+                                >
+                                  <Link to={`/nft/${favorite.id}`}>
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    View
+                                  </Link>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeFromFavorites(favorite.id)}
+                                >
+                                  <Heart className="h-4 w-4 fill-current text-red-500" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-semibold text-lg">{favorite.name}</h4>
+                              <Badge variant="secondary" className="text-xs">NFT</Badge>
+                            </div>
+                            <div className="space-y-1 text-sm">
+                              {favorite.collection_name && (
+                                <p className="text-muted-foreground">
+                                  Collection: <span className="font-medium">{favorite.collection_name}</span>
+                                </p>
+                              )}
+                              <p className="text-xs text-muted-foreground">
+                                Added {new Date(favorite.added_at).toLocaleDateString('cs-CZ').replace(/\./g, '. ').replace(/\s+/g, ' ').trim()}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </TabsContent>
