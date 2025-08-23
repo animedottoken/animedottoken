@@ -378,7 +378,7 @@ export default function Profile() {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="outline" className="text-xs">
-                                  Verified
+                                  ✓
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
