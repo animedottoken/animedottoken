@@ -14,7 +14,11 @@ import { useState, useEffect } from "react";
 export default function Marketplace() {
   const { connected } = useSolanaWallet();
   const [nfts, setNfts] = useState<any[]>([]);
+  const [filteredNfts, setFilteredNfts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceRange, setPriceRange] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
   const [stats, setStats] = useState({
     totalItems: 0,
     totalOwners: 0,
@@ -76,11 +80,58 @@ export default function Marketplace() {
     }
   }, [connected]);
 
-  // Get featured NFTs (most recent 6)
-  const featuredNFTs = nfts.slice(0, 6);
-  
-  // Get newest NFTs (most recent 12) 
+  // Filter and sort logic
+  useEffect(() => {
+    let filtered = [...nfts];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(nft => 
+        nft.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        nft.collections?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        nft.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply price filter
+    if (priceRange !== "all") {
+      filtered = filtered.filter(nft => {
+        if (!nft.is_listed || !nft.price) return false;
+        const price = Number(nft.price);
+        switch (priceRange) {
+          case "low": return price >= 0.1 && price <= 1;
+          case "mid": return price > 1 && price <= 5;
+          case "high": return price > 5;
+          default: return true;
+        }
+      });
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "recent":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "price-low":
+          const priceA = Number(a.price) || 0;
+          const priceB = Number(b.price) || 0;
+          return priceA - priceB;
+        case "price-high":
+          return Number(b.price || 0) - Number(a.price || 0);
+        case "popular":
+          return (b.views || 0) - (a.views || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredNfts(filtered);
+  }, [nfts, searchTerm, priceRange, sortBy]);
+
+  // Get different views of NFTs
+  const featuredNFTs = nfts.filter(nft => nft.is_featured).slice(0, 6);
   const newestNFTs = nfts.slice(0, 12);
+  const trendingNFTs = nfts.filter(nft => nft.views > 0).sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 12);
 
   return (
     <>
@@ -146,9 +197,11 @@ export default function Marketplace() {
                   <Input 
                     placeholder="Search NFTs, collections, or creators..."
                     className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Select>
+                <Select value={priceRange} onValueChange={setPriceRange}>
                   <SelectTrigger className="w-full md:w-48">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Price Range" />
@@ -160,7 +213,7 @@ export default function Marketplace() {
                     <SelectItem value="high">5+ SOL</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-full md:w-48">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
@@ -188,17 +241,17 @@ export default function Marketplace() {
                       <Loader2 className="h-8 w-8 animate-spin" />
                       <span className="ml-2">Loading NFTs...</span>
                     </div>
-                  ) : nfts.length === 0 ? (
+                  ) : filteredNfts.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="text-4xl mb-4">🎨</div>
-                      <h3 className="text-xl font-semibold mb-2">No NFTs Yet</h3>
+                      <div className="text-4xl mb-4">🔍</div>
+                      <h3 className="text-xl font-semibold mb-2">No NFTs Found</h3>
                       <p className="text-muted-foreground">
-                        Be the first to mint an NFT! Visit our mint page to get started.
+                        Try adjusting your search or filter criteria to find more NFTs.
                       </p>
                     </div>
                   ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {nfts.map((nft) => (
+                      {filteredNfts.map((nft) => (
                         <Card key={nft.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
                           <CardContent className="p-0">
                             <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center text-6xl group-hover:scale-105 transition-transform">
@@ -388,13 +441,74 @@ export default function Marketplace() {
                 </TabsContent>
 
                 <TabsContent value="trending" className="mt-6">
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4">📈</div>
-                    <h3 className="text-xl font-semibold mb-2">Trending Analysis</h3>
-                    <p className="text-muted-foreground">
-                      Trending NFTs and collections will be analyzed here
-                    </p>
-                  </div>
+                  {loading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <span className="ml-2">Loading trending NFTs...</span>
+                    </div>
+                  ) : trendingNFTs.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="text-4xl mb-4">📈</div>
+                      <h3 className="text-xl font-semibold mb-2">No Trending NFTs Yet</h3>
+                      <p className="text-muted-foreground">
+                        NFTs with high activity and views will appear here as the marketplace grows.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {trendingNFTs.map((nft) => (
+                        <Card key={nft.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
+                          <CardContent className="p-0">
+                            <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center text-6xl group-hover:scale-105 transition-transform">
+                              <img 
+                                src={nft.image_url} 
+                                alt={nft.name}
+                                className="w-full h-full object-cover rounded-t-lg"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/images/og-anime.jpg';
+                                }}
+                              />
+                            </div>
+                            <div className="p-4">
+                              <Badge className="mb-2" variant="default">
+                                <TrendingUp className="h-3 w-3 mr-1" />
+                                Trending
+                              </Badge>
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <h3 className="font-semibold line-clamp-1">{nft.name}</h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    {nft.collections?.name || 'Unknown Collection'}
+                                  </p>
+                                </div>
+                                <Button variant="ghost" size="sm">
+                                  <Heart className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="text-lg font-bold">
+                                    {nft.is_listed && nft.price ? `${Number(nft.price).toFixed(2)} SOL` : 'Not Listed'}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {nft.views || 0} views
+                                  </div>
+                                </div>
+                                {nft.attributes?.rarity && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {nft.attributes.rarity}
+                                  </Badge>
+                                )}
+                              </div>
+                              <Button className="w-full mt-3">
+                                {nft.is_listed ? 'Buy Now' : 'View Details'}
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </TabsContent>
               </Tabs>
             </>
