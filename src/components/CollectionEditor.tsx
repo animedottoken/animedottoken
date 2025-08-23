@@ -26,8 +26,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
-  // Use refreshed collection data if available, otherwise fallback to initial
-  const currentCollection = collection || initialCollection;
+  // Safely merge initial and refreshed data to keep all fields visible
+  const currentCollection = { ...initialCollection, ...(collection ?? {}) };
   
   // Check ownership using the initial collection data to avoid masked creator_address from secured API
   const isOwner = publicKey === initialCollection.creator_address;
