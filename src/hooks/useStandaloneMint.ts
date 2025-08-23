@@ -159,7 +159,7 @@ export const useStandaloneMint = () => {
             total_quantity: quantity,
             explicit_content: nftData.explicit_content || false
           },
-          traits: nftData.attributes || [], // Store structured traits with display_type
+          // Note: traits column removed - using attributes instead
           is_listed: nftData.list_after_mint || false,
           price: nftData.list_after_mint ? nftData.initial_price : null
         });
