@@ -66,6 +66,7 @@ export type Database = {
           created_at: string
           creator_address: string
           description: string | null
+          enable_primary_sales: boolean
           explicit_content: boolean | null
           external_links: Json | null
           go_live_date: string | null
@@ -100,6 +101,7 @@ export type Database = {
           created_at?: string
           creator_address: string
           description?: string | null
+          enable_primary_sales?: boolean
           explicit_content?: boolean | null
           external_links?: Json | null
           go_live_date?: string | null
@@ -134,6 +136,7 @@ export type Database = {
           created_at?: string
           creator_address?: string
           description?: string | null
+          enable_primary_sales?: boolean
           explicit_content?: boolean | null
           external_links?: Json | null
           go_live_date?: string | null

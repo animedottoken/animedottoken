@@ -26,8 +26,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
-  // Safely merge initial and refreshed data to keep all fields visible
-  const currentCollection = { ...initialCollection, ...(collection ?? {}) };
+  // Use the most current collection data, prioritizing refreshed RPC data
+  const currentCollection = collection ? { ...initialCollection, ...collection } : initialCollection;
   
   // Check ownership using the initial collection data to avoid masked creator_address from secured API
   const isOwner = publicKey === initialCollection.creator_address;
@@ -35,9 +35,13 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const hasMintedNFTs = itemsRedeemed > 0;
 
   const handleUpdate = async (updates: any) => {
-    await updateCollection(currentCollection.id, updates);
-    // Refresh the collection data after successful update
-    refreshCollection();
+    try {
+      await updateCollection(currentCollection.id, updates);
+      // Force refresh to get the updated data immediately
+      await refreshCollection();
+    } catch (error) {
+      console.error('Update failed:', error);
+    }
   };
 
   const handleDeleteCollection = async () => {
