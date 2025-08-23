@@ -430,7 +430,6 @@ export default function Profile() {
                           </Tooltip>
                         </TooltipProvider>
                       </div>
-                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                       {getCollectionDescription(collection)}
