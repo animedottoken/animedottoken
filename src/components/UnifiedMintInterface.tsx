@@ -192,7 +192,21 @@ export const UnifiedMintInterface = () => {
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unexpected error occurred';
+      let errorMessage = 'Unexpected error occurred';
+      
+      // Surface exact Edge Function errors
+      if (error && typeof error === 'object') {
+        if ('message' in error && error.message) {
+          errorMessage = error.message;
+        } else if ('error' in error && error.error) {
+          errorMessage = error.error;
+        } else if ('details' in error && error.details) {
+          errorMessage = error.details;
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       setMintingError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -387,13 +401,8 @@ export const UnifiedMintInterface = () => {
                         selected={formData.mint_end_at ? new Date(formData.mint_end_at) : undefined}
                         onSelect={(date) => {
                           if (date) {
-                            const now = new Date();
-                            if (date <= now) {
-                              toast.error('Date must be in the future');
-                              return;
-                            }
-                            
-                            // Keep existing time or set to current time if new date
+                            // Don't validate date alone - only validate combined date+time
+                            // Keep existing time or set to end of day if new date
                             let timeString = '23:59';
                             if (formData.mint_end_at) {
                               const existing = new Date(formData.mint_end_at);
@@ -403,15 +412,29 @@ export const UnifiedMintInterface = () => {
                             const [hours, minutes] = timeString.split(':');
                             date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
                             
+                            // Now validate the combined date+time
+                            const now = new Date();
+                            if (date <= now) {
+                              setFormData({ 
+                                ...formData, 
+                                mint_end_at_error: 'Date and time must be in the future'
+                              });
+                              return;
+                            }
+                            
                             setFormData({ 
                               ...formData, 
-                              mint_end_at: date.toISOString().slice(0, 16),
+                              mint_end_at: date.toISOString(),
                               mint_end_at_error: undefined
                             });
                           }
                         }}
-                         disabled={(date) => { const today = new Date(); today.setHours(0,0,0,0); return date < today; }}
-                         fromDate={new Date(new Date().setHours(0,0,0,0))} // Prevent browsing past dates
+                        disabled={(date) => { 
+                          const today = new Date(); 
+                          today.setHours(0,0,0,0); 
+                          return date < today; 
+                        }}
+                        fromDate={new Date()}
                         initialFocus
                         className="p-3 pointer-events-auto"
                       />
@@ -423,20 +446,39 @@ export const UnifiedMintInterface = () => {
                      <Select
                        value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getHours()).padStart(2, '0') : '23'}
                        onValueChange={(hour) => {
-                         if (!formData.mint_end_at) return;
+                         if (!formData.mint_end_at) {
+                           // Create new date with selected hour
+                           const date = new Date();
+                           date.setHours(parseInt(hour), 59, 0, 0);
+                           setFormData({ ...formData, mint_end_at: date.toISOString() });
+                           return;
+                         }
+                         
                          const date = new Date(formData.mint_end_at);
                          const minutes = date.getMinutes();
                          date.setHours(parseInt(hour), minutes, 0, 0);
+                         
+                         // Validate combined date+time
                          const now = new Date();
                          if (date <= now) {
-                           toast.error('Date and time must be in the future');
+                           setFormData({ 
+                             ...formData, 
+                             mint_end_at_error: 'Date and time must be in the future'
+                           });
                            return;
                          }
-                         setFormData({ ...formData, mint_end_at: date.toISOString().slice(0, 16) });
+                         
+                         setFormData({ 
+                           ...formData, 
+                           mint_end_at: date.toISOString(),
+                           mint_end_at_error: undefined
+                         });
                        }}
                      >
-                       <SelectTrigger className="w-20"><SelectValue placeholder="HH" /></SelectTrigger>
-                       <SelectContent className="z-50">
+                       <SelectTrigger className="w-20">
+                         <SelectValue placeholder="HH" />
+                       </SelectTrigger>
+                       <SelectContent className="z-50 max-h-60">
                          {Array.from({ length: 24 }).map((_, i) => {
                            const v = String(i).padStart(2, '0');
                            return (
@@ -452,20 +494,39 @@ export const UnifiedMintInterface = () => {
                      <Select
                        value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getMinutes()).padStart(2, '0') : '59'}
                        onValueChange={(minute) => {
-                         if (!formData.mint_end_at) return;
+                         if (!formData.mint_end_at) {
+                           // Create new date with selected minute
+                           const date = new Date();
+                           date.setHours(23, parseInt(minute), 0, 0);
+                           setFormData({ ...formData, mint_end_at: date.toISOString() });
+                           return;
+                         }
+                         
                          const date = new Date(formData.mint_end_at);
                          const hours = date.getHours();
                          date.setHours(hours, parseInt(minute), 0, 0);
+                         
+                         // Validate combined date+time
                          const now = new Date();
                          if (date <= now) {
-                           toast.error('Date and time must be in the future');
+                           setFormData({ 
+                             ...formData, 
+                             mint_end_at_error: 'Date and time must be in the future'
+                           });
                            return;
                          }
-                         setFormData({ ...formData, mint_end_at: date.toISOString().slice(0, 16) });
+                         
+                         setFormData({ 
+                           ...formData, 
+                           mint_end_at: date.toISOString(),
+                           mint_end_at_error: undefined
+                         });
                        }}
                      >
-                       <SelectTrigger className="w-20"><SelectValue placeholder="MM" /></SelectTrigger>
-                       <SelectContent className="z-50">
+                       <SelectTrigger className="w-20">
+                         <SelectValue placeholder="MM" />
+                       </SelectTrigger>
+                       <SelectContent className="z-50 max-h-60">
                          {Array.from({ length: 60 }).map((_, i) => {
                            const v = String(i).padStart(2, '0');
                            return (
@@ -474,6 +535,10 @@ export const UnifiedMintInterface = () => {
                          })}
                        </SelectContent>
                      </Select>
+                     
+                     <span className="text-xs text-muted-foreground ml-2">
+                       {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                     </span>
                    </div>
                 </div>
                 {formData.mint_end_at_error && (

@@ -73,10 +73,10 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           is_live: boolean
-          items_available: number
+          items_available: number | null
           items_redeemed: number
           locked_fields: Json
-          max_supply: number
+          max_supply: number | null
           mint_end_at: string | null
           mint_price: number
           name: string
@@ -107,10 +107,10 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           is_live?: boolean
-          items_available?: number
+          items_available?: number | null
           items_redeemed?: number
           locked_fields?: Json
-          max_supply?: number
+          max_supply?: number | null
           mint_end_at?: string | null
           mint_price?: number
           name: string
@@ -141,10 +141,10 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           is_live?: boolean
-          items_available?: number
+          items_available?: number | null
           items_redeemed?: number
           locked_fields?: Json
-          max_supply?: number
+          max_supply?: number | null
           mint_end_at?: string | null
           mint_price?: number
           name?: string

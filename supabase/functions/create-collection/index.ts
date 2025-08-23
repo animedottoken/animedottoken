@@ -167,8 +167,19 @@ serve(async (req) => {
 
     if (error) {
       console.error('Insert error:', error);
+      let errorMessage = 'Failed to create collection';
+      
+      // Surface specific database errors
+      if (error.code === '23502') {
+        errorMessage = `Required field missing: ${error.message}`;
+      } else if (error.code === '23505') {
+        errorMessage = 'Collection with this name already exists';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       return new Response(
-        JSON.stringify({ error: error.message || 'Failed to create collection' }),
+        JSON.stringify({ error: errorMessage }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
