@@ -202,6 +202,15 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
           </p>
         </CardHeader>
       <CardContent className="space-y-4">
+        {/* No properties message - show ABOVE the form when there are no properties */}
+        {properties.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Palette className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <p className="text-sm">No properties added yet</p>
+            <p className="text-xs">Properties help describe unique traits of your NFT</p>
+          </div>
+        )}
+
         {/* Existing Properties */}
         {properties.length > 0 && (
           <div className="space-y-3">
@@ -325,14 +334,6 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
             Add Property
           </Button>
         </div>
-
-        {properties.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Palette className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">No properties added yet</p>
-            <p className="text-xs">Properties help describe unique traits of your NFT</p>
-          </div>
-        )}
       </CardContent>
     </Card>
     </TooltipProvider>

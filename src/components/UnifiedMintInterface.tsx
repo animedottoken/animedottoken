@@ -408,6 +408,7 @@ export const UnifiedMintInterface = () => {
                           }
                         }}
                         disabled={(date) => date <= new Date()}
+                        fromDate={new Date()} // Prevent browsing past dates
                         initialFocus
                         className="p-3 pointer-events-auto"
                       />
@@ -607,15 +608,28 @@ export const UnifiedMintInterface = () => {
                 <Label htmlFor="mint_price" className="text-base font-medium">
                   Mint Price (SOL)
                 </Label>
-                <Input
-                  id="mint_price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.mint_price}
-                  onChange={(e) => setFormData({ ...formData, mint_price: parseFloat(e.target.value) || 0 })}
-                />
+                      <Input
+                        id="mint_price_input"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0.1"
+                        value={formData.mint_price === 0 ? '' : formData.mint_price.toString()}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Allow empty, digits, and decimal point
+                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                            const numValue = value === '' ? 0 : parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              setFormData({ ...formData, mint_price: numValue });
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // Format the number on blur
+                          const value = parseFloat(e.target.value) || 0;
+                          setFormData({ ...formData, mint_price: value });
+                        }}
+                      />
                 <div className="text-xs text-muted-foreground">
                   Price per NFT in SOL
                 </div>
