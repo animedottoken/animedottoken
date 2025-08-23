@@ -166,15 +166,6 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
             </Button>
           </div>
 
-          {/* Price row inside card */}
-          <div className="mt-2 mb-3">
-            {listed && nftPrice !== null ? (
-              <div className="text-lg font-bold text-primary">{nftPrice} SOL</div>
-            ) : (
-              <div className="text-sm text-muted-foreground">Not for sale</div>
-            )}
-          </div>
-
           <Button className="w-full" variant="outline" onClick={(e) => {e.stopPropagation(); handleViewDetails()}}>
             <Eye className="h-4 w-4 mr-2" />
             View Details
