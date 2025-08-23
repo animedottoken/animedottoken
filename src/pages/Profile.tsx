@@ -101,6 +101,7 @@ export default function Profile() {
   }
 
   if (selectedCollection) {
+    const isOwner = publicKey === (selectedCollection as any)?.creator_address;
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="mb-6">
@@ -112,10 +113,12 @@ export default function Profile() {
             ← Back to Profile
           </Button>
         </div>
-        <CollectionEditor 
-          collection={selectedCollection} 
-          onClose={() => setSelectedCollection(null)} 
-        />
+        {isOwner && (
+          <CollectionEditor 
+            collection={selectedCollection} 
+            onClose={() => setSelectedCollection(null)} 
+          />
+        )}
       </div>
     );
   }

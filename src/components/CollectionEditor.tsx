@@ -57,19 +57,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   };
 
   if (!isOwner) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center">
-            <Info className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">View Only</h3>
-            <p className="text-muted-foreground">
-              You can only view this collection's details. Only the creator can make changes.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (
