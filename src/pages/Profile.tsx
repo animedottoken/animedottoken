@@ -349,9 +349,11 @@ export default function Profile() {
                         {collection.is_live ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge variant="default" className="bg-green-500 text-white text-xs">
-                                Live
-                              </Badge>
+                              <div>
+                                <Badge variant="default" className="bg-green-500 text-white text-xs">
+                                  Live
+                                </Badge>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Collection is live and accepting mints</p>
@@ -360,9 +362,11 @@ export default function Profile() {
                         ) : (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge variant="secondary" className="text-xs">
-                                Draft
-                              </Badge>
+                              <div>
+                                <Badge variant="secondary" className="text-xs">
+                                  Draft
+                                </Badge>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Collection is in draft mode</p>
@@ -372,9 +376,11 @@ export default function Profile() {
                         {collection.verified && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge variant="outline" className="text-xs">
-                                ✓
-                              </Badge>
+                              <div>
+                                <Badge variant="outline" className="text-xs">
+                                  ✓
+                                </Badge>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Verified collection</p>
