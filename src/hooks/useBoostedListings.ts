@@ -38,7 +38,13 @@ export const useBoostedListings = () => {
         return;
       }
 
-      setBoostedListings(data || []);
+      // Transform the data to ensure tier property matches our interface
+      const transformedData = (data || []).map(item => ({
+        ...item,
+        tier: item.tier as 'god' | 'top' | 'boosted' // Type assertion to fix the type mismatch
+      }));
+
+      setBoostedListings(transformedData);
     } catch (error) {
       console.error('Error loading boosted listings:', error);
     } finally {
