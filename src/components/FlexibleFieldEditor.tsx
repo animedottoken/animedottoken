@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lock, Unlock, Info, Infinity } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { PropertiesEditor } from '@/components/PropertiesEditor';
 import { Collection } from '@/hooks/useCollections';
 
 interface FieldRule {
@@ -22,6 +23,9 @@ interface FieldRule {
   badge: string;
   help?: string;
   hidden?: () => boolean;
+  visible?: () => boolean;
+  required?: boolean;
+  transform?: (value: string) => string;
   options?: string[] | { value: string; label: string }[];
 }
 
@@ -42,107 +46,150 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
 
   // Define field rules
   const fieldRules: Record<string, FieldRule> = {
-    // Always editable
+    // Basic Information
     name: { 
       label: 'Collection Name', 
       type: 'text', 
-      maxLength: 32, 
-      canEdit: () => true,
-      badge: 'Always Editable'
+      maxLength: 100, 
+      canEdit: () => !lockedFields.includes('name'),
+      badge: 'On-Chain',
+      required: true,
+      help: 'Name of your collection (visible on marketplaces)'
+    },
+    symbol: { 
+      label: 'Symbol', 
+      type: 'text', 
+      maxLength: 10, 
+      canEdit: () => !hasMintedNFTs && !lockedFields.includes('symbol'),
+      badge: hasMintedNFTs ? 'Chain-Locked' : 'On-Chain',
+      transform: (value: string) => value.toUpperCase(),
+      help: 'Short symbol for your collection (e.g., AWESOME)'
     },
     site_description: { 
       label: 'Public Description', 
       type: 'textarea', 
       maxLength: 2000, 
-      canEdit: () => true,
-      badge: 'Always Editable',
-      help: 'Off-Chain - This appears on your public collection page in this app. Good for long details, roadmap, utilities, links.'
+      canEdit: () => !lockedFields.includes('site_description'),
+      badge: 'Off-Chain',
+      help: 'This appears on your public collection page in this app. Good for long details, roadmap, utilities, links.'
     },
     onchain_description: { 
       label: 'Short Description', 
       type: 'textarea', 
       maxLength: 200, 
-      canEdit: () => true,
-      badge: 'Always Editable',
-      help: 'On-Chain - Stored on-chain and shown in wallets/marketplaces. Keep it brief.'
-    },
-    mint_price: { 
-      label: 'Mint Price (SOL)', 
-      type: 'number', 
-      min: 0, 
-      step: 0.01, 
-      canEdit: () => true,
-      badge: 'Always Editable'
-    },
-    treasury_wallet: { 
-      label: 'Treasury Wallet', 
-      type: 'text', 
-      canEdit: () => true,
-      badge: 'Always Editable'
-    },
-    whitelist_enabled: { 
-      label: 'Whitelist Required', 
-      type: 'switch', 
-      canEdit: () => true,
-      badge: 'Always Editable'
-    },
-    mint_end_at: { 
-      label: 'Mint End Date', 
-      type: 'datetime-local', 
-      canEdit: () => true,
-      badge: 'Always Editable',
-      help: 'Date must be in the future with 4-digit year (YYYY-MM-DD)'
-    },
-    category: { 
-      label: 'Category', 
-      type: 'select', 
-      options: ['Art', 'Gaming', 'Music', 'Sports', 'Utility', 'Profile Pictures', 'Collectibles', 'Other'],
-      canEdit: () => true,
-      badge: 'Always Editable'
-    },
-    explicit_content: { 
-      label: 'Explicit Content', 
-      type: 'switch', 
-      canEdit: () => true,
-      badge: 'Always Editable'
+      canEdit: () => !lockedFields.includes('onchain_description'),
+      badge: 'On-Chain',
+      help: 'Stored on-chain and shown in wallets/marketplaces. Keep it brief.'
     },
     
-    // Editable until first mint
+    // Pricing & Sales
+    enable_primary_sales: { 
+      label: 'Enable Primary Sales', 
+      type: 'switch', 
+      canEdit: () => !lockedFields.includes('enable_primary_sales'),
+      badge: 'On-Chain',
+      help: 'Allow primary market sales with mint price'
+    },
+    mint_price: { 
+      label: 'Price (SOL)', 
+      type: 'number', 
+      canEdit: () => !lockedFields.includes('mint_price'),
+      badge: 'On-Chain',
+      min: 0,
+      step: 0.001,
+      visible: () => (collection as any).enable_primary_sales !== false,
+      help: 'Price for minting new NFTs from this collection'
+    },
+    
+    // Supply Settings
     supply_mode: { 
       label: 'Supply Mode', 
       type: 'select', 
       options: [
         { value: 'fixed', label: 'Fixed Supply' },
-        { value: 'open', label: 'Open Edition ∞' }
+        { value: 'open', label: 'Open Edition' }
       ],
-      canEdit: () => !hasMintedNFTs,
-      badge: hasMintedNFTs ? 'Locked after first mint' : 'Editable until first mint'
+      canEdit: () => !hasMintedNFTs && !lockedFields.includes('supply_mode'),
+      badge: hasMintedNFTs ? 'Chain-Locked' : 'On-Chain',
+      help: 'Whether the collection has a limited or unlimited supply'
     },
     max_supply: { 
       label: 'Max Supply', 
       type: 'number', 
       min: 1, 
       max: 100000, 
-      canEdit: () => !hasMintedNFTs && collection.supply_mode === 'fixed',
-      badge: hasMintedNFTs ? 'Locked after first mint' : 'Editable until first mint',
-      hidden: () => collection.supply_mode === 'open'
+      canEdit: () => !hasMintedNFTs && !lockedFields.includes('max_supply'),
+      badge: hasMintedNFTs ? 'Chain-Locked' : 'On-Chain',
+      visible: () => collection.supply_mode === 'fixed',
+      help: 'Maximum number of NFTs that can be minted'
     },
     royalty_percentage: { 
-      label: 'Royalties (%)', 
+      label: 'Royalty %', 
       type: 'number', 
       min: 0, 
       max: 50, 
       step: 0.1, 
-      canEdit: () => !hasMintedNFTs,
-      badge: hasMintedNFTs ? 'Locked after first mint' : 'Editable until first mint'
+      canEdit: () => !hasMintedNFTs && !lockedFields.includes('royalty_percentage'),
+      badge: hasMintedNFTs ? 'Chain-Locked' : 'On-Chain',
+      help: 'Percentage of secondary sales paid as royalties'
     },
-    symbol: { 
-      label: 'Symbol', 
+    
+    // Wallet & Settings
+    treasury_wallet: { 
+      label: 'Treasury Wallet', 
       type: 'text', 
-      maxLength: 10, 
-      canEdit: () => !hasMintedNFTs,
-      badge: hasMintedNFTs ? 'Locked after first mint' : 'Editable until first mint'
+      canEdit: () => !lockedFields.includes('treasury_wallet'),
+      badge: 'On-Chain',
+      help: 'Wallet address that receives mint payments and royalties'
     },
+    whitelist_enabled: { 
+      label: 'Whitelist Enabled', 
+      type: 'switch', 
+      canEdit: () => !lockedFields.includes('whitelist_enabled'),
+      badge: 'Off-Chain',
+      help: 'Require wallet addresses to be pre-approved for minting'
+    },
+    
+    // Metadata & Configuration
+    mint_end_at: { 
+      label: 'Mint End Date', 
+      type: 'datetime-local', 
+      canEdit: () => !lockedFields.includes('mint_end_at'),
+      badge: 'Off-Chain',
+      help: 'Optional date when minting automatically ends'
+    },
+    category: { 
+      label: 'Category', 
+      type: 'select', 
+      options: [
+        { value: 'art', label: 'Art' },
+        { value: 'collectibles', label: 'Collectibles' },
+        { value: 'gaming', label: 'Gaming' },
+        { value: 'music', label: 'Music' },
+        { value: 'photography', label: 'Photography' },
+        { value: 'sports', label: 'Sports' },
+        { value: 'utility', label: 'Utility' },
+        { value: 'pfp', label: 'Profile Pictures' },
+        { value: 'other', label: 'Other' }
+      ],
+      canEdit: () => !lockedFields.includes('category'),
+      badge: 'Off-Chain',
+      help: 'Collection category for better discoverability'
+    },
+    explicit_content: { 
+      label: 'Explicit Content', 
+      type: 'switch', 
+      canEdit: () => !lockedFields.includes('explicit_content'),
+      badge: 'Off-Chain',
+      help: 'Mark if collection contains mature/explicit content'
+    },
+    attributes: { 
+      label: 'Properties', 
+      type: 'properties', 
+      canEdit: () => !lockedFields.includes('attributes'),
+      badge: 'On-Chain',
+      help: 'Default properties that will be applied to all NFTs in this collection'
+    }
   };
 
   const isFieldLocked = (fieldName: string) => {
@@ -200,7 +247,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
 
   const renderField = (fieldName: string) => {
     const rule = fieldRules[fieldName];
-    if (!rule || rule.hidden?.()) return null;
+    if (!rule || rule.hidden?.() || (rule.visible && !rule.visible())) return null;
 
     const value = collection[fieldName as keyof Collection];
     const isLocked = isFieldLocked(fieldName);
@@ -299,11 +346,22 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                 </div>
               )}
             </div>
+          ) : rule.type === 'properties' ? (
+            <div className="space-y-4">
+              <PropertiesEditor
+                properties={fieldValues[fieldName] || (Array.isArray(collection.attributes) ? collection.attributes : [])}
+                onChange={(properties) => setFieldValues({ ...fieldValues, [fieldName]: properties })}
+              />
+            </div>
           ) : (
             <Input
               type={rule.type}
               value={fieldValues[fieldName] || ''}
-              onChange={(e) => setFieldValues({ ...fieldValues, [fieldName]: e.target.value })}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const transformedValue = rule.transform ? rule.transform(inputValue) : inputValue;
+                setFieldValues({ ...fieldValues, [fieldName]: transformedValue });
+              }}
               min={rule.min}
               max={rule.max}
               step={rule.step}
@@ -317,7 +375,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
               onClick={() => saveField(fieldName)}
               disabled={!!fieldValues[`${fieldName}_error`]}
             >
-              Save
+              {rule.type === 'properties' ? 'Save Properties' : 'Save'}
             </Button>
             <Button size="sm" variant="outline" onClick={cancelEditing}>Cancel</Button>
           </div>
@@ -345,6 +403,17 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
           </div>
           
           <div className="text-sm text-muted-foreground mb-2">
+            <Badge 
+              variant={
+                rule.badge === 'Chain-Locked' ? 'destructive' :
+                rule.badge === 'On-Chain' ? 'secondary' :
+                rule.badge === 'Off-Chain' ? 'outline' :
+                'default'
+              }
+              className="mr-2"
+            >
+              {rule.badge}
+            </Badge>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
                 <Infinity className="h-4 w-4" />
@@ -354,14 +423,17 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
               collection.supply_mode === 'open' ? 'Open Edition ∞' : 'Fixed Supply'
             ) : rule.type === 'switch' ? (
               value ? 'Enabled' : 'Disabled'
+            ) : rule.type === 'datetime-local' ? (
+              value ? new Date(value as string).toLocaleString() : 'Not set'
+            ) : rule.type === 'properties' ? (
+              (() => {
+                const props = Array.isArray(value) ? value : [];
+                return props.length > 0 ? `${props.length} properties` : 'No properties set';
+              })()
             ) : (
-              value?.toString() || 'Not set'
+              value?.toString() || 'No value set'
             )}
           </div>
-          
-          <Badge variant={isLocked ? 'secondary' : 'outline'} className="text-xs">
-            {badge}
-          </Badge>
         </div>
         
         <div className="flex items-center gap-2">
@@ -401,20 +473,16 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
           <h4 className="font-medium mb-2">Legend</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">Always Editable</Badge>
-              <span>Can always be changed</span>
+              <Badge variant="secondary">On-Chain</Badge>
+              <span>Stored permanently on blockchain</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">Editable until first mint</Badge>
-              <span>Can edit until any NFT is minted</span>
+              <Badge variant="outline">Off-Chain</Badge>
+              <span>Stored in app database, can be changed</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">Locked after first mint</Badge>
-              <span>Chain rule - locked automatically</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">Locked by creator</Badge>
-              <span>You locked this field</span>
+              <Badge variant="destructive">Chain-Locked</Badge>
+              <span>Cannot be changed after first mint</span>
             </div>
           </div>
         </div>

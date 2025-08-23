@@ -26,6 +26,8 @@ interface UpdateCollectionRequest {
     category?: string;
     explicit_content?: boolean;
     external_links?: any[];
+    enable_primary_sales?: boolean;
+    attributes?: any[];
   };
 }
 
@@ -134,6 +136,14 @@ serve(async (req) => {
 
     if (updates.mint_end_at !== undefined && !lockedFields.includes('mint_end_at')) {
       updateData.mint_end_at = updates.mint_end_at
+    }
+
+    if (updates.enable_primary_sales !== undefined && !lockedFields.includes('enable_primary_sales')) {
+      updateData.enable_primary_sales = updates.enable_primary_sales
+    }
+
+    if (updates.attributes !== undefined && !lockedFields.includes('attributes')) {
+      updateData.attributes = updates.attributes
     }
 
     // Supply mode can be changed if not locked and no NFTs minted

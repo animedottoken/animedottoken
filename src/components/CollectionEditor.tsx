@@ -96,7 +96,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
               <div className="font-bold">{currentCollection.mint_price} SOL</div>
-              <div className="text-sm text-muted-foreground">Mint Price</div>
+              <div className="text-sm text-muted-foreground">Price (SOL)</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <Image className="w-6 h-6 mx-auto mb-2 text-primary" />
