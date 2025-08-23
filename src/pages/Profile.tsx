@@ -23,6 +23,7 @@ import { useBurnAllNFTs } from "@/hooks/useBurnAllNFTs";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useFavorites } from "@/hooks/useFavorites";
+import { EditNFTDialog } from "@/components/EditNFTDialog";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
@@ -536,27 +537,16 @@ export default function Profile() {
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="flex gap-2 flex-wrap justify-center">
+                        <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            // NFT editing functionality could be added here
-                            toast.info('NFT editing functionality coming soon!');
-                          }}
+                          asChild
                         >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            // NFT viewing functionality - could open a modal or navigate to detail page
-                            toast.info('NFT detail view coming soon!');
-                          }}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          View
+                          <Link to={`/nft/${nft.id}`}>
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            View
+                          </Link>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -594,64 +584,66 @@ export default function Profile() {
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{nft.name}</h4>
                       <div className="flex items-center gap-1">
+                        <Badge variant="secondary" className="text-xs">
+                          NFT
+                        </Badge>
                         {nft.symbol && (
                           <Badge variant="outline" className="text-xs">
                             {nft.symbol}
                           </Badge>
                         )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0"
-                                onClick={() => {
-                                  if (!connected) {
-                                    toast.error('Connect wallet to use favorites');
-                                    return;
-                                  }
-                                  if (isFavorite(nft.id)) {
-                                    removeFromFavorites(nft.id);
-                                  } else {
-                                    addToFavorites({
-                                      id: nft.id,
-                                      name: nft.name,
-                                      image_url: nft.image_url,
-                                      collection_name: nft.collection_name,
-                                      type: 'nft'
-                                    });
-                                  }
-                                }}
-                              >
-                                <Heart 
-                                  className={`h-4 w-4 ${
-                                    isFavorite(nft.id) 
-                                      ? 'fill-current text-red-500' 
-                                      : 'text-muted-foreground'
-                                  }`}
-                                />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>
-                                {!connected 
-                                  ? 'Connect wallet to use favorites'
-                                  : isFavorite(nft.id) 
-                                    ? 'Remove from favorites' 
-                                    : 'Add to favorites'
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Heart clicked for NFT:', nft.id);
+                                const favoriteData = {
+                                  id: nft.id,
+                                  name: nft.name,
+                                  image_url: nft.image_url,
+                                  collection_name: nft.collection_name,
+                                  type: 'nft' as const
+                                };
+                                
+                                if (isFavorite(nft.id)) {
+                                  console.log('Removing from favorites');
+                                  removeFromFavorites(nft.id);
+                                } else {
+                                  console.log('Adding to favorites');
+                                  addToFavorites(favoriteData);
                                 }
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                              }}
+                            >
+                              <Heart 
+                                className={`h-4 w-4 ${
+                                  isFavorite(nft.id) 
+                                    ? 'fill-current text-red-500' 
+                                    : 'text-muted-foreground'
+                                }`}
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {!connected 
+                                ? 'Connect wallet to use favorites'
+                                : isFavorite(nft.id) 
+                                  ? 'Remove from favorites' 
+                                  : 'Add to favorites'
+                              }
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
-                    {nft.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {nft.description}
-                      </p>
-                    )}
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {nft.description || 'No description'}
+                    </p>
                     <div className="flex items-center justify-between text-sm">
                       <div>
                         <span className="text-muted-foreground">Collection:</span>
