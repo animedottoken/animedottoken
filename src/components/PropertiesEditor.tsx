@@ -241,7 +241,7 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                               )}
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
-                              {property.value ? format(parse(property.value, 'yyyy-MM-dd', new Date()), 'PPP') : "Pick a date"}
+                              {property.value ? format(parse(property.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : "Pick a date"}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
@@ -345,7 +345,7 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {newProperty.value ? format(parse(newProperty.value, 'yyyy-MM-dd', new Date()), 'PPP') : "Pick a date"}
+                    {newProperty.value ? format(parse(newProperty.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

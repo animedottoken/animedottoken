@@ -938,7 +938,7 @@ export const UnifiedMintInterface = () => {
                            <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg text-sm">
                              <span className="font-medium">{attr.trait_type}</span>
                              <div className="text-right">
-                               <div>{attr.display_type === 'date' && attr.value ? format(parse(attr.value, 'yyyy-MM-dd', new Date()), 'PPP') : attr.value}</div>
+                               <div>{attr.display_type === 'date' && attr.value ? format(parse(attr.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : attr.value}</div>
                                <div className="text-muted-foreground text-xs">
                                  {attr.display_type === 'text' ? 'Text' : 
                                   attr.display_type === 'number' ? 'Number' :
