@@ -28,36 +28,36 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
 
   const getTierIcon = () => {
     switch (listing.tier) {
-      case 'god': return <Crown className="h-4 w-4 text-yellow-500" />;
-      case 'top': return <Rocket className="h-4 w-4 text-gray-400" />;
-      default: return <TrendingUp className="h-4 w-4 text-blue-500" />;
+      case 'god': return <Crown className="h-4 w-4" />;
+      case 'top': return <Rocket className="h-4 w-4" />;
+      default: return <TrendingUp className="h-4 w-4" />;
     }
   };
 
   const getTierBorder = () => {
     switch (listing.tier) {
-      case 'god': return 'border-2 border-yellow-500/50 shadow-lg shadow-yellow-500/20';
-      case 'top': return 'border-2 border-gray-400/50 shadow-lg shadow-gray-400/20';
-      default: return 'border-2 border-blue-500/50 shadow-lg shadow-blue-500/20';
+      case 'god': return 'border-2 border-primary shadow-lg shadow-primary/20';
+      case 'top': return 'border-2 border-accent shadow-lg shadow-accent/20';
+      default: return 'border-2 border-secondary shadow-lg shadow-secondary/20';
     }
   };
 
   const getTierBadge = () => {
     switch (listing.tier) {
       case 'god': return (
-        <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
+        <Badge className="bg-primary text-primary-foreground font-bold">
           <Crown className="h-3 w-3 mr-1" />
           God Tier #{listing.bid_rank}
         </Badge>
       );
       case 'top': return (
-        <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-white">
+        <Badge className="bg-accent text-accent-foreground font-bold">
           <Rocket className="h-3 w-3 mr-1" />
           Top Tier #{listing.bid_rank}
         </Badge>
       );
       default: return (
-        <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+        <Badge className="bg-secondary text-secondary-foreground font-bold">
           <TrendingUp className="h-3 w-3 mr-1" />
           Boosted #{listing.bid_rank}
         </Badge>
@@ -109,9 +109,9 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
           {getTierBadge()}
         </div>
 
-        {/* Boost Info */}
-        <div className="absolute top-2 right-2 z-10 bg-black/70 text-white text-xs px-2 py-1 rounded">
-          {listing.bid_amount} $ANIME
+        {/* Boost Info - Amount Display */}
+        <div className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded shadow-lg">
+          {Number(listing.bid_amount).toLocaleString()} $ANIME
         </div>
 
         {/* Image */}
