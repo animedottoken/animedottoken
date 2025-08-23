@@ -884,6 +884,89 @@ export const UnifiedMintInterface = () => {
       )}
 
       {activeStep === 3 && (
+        <Card className="w-full max-w-4xl mx-auto">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+              <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+              Review Collection Details
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base">
+              Please review the details of your collection before submitting.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-4 sm:px-6 space-y-6">
+            {/* Collection Preview */}
+            <div className="bg-muted/30 rounded-lg p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                {formData.image_file && (
+                  <img 
+                    src={formData.image_preview_url || URL.createObjectURL(formData.image_file)}
+                    alt="Collection preview"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-2 border-border"
+                  />
+                )}
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-lg sm:text-xl font-bold">{formData.name}</h3>
+                  {formData.symbol && (
+                    <Badge variant="secondary" className="mt-1">{formData.symbol}</Badge>
+                  )}
+                  <p className="text-sm text-muted-foreground mt-2">{formData.category}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Details - Mobile Optimized */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="bg-muted/20 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground">Price</div>
+                  <div className="font-bold">{formData.mint_price} SOL</div>
+                </div>
+                <div className="bg-muted/20 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground">Supply</div>
+                  <div className="font-bold">
+                    {formData.supply_mode === 'open' ? '∞ Open' : `${formData.max_supply} Max`}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-muted/20 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground">Royalties</div>
+                  <div className="font-bold">{formData.royalty_percentage.toFixed(2)}%</div>
+                </div>
+                <div className="bg-muted/20 p-3 rounded-lg">
+                  <div className="text-xs text-muted-foreground">Whitelist</div>
+                  <div className="font-bold">{formData.whitelist_enabled ? 'Enabled' : 'Disabled'}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Descriptions - Mobile Optimized */}
+            {formData.onchain_description && (
+              <div className="bg-muted/20 p-4 rounded-lg">
+                <div className="text-sm font-medium mb-2">On-Chain Description</div>
+                <div className="text-sm text-muted-foreground">{formData.onchain_description}</div>
+              </div>
+            )}
+
+            {/* Action Buttons - Mobile Optimized */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
+              <Button variant="outline" onClick={() => setActiveStep(2)} className="w-full sm:w-auto">
+                Back to Settings
+              </Button>
+              <Button 
+                onClick={handleSubmit} 
+                size="lg"
+                disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
+                className="w-full sm:w-auto"
+              >
+                {isMinting ? 'Creating & Minting...' : 'Create Collection'}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
           <Card className="w-full max-w-4xl mx-auto">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
@@ -924,26 +1007,6 @@ export const UnifiedMintInterface = () => {
                  </div>
                </div>
 
-               {/* Collection Info */}
-               <div className="flex-1">
-                 <div className="flex items-start justify-between">
-                   <div>
-                     <h2 className="text-2xl font-bold">{formData.name}</h2>
-                     <p className="text-lg text-muted-foreground">{formData.symbol}</p>
-                     <p className="text-sm text-muted-foreground mt-1">{formData.category}</p>
-                   </div>
-                   
-                   {/* Content Rating Badge */}
-                      <div className="flex items-center gap-2 bg-background px-3 py-1 rounded-full">
-                        <div className={`w-2 h-2 rounded-full ${formData.explicit_content ? 'bg-orange-500' : 'bg-green-500'}`}></div>
-                        <span className="text-xs font-medium">
-                          {formData.explicit_content ? 'Explicit' : 'Safe'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
                 {/* Collection Banner */}
                 {(formData.banner_file || formData.banner_preview_url) && (
                   <div className="mt-4">
@@ -1072,17 +1135,18 @@ export const UnifiedMintInterface = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+               </div>
+               
                <div className="flex flex-col sm:flex-row justify-between gap-3 pt-6 sm:pt-8 border-t mt-6 sm:mt-8">
                  <Button variant="outline" onClick={() => setActiveStep(2)} className="w-full sm:w-auto">
                    Back
                  </Button>
-                  <Button 
-                    onClick={handleSubmit} 
-                    size="lg"
-                    disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
-                    className="w-full sm:w-auto"
-                  >
+                 <Button 
+                   onClick={handleSubmit} 
+                   size="lg"
+                   disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
+                   className="w-full sm:w-auto"
+                 >
                    {isMinting ? 'Creating & Minting...' : 'Create Collection + Mint NFT'}
                    <ArrowRight className="ml-2 h-4 w-4" />
                  </Button>
