@@ -662,10 +662,6 @@ export default function Profile() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Owner:</span>
-                        <span className="ml-1 font-medium">You</span>
-                      </div>
-                      <div>
                         <span className="text-muted-foreground">Price:</span>
                         <span className="ml-1 font-medium">-</span>
                       </div>
