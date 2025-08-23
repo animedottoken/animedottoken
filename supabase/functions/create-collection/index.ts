@@ -28,6 +28,7 @@ interface CreateCollectionRequest {
   go_live_date?: string | null;
   mint_end_at?: string | null;
   locked_fields?: string[];
+  attributes?: { trait_type: string; value: string; display_type?: string }[];
   creator_address: string; // wallet address
 }
 
@@ -130,6 +131,7 @@ serve(async (req) => {
       go_live_date: body.go_live_date || null,
       mint_end_at: body.mint_end_at || null,
       locked_fields: body.locked_fields || [],
+      attributes: body.attributes || [],
       is_active: true,
       is_live: true,
       verified: false,

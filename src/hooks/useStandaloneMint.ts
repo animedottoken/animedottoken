@@ -12,7 +12,7 @@ export interface StandaloneNFTData {
   royalty_percentage?: number;
   category?: string;
   external_links?: { type: string; url: string }[];
-  attributes?: { trait_type: string; value: string }[];
+  attributes?: { trait_type: string; value: string; display_type?: string }[];
   collection_id?: string; // Optional: assign to existing collection
   explicit_content?: boolean;
   list_after_mint?: boolean;
@@ -159,6 +159,7 @@ export const useStandaloneMint = () => {
             total_quantity: quantity,
             explicit_content: nftData.explicit_content || false
           },
+          traits: nftData.attributes || [], // Store structured traits with display_type
           is_listed: nftData.list_after_mint || false,
           price: nftData.list_after_mint ? nftData.initial_price : null
         });

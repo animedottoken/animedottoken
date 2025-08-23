@@ -139,6 +139,7 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
           go_live_date: collectionData.go_live_date || null,
           mint_end_at: collectionData.mint_end_at || null,
           locked_fields: collectionData.locked_fields || [],
+          attributes: collectionData.attributes || [],
         }
       });
 
