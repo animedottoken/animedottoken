@@ -29,7 +29,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   // Use refreshed collection data if available, otherwise fallback to initial
   const currentCollection = collection || initialCollection;
   
-  const isOwner = publicKey === currentCollection.creator_address;
+  // Check ownership using the initial collection data to avoid masked creator_address from secured API
+  const isOwner = publicKey === initialCollection.creator_address;
   const itemsRedeemed = currentCollection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
 
