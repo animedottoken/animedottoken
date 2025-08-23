@@ -650,8 +650,10 @@ export default function Profile() {
                     </p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Supply:</span>
-                        <span className="ml-1 font-medium">1</span>
+                        <span className="text-muted-foreground">Collection:</span>
+                        <span className="ml-1 font-medium">
+                          {nft.collection_name || 'Standalone'}
+                        </span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Minted:</span>
@@ -660,12 +662,14 @@ export default function Profile() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Price:</span>
-                        <span className="ml-1 font-medium">-</span>
+                        <span className="text-muted-foreground">Owner:</span>
+                        <span className="ml-1 font-medium">You</span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Royalty:</span>
-                        <span className="ml-1 font-medium">-</span>
+                        <span className="text-muted-foreground">Properties:</span>
+                        <span className="ml-1 font-medium">
+                          {nft.metadata && Array.isArray(nft.metadata) ? nft.metadata.length : 0}
+                        </span>
                       </div>
                     </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
