@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2 } from "lucide-react";
+import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2, Heart } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
@@ -22,6 +22,7 @@ import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { useBurnAllNFTs } from "@/hooks/useBurnAllNFTs";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
@@ -30,6 +31,7 @@ export default function Profile() {
   const { burning, burnNFT } = useBurnNFT();
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -343,7 +345,7 @@ export default function Profile() {
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{collection.name}</h4>
-                      <div className="flex gap-1">
+                      <div className="flex items-center gap-1">
                         {collection.is_live ? (
                           <Badge variant="default" className="bg-green-500 text-white text-xs">
                             Live
@@ -354,10 +356,64 @@ export default function Profile() {
                           </Badge>
                         )}
                         {collection.verified && (
-                          <Badge variant="outline" className="text-xs">
-                            ✓
-                          </Badge>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="outline" className="text-xs">
+                                  ✓
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Verified collection</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const favoriteData = {
+                                    id: collection.id,
+                                    name: collection.name,
+                                    image_url: collection.image_url || collection.banner_image_url,
+                                    type: 'collection' as const
+                                  };
+                                  
+                                  if (isFavorite(collection.id)) {
+                                    removeFromFavorites(collection.id);
+                                  } else {
+                                    addToFavorites(favoriteData);
+                                  }
+                                }}
+                              >
+                                <Heart 
+                                  className={`h-3 w-3 ${
+                                    isFavorite(collection.id) 
+                                      ? 'fill-current text-red-500' 
+                                      : 'text-muted-foreground'
+                                  }`}
+                                />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {!connected 
+                                  ? 'Connect wallet to use favorites'
+                                  : isFavorite(collection.id) 
+                                    ? 'Remove from favorites' 
+                                    : 'Add to favorites'
+                                }
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
