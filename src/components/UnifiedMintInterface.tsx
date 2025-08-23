@@ -418,33 +418,63 @@ export const UnifiedMintInterface = () => {
                     </PopoverContent>
                   </Popover>
                   
-                   <Input
-                     type="time"
-                     step="60"
-                     inputMode="numeric"
-                     pattern="[0-9]{2}:[0-9]{2}"
-                     value={formData.mint_end_at ? new Date(formData.mint_end_at).toTimeString().slice(0, 5) : '23:59'}
-                     onChange={(e) => {
-                       if (formData.mint_end_at) {
+                   <div className="flex items-center gap-2">
+                     {/* Hours */}
+                     <Select
+                       value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getHours()).padStart(2, '0') : '23'}
+                       onValueChange={(hour) => {
+                         if (!formData.mint_end_at) return;
                          const date = new Date(formData.mint_end_at);
-                         const [hours, minutes] = e.target.value.split(':');
-                         date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                         
+                         const minutes = date.getMinutes();
+                         date.setHours(parseInt(hour), minutes, 0, 0);
                          const now = new Date();
                          if (date <= now) {
                            toast.error('Date and time must be in the future');
                            return;
                          }
-                         
-                         setFormData({ 
-                           ...formData, 
-                           mint_end_at: date.toISOString().slice(0, 16)
-                         });
-                       }
-                     }}
-                     className="w-32"
-                     placeholder="23:59"
-                   />
+                         setFormData({ ...formData, mint_end_at: date.toISOString().slice(0, 16) });
+                       }}
+                     >
+                       <SelectTrigger className="w-20"><SelectValue placeholder="HH" /></SelectTrigger>
+                       <SelectContent className="z-50">
+                         {Array.from({ length: 24 }).map((_, i) => {
+                           const v = String(i).padStart(2, '0');
+                           return (
+                             <SelectItem key={v} value={v}>{v}</SelectItem>
+                           );
+                         })}
+                       </SelectContent>
+                     </Select>
+
+                     <span className="text-muted-foreground">:</span>
+
+                     {/* Minutes */}
+                     <Select
+                       value={formData.mint_end_at ? String(new Date(formData.mint_end_at).getMinutes()).padStart(2, '0') : '59'}
+                       onValueChange={(minute) => {
+                         if (!formData.mint_end_at) return;
+                         const date = new Date(formData.mint_end_at);
+                         const hours = date.getHours();
+                         date.setHours(hours, parseInt(minute), 0, 0);
+                         const now = new Date();
+                         if (date <= now) {
+                           toast.error('Date and time must be in the future');
+                           return;
+                         }
+                         setFormData({ ...formData, mint_end_at: date.toISOString().slice(0, 16) });
+                       }}
+                     >
+                       <SelectTrigger className="w-20"><SelectValue placeholder="MM" /></SelectTrigger>
+                       <SelectContent className="z-50">
+                         {Array.from({ length: 60 }).map((_, i) => {
+                           const v = String(i).padStart(2, '0');
+                           return (
+                             <SelectItem key={v} value={v}>{v}</SelectItem>
+                           );
+                         })}
+                       </SelectContent>
+                     </Select>
+                   </div>
                 </div>
                 {formData.mint_end_at_error && (
                   <div className="text-sm text-destructive">
