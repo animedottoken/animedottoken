@@ -58,6 +58,7 @@ export type Database = {
       }
       collections: {
         Row: {
+          attributes: Json
           banner_image_url: string | null
           candy_machine_id: string | null
           category: string | null
@@ -91,6 +92,7 @@ export type Database = {
           whitelist_enabled: boolean
         }
         Insert: {
+          attributes?: Json
           banner_image_url?: string | null
           candy_machine_id?: string | null
           category?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           whitelist_enabled?: boolean
         }
         Update: {
+          attributes?: Json
           banner_image_url?: string | null
           candy_machine_id?: string | null
           category?: string | null
