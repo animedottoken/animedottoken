@@ -45,6 +45,8 @@ export const UnifiedMintInterface = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [step3Collection, setStep3Collection] = useState(null);
+  const [isMinting, setIsMinting] = useState(false);
+  const [mintingError, setMintingError] = useState(null);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey } = useSolanaWallet();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -128,34 +130,67 @@ export const UnifiedMintInterface = () => {
       return;
     }
 
-    // Create collection
-    const result = await createCollection({
-      ...formData,
-      name: formData.name,
-      symbol: formData.symbol,
-      site_description: formData.site_description,
-      onchain_description: formData.onchain_description,
-      image_file: formData.image_file,
-      banner_file: formData.banner_file,
-      external_links: formData.external_links,
-      category: formData.category,
-      explicit_content: formData.explicit_content,
-      enable_primary_sales: formData.enable_primary_sales,
-      mint_price: formData.mint_price,
-      max_supply: formData.max_supply,
-      royalty_percentage: formData.royalty_percentage,
-      treasury_wallet: formData.treasury_wallet || publicKey,
-      whitelist_enabled: formData.whitelist_enabled,
-      go_live_date: formData.go_live_date,
-      mint_end_at: formData.mint_end_at,
-      supply_mode: formData.supply_mode,
-      locked_fields: formData.locked_fields,
-      attributes: formData.attributes,
-    });
+    setIsMinting(true);
+    setMintingError(null);
 
-    if (result.success && result.collection) {
-      setStep3Collection(result.collection);
-      setActiveStep(4);
+    try {
+      // Create collection
+      const result = await createCollection({
+        ...formData,
+        name: formData.name,
+        symbol: formData.symbol,
+        site_description: formData.site_description,
+        onchain_description: formData.onchain_description,
+        image_file: formData.image_file,
+        banner_file: formData.banner_file,
+        external_links: formData.external_links,
+        category: formData.category,
+        explicit_content: formData.explicit_content,
+        enable_primary_sales: formData.enable_primary_sales,
+        mint_price: formData.mint_price,
+        max_supply: formData.max_supply,
+        royalty_percentage: formData.royalty_percentage,
+        treasury_wallet: formData.treasury_wallet || publicKey,
+        whitelist_enabled: formData.whitelist_enabled,
+        go_live_date: formData.go_live_date,
+        mint_end_at: formData.mint_end_at,
+        supply_mode: formData.supply_mode,
+        locked_fields: formData.locked_fields,
+        attributes: formData.attributes,
+      });
+
+      if (result.success && result.collection) {
+        // Now mint the Collection NFT on-chain
+        toast.success('Collection created! Now minting on-chain...');
+        
+        const { supabase } = await import('@/integrations/supabase/client');
+        const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+          body: {
+            collectionId: result.collection.id,
+            creatorAddress: publicKey
+          }
+        });
+
+        if (mintError || !mintResult?.success) {
+          console.error('Minting error:', mintError || mintResult);
+          setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
+          toast.error('Collection created but failed to mint on-chain');
+        } else {
+          toast.success('Collection minted successfully on-chain! 🎉');
+          result.collection.collection_mint_address = mintResult.collectionMintAddress;
+          result.collection.verified = true;
+        }
+
+        setStep3Collection(result.collection);
+        setActiveStep(4);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unexpected error occurred';
+      setMintingError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsMinting(false);
     }
   };
 
@@ -709,9 +744,9 @@ export const UnifiedMintInterface = () => {
                 <Button 
                   onClick={handleSubmit} 
                   size="lg"
-                  disabled={!!formData.mint_end_at_error}
+                  disabled={!!formData.mint_end_at_error || isMinting}
                 >
-                  Create Collection
+                  {isMinting ? 'Creating & Minting...' : 'Create Collection + Mint NFT'}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -727,8 +762,13 @@ export const UnifiedMintInterface = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5 text-green-500" />
-                    Collection Created Successfully!
+                    Collection {step3Collection?.verified ? 'Created & Minted Successfully!' : 'Created Successfully!'}
                   </CardTitle>
+                  {mintingError && (
+                    <div className="text-sm text-destructive mt-2">
+                      Minting Error: {mintingError}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -759,8 +799,8 @@ export const UnifiedMintInterface = () => {
                       </div>
                       <div>
                         <div className="text-sm text-muted-foreground">Status</div>
-                        <Badge variant={step3Collection?.is_live ? 'default' : 'secondary'}>
-                          {step3Collection?.is_live ? 'Live' : 'Draft'}
+                        <Badge variant={step3Collection?.verified ? 'default' : 'secondary'}>
+                          {step3Collection?.verified ? 'Verified ✓' : 'Draft'}
                         </Badge>
                       </div>
                       <div>
@@ -770,6 +810,15 @@ export const UnifiedMintInterface = () => {
                         </div>
                       </div>
                     </div>
+                    
+                    {step3Collection?.collection_mint_address && (
+                      <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                        <div className="text-sm text-muted-foreground">Collection Mint Address</div>
+                        <div className="font-mono text-xs break-all bg-background p-2 rounded border mt-1">
+                          {step3Collection.collection_mint_address}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
