@@ -12,9 +12,12 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings } from 'lucide-react';
+import { ArrowRight, CheckCircle, Palette, Users, Infinity, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface FormData {
   name: string;
@@ -357,53 +360,66 @@ export const UnifiedMintInterface = () => {
                 <Label htmlFor="mint_end_at" className="text-base font-medium">
                   Mint End Date (Optional)
                 </Label>
-                <Input
-                  id="mint_end_at"
-                  type="datetime-local"
-                  value={formData.mint_end_at}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    
-                    // Validate 4-digit year and future date
-                    if (value) {
-                      const date = new Date(value);
-                      const year = date.getFullYear();
-                      const now = new Date();
-                      
-                      let errorMessage = '';
-                      let validValue = value;
-                      
-                      if (year < 1000 || year > 9999) {
-                        errorMessage = 'Year must be exactly 4 digits (YYYY)';
-                        validValue = ''; // Don't store invalid dates
-                      } else if (date <= now) {
-                        errorMessage = 'Date must be in the future';
-                        validValue = ''; // Don't store past dates
-                      }
-                      
-                       setFormData({ 
-                         ...formData, 
-                         mint_end_at: validValue,
-                         mint_end_at_error: errorMessage 
-                       });
-                    } else {
-                      setFormData({ 
-                        ...formData, 
-                        mint_end_at: value,
-                        mint_end_at_error: undefined 
-                      });
-                    }
-                  }}
-                />
-                 {formData.mint_end_at_error && (
-                   <div className="text-sm text-destructive">
-                     {formData.mint_end_at_error}
-                   </div>
-                 )}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.mint_end_at && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.mint_end_at ? (
+                        new Date(formData.mint_end_at).toLocaleString()
+                      ) : (
+                        <span>Select end date and time</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.mint_end_at ? new Date(formData.mint_end_at) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          // Set time to end of day
+                          date.setHours(23, 59, 59, 999);
+                          const now = new Date();
+                          
+                          if (date <= now) {
+                            toast.error('Date must be in the future');
+                            return;
+                          }
+                          
+                          setFormData({ 
+                            ...formData, 
+                            mint_end_at: date.toISOString().slice(0, 16),
+                            mint_end_at_error: undefined
+                          });
+                        } else {
+                          setFormData({ 
+                            ...formData, 
+                            mint_end_at: '',
+                            mint_end_at_error: undefined
+                          });
+                        }
+                      }}
+                      disabled={(date) => date <= new Date()}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {formData.mint_end_at_error && (
+                  <div className="text-sm text-destructive">
+                    {formData.mint_end_at_error}
+                  </div>
+                )}
                 <div className="text-xs text-muted-foreground">
                   {formData.supply_mode === 'open' 
-                    ? "Set when to stop minting this open edition (4-digit year, future date)"
-                    : "Optionally set a deadline for minting (4-digit year, future date)"
+                    ? "Set when to stop minting this open edition (future date only)"
+                    : "Optionally set a deadline for minting (future date only)"
                   }
                 </div>
               </div>
