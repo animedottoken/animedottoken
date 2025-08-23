@@ -89,7 +89,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       label: 'Mint End Date', 
       type: 'datetime-local', 
       canEdit: () => true,
-      badge: 'Always Editable'
+      badge: 'Always Editable',
+      help: 'Date must be in the future with 4-digit year (YYYY-MM-DD)'
     },
     category: { 
       label: 'Category', 
@@ -255,6 +256,48 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                 ))}
               </SelectContent>
             </Select>
+          ) : rule.type === 'datetime-local' ? (
+            <div className="space-y-2">
+              <Input
+                type={rule.type}
+                value={fieldValues[fieldName] || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  
+                  // Validate 4-digit year and future date
+                  if (value) {
+                    const date = new Date(value);
+                    const year = date.getFullYear();
+                    const now = new Date();
+                    
+                    let errorMessage = '';
+                    
+                    if (year < 1000 || year > 9999) {
+                      errorMessage = 'Year must be exactly 4 digits (YYYY)';
+                    } else if (date <= now) {
+                      errorMessage = 'Date must be in the future';
+                    }
+                    
+                    setFieldValues({ 
+                      ...fieldValues, 
+                      [fieldName]: value,
+                      [`${fieldName}_error`]: errorMessage 
+                    });
+                  } else {
+                    setFieldValues({ ...fieldValues, [fieldName]: value });
+                  }
+                }}
+                min={rule.min}
+                max={rule.max}
+                step={rule.step}
+                maxLength={rule.maxLength}
+              />
+              {fieldValues[`${fieldName}_error`] && (
+                <div className="text-sm text-destructive">
+                  {fieldValues[`${fieldName}_error`]}
+                </div>
+              )}
+            </div>
           ) : (
             <Input
               type={rule.type}
@@ -268,7 +311,13 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
           )}
           
           <div className="flex gap-2">
-            <Button size="sm" onClick={() => saveField(fieldName)}>Save</Button>
+            <Button 
+              size="sm" 
+              onClick={() => saveField(fieldName)}
+              disabled={!!fieldValues[`${fieldName}_error`]}
+            >
+              Save
+            </Button>
             <Button size="sm" variant="outline" onClick={cancelEditing}>Cancel</Button>
           </div>
         </div>

@@ -37,6 +37,8 @@ interface FormData {
   mint_end_at: string; // Add mint end date
   locked_fields: string[]; // Add locked fields
   attributes: Property[]; // Add properties for collections
+  // Error fields for validation
+  mint_end_at_error?: string;
 }
 
 export const UnifiedMintInterface = () => {
@@ -324,12 +326,46 @@ export const UnifiedMintInterface = () => {
                   id="mint_end_at"
                   type="datetime-local"
                   value={formData.mint_end_at}
-                  onChange={(e) => setFormData({ ...formData, mint_end_at: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    
+                    // Validate 4-digit year and future date
+                    if (value) {
+                      const date = new Date(value);
+                      const year = date.getFullYear();
+                      const now = new Date();
+                      
+                      let errorMessage = '';
+                      
+                      if (year < 1000 || year > 9999) {
+                        errorMessage = 'Year must be exactly 4 digits (YYYY)';
+                      } else if (date <= now) {
+                        errorMessage = 'Date must be in the future';
+                      }
+                      
+                       setFormData({ 
+                         ...formData, 
+                         mint_end_at: value,
+                         mint_end_at_error: errorMessage 
+                       });
+                    } else {
+                      setFormData({ 
+                        ...formData, 
+                        mint_end_at: value,
+                        mint_end_at_error: undefined 
+                      });
+                    }
+                  }}
                 />
+                 {formData.mint_end_at_error && (
+                   <div className="text-sm text-destructive">
+                     {formData.mint_end_at_error}
+                   </div>
+                 )}
                 <div className="text-xs text-muted-foreground">
                   {formData.supply_mode === 'open' 
-                    ? "Set when to stop minting this open edition"
-                    : "Optionally set a deadline for minting"
+                    ? "Set when to stop minting this open edition (4-digit year, future date)"
+                    : "Optionally set a deadline for minting (4-digit year, future date)"
                   }
                 </div>
               </div>
@@ -670,7 +706,11 @@ export const UnifiedMintInterface = () => {
                 <Button variant="outline" onClick={() => setActiveStep(2)}>
                   Back
                 </Button>
-                <Button onClick={handleSubmit} size="lg">
+                <Button 
+                  onClick={handleSubmit} 
+                  size="lg"
+                  disabled={!!formData.mint_end_at_error}
+                >
                   Create Collection
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

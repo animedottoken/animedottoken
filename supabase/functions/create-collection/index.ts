@@ -107,6 +107,27 @@ serve(async (req) => {
       }
     }
 
+    // Date validation for mint_end_at
+    if (body.mint_end_at) {
+      const mintEndDate = new Date(body.mint_end_at);
+      const year = mintEndDate.getFullYear();
+      const now = new Date();
+      
+      if (year < 1000 || year > 9999) {
+        return new Response(
+          JSON.stringify({ error: "Mint end date year must be exactly 4 digits (YYYY)" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (mintEndDate <= now) {
+        return new Response(
+          JSON.stringify({ error: "Mint end date must be in the future" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     const insertData: any = {
       id: body.id,
       name: body.name,
@@ -131,7 +152,7 @@ serve(async (req) => {
       go_live_date: body.go_live_date || null,
       mint_end_at: body.mint_end_at || null,
       locked_fields: body.locked_fields || [],
-      attributes: body.attributes || [],
+      attributes: body.attributes || [], // Ensure it's always an array
       is_active: true,
       is_live: true,
       verified: false,
