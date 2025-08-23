@@ -666,10 +666,8 @@ export default function Profile() {
                         <span className="ml-1 font-medium">You</span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Properties:</span>
-                        <span className="ml-1 font-medium">
-                          {nft.metadata && Array.isArray(nft.metadata) ? nft.metadata.length : 0}
-                        </span>
+                        <span className="text-muted-foreground">Price:</span>
+                        <span className="ml-1 font-medium">-</span>
                       </div>
                     </div>
                     {nft.metadata && Array.isArray(nft.metadata) && nft.metadata.length > 0 && (
