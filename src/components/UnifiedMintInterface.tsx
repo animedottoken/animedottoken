@@ -252,7 +252,7 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-base font-medium">
-                  Collection Name
+                  Collection Name <span className="text-destructive">*</span> <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <Input
                   id="name"
@@ -268,7 +268,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="symbol" className="text-base font-medium">
-                  Symbol
+                  Symbol <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <Input
                   id="symbol"
@@ -361,7 +361,7 @@ export const UnifiedMintInterface = () => {
               {formData.supply_mode === 'fixed' && (
                 <div className="space-y-3">
                   <Label htmlFor="max_supply" className="text-base font-medium">
-                    Max Supply
+                    Max Supply <Badge variant="secondary">On-Chain</Badge>
                   </Label>
                   <Input
                     id="max_supply"
@@ -391,7 +391,7 @@ export const UnifiedMintInterface = () => {
               {/* Optional Mint End Date */}
               <div className="space-y-3">
                 <Label htmlFor="mint_end_at" className="text-base font-medium">
-                  Mint End Date & Time (Optional)
+                  Mint End Date & Time (Optional) <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <div className="flex gap-2">
                   <Popover>
@@ -557,14 +557,14 @@ export const UnifiedMintInterface = () => {
                 </div>
                 {formData.mint_end_at && (
                   <div className="text-xs text-muted-foreground">
-                    Will close at: {new Date(formData.mint_end_at).toLocaleString()} — stored as {new Date(formData.mint_end_at).toUTCString()}
+                    Will close at: {new Date(formData.mint_end_at).toLocaleString()}
                   </div>
                 )}
               </div>
 
               <div className="space-y-3">
                 <Label htmlFor="category" className="text-base font-medium">
-                  Category
+                  Category <Badge variant="outline">Off-Chain</Badge>
                 </Label>
                 <Select
                   value={formData.category}
@@ -617,7 +617,7 @@ export const UnifiedMintInterface = () => {
                   {formData.enable_primary_sales && (
                     <div className="ml-6 space-y-3">
                       <Label htmlFor="mint_price_input" className="text-base font-medium">
-                        Price (SOL) *
+                        Price (SOL) <span className="text-destructive">*</span> <Badge variant="secondary">On-Chain</Badge>
                       </Label>
                       <Input
                         id="mint_price_input"
@@ -680,7 +680,7 @@ export const UnifiedMintInterface = () => {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-base font-medium">
-                  Collection Avatar <Badge variant="destructive">Required</Badge> <Badge variant="secondary">On-Chain</Badge>
+                  Collection Avatar <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground">(Required)</span> <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <FileUpload
                   onFileSelect={(file) => setFormData({ ...formData, image_file: file })}
@@ -714,7 +714,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label className="text-base font-medium">
-                  Royalties (%)
+                  Royalties (%) <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <div className="space-y-3">
                   <Slider
@@ -748,7 +748,7 @@ export const UnifiedMintInterface = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="treasury_wallet" className="text-base font-medium">
-                  Treasury Wallet
+                  Treasury Wallet <Badge variant="secondary">On-Chain</Badge>
                 </Label>
                 <Input
                   id="treasury_wallet"
