@@ -346,89 +346,87 @@ export default function Profile() {
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-lg">{collection.name}</h4>
                       <div className="flex items-center gap-1">
-                        <TooltipProvider>
-                          {collection.is_live ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="default" className="bg-green-500 text-white text-xs">
-                                  Live
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Collection is live and accepting mints</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="text-xs">
-                                  Draft
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Collection is in draft mode</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                          {collection.verified && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="outline" className="text-xs">
-                                  ✓
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Verified collection</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
+                        {collection.is_live ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Heart clicked for collection:', collection.id);
-                                  const favoriteData = {
-                                    id: collection.id,
-                                    name: collection.name,
-                                    image_url: collection.image_url || collection.banner_image_url,
-                                    type: 'collection' as const
-                                  };
-                                  
-                                  if (isFavorite(collection.id)) {
-                                    console.log('Removing from favorites');
-                                    removeFromFavorites(collection.id);
-                                  } else {
-                                    console.log('Adding to favorites');
-                                    addToFavorites(favoriteData);
-                                  }
-                                }}
-                              >
-                                <Heart 
-                                  className={`h-4 w-4 ${
-                                    isFavorite(collection.id) 
-                                      ? 'fill-current text-red-500' 
-                                      : 'text-muted-foreground'
-                                  }`}
-                                />
-                              </Button>
+                              <Badge variant="default" className="bg-green-500 text-white text-xs">
+                                Live
+                              </Badge>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>
-                                {!connected 
-                                  ? 'Connect wallet to use favorites'
-                                  : isFavorite(collection.id) 
-                                    ? 'Remove from favorites' 
-                                    : 'Add to favorites'
-                                }
-                              </p>
+                              <p>Collection is live and accepting mints</p>
                             </TooltipContent>
                           </Tooltip>
-                        </TooltipProvider>
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant="secondary" className="text-xs">
+                                Draft
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Collection is in draft mode</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                        {collection.verified && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant="outline" className="text-xs">
+                                ✓
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Verified collection</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Heart clicked for collection:', collection.id);
+                                const favoriteData = {
+                                  id: collection.id,
+                                  name: collection.name,
+                                  image_url: collection.image_url || collection.banner_image_url,
+                                  type: 'collection' as const
+                                };
+                                
+                                if (isFavorite(collection.id)) {
+                                  console.log('Removing from favorites');
+                                  removeFromFavorites(collection.id);
+                                } else {
+                                  console.log('Adding to favorites');
+                                  addToFavorites(favoriteData);
+                                }
+                              }}
+                            >
+                              <Heart 
+                                className={`h-4 w-4 ${
+                                  isFavorite(collection.id) 
+                                    ? 'fill-current text-red-500' 
+                                    : 'text-muted-foreground'
+                                }`}
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              {!connected 
+                                ? 'Connect wallet to use favorites'
+                                : isFavorite(collection.id) 
+                                  ? 'Remove from favorites' 
+                                  : 'Add to favorites'
+                              }
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
