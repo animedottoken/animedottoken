@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Crown, Rocket, TrendingUp, Eye, Heart } from 'lucide-react';
+import { Crown, Rocket, TrendingUp, Eye, Heart, CheckCircle } from 'lucide-react';
 import { useNFTLikes } from '@/hooks/useNFTLikes';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 interface BoostedListing {
   id: string;
@@ -28,27 +28,53 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
   const navigate = useNavigate();
   const [nftPrice, setNftPrice] = useState<number | null>(null);
   const [listed, setListed] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>('');
+  const [ownerNickname, setOwnerNickname] = useState<string>('');
+  const [ownerVerified, setOwnerVerified] = useState<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
     supabase
       .from('nfts')
-      .select('price,is_listed')
+      .select('price,is_listed,description')
       .eq('id', listing.nft_id)
       .maybeSingle()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
-          console.error('Error loading NFT price:', error);
+          console.error('Error loading NFT details:', error);
           setNftPrice(null);
           setListed(false);
+          setDescription('');
           return;
         }
         setNftPrice(data?.price ?? null);
         setListed(!!data?.is_listed);
+        setDescription(data?.description || '');
       });
     return () => { cancelled = true; };
   }, [listing.nft_id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('user_profiles')
+      .select('display_name,verified')
+      .eq('wallet_address', listing.owner_address)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error('Error loading owner profile:', error);
+          setOwnerNickname('');
+          setOwnerVerified(false);
+          return;
+        }
+        setOwnerNickname(data?.display_name || '');
+        setOwnerVerified(!!data?.verified);
+      });
+    return () => { cancelled = true; };
+  }, [listing.owner_address]);
 
   const getTierIcon = () => {
     switch (listing.tier) {
@@ -145,25 +171,44 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         {/* Content */}
         <div className="p-4">
           <div className="flex justify-between items-start mb-2">
-            <div>
-              <h3 className="font-semibold line-clamp-1">{listing.nft_name}</h3>
-              <p className="text-sm text-muted-foreground">
-                Owner: {listing.owner_address.slice(0, 4)}...{listing.owner_address.slice(-4)}
-              </p>
+            <div className="flex-1 mr-2">
+              <h3 className="font-semibold line-clamp-1 mb-1">{listing.nft_name}</h3>
+              
+              {/* Description */}
+              {description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
+                  {description}
+                </p>
+              )}
+              
+              {/* Owner info */}
+              <Link 
+                to={`/creator/${listing.owner_address}`}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <span>
+                  {ownerNickname || 
+                   `${listing.owner_address.slice(0, 4)}...${listing.owner_address.slice(-4)}`}
+                </span>
+                {ownerVerified && (
+                  <CheckCircle className="h-3 w-3 text-primary" />
+                )}
+              </Link>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={handleLike}
               disabled={likeLoading}
-              className={isLiked(listing.nft_id) ? "text-red-500" : ""}
+              className={`shrink-0 ${isLiked(listing.nft_id) ? "text-red-500" : ""}`}
             >
               <Heart className={`h-4 w-4 ${isLiked(listing.nft_id) ? "fill-current" : ""}`} />
             </Button>
           </div>
           
           {/* Price display */}
-          <div className="mb-3">
+          <div>
             {listed && nftPrice !== null ? (
               <div className="text-lg font-bold text-primary">{nftPrice} SOL</div>
             ) : (
