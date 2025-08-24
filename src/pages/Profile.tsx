@@ -15,6 +15,7 @@ import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -416,30 +417,20 @@ export default function Profile() {
       </div>
 
       {/* PFP Selection Dialog */}
-      <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-        <DialogContent className="sm:max-w-[680px]">
-          <DialogHeader>
-            <DialogTitle>Select an NFT for your profile picture</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {nfts && nfts.length > 0 ? (
-              nfts.map((nft) => (
-                <button key={nft.mint_address} onClick={async () => {
-                  const ok = await setPFP(nft.mint_address, 'simulated_transaction_signature');
-                  if (ok) {
-                    setPfpDialogOpen(false);
-                    toast.success('Profile picture updated! First change is free, next changes will cost 2 USD.');
-                  }
-                }} className="relative rounded-lg overflow-hidden border hover:shadow">
-                  <img src={nft.image_url} alt={nft.name} className="w-full h-full object-cover aspect-square" loading="lazy" />
-                </button>
-              ))
-            ) : (
-              <p className="text-muted-foreground text-sm col-span-full">No NFTs found.</p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PfpPickerDialog
+        open={pfpDialogOpen}
+        onOpenChange={setPfpDialogOpen}
+        profile={profile}
+        nfts={nfts}
+        loading={pfpLoading}
+        onConfirm={async (mint) => {
+          const ok = await setPFP(mint, 'simulated_transaction_signature');
+          if (ok) {
+            toast.success('Profile picture updated! First change is free, next changes will cost 2 USD.');
+          }
+          return ok;
+        }}
+      />
 
       {/* Banner Monetization Dialog */}
       <Dialog open={bannerDialogOpen} onOpenChange={setBannerDialogOpen}>
