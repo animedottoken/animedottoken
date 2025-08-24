@@ -90,10 +90,17 @@ export default function Marketplace() {
 
   const filteredNfts = nfts.filter(nft => {
     const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const isNftFavorite = isFavorite(nft.id);
     const matchesFilter = filterBy === "all" || 
       (filterBy === "listed" && nft.is_listed) ||
       (filterBy === "unlisted" && !nft.is_listed) ||
-      (filterBy === "favorites" && isFavorite(nft.id));
+      (filterBy === "favorites" && isNftFavorite);
+    
+    // Debug log for favorites filter
+    if (filterBy === "favorites") {
+      console.log(`NFT ${nft.name} (${nft.id}): isFavorite = ${isNftFavorite}`);
+    }
+    
     return matchesSearch && matchesFilter;
   });
 
