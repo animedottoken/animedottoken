@@ -514,7 +514,9 @@ export default function Marketplace() {
                     {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex items-center justify-center gap-2 mb-2">
+                {/* Profile Info Section */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="font-semibold">
                       {creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}
                     </h3>
@@ -522,41 +524,13 @@ export default function Marketplace() {
                       <Badge variant="secondary" className="text-xs">✓</Badge>
                     )}
                   </div>
-                  {creator.bio && (
-                    <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
-                      {creator.bio}
-                    </p>
-                  )}
                   
-                  {/* Compact Stats Layout */}
-                  <div className="space-y-3 mb-4">
-                    {/* Content Stats Row */}
-                    <div className="flex items-center justify-center gap-4 text-sm">
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium text-primary">{creator.created_nfts}</span>
-                        <span className="text-muted-foreground">NFTs</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium text-primary">{creator.created_collections}</span>
-                        <span className="text-muted-foreground">Collections</span>
-                      </div>
-                    </div>
-                    
-                    {/* Profile & Activity Stats Row */}
-                    <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-                      <span>{creator.follower_count} likes</span>
-                      <span>•</span>
-                      <span>{creator.nft_likes_count} NFT likes</span>
-                      <span>•</span>
-                      <span>{creator.trade_count} trades</span>
-                    </div>
-                  </div>
-                  
-                  {/* Rank Badge */}
-                  <div className="flex items-center justify-center gap-2 mb-4">
+                  {/* Profile Stats: Likes + Level */}
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <span className="text-sm text-muted-foreground">{creator.follower_count} likes</span>
                     <Badge 
                       variant="outline" 
-                      className={`${
+                      className={`text-xs ${
                         creator.profile_rank === 'DIAMOND' ? 'border-purple-500 text-purple-600' :
                         creator.profile_rank === 'GOLD' ? 'border-yellow-500 text-yellow-600' :
                         creator.profile_rank === 'SILVER' ? 'border-gray-400 text-gray-600' :
@@ -589,22 +563,50 @@ export default function Marketplace() {
                       </TooltipProvider>
                     </Badge>
                   </div>
-                  <button
-                    aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
-                    disabled={followLoading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!publicKey) {
-                        toast.error('Please connect your wallet to like creators');
-                        return;
-                      }
-                      toggleFollow(creator.wallet_address);
-                    }}
-                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-                  >
-                    <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
-                  </button>
-                </CardContent>
+                </div>
+                
+                {creator.bio && (
+                  <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
+                    {creator.bio}
+                  </p>
+                )}
+                
+                {/* Content Stats */}
+                <div className="flex items-center justify-center gap-4 text-sm mb-3">
+                  <div className="flex items-center gap-1">
+                    <span className="font-medium text-primary">{creator.created_nfts}</span>
+                    <span className="text-muted-foreground">NFTs</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-medium text-primary">{creator.created_collections}</span>
+                    <span className="text-muted-foreground">Collections</span>
+                  </div>
+                </div>
+                
+                {/* Activity Stats */}
+                <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground mb-4">
+                  <span>{creator.nft_likes_count} NFT likes</span>
+                  <span>•</span>
+                  <span>{creator.trade_count} trades</span>
+                </div>
+
+                {/* Follow Button */}
+                <button
+                  aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
+                  disabled={followLoading}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!publicKey) {
+                      toast.error('Please connect your wallet to like creators');
+                      return;
+                    }
+                    toggleFollow(creator.wallet_address);
+                  }}
+                  className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                >
+                  <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
+                </button>
+              </CardContent>
             </Card>
           ))}
         </div>
