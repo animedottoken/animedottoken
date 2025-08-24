@@ -95,41 +95,8 @@ export default function Marketplace() {
 
   useEffect(() => {
     loadMarketplaceData();
-
-    // Set up real-time subscription for marketplace updates
-    const channel = supabase
-      .channel('marketplace-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'creator_follows'
-        },
-        (payload) => {
-          console.log('Creator follows change detected in marketplace:', payload);
-          // Reload marketplace data to update creator stats
-          loadMarketplaceData();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'nft_likes'
-        },
-        (payload) => {
-          console.log('NFT likes change detected in marketplace:', payload);
-          // Reload marketplace data to update stats
-          loadMarketplaceData();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Note: Real-time updates for follows and likes are handled by their respective hooks
+    // (useCreatorFollows, useNFTLikes) so we don't need to reload all marketplace data here
   }, []);
 
   const loadMarketplaceData = async () => {
