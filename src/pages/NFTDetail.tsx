@@ -34,7 +34,7 @@ export default function NFTDetail() {
   const [loading, setLoading] = useState(true);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect } = useSolanaWallet();
   
   // Navigation context for moving between NFTs
   const navigation = useNavigationContext(id!, 'nft');
@@ -422,7 +422,10 @@ export default function NFTDetail() {
                       <p className="text-muted-foreground mb-4">
                         To buy this NFT, you need to connect your wallet first.
                       </p>
-                      <Button onClick={() => toast.info("Please connect your Solana wallet using the button in the top navigation")}>
+                      <Button 
+                        onClick={() => connect()}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
                         Connect Wallet to Buy
                       </Button>
                     </div>
