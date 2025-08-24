@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,7 @@ import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 import { normalizeAttributes } from '@/lib/attributes';
+import { truncateAddress } from "@/utils/addressUtils";
 
 interface ExtendedNFT extends UserNFT {
   price?: number;
@@ -542,12 +543,12 @@ export default function NFTDetail() {
                       <div>
                         <div className="text-sm font-medium">{nft.owner_display_name}</div>
                         <code className="text-xs text-muted-foreground">
-                          {nft.owner_address.slice(0, 8)}...{nft.owner_address.slice(-8)}
+                          {truncateAddress(nft.owner_address)}
                         </code>
                       </div>
                     ) : (
                       <code className="text-xs bg-muted px-2 py-1 rounded">
-                        {nft.owner_address.slice(0, 8)}...{nft.owner_address.slice(-8)}
+                        {truncateAddress(nft.owner_address)}
                       </code>
                     )}
                   </div>
@@ -564,12 +565,12 @@ export default function NFTDetail() {
                         <div>
                           <div className="text-sm font-medium">{nft.creator_display_name}</div>
                           <code className="text-xs text-muted-foreground">
-                            {nft.creator_address.slice(0, 8)}...{nft.creator_address.slice(-8)}
+                            {truncateAddress(nft.creator_address)}
                           </code>
                         </div>
                       ) : (
                         <code className="text-xs bg-muted px-2 py-1 rounded">
-                          {nft.creator_address.slice(0, 8)}...{nft.creator_address.slice(-8)}
+                          {truncateAddress(nft.creator_address)}
                         </code>
                       )}
                     </div>

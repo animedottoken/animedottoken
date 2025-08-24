@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { truncateAddress } from '@/utils/addressUtils';
 
 interface UserProfile {
   wallet_address: string;
@@ -101,7 +102,7 @@ export const UserProfileDisplay = ({
     );
   }
 
-  const displayName = profile?.nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+  const displayName = profile?.nickname || truncateAddress(walletAddress);
   const rankColor = getRankColor(profile?.profile_rank || 'DEFAULT');
   const rankBadge = getRankBadge(profile?.profile_rank || 'DEFAULT');
   const sizeClasses = getSizeClasses();

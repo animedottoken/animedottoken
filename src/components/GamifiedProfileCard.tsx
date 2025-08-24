@@ -13,6 +13,7 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { truncateAddress } from '@/utils/addressUtils';
 
 export const GamifiedProfileCard = () => {
   const {
@@ -293,7 +294,7 @@ export const GamifiedProfileCard = () => {
               </span>
             </h3>
             <p className="text-xs text-muted-foreground">
-              {profile.wallet_address.slice(0, 4)}...{profile.wallet_address.slice(-4)}
+              {truncateAddress(profile.wallet_address)}
             </p>
           </div>
           
@@ -470,7 +471,7 @@ export const GamifiedProfileCard = () => {
                   {/* Preview Info */}
                   <div className="flex-1 min-w-0">
                     <div className="mb-3">
-                      <p className="font-semibold text-lg">{profile.nickname || `${profile.wallet_address.slice(0, 6)}...${profile.wallet_address.slice(-4)}`}</p>
+                      <p className="font-semibold text-lg">{profile.nickname || truncateAddress(profile.wallet_address)}</p>
                       <p className="text-sm text-muted-foreground">
                         {selectedNftForPfp ? (userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name || 'Selected NFT') : 'Current Profile Picture'}
                       </p>

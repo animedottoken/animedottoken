@@ -34,6 +34,7 @@ import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
+import { truncateAddress } from "@/utils/addressUtils";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -435,7 +436,7 @@ export default function CollectionDetail() {
                           <div className="mb-2">
                             <h3 className="font-semibold line-clamp-1">{nft.name}</h3>
                             <p className="text-sm text-muted-foreground">
-                              Owner: {nft.owner_address.slice(0, 8)}...{nft.owner_address.slice(-4)}
+                              Owner: {truncateAddress(nft.owner_address)}
                             </p>
                           </div>
                           <div className="flex items-center justify-between">

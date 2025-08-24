@@ -5,6 +5,7 @@ import { Heart, CheckCircle, Eye } from 'lucide-react';
 import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { truncateAddress } from '@/utils/addressUtils';
 
 interface NFTCardProps {
   nft: {
@@ -106,8 +107,7 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               <span>
-                {ownerNickname || 
-                 `${nft.owner_address.slice(0, 4)}...${nft.owner_address.slice(-4)}`}
+                {ownerNickname || truncateAddress(nft.owner_address)}
               </span>
               {ownerVerified && (
                 <CheckCircle className="h-3 w-3 text-primary" />
