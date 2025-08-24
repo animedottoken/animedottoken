@@ -91,6 +91,31 @@ export default function Marketplace() {
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
   
   const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
+  
+  // Update creator follower count locally when follow status changes
+  const handleCreatorFollow = async (creatorWallet: string) => {
+    const isCurrentlyFollowing = isFollowing(creatorWallet);
+    
+    try {
+      await toggleFollow(creatorWallet);
+      
+      // Update the local creator stats immediately
+      setCreators(prevCreators => 
+        prevCreators.map(creator => 
+          creator.wallet_address === creatorWallet 
+            ? { 
+                ...creator, 
+                follower_count: isCurrentlyFollowing 
+                  ? Math.max(0, creator.follower_count - 1)
+                  : creator.follower_count + 1
+              }
+            : creator
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    }
+  };
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
 
   useEffect(() => {
@@ -550,7 +575,7 @@ export default function Marketplace() {
                         toast.error('Please connect your wallet to like creators');
                         return;
                       }
-                      toggleFollow(creator.wallet_address);
+                      handleCreatorFollow(creator.wallet_address);
                     }}
                     className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
                   >
