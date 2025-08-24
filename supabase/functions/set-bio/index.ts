@@ -73,11 +73,17 @@ serve(async (req) => {
       .from('user_profiles')
       .select('*')
       .eq('wallet_address', walletAddress)
-      .single()
+      .maybeSingle()
 
-    if (fetchError && fetchError.code !== 'PGRST116') {
+    if (fetchError) {
       console.error('Error fetching profile:', fetchError)
-      throw new Error('Failed to fetch current profile')
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch current profile' }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
     }
 
     // Check if this is the first time setting bio (free) or requires payment
@@ -85,7 +91,7 @@ serve(async (req) => {
     
     if (!isFirstTime) {
       // Verify transaction signature for paid bio updates
-      if (!transaction_signature.startsWith('test_tx_')) {
+      if (!transaction_signature || (!transaction_signature.startsWith('test_tx_') && !transaction_signature.startsWith('simulated_'))) {
         // In production, verify the actual transaction here
         return new Response(
           JSON.stringify({ error: 'Invalid transaction signature' }),
@@ -97,23 +103,37 @@ serve(async (req) => {
       }
     }
 
-    // Update or create profile
+    // Update or create profile while preserving existing fields
     const { data: updatedProfile, error: updateError } = await supabase
       .from('user_profiles')
       .upsert({
         wallet_address: walletAddress,
         bio: bio.trim(),
         bio_unlock_status: true,
+        // Preserve existing fields
+        nickname: currentProfile?.nickname || null,
+        trade_count: currentProfile?.trade_count || 0,
+        profile_rank: currentProfile?.profile_rank || 'DEFAULT',
+        pfp_unlock_status: currentProfile?.pfp_unlock_status || false,
+        current_pfp_nft_mint_address: currentProfile?.current_pfp_nft_mint_address || null,
+        profile_image_url: currentProfile?.profile_image_url || null,
+        banner_image_url: currentProfile?.banner_image_url || null,
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'wallet_address'
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (updateError) {
       console.error('Error updating profile:', updateError)
-      throw new Error('Failed to update bio')
+      return new Response(
+        JSON.stringify({ error: 'Failed to update bio' }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
     }
 
     console.log('Bio updated successfully for wallet:', walletAddress)
