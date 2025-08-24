@@ -203,8 +203,8 @@ export const GamifiedProfileCard = () => {
               <span className="font-medium text-foreground"> "Connect Wallet" </span>
               button in the top-right corner.
             </p>
-            <p className="text-xs text-muted-foreground bg-green-50 dark:bg-green-950 p-2 rounded border border-green-200 dark:border-green-800">
-              🔒 <span className="font-medium text-green-700 dark:text-green-300">Safe Connection:</span> Connecting your wallet is completely secure and won't allow any charges without your explicit approval.
+            <p className="text-xs text-muted-foreground bg-success/10 p-2 rounded border border-success/20">
+              🔒 <span className="font-medium text-success">Safe Connection:</span> Connecting your wallet is completely secure and won't allow any charges without your explicit approval.
             </p>
           </div>
         </CardContent>
@@ -523,12 +523,12 @@ export const GamifiedProfileCard = () => {
               </DialogHeader>
               <div className="space-y-4">
                 {!profile.bio && !profile.bio_unlock_status ? (
-                  <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="p-4 bg-success/10 rounded-lg border border-success/20">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-green-800 dark:text-green-200">First Bio - FREE!</span>
+                      <span className="font-medium text-success">First Bio - FREE!</span>
                       <span className="text-2xl">🎉</span>
                     </div>
-                    <div className="text-sm text-green-700 dark:text-green-300">
+                    <div className="text-sm text-muted-foreground">
                       Your first bio is completely free. Future changes will cost 2 USDT.
                     </div>
                   </div>
