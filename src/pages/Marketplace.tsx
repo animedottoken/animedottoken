@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ChevronLeft, ChevronRight, Star, Grid3x3 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
@@ -630,8 +630,8 @@ export default function Marketplace() {
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
                           <div className="text-sm font-medium flex items-center justify-center gap-1">
-                            <Crown className="w-3 h-3" />
-                            {creator.trade_count}
+                            <Star className="w-3 h-3" />
+                            {getRankBadge(creator.profile_rank).text}
                           </div>
                         </div>
                       </TooltipTrigger>
@@ -645,7 +645,7 @@ export default function Marketplace() {
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
                           <div className="text-sm font-medium flex items-center justify-center gap-1 text-primary">
-                            <Zap className="w-3 h-3" />
+                            <Grid3x3 className="w-3 h-3" />
                             {creator.created_nfts}
                           </div>
                         </div>
@@ -655,18 +655,18 @@ export default function Marketplace() {
                       </TooltipContent>
                     </Tooltip>
                     
-                    {/* Likes */}
+                    {/* Profile Likes */}
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
                           <div className="text-sm font-medium flex items-center justify-center gap-1 text-destructive">
                             <Heart className="w-3 h-3" />
-                            {creator.nft_likes_count}
+                            {creator.follower_count}
                           </div>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Likes</p>
+                        <p>Profile Likes</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
