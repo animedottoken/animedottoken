@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
+import { toast } from "sonner";
 
 interface Creator {
   wallet_address: string;
@@ -363,18 +364,23 @@ export default function CreatorProfile() {
               )}
 
               {/* Follow Button - positioned after bio, before stats */}
-              {publicKey && (
-                <div className="mb-4">
-                  <button
-                    aria-label={isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator'}
-                    disabled={followLoading}
-                    onClick={() => handleToggleFollow(creator.wallet_address)}
-                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-                  >
-                    <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
-                  </button>
-                </div>
-              )}
+              <div className="mb-4">
+                <button
+                  aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
+                  disabled={followLoading}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!publicKey) {
+                      toast.error('Please connect your wallet to like creators');
+                      return;
+                    }
+                    handleToggleFollow(creator.wallet_address);
+                  }}
+                  className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                >
+                  <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
+                </button>
+              </div>
               
               {/* Content Stats */}
               <div className="flex items-center justify-center gap-4 text-sm mb-3">
