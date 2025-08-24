@@ -169,12 +169,19 @@ export default function Profile() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <Card>
-          <CardContent className="p-12 text-center">
+          <CardContent className="p-12 text-center space-y-4">
             <User className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h2 className="text-2xl font-bold mb-2">Connect Your Wallet</h2>
-            <p className="text-muted-foreground mb-6">
-              Please connect your wallet to view your profile and collections.
-            </p>
+            <div className="space-y-3">
+              <p className="text-muted-foreground">
+                To view and customize your profile, please connect your wallet using the 
+                <span className="font-medium text-foreground"> "Connect Wallet" </span>
+                button in the top-right corner.
+              </p>
+              <p className="text-sm text-muted-foreground bg-green-50 dark:bg-green-950 p-3 rounded-lg border border-green-200 dark:border-green-800 inline-block">
+                🔒 <span className="font-medium text-green-700 dark:text-green-300">Safe Connection:</span> Connecting your wallet is completely secure and won't allow any charges without your explicit approval.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
