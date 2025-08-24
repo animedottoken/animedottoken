@@ -160,11 +160,13 @@ export default function CreatorProfile() {
           .order('created_at', { ascending: false });
 
         // Fetch creator's Collections  
-        const { data: collections } = await supabase
-          .from('collections_public')
+        const { data: collections, error: collectionsError } = await supabase
+          .from('collections')
           .select('*')
           .eq('creator_address', wallet)
           .order('created_at', { ascending: false });
+
+        console.log('Collections query result:', { collections, collectionsError });
 
         if (profile) {
           setCreator({
@@ -213,15 +215,18 @@ export default function CreatorProfile() {
 
         // Process Collections data
         if (collections) {
+          console.log('Processing collections:', collections);
           setCreatorCollections(collections.map(collection => ({
             id: collection.id,
             name: collection.name,
-            image_url: collection.image_url,
+            image_url: collection.image_url || collection.banner_image_url,
             description: collection.description,
-            items_total: collection.max_supply || 100,
-            items_redeemed: 0, // Will implement separately if needed
-            verified: collection.verified
+            items_total: collection.max_supply || 0,
+            items_redeemed: collection.items_redeemed || 0,
+            verified: collection.verified || false
           })));
+        } else {
+          console.log('No collections found for creator:', wallet);
         }
       } catch (error) {
         console.error('Error fetching creator data:', error);
