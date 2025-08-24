@@ -77,7 +77,7 @@ export const useCreatorFollows = () => {
 
     // Set up real-time subscription for creator follows
     const channel = supabase
-      .channel('creator_follows_changes')
+      .channel('creator-follows-realtime')
       .on(
         'postgres_changes',
         {
@@ -86,17 +86,22 @@ export const useCreatorFollows = () => {
           table: 'creator_follows'
         },
         (payload) => {
-          console.log('Creator follows change detected:', payload);
+          console.log('🔥 Real-time creator follows change detected:', payload);
+          console.log('Event type:', payload.eventType);
+          console.log('Table:', payload.table);
           // Refresh followed creators when any change occurs
           loadFollowedCreators();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('🔌 Creator follows subscription status:', status);
+      });
 
     return () => {
+      console.log('🔌 Cleaning up creator follows subscription');
       supabase.removeChannel(channel);
     };
-  }, [loadFollowedCreators]);
+  }, [connected, publicKey]);
 
   return {
     followedCreators,

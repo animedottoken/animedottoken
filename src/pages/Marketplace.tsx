@@ -97,7 +97,7 @@ export default function Marketplace() {
 
     // Set up real-time subscription for marketplace updates
     const channel = supabase
-      .channel('marketplace_updates')
+      .channel('marketplace-realtime')
       .on(
         'postgres_changes',
         {
