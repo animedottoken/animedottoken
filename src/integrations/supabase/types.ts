@@ -492,10 +492,15 @@ export type Database = {
           banner_image_url: string | null
           bio: string | null
           created_at: string
+          current_pfp_nft_mint_address: string | null
           discord_handle: string | null
           display_name: string | null
           id: string
+          nickname: string | null
+          pfp_unlock_status: boolean | null
           profile_image_url: string | null
+          profile_rank: string | null
+          trade_count: number | null
           twitter_handle: string | null
           updated_at: string
           verified: boolean
@@ -506,10 +511,15 @@ export type Database = {
           banner_image_url?: string | null
           bio?: string | null
           created_at?: string
+          current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          nickname?: string | null
+          pfp_unlock_status?: boolean | null
           profile_image_url?: string | null
+          profile_rank?: string | null
+          trade_count?: number | null
           twitter_handle?: string | null
           updated_at?: string
           verified?: boolean
@@ -520,10 +530,15 @@ export type Database = {
           banner_image_url?: string | null
           bio?: string | null
           created_at?: string
+          current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          nickname?: string | null
+          pfp_unlock_status?: boolean | null
           profile_image_url?: string | null
+          profile_rank?: string | null
+          trade_count?: number | null
           twitter_handle?: string | null
           updated_at?: string
           verified?: boolean
@@ -656,6 +671,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_profile_rank: {
+        Args: { trade_count: number }
+        Returns: string
+      }
       generate_collection_slug: {
         Args: { collection_name: string }
         Returns: string
@@ -697,6 +716,10 @@ export type Database = {
           verified: boolean
           whitelist_enabled: boolean
         }[]
+      }
+      increment_user_trade_count: {
+        Args: { user_wallet_address: string }
+        Returns: undefined
       }
     }
     Enums: {
