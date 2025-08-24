@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Edit, Crown, Lock, Unlock, Image, DollarSign } from 'lucide-react';
+import { Edit, Crown, Lock, Image, DollarSign, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
@@ -146,9 +147,31 @@ export const GamifiedProfileCard = () => {
               }
             </AvatarFallback>
           </Avatar>
-          <Badge className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 ${rankBadge.color} text-white text-xs`}>
-            <Crown className="w-3 h-3 mr-1" />
-            {rankBadge.text}
+          <Badge className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 ${rankBadge.color} text-white text-xs cursor-help`}>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center">
+                    <Crown className="w-3 h-3 mr-1" />
+                    {rankBadge.text}
+                    <Info className="w-3 h-3 ml-1" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <div className="space-y-2 text-sm">
+                    <div className="font-semibold">Ranking System:</div>
+                    <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
+                    <div>🥇 <strong>Gold</strong>: 250+ trades</div>
+                    <div>🥈 <strong>Silver</strong>: 50+ trades</div>
+                    <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
+                    <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Trade more NFTs to increase your rank!
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </Badge>
           {profile.pfp_unlock_status ? (
             <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
@@ -282,12 +305,6 @@ export const GamifiedProfileCard = () => {
             </Dialog>
           ) : (
             <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full text-green-600 border-green-600 hover:bg-green-50">
-                  <Unlock className="w-4 h-4 mr-2" />
-                  Change PFP
-                </Button>
-              </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Choose Your Profile Picture</DialogTitle>

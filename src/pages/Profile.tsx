@@ -208,9 +208,9 @@ export default function Profile() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Profile Header with Gamification */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="max-w-sm mx-auto">
         <GamifiedProfileCard />
-        
-        {/* Traditional Profile Card */}
+      </div>
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
