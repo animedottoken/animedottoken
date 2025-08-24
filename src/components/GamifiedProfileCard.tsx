@@ -91,6 +91,8 @@ export const GamifiedProfileCard = () => {
 
   const handleNftClick = (nftMintAddress: string) => {
     setSelectedNftForPfp(nftMintAddress);
+    // Close the selection dialog before opening confirmation to avoid overlay conflicts
+    setPfpDialogOpen(false);
     setPfpConfirmDialogOpen(true);
   };
 
