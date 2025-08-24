@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap } from "lucide-react";
+import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart } from "lucide-react";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface NFT {
   id: string;
@@ -47,6 +48,7 @@ export default function Marketplace() {
   const [activeTab, setActiveTab] = useState<"nfts" | "collections">("nfts");
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   useEffect(() => {
     loadMarketplaceData();
@@ -90,7 +92,8 @@ export default function Marketplace() {
     const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterBy === "all" || 
       (filterBy === "listed" && nft.is_listed) ||
-      (filterBy === "unlisted" && !nft.is_listed);
+      (filterBy === "unlisted" && !nft.is_listed) ||
+      (filterBy === "favorites" && isFavorite(nft.id));
     return matchesSearch && matchesFilter;
   });
 
@@ -180,6 +183,7 @@ export default function Marketplace() {
                 <SelectItem value="all">All NFTs</SelectItem>
                 <SelectItem value="listed">Listed</SelectItem>
                 <SelectItem value="unlisted">Unlisted</SelectItem>
+                <SelectItem value="favorites">❤️ Favorites</SelectItem>
               </SelectContent>
             </Select>
 
@@ -248,17 +252,6 @@ export default function Marketplace() {
                  navigate(`/nft/${nft.id}?${queryString}`);
                }}
              >
-               {/* Price Display - Top Right */}
-               {nft.is_listed && nft.price ? (
-                 <div className="absolute top-3 right-3 z-10 bg-primary text-primary-foreground font-bold text-sm px-3 py-1 rounded-full shadow-lg">
-                   {nft.price} SOL
-                 </div>
-               ) : (
-                 <div className="absolute top-3 right-3 z-10 bg-muted text-muted-foreground font-medium text-xs px-2 py-1 rounded-full">
-                   Not Listed
-                 </div>
-               )}
-
                <div className="aspect-square overflow-hidden rounded-t-lg">
                  <ImageLazyLoad
                    src={nft.image_url || "/placeholder.svg"}
@@ -266,9 +259,42 @@ export default function Marketplace() {
                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                  />
                </div>
-              <CardContent className="p-4">
-                <h3 className="font-semibold truncate">{nft.name}</h3>
-              </CardContent>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold truncate">{nft.name}</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isFavorite(nft.id)) {
+                          removeFromFavorites(nft.id);
+                        } else {
+                          addToFavorites({
+                            id: nft.id,
+                            name: nft.name,
+                            image_url: nft.image_url,
+                            type: 'nft'
+                          });
+                        }
+                      }}
+                      className={isFavorite(nft.id) ? "text-red-500" : ""}
+                    >
+                      <Heart className={`h-4 w-4 ${isFavorite(nft.id) ? "fill-current" : ""}`} />
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    {nft.is_listed && nft.price ? (
+                      <div className="text-lg font-bold text-primary">
+                        {nft.price} SOL
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        Not Listed
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
              </Card>
           ))}
         </div>

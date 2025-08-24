@@ -119,17 +119,6 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
           {getTierBadge()}
         </div>
 
-        {/* Price Overlay - Top Right */}
-        {listed && nftPrice !== null ? (
-          <div className="absolute top-3 right-3 z-20 bg-primary text-primary-foreground font-bold text-sm px-3 py-1 rounded-full shadow-lg">
-            {nftPrice} SOL
-          </div>
-        ) : (
-          <div className="absolute top-3 right-3 z-20 bg-muted text-muted-foreground font-medium text-xs px-2 py-1 rounded-full">
-            Not Listed
-          </div>
-        )}
-
         {/* Image Container */}
         <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg overflow-hidden">
           <img 
@@ -168,6 +157,15 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
             >
               <Heart className={`h-4 w-4 ${isFavorite(listing.nft_id) ? "fill-current" : ""}`} />
             </Button>
+          </div>
+          
+          {/* Price display */}
+          <div className="mb-3">
+            {listed && nftPrice !== null ? (
+              <div className="text-lg font-bold text-primary">{nftPrice} SOL</div>
+            ) : (
+              <div className="text-sm text-muted-foreground">Not Listed</div>
+            )}
           </div>
 
           <Button className="w-full" variant="outline" onClick={(e) => {e.stopPropagation(); handleViewDetails()}}>
