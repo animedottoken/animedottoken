@@ -221,31 +221,6 @@ export const GamifiedProfileCard = () => {
               }
             </AvatarFallback>
           </Avatar>
-          <Badge className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 ${rankBadge.color} text-white text-xs cursor-help z-10`}>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center">
-                    <Crown className="w-3 h-3" />
-                    <Info className="w-3 h-3 ml-1" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs z-50">
-                  <div className="space-y-2 text-sm">
-                    <div className="font-semibold">Ranking System:</div>
-                    <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
-                    <div>🥇 <strong>Gold</strong>: 250+ trades</div>
-                    <div>🥈 <strong>Silver</strong>: 50+ trades</div>
-                    <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                    <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      Trade more NFTs to increase your rank!
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </Badge>
           <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
             <Edit className="w-3 h-3" />
           </div>
@@ -293,7 +268,29 @@ export const GamifiedProfileCard = () => {
           <div className="p-3 rounded-lg bg-muted/50">
             <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
             <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-              Rank <Info className="w-3 h-3" />
+              Rank
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="inline-flex items-center" aria-label="Rank info">
+                      <Info className="w-3 h-3" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs z-50">
+                    <div className="space-y-2 text-sm">
+                      <div className="font-semibold">Ranking System:</div>
+                      <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
+                      <div>🥇 <strong>Gold</strong>: 250+ trades</div>
+                      <div>🥈 <strong>Silver</strong>: 50+ trades</div>
+                      <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
+                      <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Trade more NFTs to increase your rank!
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
