@@ -371,9 +371,6 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="mt-2 text-xs text-muted-foreground">
-        {profile && (<span>{profileLikes} likes • {nftLikes} NFT likes</span>)}
-      </div>
 
       {/* Collections Grid */}
       <h2 className="text-xl font-semibold mb-4">My Collections</h2>
