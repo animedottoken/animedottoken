@@ -3,7 +3,7 @@ import { Edit, Crown, Lock, Image, DollarSign, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -299,9 +299,10 @@ export const GamifiedProfileCard = () => {
           {/* Nickname Setting */}
           <Dialog open={nicknameDialogOpen} onOpenChange={setNicknameDialogOpen}>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{profile.nickname ? 'Change Your Nickname' : 'Set Your Nickname'}</DialogTitle>
-              </DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>{profile.nickname ? 'Change Your Nickname' : 'Set Your Nickname'}</DialogTitle>
+                  <DialogDescription>Enter a nickname and confirm payment to save.</DialogDescription>
+                </DialogHeader>
                 <div className="space-y-4">
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
@@ -352,6 +353,7 @@ export const GamifiedProfileCard = () => {
             <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Choose Your Profile Picture</DialogTitle>
+                <DialogDescription>Select an NFT to preview and click to proceed.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 {/* Live Preview Section */}
@@ -454,6 +456,7 @@ export const GamifiedProfileCard = () => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Confirm Profile Picture Change</DialogTitle>
+                <DialogDescription>Review the price and confirm to apply your new profile picture.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="p-4 bg-muted/50 rounded-lg">
@@ -485,7 +488,7 @@ export const GamifiedProfileCard = () => {
                   <Button 
                     className="flex-1"
                     onClick={handleConfirmPFP}
-                    disabled={pfpLoading || pfpPricing.loading}
+                    disabled={pfpLoading}
                   >
                     {pfpLoading ? 'Processing...' : 'Confirm & Pay'}
                   </Button>
@@ -501,6 +504,7 @@ export const GamifiedProfileCard = () => {
                 <DialogTitle>
                   {profile.bio ? 'Change Your Bio' : 'Set Your Bio'}
                 </DialogTitle>
+                <DialogDescription>Write your bio and confirm. First bio is free.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 {!profile.bio && !profile.bio_unlock_status ? (
@@ -553,11 +557,11 @@ export const GamifiedProfileCard = () => {
                 <Button 
                   onClick={handleSetBio} 
                   className="w-full"
-                  disabled={bioLoading || (profile.bio || profile.bio_unlock_status ? bioPricing.loading : false)}
+                  disabled={bioLoading}
                 >
                   {bioLoading ? 'Processing...' : 
                     (!profile.bio && !profile.bio_unlock_status) ? 'Set Bio (Free!)' : 
-                    `Pay ${formatTokenAmount(bioPricing.animeAmount)} $ANIME`
+                    (bioPricing.loading ? 'Confirm' : `Pay ${formatTokenAmount(bioPricing.animeAmount)} $ANIME`)
                   }
                 </Button>
               </div>
