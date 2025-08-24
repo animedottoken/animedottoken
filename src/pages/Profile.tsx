@@ -84,17 +84,15 @@ export default function Profile() {
     
     setProfileLoading(true);
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .upsert({
+      const { data, error } = await supabase.functions.invoke('upsert-profile', {
+        body: {
           wallet_address: publicKey,
-          display_name: displayName || null
-        }, {
-          onConflict: 'wallet_address'
-        });
+          display_name: displayName || null,
+        },
+      });
       
       if (error) {
-        console.error('Error saving profile:', error);
+        console.error('Error saving profile (fn):', error);
         toast.error('Failed to save profile');
         return;
       }
