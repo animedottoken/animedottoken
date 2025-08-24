@@ -286,10 +286,14 @@ export const GamifiedProfileCard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 text-center">
+        <div className="grid grid-cols-2 gap-4 text-center">
           <div className="p-3 rounded-lg bg-muted/50">
             <div className="text-2xl font-bold text-primary">{profile.trade_count}</div>
-            <div className="text-sm text-muted-foreground">Total Trades</div>
+            <div className="text-sm text-muted-foreground">Trades</div>
+          </div>
+          <div className="p-3 rounded-lg bg-muted/50">
+            <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
+            <div className="text-sm text-muted-foreground">Rank</div>
           </div>
         </div>
 
