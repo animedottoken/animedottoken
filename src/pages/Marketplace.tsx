@@ -629,8 +629,9 @@ export default function Marketplace() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
-                          <div className="text-sm font-medium flex items-center justify-center gap-1">
-                            ⭐ {getRankBadge(creator.profile_rank).text}
+                          <div className="text-sm font-medium flex flex-col items-center justify-center gap-1">
+                            <span>⭐</span>
+                            <span>{getRankBadge(creator.profile_rank).text}</span>
                           </div>
                         </div>
                       </TooltipTrigger>
@@ -643,9 +644,9 @@ export default function Marketplace() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
-                          <div className="text-sm font-medium flex items-center justify-center gap-1 text-primary">
+                          <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-primary">
                             <Grid3x3 className="w-3 h-3" />
-                            {creator.created_nfts}
+                            <span>{creator.created_nfts}</span>
                           </div>
                         </div>
                       </TooltipTrigger>
@@ -658,9 +659,9 @@ export default function Marketplace() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
-                          <div className="text-sm font-medium flex items-center justify-center gap-1 text-destructive">
+                          <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-destructive">
                             <Heart className="w-3 h-3" />
-                            {creator.follower_count}
+                            <span>{creator.follower_count}</span>
                           </div>
                         </div>
                       </TooltipTrigger>
