@@ -211,6 +211,67 @@ export const useGamifiedProfile = () => {
     }
   }, [connected, publicKey, fetchProfile]);
 
+  const setBanner = useCallback(async (bannerFile: File): Promise<boolean> => {
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
+      return false;
+    }
+
+    setBioLoading(true); // Reuse bio loading state for banner
+    try {
+      // Upload to Supabase Storage
+      const fileName = `banner_${publicKey}_${Date.now()}.${bannerFile.name.split('.').pop()}`;
+      const filePath = `banners/${fileName}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('collection-images')
+        .upload(filePath, bannerFile);
+
+      if (uploadError) {
+        console.error('Error uploading banner:', uploadError);
+        toast.error('Failed to upload banner image');
+        return false;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('collection-images')
+        .getPublicUrl(filePath);
+
+      // Update profile with new banner URL
+      const { data, error } = await supabase.functions.invoke('set-banner', {
+        body: { 
+          banner_url: urlData.publicUrl,
+          wallet_address: publicKey,
+          transaction_signature: 'simulated_banner_transaction'
+        },
+      });
+
+      if (error) {
+        console.error('Error setting banner:', error);
+        toast.error(error.message || 'Failed to update banner');
+        return false;
+      }
+
+      if (data.error) {
+        console.error('Error in set-banner response:', data.error);
+        toast.error(data.error);
+        return false;
+      }
+
+      toast.success('Banner updated successfully!');
+      await fetchProfile();
+      
+      return true;
+    } catch (error) {
+      console.error('Error setting banner:', error);
+      toast.error('Failed to update banner');
+      return false;
+    } finally {
+      setBioLoading(false);
+    }
+  }, [connected, publicKey, fetchProfile]);
+
   const getRankColor = useCallback((rank: string) => {
     switch (rank) {
       case 'BRONZE': return 'border-amber-600';
@@ -247,6 +308,7 @@ export const useGamifiedProfile = () => {
     unlockPFP,
     setPFP,
     setBio,
+    setBanner,
     getRankColor,
     getRankBadge,
     fetchProfile,

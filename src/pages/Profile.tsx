@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
+import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
@@ -26,7 +27,7 @@ export default function Profile() {
   const { publicKey, connected, connect } = useSolanaWallet();
   const { collections, loading, refreshCollections } = useCollections();
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
-  const { profile, setNickname, setBio, setPFP, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
+  const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
   
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(profile?.wallet_address ? [profile.wallet_address] : []);
@@ -39,6 +40,7 @@ export default function Profile() {
   const [newBio, setNewBio] = useState('');
   
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
+  const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
 
   const handleNicknameUpdate = async () => {
     if (!newNickname.trim()) {
@@ -246,14 +248,24 @@ export default function Profile() {
       {/* Enhanced Profile Section */}
       <div className="mb-8">
         {/* Universal Banner */}
-        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden">
+        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden group">
           <ImageLazyLoad
-            src={profileBanner}
+            src={profile?.banner_image_url || profileBanner}
             alt="Profile Banner"
             className="absolute inset-0 w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+          
+          {/* Banner Edit Button */}
+          <button
+            onClick={() => setBannerDialogOpen(true)}
+            className="absolute top-4 right-4 p-2 rounded-full bg-background/80 border hover:bg-muted transition opacity-0 group-hover:opacity-100"
+            aria-label="Change banner"
+            title="Change banner (visible on profile & marketplace)"
+          >
+            <Camera className="w-5 h-5" />
+          </button>
         </AspectRatio>
 
         {/* Profile Info */}
@@ -428,6 +440,19 @@ export default function Profile() {
           if (ok) {
             toast.success('Profile picture updated!');
           }
+          return ok;
+        }}
+      />
+
+      {/* Banner Selection Dialog */}
+      <BannerPickerDialog
+        open={bannerDialogOpen}
+        onOpenChange={setBannerDialogOpen}
+        profile={profile}
+        loading={bioLoading} // Reusing bio loading state
+        isFirstChange={!profile?.banner_image_url}
+        onConfirm={async (file) => {
+          const ok = await setBanner(file);
           return ok;
         }}
       />
