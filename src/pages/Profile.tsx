@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollections } from '@/hooks/useCollections';
@@ -8,52 +7,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
-import { useToast } from "@/components/ui/use-toast"
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
+import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { publicKey, connected, connect } = useSolanaWallet();
   const { collections, loading, refreshCollections } = useCollections();
-  const { toast } = useToast()
-  const [profile, setProfile] = useState<{
-    nickname: string | null;
-    profile_image_url: string | null;
-    banner_image_url: string | null;
-  }>({
-    nickname: null,
-    profile_image_url: null,
-    banner_image_url: null,
-  });
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!publicKey) return;
-      try {
-        const response = await fetch(`/api/profile?wallet=${publicKey}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setProfile({
-          nickname: data.nickname,
-          profile_image_url: data.profile_image_url,
-          banner_image_url: data.banner_image_url,
-        });
-      } catch (error) {
-        console.error("Could not fetch profile:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to load profile",
-          description: "There was an issue loading your profile data.",
-        })
-      }
-    };
-
-    fetchProfile();
-  }, [publicKey, toast]);
+  const { profile } = useGamifiedProfile();
 
   const renderCollectionsGrid = () => {
     if (collections.length === 0) {
@@ -234,7 +197,7 @@ export default function Profile() {
       <div className="mb-8">
         <div className="relative w-full h-32 rounded-md overflow-hidden">
           <ImageLazyLoad
-            src={profile.banner_image_url || '/placeholder.svg'}
+            src={profile?.profile_image_url || '/placeholder.svg'}
             alt="Banner"
             className="w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
@@ -243,11 +206,11 @@ export default function Profile() {
         </div>
         <div className="flex items-center mt-2">
           <Avatar className="w-16 h-16 rounded-full border-2 border-white -mt-8 mr-4 relative">
-            <AvatarImage src={profile.profile_image_url || '/placeholder.svg'} alt="Avatar" />
+            <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="text-lg font-semibold">{profile.nickname || 'Unnamed User'}</h2>
+            <h2 className="text-lg font-semibold">{profile?.nickname || 'Unnamed User'}</h2>
             <p className="text-muted-foreground">{publicKey}</p>
           </div>
         </div>
