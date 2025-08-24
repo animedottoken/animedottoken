@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit, Crown, Lock, Image, DollarSign, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export const GamifiedProfileCard = () => {
   const {
@@ -29,6 +30,9 @@ export const GamifiedProfileCard = () => {
     getRankBadge,
   } = useGamifiedProfile();
 
+  // Creator stats for follower count and NFT likes
+  const [creatorStats, setCreatorStats] = useState<{follower_count: number, nft_likes_count: number} | null>(null);
+
   const nicknamePricing = useAnimePricing(1.00); // $1.00 USD for nickname
   const pfpPricing = useAnimePricing(2.00); // $2.00 USD for PFP unlock
   const bioPricing = useAnimePricing(2.00); // $2.00 USD for bio changes after first time
@@ -40,6 +44,28 @@ export const GamifiedProfileCard = () => {
   const [selectedNftForPfp, setSelectedNftForPfp] = useState<string | null>(null);
   const [nicknameInput, setNicknameInput] = useState('');
   const [bioInput, setBioInput] = useState('');
+
+  // Fetch creator stats (follower count and NFT likes)
+  useEffect(() => {
+    const fetchCreatorStats = async () => {
+      if (!profile?.wallet_address) return;
+      
+      try {
+        const { data } = await supabase
+          .from('creators_public_stats')
+          .select('follower_count, nft_likes_count')
+          .eq('wallet_address', profile.wallet_address)
+          .single();
+        
+        setCreatorStats(data || {follower_count: 0, nft_likes_count: 0});
+      } catch (error) {
+        console.error('Error fetching creator stats:', error);
+        setCreatorStats({follower_count: 0, nft_likes_count: 0});
+      }
+    };
+
+    fetchCreatorStats();
+  }, [profile?.wallet_address]);
 
   const handleAvatarClick = () => {
     if (!profile) return;
@@ -275,36 +301,12 @@ export const GamifiedProfileCard = () => {
 
         <div className="grid grid-cols-2 gap-4 text-center">
           <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{profile.trade_count}</div>
-            <div className="text-sm text-muted-foreground">Trades</div>
+            <div className="text-2xl font-bold text-primary">{creatorStats?.follower_count || 0}</div>
+            <div className="text-sm text-muted-foreground">Likes</div>
           </div>
           <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
-            <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-              Rank
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="inline-flex items-center" aria-label="Rank info">
-                      <Info className="w-3 h-3" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs z-50">
-                    <div className="space-y-2 text-sm">
-                      <div className="font-semibold">Ranking System:</div>
-                      <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
-                      <div>🥇 <strong>Gold</strong>: 250+ trades</div>
-                      <div>🥈 <strong>Silver</strong>: 50+ trades</div>
-                      <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                      <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
-                      <div className="text-xs text-muted-foreground mt-2">
-                        Trade more NFTs to increase your rank!
-                      </div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <div className="text-2xl font-bold text-primary">{creatorStats?.nft_likes_count || 0}</div>
+            <div className="text-sm text-muted-foreground">NFT Likes</div>
           </div>
         </div>
 
