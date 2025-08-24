@@ -24,15 +24,17 @@ serve(async (req) => {
       });
     }
 
-    if (nickname.length < 3 || nickname.length > 15) {
-      return new Response(JSON.stringify({ error: "Nickname must be 3-15 characters long" }), {
+    const trimmedNickname = nickname.trim();
+    if (trimmedNickname.length < 2 || trimmedNickname.length > 20) {
+      return new Response(JSON.stringify({ error: "Nickname must be 2-20 characters long" }), {
         status: 400,
         headers: corsHeaders,
       });
     }
 
-    if (!/^[a-zA-Z0-9]+$/.test(nickname)) {
-      return new Response(JSON.stringify({ error: "Nickname can only contain alphanumeric characters" }), {
+    // Allow letters, numbers, spaces, and common special characters
+    if (!/^[a-zA-Z0-9\s\-_\.]+$/.test(trimmedNickname)) {
+      return new Response(JSON.stringify({ error: "Nickname can only contain letters, numbers, spaces, hyphens, underscores, and periods" }), {
         status: 400,
         headers: corsHeaders,
       });
@@ -64,15 +66,22 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // In production, verify the transaction signature here
     console.log(`Processing nickname change for wallet: ${wallet_address}, tx: ${transaction_signature}`);
 
     // Check if nickname already exists
-    const { data: existingNickname } = await supabase
+    const { data: existingNickname, error: existingError } = await supabase
       .from("user_profiles")
       .select("wallet_address")
-      .eq("nickname", nickname)
-      .single();
+      .eq("nickname", trimmedNickname)
+      .maybeSingle();
+
+    if (existingError) {
+      console.error("Error checking existing nickname:", existingError);
+      return new Response(JSON.stringify({ error: "Database error checking nickname availability" }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
 
     if (existingNickname && existingNickname.wallet_address !== wallet_address) {
       return new Response(JSON.stringify({ error: "Nickname already taken" }), {
@@ -82,33 +91,45 @@ serve(async (req) => {
     }
 
     // Get existing user profile data for preserving other fields
-    const { data: userProfile } = await supabase
+    const { data: userProfile, error: profileError } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("wallet_address", wallet_address)
-      .single();
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Error fetching user profile:", profileError);
+      return new Response(JSON.stringify({ error: "Database error fetching profile" }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
 
     // Upsert the nickname while preserving other fields
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from("user_profiles")
       .upsert({ 
         wallet_address, 
-        nickname,
+        nickname: trimmedNickname,
         trade_count: userProfile?.trade_count || 0,
         profile_rank: userProfile?.profile_rank || 'DEFAULT',
         pfp_unlock_status: userProfile?.pfp_unlock_status || false,
+        bio_unlock_status: userProfile?.bio_unlock_status || false,
         current_pfp_nft_mint_address: userProfile?.current_pfp_nft_mint_address || null,
-        profile_image_url: userProfile?.profile_image_url || null
+        profile_image_url: userProfile?.profile_image_url || null,
+        banner_image_url: userProfile?.banner_image_url || null,
+        bio: userProfile?.bio || null
       }, { onConflict: "wallet_address" });
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+    if (updateError) {
+      console.error("Error updating nickname:", updateError);
+      return new Response(JSON.stringify({ error: updateError.message }), {
         status: 400,
         headers: corsHeaders,
       });
     }
 
-    return new Response(JSON.stringify({ success: true, nickname }), {
+    return new Response(JSON.stringify({ success: true, nickname: trimmedNickname }), {
       status: 200,
       headers: corsHeaders,
     });

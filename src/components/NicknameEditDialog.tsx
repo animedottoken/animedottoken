@@ -64,7 +64,7 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
               maxLength={20}
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Maximum 20 characters
+              2-20 characters. Letters, numbers, spaces, hyphens, underscores, and periods allowed.
             </p>
           </div>
 
