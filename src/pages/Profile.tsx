@@ -317,18 +317,6 @@ export default function Profile() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
-                <span className="text-2xl font-bold text-primary">
-                  {nfts?.length || 0} / {collections?.length || 0}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
-            </CardContent>
-          </Card>
-
           <Card className="bg-secondary/5 border-secondary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
@@ -364,6 +352,18 @@ export default function Profile() {
                 </TooltipProvider>
               </div>
               <p className="text-sm text-muted-foreground">Rank / Trades</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
+                <span className="text-2xl font-bold text-primary">
+                  {nfts?.length || 0} / {collections?.length || 0}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
             </CardContent>
           </Card>
 
