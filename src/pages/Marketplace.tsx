@@ -61,7 +61,7 @@ interface Creator {
 
 export default function Marketplace() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { publicKey } = useSolanaWallet();
   
   const [nfts, setNfts] = useState<NFT[]>([]);
@@ -76,22 +76,9 @@ export default function Marketplace() {
   const [showPropertyFilter, setShowPropertyFilter] = useState(false);
   const [propertyFilters, setPropertyFilters] = useState<Record<string, string[]>>({});
   
-  // Initialize activeTab from URL parameter or default to "nfts"
-  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam === 'creators' || tabParam === 'collections' || tabParam === 'nfts') {
-      return tabParam;
-    }
-    return "nfts";
-  });
+  // Initialize activeTab with "nfts" as default
+  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("nfts");
 
-  // Update URL when tab changes
-  const handleTabChange = (tab: "nfts" | "collections" | "creators") => {
-    setActiveTab(tab);
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', tab);
-    window.history.replaceState({}, '', url.toString());
-  };
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
   
@@ -149,6 +136,24 @@ export default function Marketplace() {
     // Note: Real-time updates for follows and likes are handled by their respective hooks
     // (useCreatorFollows, useNFTLikes) so we don't need to reload all marketplace data here
   }, []);
+
+  // Sync tab with URL parameter
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['nfts', 'collections', 'creators'].includes(tab) && tab !== activeTab) {
+      setActiveTab(tab as "nfts" | "collections" | "creators");
+    }
+  }, [searchParams]);
+
+  // Update URL when tab changes
+  useEffect(() => {
+    const currentTab = searchParams.get('tab');
+    if (currentTab !== activeTab) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('tab', activeTab);
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [activeTab, searchParams, setSearchParams]);
 
   const loadMarketplaceData = async () => {
     try {
@@ -335,19 +340,19 @@ export default function Marketplace() {
       <div className="flex gap-4 mb-6">
         <Button
           variant={activeTab === "nfts" ? "default" : "outline"}
-          onClick={() => handleTabChange("nfts")}
+          onClick={() => setActiveTab("nfts")}
         >
           NFTs
         </Button>
         <Button
           variant={activeTab === "collections" ? "default" : "outline"}
-          onClick={() => handleTabChange("collections")}
+          onClick={() => setActiveTab("collections")}
         >
           Collections
         </Button>
         <Button 
           variant={activeTab === "creators" ? "default" : "outline"}
-          onClick={() => handleTabChange("creators")}
+          onClick={() => setActiveTab("creators")}
         >
           Creators
         </Button>

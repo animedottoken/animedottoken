@@ -112,12 +112,13 @@ export default function CollectionDetail() {
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="sm" onClick={() => {
+              const tab = searchParams.get('tab') || (navigation.source === 'collections' ? 'collections' : 'nfts');
               const backUrl = navigation.source === 'favorites' 
                 ? '/profile?tab=favorites' 
                 : navigation.source === 'collections' 
                 ? '/profile?tab=collections' 
                 : navigation.source === 'marketplace'
-                ? '/marketplace'
+                ? `/marketplace?tab=${tab}`
                 : '/profile';
               navigate(backUrl);
             }}>

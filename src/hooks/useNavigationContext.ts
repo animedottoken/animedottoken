@@ -48,9 +48,10 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
     const targetItem = items[newIndex];
     if (targetItem) {
       const fromParam = source ? `from=${source}` : '';
+      const tabParam = searchParams.get('tab') ? `tab=${searchParams.get('tab')}` : '';
       const navParam = `nav=${encodeURIComponent(JSON.stringify(items.map(item => item.id)))}`;
       const viewParam = searchParams.get('view') ? `view=${searchParams.get('view')}` : '';
-      const queryString = [fromParam, navParam, viewParam].filter(Boolean).join('&');
+      const queryString = [fromParam, tabParam, navParam, viewParam].filter(Boolean).join('&');
       
       if (itemType === 'collection') {
         navigate(`/collection/${targetItem.id}?${queryString}`);

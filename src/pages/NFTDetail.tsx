@@ -251,7 +251,7 @@ export default function NFTDetail() {
       <div className="flex items-center gap-4 mb-6">
         <Button variant="outline" asChild>
           <Link to={navigation.source === 'marketplace' 
-            ? "/marketplace" 
+            ? `/marketplace?tab=${searchParams.get('tab') || 'nfts'}` 
             : navigation.source === 'favorites' 
             ? "/profile?tab=favorites" 
             : navigation.source === 'nfts' 

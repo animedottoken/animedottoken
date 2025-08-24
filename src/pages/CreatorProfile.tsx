@@ -78,7 +78,8 @@ export default function CreatorProfile() {
   const handlePrevious = () => {
     if (hasPrevious) {
       const prevWallet = navCreators[currentIndex - 1];
-      const queryString = `from=${from}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+      const tab = searchParams.get('tab') || 'creators';
+      const queryString = `from=${from}&tab=${tab}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
       navigate(`/profile/${prevWallet}?${queryString}`);
     }
   };
@@ -86,7 +87,8 @@ export default function CreatorProfile() {
   const handleNext = () => {
     if (hasNext) {
       const nextWallet = navCreators[currentIndex + 1];
-      const queryString = `from=${from}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+      const tab = searchParams.get('tab') || 'creators';
+      const queryString = `from=${from}&tab=${tab}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
       navigate(`/profile/${nextWallet}?${queryString}`);
     }
   };
@@ -320,7 +322,10 @@ export default function CreatorProfile() {
       <div className="flex items-center justify-between mb-6">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(from ? `/marketplace?tab=${from}` : '/marketplace?tab=creators')}
+          onClick={() => {
+            const tab = searchParams.get('tab') || 'creators';
+            navigate(from === 'marketplace' ? `/marketplace?tab=${tab}` : '/marketplace?tab=creators');
+          }}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to {from === 'marketplace' ? 'Marketplace' : 'Creators'}
