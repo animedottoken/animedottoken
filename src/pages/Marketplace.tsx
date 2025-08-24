@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
+import { NFTCard } from "@/components/NFTCard";
 // removed favorites import
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
@@ -428,49 +429,11 @@ export default function Marketplace() {
               const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
               
               return (
-                <Card 
+                <NFTCard 
                   key={nft.id}
-                  className="group hover:shadow-lg transition-all cursor-pointer relative"
-                  onClick={() => navigate(`/nft/${nft.id}?${queryString}`)}
-                >
-                  <div className="aspect-square overflow-hidden rounded-t-lg">
-                    <img
-                      src={nft.image_url || "/placeholder.svg"}
-                      alt={nft.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold truncate">{nft.name}</h3>
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          disabled={likeLoading}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleLike(nft.id);
-                          }}
-                          className={isLiked(nft.id) ? "text-destructive" : "text-muted-foreground"}
-                        >
-                          <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      {nft.is_listed && nft.price ? (
-                        <div className="text-lg font-bold text-primary">
-                          {nft.price} SOL
-                        </div>
-                      ) : (
-                        <div className="text-sm text-muted-foreground">
-                          Not Listed
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                  nft={nft}
+                  navigationQuery={queryString}
+                />
               );
             })}
           </div>
