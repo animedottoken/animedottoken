@@ -48,7 +48,7 @@ export default function Profile() {
       return;
     }
     
-    const success = await setNickname(newNickname.trim());
+    const success = await setNickname(newNickname.trim(), 'simulated_transaction_signature');
     if (success) {
       setEditingNickname(false);
       setNewNickname('');
