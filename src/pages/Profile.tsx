@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2, Heart } from "lucide-react";
+import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2, Heart, Zap } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
@@ -24,6 +24,8 @@ import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useFavorites } from "@/hooks/useFavorites";
 import { EditNFTDialog } from "@/components/EditNFTDialog";
+import { useUserBoostedListings } from "@/hooks/useUserBoostedListings";
+import { BoostedItemCard } from "@/components/BoostedItemCard";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
@@ -33,6 +35,7 @@ export default function Profile() {
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
+  const { boostedListings, loading: boostedLoading, refreshBoostedListings } = useUserBoostedListings(publicKey || undefined);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
@@ -152,7 +155,7 @@ export default function Profile() {
 
       {/* Profile Tabs */}
       <Tabs defaultValue={defaultTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="collections" className="flex items-center gap-2">
             <Grid3X3 className="h-4 w-4" />
             Collections ({collections.length})
@@ -160,6 +163,10 @@ export default function Profile() {
           <TabsTrigger value="nfts" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             My NFTs ({nfts.length})
+          </TabsTrigger>
+          <TabsTrigger value="boosted" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Boosted ({boostedListings.length})
           </TabsTrigger>
           <TabsTrigger value="favorites" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
@@ -845,6 +852,63 @@ export default function Profile() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Boosted Tab */}
+        <TabsContent value="boosted" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">My Boosted Items</h3>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshBoostedListings}
+                disabled={boostedLoading}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${boostedLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Badge variant="outline" className="text-xs">
+                {boostedListings.length} items
+              </Badge>
+            </div>
+          </div>
+
+          {boostedLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-t-lg" />
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted rounded mb-2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : boostedListings.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <Zap className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Boosted Items</h3>
+                <p className="text-muted-foreground mb-6">
+                  You haven't boosted any NFTs yet. Boost your NFTs to get them featured in the marketplace.
+                </p>
+                <Button asChild>
+                  <Link to="/marketplace">
+                    <Zap className="h-4 w-4 mr-2" />
+                    Explore Marketplace
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {boostedListings.map((listing) => (
+                <BoostedItemCard key={listing.id} listing={listing} />
+              ))}
             </div>
           )}
         </TabsContent>
