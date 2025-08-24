@@ -64,14 +64,23 @@ export const GamifiedProfileCard = () => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
-    // In a real implementation, this would trigger a Solana transaction
-    const fakeSignature = `tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    toast.info(`Processing payment: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME (≈$${nicknamePricing.usdPrice.toFixed(2)} USDT)`);
+    // TEST MODE: Simulate payment without real transaction
+    const testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     
-    const success = await setNickname(nicknameInput.trim(), fakeSignature);
+    // Show payment simulation
+    toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
+    toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ $${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
+      duration: 3000
+    });
+    
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const success = await setNickname(nicknameInput.trim(), testTransactionSignature);
     if (success) {
       setNicknameDialogOpen(false);
       setNicknameInput('');
+      toast.success('✅ Nickname set successfully! (Test mode - no real payment)');
     }
   };
 
@@ -81,14 +90,23 @@ export const GamifiedProfileCard = () => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
-    // In a real implementation, this would trigger a Solana transaction
-    const fakeSignature = `tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    toast.info(`Processing payment: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME (≈$${pfpPricing.usdPrice.toFixed(2)} USDT)`);
+    // TEST MODE: Simulate payment without real transaction
+    const testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     
-    const success = await unlockPFP(fakeSignature);
+    // Show payment simulation
+    toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
+    toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ $${pfpPricing.usdPrice.toFixed(2)} USDT`, {
+      duration: 3000
+    });
+    
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const success = await unlockPFP(testTransactionSignature);
     if (success) {
       setPfpUnlockDialogOpen(false);
       setPfpDialogOpen(true);
+      toast.success('✅ PFP unlocked successfully! (Test mode - no real payment)');
     }
   };
 
