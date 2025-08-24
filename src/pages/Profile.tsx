@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { NicknameEditDialog } from '@/components/NicknameEditDialog';
+import { BioEditDialog } from '@/components/BioEditDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
@@ -35,27 +36,10 @@ export default function Profile() {
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
   const nftLikes = profile?.wallet_address ? getCreatorNFTLikeCount(profile.wallet_address) : 0;
   
-  const [editingBio, setEditingBio] = useState(false);
-  const [newBio, setNewBio] = useState('');
-  
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
-
-  const handleBioUpdate = async () => {
-    if (!newBio.trim()) {
-      toast.error('Please enter a bio');
-      return;
-    }
-    
-    // For now, we'll simulate payment - in real app this would integrate with Solana payment
-    const success = await setBio(newBio.trim(), 'simulated_transaction_signature');
-    if (success) {
-      setEditingBio(false);
-      setNewBio('');
-      toast.success('Bio updated! First change is free, next changes will cost 2 USDT.');
-    }
-  };
+  const [bioDialogOpen, setBioDialogOpen] = useState(false);
 
   const renderCollectionsGrid = () => {
     if (collections.length === 0) {
@@ -302,45 +286,19 @@ export default function Profile() {
 
               {/* Bio Section */}
               <div className="max-w-md">
-                {editingBio ? (
-                  <div className="space-y-2">
-                    <Textarea 
-                      value={newBio}
-                      onChange={(e) => setNewBio(e.target.value)}
-                      placeholder="Tell us about yourself (100 characters max)"
-                      maxLength={100}
-                      className="resize-none"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" onClick={handleBioUpdate} disabled={bioLoading}>
-                        Save Bio
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingBio(false)}>
-                        Cancel
-                      </Button>
-                    </div>
-                     <p className="text-xs text-muted-foreground">
-                       First bio change is free. Next changes cost 2 USDT.
-                     </p>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="text-muted-foreground text-sm italic">
-                      {profile?.bio || 'Add your bio (100 characters max)'}
-                    </p>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => {
-                        setNewBio(profile?.bio || '');
-                        setEditingBio(true);
-                      }}
-                      className="p-1 h-auto"
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <p className="text-muted-foreground text-sm italic">
+                    {profile?.bio || 'Add your bio (100 characters max)'}
+                  </p>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => setBioDialogOpen(true)}
+                    className="p-1 h-auto"
+                  >
+                    <Edit className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -401,6 +359,22 @@ export default function Profile() {
       ) : (
         renderCollectionsGrid()
       )}
+
+      {/* Bio Edit Dialog */}
+      <BioEditDialog
+        open={bioDialogOpen}
+        onOpenChange={setBioDialogOpen}
+        profile={profile}
+        loading={bioLoading}
+        currentBio={profile?.bio}
+        onConfirm={async (bio) => {
+          const ok = await setBio(bio, 'simulated_transaction_signature');
+          if (ok) {
+            toast.success('Bio updated successfully!');
+          }
+          return ok;
+        }}
+      />
 
       {/* Nickname Edit Dialog */}
       <NicknameEditDialog
