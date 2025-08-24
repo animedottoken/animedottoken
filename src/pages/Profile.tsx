@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import profileBanner from '@/assets/profile-banner.jpg';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -246,12 +247,12 @@ export default function Profile() {
         {/* Universal Banner */}
         <div className="relative w-full h-32 rounded-lg overflow-hidden">
           <ImageLazyLoad
-            src="/images/og-anime.jpg"
+            src={profileBanner}
             alt="Profile Banner"
             className="w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
         </div>
 
         {/* Profile Info */}
