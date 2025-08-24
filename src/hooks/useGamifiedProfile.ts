@@ -284,11 +284,11 @@ export const useGamifiedProfile = () => {
 
   const getRankBadge = useCallback((rank: string) => {
     switch (rank) {
-      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600' };
-      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400' };
-      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500' };
-      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400' };
-      default: return { text: 'Starter', color: 'bg-muted' };
+      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600', icon: '🥉' };
+      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400', icon: '🥈' };
+      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500', icon: '🥇' };
+      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400', icon: '🏆' };
+      default: return { text: 'Starter', color: 'bg-muted', icon: '🌟' };
     }
   }, []);
 

@@ -329,14 +329,24 @@ export default function Profile() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="inline-flex items-center">
+                      <span className="inline-flex items-center text-lg font-semibold">
+                        <span className="mr-1">
+                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
+                        </span>
                         {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
-                        <Info className="w-3 h-3 ml-1 text-muted-foreground" />
+                        <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
+                          <Info className="w-3 h-3 text-white" />
+                        </div>
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Rank based on trading activity:<br />
-                      Starter (0-9 trades) → Bronze (10-49) → Silver (50-199) → Gold (200+)</p>
+                      <div className="text-sm space-y-1">
+                        <p className="font-semibold">🏆 Diamond: 1,000+ trades</p>
+                        <p className="font-semibold">🥇 Gold: 250+ trades</p>
+                        <p className="font-semibold">🥈 Silver: 50+ trades</p>
+                        <p className="font-semibold">🥉 Bronze: 10+ trades</p>
+                        <p className="font-semibold">🌟 Starter: 0-9 trades</p>
+                      </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
