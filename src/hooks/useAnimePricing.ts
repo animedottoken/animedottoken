@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface PricingInfo {
   usdPrice: number;
@@ -23,26 +22,44 @@ export const useAnimePricing = (usdAmount: number) => {
       try {
         setPricingInfo(prev => ({ ...prev, loading: true, error: null }));
         
-        const { data, error } = await supabase.functions.invoke('get-anime-price');
+        // Use DexScreener like the main page - using a mock pair address for now
+        // Replace with actual ANIME token pair address
+        const pairAddress = "ANIME_PAIR_ADDRESS_HERE";
         
-        if (error) throw error;
+        let animePrice = 0.02; // Fallback price: 1 ANIME = 0.02 USDT
         
-        const animePrice = data.price;
-        const animeAmount = usdAmount / animePrice;
+        try {
+          const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/solana/${pairAddress}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data?.pairs?.[0]?.priceUsd) {
+              animePrice = parseFloat(data.pairs[0].priceUsd);
+            }
+          }
+        } catch (apiError) {
+          console.debug('DexScreener API failed, using fallback price:', apiError);
+        }
+        
+        const animeAmount = Math.ceil(usdAmount / animePrice);
         
         setPricingInfo({
           usdPrice: usdAmount,
-          animeAmount: Math.ceil(animeAmount), // Round up to avoid underpayment
+          animeAmount,
           animePrice,
           loading: false,
           error: null
         });
       } catch (err) {
-        setPricingInfo(prev => ({
-          ...prev,
+        // Fallback calculation
+        const fallbackAnimeAmount = Math.ceil(usdAmount / 0.02);
+        setPricingInfo({
+          usdPrice: usdAmount,
+          animeAmount: fallbackAnimeAmount,
+          animePrice: 0.02,
           loading: false,
-          error: err instanceof Error ? err.message : 'Failed to fetch pricing'
-        }));
+          error: err instanceof Error ? err.message : 'Using fallback pricing'
+        });
       }
     };
 

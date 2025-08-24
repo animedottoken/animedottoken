@@ -41,7 +41,7 @@ export const GamifiedProfileCard = () => {
 
     // In a real implementation, this would trigger a Solana transaction
     const fakeSignature = `tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    toast.info(`Processing payment: $${nicknamePricing.usdPrice.toFixed(2)} USD (${nicknamePricing.animeAmount} $ANIME)`);
+    toast.info(`Processing payment: ${nicknamePricing.animeAmount} $ANIME ($${nicknamePricing.usdPrice.toFixed(2)} USD)`);
     
     const success = await setNickname(nicknameInput.trim(), fakeSignature);
     if (success) {
@@ -53,7 +53,7 @@ export const GamifiedProfileCard = () => {
   const handleUnlockPFP = async () => {
     // In a real implementation, this would trigger a Solana transaction
     const fakeSignature = `tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    toast.info(`Processing payment: $${pfpPricing.usdPrice.toFixed(2)} USD (${pfpPricing.animeAmount} $ANIME)`);
+    toast.info(`Processing payment: ${pfpPricing.animeAmount} $ANIME ($${pfpPricing.usdPrice.toFixed(2)} USD)`);
     
     const success = await unlockPFP(fakeSignature);
     if (success) {
@@ -146,7 +146,7 @@ export const GamifiedProfileCard = () => {
                     <span className="ml-2 text-xs">Loading...</span>
                   ) : (
                     <span className="ml-2 text-xs">
-                      ${nicknamePricing.usdPrice.toFixed(2)} USD (≈{nicknamePricing.animeAmount} $ANIME)
+                      {nicknamePricing.animeAmount} $ANIME ($1.00)
                     </span>
                   )}
                 </Button>
@@ -165,9 +165,9 @@ export const GamifiedProfileCard = () => {
                       <div className="animate-pulse">Loading pricing...</div>
                     ) : (
                       <div>
-                        <div className="text-lg font-bold">${nicknamePricing.usdPrice.toFixed(2)} USD</div>
+                        <div className="text-lg font-bold">{nicknamePricing.animeAmount} $ANIME</div>
                         <div className="text-sm text-muted-foreground">
-                          ≈ {nicknamePricing.animeAmount} $ANIME tokens
+                          ${nicknamePricing.usdPrice.toFixed(2)} USD
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           Price updated every 30 seconds
@@ -215,7 +215,7 @@ export const GamifiedProfileCard = () => {
                 <span className="ml-2 text-xs">Loading...</span>
               ) : (
                 <span className="ml-2 text-xs">
-                  ${pfpPricing.usdPrice.toFixed(2)} USD (≈{pfpPricing.animeAmount} $ANIME)
+                  {pfpPricing.animeAmount} $ANIME ($2.00)
                 </span>
               )}
             </Button>
