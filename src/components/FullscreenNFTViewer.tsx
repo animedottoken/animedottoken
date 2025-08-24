@@ -71,8 +71,8 @@ export const FullscreenNFTViewer = ({
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, canNavigate, onNavigate, onClose]);
 
   // Handle touch gestures for mobile
@@ -259,7 +259,7 @@ export const FullscreenNFTViewer = ({
             variant="ghost"
             size="lg"
             onClick={() => onNavigate?.('prev')}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/10 h-12 w-12"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 focus-visible:ring-violet-500 h-12 w-12"
           >
             <ChevronLeft className="h-6 w-6" />
           </Button>
@@ -267,7 +267,7 @@ export const FullscreenNFTViewer = ({
             variant="ghost"
             size="lg"
             onClick={() => onNavigate?.('next')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/10 h-12 w-12"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 focus-visible:ring-violet-500 h-12 w-12"
           >
             <ChevronRight className="h-6 w-6" />
           </Button>

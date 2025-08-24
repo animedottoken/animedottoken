@@ -49,7 +49,8 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
     if (targetItem) {
       const fromParam = source ? `from=${source}` : '';
       const navParam = `nav=${encodeURIComponent(JSON.stringify(items.map(item => item.id)))}`;
-      const queryString = [fromParam, navParam].filter(Boolean).join('&');
+      const viewParam = searchParams.get('view') ? `view=${searchParams.get('view')}` : '';
+      const queryString = [fromParam, navParam, viewParam].filter(Boolean).join('&');
       
       if (itemType === 'collection') {
         navigate(`/collection/${targetItem.id}?${queryString}`);
@@ -59,8 +60,11 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
     }
   };
 
-  // Keyboard navigation
+  // Keyboard navigation (disabled when in fullscreen view)
   useEffect(() => {
+    const isFullscreen = searchParams.get('view') === 'fs';
+    if (isFullscreen) return; // Don't handle keyboard when in fullscreen
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!items.length || currentIndex === -1) return;
       
@@ -75,7 +79,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [items, currentIndex]);
+  }, [items, currentIndex, searchParams]);
 
   const canNavigate = items.length > 1;
   const hasPrev = canNavigate && items.length > 0;
