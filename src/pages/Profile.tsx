@@ -334,6 +334,8 @@ export default function Profile() {
                           {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
                         </span>
                         {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                        <span className="mx-2">/</span>
+                        {profile?.trade_count || 0}
                         <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
                           <Info className="w-3 h-3 text-white" />
                         </div>
@@ -351,7 +353,7 @@ export default function Profile() {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <p className="text-sm text-muted-foreground">Trades / Rank</p>
+              <p className="text-sm text-muted-foreground">Rank / Trades</p>
             </CardContent>
           </Card>
 
