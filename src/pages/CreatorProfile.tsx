@@ -330,6 +330,17 @@ export default function CreatorProfile() {
                             className="w-full h-full object-cover rounded-lg"
                             onClick={() => navigate(`/nft/${nft.id}`)}
                           />
+                          {/* Heart like button */}
+                          {publicKey && (
+                            <button
+                              aria-label={isLiked(nft.id) ? 'Unlike NFT' : 'Like NFT'}
+                              onClick={(e) => { e.stopPropagation(); toggleLike(nft.id); }}
+                              disabled={nftLikeLoading}
+                              className="absolute top-2 right-2 z-10 p-2 rounded-md border bg-background/80 backdrop-blur hover:bg-muted transition-colors"
+                            >
+                              <Heart className={`${isLiked(nft.id) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'} w-4 h-4`} />
+                            </button>
+                          )}
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                             <ExternalLink className="w-5 h-5 text-white" />
                           </div>
