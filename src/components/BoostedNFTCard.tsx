@@ -125,11 +125,19 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
           />
           
           {/* Hover overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center">
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="bg-black/70 p-3 rounded-full">
-                {getTierIcon()}
-              </div>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewDetails();
+                }}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View
+              </Button>
             </div>
           </div>
         </div>
@@ -162,11 +170,6 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
               <div className="text-sm text-muted-foreground">Not Listed</div>
             )}
           </div>
-
-          <Button className="w-full" variant="outline" onClick={(e) => {e.stopPropagation(); handleViewDetails()}}>
-            <Eye className="h-4 w-4 mr-2" />
-            View Details
-          </Button>
         </div>
       </CardContent>
     </Card>

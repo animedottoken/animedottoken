@@ -305,15 +305,8 @@ export default function Profile() {
                         }
                       }}
                     />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="flex gap-2 flex-wrap justify-center">
-                        <Button
-                          size="sm"
-                          onClick={() => setSelectedCollection(collection)}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -323,6 +316,13 @@ export default function Profile() {
                                      <ExternalLink className="h-4 w-4 mr-1" />
                                      View
                                    </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => setSelectedCollection(collection)}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
                         </Button>
                         <Button
                           size="sm"
@@ -599,7 +599,6 @@ export default function Profile() {
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="flex gap-2 flex-wrap justify-center">
-                        <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
                          <Button
                            size="sm"
                            variant="outline"
@@ -610,6 +609,7 @@ export default function Profile() {
                              View
                            </Link>
                          </Button>
+                        <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
