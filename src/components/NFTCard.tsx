@@ -83,7 +83,7 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
           size="sm" 
           onClick={handleLike}
           disabled={likeLoading}
-          className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
+          className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
             isLiked(nft.id)
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-black/50 text-white hover:bg-black/70'
@@ -93,8 +93,8 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
         </Button>
         
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10">
             <Button 
               size="sm" 
               variant="outline"

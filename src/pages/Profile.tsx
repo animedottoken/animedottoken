@@ -31,6 +31,9 @@ import profileBanner from '@/assets/profile-banner.jpg';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { supabase } from '@/integrations/supabase/client';
 import { NFTCard } from '@/components/NFTCard';
+import { EditNFTDialog } from '@/components/EditNFTDialog';
+import { useBurnNFT } from '@/hooks/useBurnNFT';
+import { useDeleteCollection } from '@/hooks/useDeleteCollection';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -38,10 +41,12 @@ export default function Profile() {
   const { collections, loading, refreshCollections } = useCollections();
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
   const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
-  const { nfts } = useUserNFTs();
+  const { nfts, refreshNFTs } = useUserNFTs();
   const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
   const { likedCollections: likedCollectionsData, loading: likedCollectionsLoading } = useLikedCollections();
   const { toggleFollow, isFollowing, followedCreators } = useCreatorFollows();
+  const { burning, burnNFT } = useBurnNFT();
+  const { deleting, deleteCollection } = useDeleteCollection();
   
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
     profile?.wallet_address ? [profile.wallet_address, ...followedCreators] : followedCreators
@@ -162,6 +167,44 @@ export default function Profile() {
                     </span>
                   )}
                 </div>
+              </div>
+
+              {/* Actions: Edit / Mint / Burn */}
+              <div className="mt-4 flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/mint?edit=${collection.id}`);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/mint/nft?collection=${collection.id}`);
+                  }}
+                >
+                  Mint
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={deleting}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!confirm(`Delete collection "${collection.name}"? This cannot be undone.`)) return;
+                    const res = await deleteCollection(collection.id, collection.name);
+                    if (res.success) {
+                      refreshCollections();
+                    }
+                  }}
+                >
+                  Burn
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -445,22 +488,42 @@ export default function Profile() {
                 const queryString = `from=profile&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
                 
                 return (
-                  <NFTCard
-                    key={nft.id}
-                    nft={{
-                      id: nft.id,
-                      name: nft.name,
-                      image_url: nft.image_url || '',
-                      price: nft.price,
-                      owner_address: nft.owner_address,
-                      creator_address: nft.creator_address,
-                      mint_address: nft.mint_address,
-                      is_listed: nft.is_listed || false,
-                      collection_id: nft.collection_id,
-                      description: nft.description,
-                    }}
-                    navigationQuery={queryString}
-                  />
+                  <div key={nft.id} className="space-y-2">
+                    <NFTCard
+                      nft={{
+                        id: nft.id,
+                        name: nft.name,
+                        image_url: nft.image_url || '',
+                        price: nft.price,
+                        owner_address: nft.owner_address,
+                        creator_address: nft.creator_address,
+                        mint_address: nft.mint_address,
+                        is_listed: nft.is_listed || false,
+                        collection_id: nft.collection_id,
+                        description: nft.description,
+                      }}
+                      navigationQuery={queryString}
+                    />
+                    <div className="flex items-center gap-2">
+                      <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        disabled={burning}
+                        onClick={async () => {
+                          if (!nft.mint_address) {
+                            toast.error('Mint address missing for this NFT');
+                            return;
+                          }
+                          if (!confirm(`Burn NFT "${nft.name}"? This cannot be undone.`)) return;
+                          const res = await burnNFT(nft.id, nft.mint_address);
+                          if (res.success) refreshNFTs();
+                        }}
+                      >
+                        Burn
+                      </Button>
+                    </div>
+                  </div>
                 );
               })}
             </div>
