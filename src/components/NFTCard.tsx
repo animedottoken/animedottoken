@@ -103,7 +103,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
         
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10 flex gap-2">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10 flex flex-wrap items-center justify-center gap-1 px-2">
             <Button 
               size="sm" 
               variant="outline"
@@ -111,9 +111,10 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
                 e.stopPropagation();
                 handleViewDetails();
               }}
+              className="bg-white/90 text-black hover:bg-white border-white/20"
             >
-              <Eye className="h-4 w-4 mr-2" />
-              View
+              <Eye className="h-4 w-4" />
+              <span className="ml-1 hidden sm:inline">View</span>
             </Button>
             {overlayActions?.map((action, index) => (
               <Button
@@ -125,9 +126,14 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
                   e.stopPropagation();
                   action.onClick(e);
                 }}
+                className={`${
+                  action.variant === 'destructive' 
+                    ? 'bg-red-500/90 text-white hover:bg-red-500 border-red-500/20' 
+                    : 'bg-white/90 text-black hover:bg-white border-white/20'
+                }`}
               >
                 {action.icon}
-                <span className="ml-2">{action.label}</span>
+                <span className="ml-1 hidden sm:inline">{action.label}</span>
               </Button>
             ))}
           </div>

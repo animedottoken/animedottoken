@@ -160,7 +160,7 @@ export default function Profile() {
 
               {/* Overlay Actions */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-1 px-2">
                   <Button
                     size="sm"
                     onClick={(e) => {
@@ -169,8 +169,8 @@ export default function Profile() {
                     }}
                     className="bg-white/90 text-black hover:bg-white"
                   >
-                    <Eye className="w-4 h-4 mr-1" />
-                    View
+                    <Eye className="w-4 h-4" />
+                    <span className="ml-1 hidden sm:inline">View</span>
                   </Button>
                   
                   <Button
@@ -182,8 +182,8 @@ export default function Profile() {
                     }}
                     className="bg-white/90 text-black hover:bg-white border-white/20"
                   >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
+                    <Edit className="w-4 h-4" />
+                    <span className="ml-1 hidden sm:inline">Edit</span>
                   </Button>
                   
                   <Button
@@ -194,8 +194,8 @@ export default function Profile() {
                     }}
                     className="bg-primary/90 text-white hover:bg-primary"
                   >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Mint
+                    <Plus className="w-4 h-4" />
+                    <span className="ml-1 hidden sm:inline">Mint</span>
                   </Button>
                   
                   <Button
@@ -220,8 +220,8 @@ export default function Profile() {
                     }}
                     className="bg-red-500/90 text-white hover:bg-red-500"
                   >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Burn
+                    <Trash2 className="w-4 h-4" />
+                    <span className="ml-1 hidden sm:inline">Burn</span>
                   </Button>
                 </div>
               </div>
@@ -508,13 +508,40 @@ export default function Profile() {
 
       {/* Content Tabs */}
       <Tabs defaultValue="collections" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="collections">My Collections</TabsTrigger>
-          <TabsTrigger value="nfts">My NFTs</TabsTrigger>
-          <TabsTrigger value="liked-collections">Collections I Like</TabsTrigger>
-          <TabsTrigger value="liked-nfts">NFTs I Like</TabsTrigger>
-          <TabsTrigger value="following">Authors I Follow</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="inline-flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground min-w-fit gap-1">
+            <TabsTrigger 
+              value="collections" 
+              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+            >
+              My Collections
+            </TabsTrigger>
+            <TabsTrigger 
+              value="nfts"
+              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+            >
+              My NFTs
+            </TabsTrigger>
+            <TabsTrigger 
+              value="liked-collections"
+              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+            >
+              Collections I Like
+            </TabsTrigger>
+            <TabsTrigger 
+              value="liked-nfts"
+              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+            >
+              NFTs I Like
+            </TabsTrigger>
+            <TabsTrigger 
+              value="following"
+              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+            >
+              Authors I Follow
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="collections" className="mt-6">
           {loading ? (
