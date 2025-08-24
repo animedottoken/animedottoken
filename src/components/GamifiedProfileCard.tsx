@@ -355,14 +355,22 @@ export const GamifiedProfileCard = () => {
           </div>
         )}
 
-        {/* Profile Like/Follow - disabled on own profile */}
-        <div className="mb-4">
+        {/* Profile actions: self view */}
+        <div className="mb-4 flex items-center justify-center gap-3">
           <button
             aria-disabled
             className="inline-flex items-center justify-center p-2 rounded-md border text-muted-foreground/70 cursor-not-allowed"
             title="You can't follow your own profile"
           >
             <Heart className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleAvatarClick}
+            className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+            title="Change profile picture"
+            aria-label="Change profile picture"
+          >
+            <Image className="w-5 h-5" />
           </button>
         </div>
         

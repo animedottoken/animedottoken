@@ -612,16 +612,20 @@ export default function Marketplace() {
                 <div className="mb-4">
                   <button
                     aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
-                    disabled={followLoading}
+                    title={publicKey && publicKey === creator.wallet_address ? "You can't like your own profile" : undefined}
+                    disabled={followLoading || (publicKey && publicKey === creator.wallet_address)}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!publicKey) {
                         toast.error('Please connect your wallet to like creators');
                         return;
                       }
+                      if (publicKey === creator.wallet_address) {
+                        return; // prevent self-like
+                      }
                       handleCreatorFollow(creator.wallet_address);
                     }}
-                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors disabled:cursor-not-allowed"
                   >
                     <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
                   </button>
