@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ThumbsUp } from "lucide-react";
-import { ImageLazyLoad } from "@/components/ImageLazyLoad";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
@@ -278,7 +278,7 @@ export default function Marketplace() {
                 <SelectItem value="listed">Listed</SelectItem>
                 <SelectItem value="unlisted">Unlisted</SelectItem>
                 <SelectItem value="favorites">❤️ Favorites</SelectItem>
-                <SelectItem value="followed_creators">👥 From Followed</SelectItem>
+                <SelectItem value="followed_creators">👥 From Liked</SelectItem>
               </SelectContent>
             </Select>
 
@@ -323,7 +323,7 @@ export default function Marketplace() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="followed">Followed</SelectItem>
+              <SelectItem value="followed">Liked</SelectItem>
             </SelectContent>
           </Select>
         )}
@@ -360,13 +360,13 @@ export default function Marketplace() {
                  navigate(`/nft/${nft.id}?${queryString}`);
                }}
              >
-               <div className="aspect-square overflow-hidden rounded-t-lg">
-                 <ImageLazyLoad
-                   src={nft.image_url || "/placeholder.svg"}
-                   alt={nft.name}
-                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                 />
-               </div>
+                <div className="aspect-square overflow-hidden rounded-t-lg">
+                  <img
+                    src={nft.image_url || "/placeholder.svg"}
+                    alt={nft.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                </div>
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-semibold truncate">{nft.name}</h3>
@@ -432,13 +432,13 @@ export default function Marketplace() {
                 navigate(`/collection/${collection.id}?${queryString}`);
               }}
             >
-              <div className="aspect-square overflow-hidden rounded-t-lg">
-                <ImageLazyLoad
-                  src={collection.image_url || "/placeholder.svg"}
-                  alt={collection.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                />
-              </div>
+               <div className="aspect-square overflow-hidden rounded-t-lg">
+                 <img
+                   src={collection.image_url || "/placeholder.svg"}
+                   alt={collection.name}
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                 />
+               </div>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="font-semibold truncate">{collection.name}</h3>
@@ -459,24 +459,20 @@ export default function Marketplace() {
             <Card 
               key={creator.id}
               className="group hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => navigate(`/profile/${creator.wallet_address}`)}
+          onClick={() => navigate(`/profile/${creator.wallet_address}`)}
+          style={{ cursor: 'pointer' }}
             >
               <CardContent className="p-6 text-center">
-                <div className="mb-4">
-                  <div className="w-24 h-24 mx-auto mb-4">
-                    {creator.profile_image_url ? (
-                      <ImageLazyLoad
-                        src={creator.profile_image_url}
-                        alt={creator.nickname || 'Creator'}
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted rounded-full flex items-center justify-center text-muted-foreground text-xl font-bold">
-                        {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mb-2">
+                <Avatar className="w-24 h-24 mx-auto mb-4">
+                  <AvatarImage 
+                    src={creator.profile_image_url} 
+                    alt={creator.nickname || creator.wallet_address} 
+                  />
+                  <AvatarFallback className="text-xl">
+                    {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="font-semibold">
                       {creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}
                     </h3>
@@ -490,9 +486,9 @@ export default function Marketplace() {
                     </p>
                   )}
                   <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span>{creator.follower_count} followers</span>
+                    <span>{creator.follower_count} likes</span>
                     <span>•</span>
-                    <span>{creator.nft_likes_count} likes</span>
+                    <span>{creator.nft_likes_count} NFT likes</span>
                     <span>•</span>
                     <span>{creator.created_nfts} NFTs</span>
                     <span>•</span>
@@ -548,18 +544,17 @@ export default function Marketplace() {
                       {isFollowing(creator.wallet_address) ? (
                         <>
                           <UserMinus className="w-4 h-4 mr-1" />
-                          Following
+                          Liked
                         </>
                       ) : (
                         <>
                           <UserPlus className="w-4 h-4 mr-1" />
-                          Follow
+                          Like
                         </>
                       )}
                     </Button>
                   )}
-                </div>
-              </CardContent>
+                </CardContent>
             </Card>
           ))}
         </div>

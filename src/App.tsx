@@ -17,6 +17,7 @@ import MintNFT from "./pages/MintNFT";
 import CollectionDetail from "./pages/CollectionDetail";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
+import CreatorProfile from "./pages/CreatorProfile";
 import NFTDetail from "./pages/NFTDetail";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -57,6 +58,7 @@ const AppLayout = () => {
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -85,6 +87,7 @@ const AppLayout = () => {
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

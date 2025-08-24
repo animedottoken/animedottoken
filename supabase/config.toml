@@ -35,3 +35,12 @@ verify_jwt = false
 
 [functions.get-anime-price]
 verify_jwt = false
+
+[functions.like-nft]
+verify_jwt = false
+
+[functions.toggle-follow]
+verify_jwt = false
+
+[functions.upsert-profile]
+verify_jwt = false
