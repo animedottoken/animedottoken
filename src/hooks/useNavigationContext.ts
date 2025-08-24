@@ -12,7 +12,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [items, setItems] = useState<NavigationItem[]>([]);
   
-  const source = searchParams.get('from'); // 'collections', 'nfts', 'favorites'
+  const source = searchParams.get('from'); // 'collections', 'nfts', 'favorites', 'marketplace'
   const navItems = searchParams.get('nav'); // JSON encoded array of item IDs
 
   useEffect(() => {

@@ -87,10 +87,12 @@ export default function CollectionDetail() {
                 ? '/profile?tab=favorites' 
                 : navigation.source === 'collections' 
                 ? '/profile?tab=collections' 
+                : navigation.source === 'marketplace'
+                ? '/marketplace'
                 : '/profile';
               navigate(backUrl);
             }}>
-              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : 'Profile'}
+              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : navigation.source === 'marketplace' ? 'Marketplace' : 'Profile'}
             </Button>
           </div>
         </div>
@@ -114,11 +116,13 @@ export default function CollectionDetail() {
                 ? '/profile?tab=favorites' 
                 : navigation.source === 'collections' 
                 ? '/profile?tab=collections' 
+                : navigation.source === 'marketplace'
+                ? '/marketplace'
                 : '/profile';
               navigate(backUrl);
             }}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : 'Profile'}
+              Back to {navigation.source === 'favorites' ? 'Favorites' : navigation.source === 'collections' ? 'Collections' : navigation.source === 'marketplace' ? 'Marketplace' : 'Profile'}
             </Button>
             
             {/* Navigation arrows */}
@@ -344,10 +348,12 @@ export default function CollectionDetail() {
                                 onClick={async () => {
                                   const result = await deleteCollection(collection.id, collection.name);
                                   if (result.success) {
-                                  const backUrl = navigation.source === 'favorites' 
+                                   const backUrl = navigation.source === 'favorites' 
                                     ? '/profile?tab=favorites' 
                                     : navigation.source === 'collections' 
                                     ? '/profile?tab=collections' 
+                                    : navigation.source === 'marketplace'
+                                    ? '/marketplace'
                                     : '/profile';
                                   navigate(backUrl);
                                   }
@@ -418,7 +424,16 @@ export default function CollectionDetail() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {mints.map((nft) => (
-                    <Card key={nft.id} className="group hover:shadow-lg transition-shadow">
+                     <Card 
+                      key={nft.id} 
+                      className="group hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => {
+                        const navIds = mints.map(mint => mint.id);
+                        const source = navigation.source || 'collection';
+                        const queryString = `from=${source}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                        navigate(`/nft/${nft.id}?${queryString}`);
+                      }}
+                    >
                       <CardContent className="p-0">
                         <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
                           {nft.image_url ? (
@@ -443,10 +458,11 @@ export default function CollectionDetail() {
                               Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
                             </div>
                             {connected && publicKey === nft.owner_address && (
-                              <Button
+                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={async () => {
+                                onClick={async (e) => {
+                                  e.stopPropagation(); // Prevent card click when burning
                                   if (!confirm(`Are you sure you want to burn "${nft.name}"? This action cannot be undone.`)) {
                                     return;
                                   }

@@ -315,7 +315,11 @@ export default function Marketplace() {
             <Card 
               key={collection.id}
               className="group hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => navigate(`/collection/${collection.id}`)}
+              onClick={() => {
+                const navIds = filteredCollections.map(c => c.id);
+                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                navigate(`/collection/${collection.id}?${queryString}`);
+              }}
             >
               <div className="aspect-square overflow-hidden rounded-t-lg">
                 <ImageLazyLoad
