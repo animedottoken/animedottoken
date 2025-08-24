@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, UserMinus, UserPlus, ArrowLeft, Heart, ExternalLink } from "lucide-react";
+import { Info, UserMinus, UserPlus, ArrowLeft, Heart, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
@@ -50,6 +50,7 @@ interface Collection {
 export default function CreatorProfile() {
   const { wallet } = useParams<{ wallet: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { publicKey } = useSolanaWallet();
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
@@ -58,6 +59,31 @@ export default function CreatorProfile() {
   const [creatorCollections, setCreatorCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Navigation state
+  const from = searchParams.get('from');
+  const navParam = searchParams.get('nav');
+  const navCreators = navParam ? JSON.parse(decodeURIComponent(navParam)) : [];
+  const currentIndex = wallet ? navCreators.indexOf(wallet) : -1;
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex >= 0 && currentIndex < navCreators.length - 1;
+
+  // Navigation functions
+  const handlePrevious = () => {
+    if (hasPrevious) {
+      const prevWallet = navCreators[currentIndex - 1];
+      const queryString = `from=${from}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+      navigate(`/profile/${prevWallet}?${queryString}`);
+    }
+  };
+
+  const handleNext = () => {
+    if (hasNext) {
+      const nextWallet = navCreators[currentIndex + 1];
+      const queryString = `from=${from}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+      navigate(`/profile/${nextWallet}?${queryString}`);
+    }
+  };
 
   // Optimistic follow toggle to update counts immediately
   const handleToggleFollow = async (creatorWallet: string) => {
@@ -285,14 +311,42 @@ export default function CreatorProfile() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Button 
-        variant="ghost" 
-        onClick={() => navigate('/marketplace?tab=creators')}
-        className="mb-6"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back
-      </Button>
+      <div className="flex items-center justify-between mb-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(from ? `/marketplace?tab=${from}` : '/marketplace?tab=creators')}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to {from === 'marketplace' ? 'Marketplace' : 'Creators'}
+        </Button>
+
+        {/* Navigation Controls */}
+        {navCreators.length > 1 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevious}
+              disabled={!hasPrevious}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground px-2">
+              {currentIndex + 1} of {navCreators.length}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNext}
+              disabled={!hasNext}
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Creator Profile Card */}

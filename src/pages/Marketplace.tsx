@@ -493,8 +493,11 @@ export default function Marketplace() {
             <Card 
               key={creator.id}
               className="group hover:shadow-lg transition-all cursor-pointer"
-          onClick={() => navigate(`/profile/${creator.wallet_address}`)}
-          style={{ cursor: 'pointer' }}
+              onClick={() => {
+                const navCreators = filteredCreators.map(c => c.wallet_address);
+                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+                navigate(`/profile/${creator.wallet_address}?${queryString}`);
+              }}
             >
               <CardContent className="p-6 text-center">
                 <Avatar className="w-24 h-24 mx-auto mb-4">
