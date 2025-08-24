@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 export const GamifiedProfileCard = () => {
   const {
     profile,
@@ -33,8 +34,11 @@ export const GamifiedProfileCard = () => {
 
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
 
-  // Creator stats for follower count and NFT likes
-  const [creatorStats, setCreatorStats] = useState<{follower_count: number, nft_likes_count: number} | null>(null);
+  // Use real-time creator stats
+  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
+    profile?.wallet_address ? [profile.wallet_address] : []
+  );
+  
   const [nftCount, setNftCount] = useState(0);
   const [collectionCount, setCollectionCount] = useState(0);
 
@@ -50,20 +54,12 @@ export const GamifiedProfileCard = () => {
   const [nicknameInput, setNicknameInput] = useState('');
   const [bioInput, setBioInput] = useState('');
 
-  // Fetch creator stats (follower count and NFT likes)
+  // Fetch NFT and collection counts
   useEffect(() => {
-    const fetchCreatorStats = async () => {
+    const fetchCounts = async () => {
       if (!profile?.wallet_address) return;
       
       try {
-        const { data } = await supabase
-          .from('creators_public_stats')
-          .select('follower_count, nft_likes_count')
-          .eq('wallet_address', profile.wallet_address)
-          .single();
-        
-        setCreatorStats(data || {follower_count: 0, nft_likes_count: 0});
-
         // Get NFT count
         const { count: nftCount } = await supabase
           .from('nfts')
@@ -79,14 +75,13 @@ export const GamifiedProfileCard = () => {
         setNftCount(nftCount || 0);
         setCollectionCount(collectionCount || 0);
       } catch (error) {
-        console.error('Error fetching creator stats:', error);
-        setCreatorStats({follower_count: 0, nft_likes_count: 0});
+        console.error('Error fetching counts:', error);
         setNftCount(0);
         setCollectionCount(0);
       }
     };
 
-    fetchCreatorStats();
+    fetchCounts();
   }, [profile?.wallet_address]);
 
   const handleAvatarClick = () => {
@@ -396,9 +391,9 @@ export const GamifiedProfileCard = () => {
          
         {/* Activity Stats */}
         <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-          <span>{creatorStats?.follower_count || 0} likes</span>
+          <span>{getCreatorFollowerCount(profile.wallet_address)} likes</span>
           <span>•</span>
-          <span>{creatorStats?.nft_likes_count || 0} NFT likes</span>
+          <span>{getCreatorNFTLikeCount(profile.wallet_address)} NFT likes</span>
         </div>
 
         <div className="space-y-2">

@@ -34,6 +34,14 @@ export const useNFTLikes = () => {
       return false;
     }
 
+    // Validate that nftId is a valid UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(nftId)) {
+      console.error('Invalid NFT ID provided to toggleLike:', nftId);
+      toast.error('Invalid NFT ID - only NFTs can be liked');
+      return false;
+    }
+
     setLoading(true);
     try {
       const isLiked = likedNFTs.includes(nftId);
@@ -47,7 +55,10 @@ export const useNFTLikes = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
       
       // Update local state
       if (action === 'like') {
@@ -61,7 +72,11 @@ export const useNFTLikes = () => {
       return true;
     } catch (err: any) {
       console.error('Error toggling like:', err);
-      toast.error(err.message || 'Failed to update like status');
+      if (err.message?.includes('violates foreign key constraint')) {
+        toast.error('This item cannot be liked - only NFTs can be liked');
+      } else {
+        toast.error(err.message || 'Failed to update like status');
+      }
       return false;
     } finally {
       setLoading(false);

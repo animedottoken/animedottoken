@@ -472,39 +472,6 @@ export default function Profile() {
                             </TooltipContent>
                           </Tooltip>
                         )}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                toggleLike(collection.id);
-                              }}
-                              disabled={nftLikeLoading}
-                            >
-                              <Heart 
-                                className={`h-4 w-4 ${
-                                  isLiked(collection.id) 
-                                    ? 'fill-current text-red-500' 
-                                    : 'text-muted-foreground'
-                                }`}
-                              />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>
-                              {!connected 
-                                ? 'Connect wallet to like'
-                                : isLiked(collection.id) 
-                                  ? 'Remove like' 
-                                  : 'Like collection'
-                              }
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
