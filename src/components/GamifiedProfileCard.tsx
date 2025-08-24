@@ -408,7 +408,7 @@ export const GamifiedProfileCard = () => {
                 </div>
                 <Separator />
 
-                <div className="grid grid-cols-3 gap-4 max-h-80 overflow-y-auto">
+                <div className="grid grid-cols-3 gap-4">
                   {userNFTs.map((nft) => (
                     <div
                       key={nft.mint_address}
