@@ -363,7 +363,7 @@ export const GamifiedProfileCard = () => {
 
           {/* PFP Selection Dialog */}
           <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-            <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0">
+            <DialogContent className="sm:max-w-[720px] h-[85vh] flex flex-col p-0">
               {/* Fixed Header */}
               <div className="flex-shrink-0 p-6 pb-4 border-b bg-background">
                 <DialogTitle className="text-xl font-semibold">Choose Your Profile Picture</DialogTitle>
@@ -372,42 +372,43 @@ export const GamifiedProfileCard = () => {
                 </p>
               </div>
 
-              {/* Fixed Live Preview */}
-              {selectedNftForPfp && (
-                <div className="flex-shrink-0 p-6 pb-4 border-b bg-muted/30">
-                  <h4 className="text-sm font-medium mb-3">Preview:</h4>
-                  <div className="flex items-center gap-3">
-                    <Avatar className={`w-12 h-12 border-2 ${rankColor}`}>
-                      <AvatarImage 
-                        src={userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.image_url} 
-                        alt="Preview" 
-                      />
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {profile.nickname?.slice(0, 2).toUpperCase() || profile.wallet_address.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{profile.nickname || `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}`}</p>
-                      <p className="text-xs text-muted-foreground">Using: {userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name}</p>
-                    </div>
+              {/* Fixed Live Preview (always visible) */}
+              <div className="flex-shrink-0 p-6 pb-4 border-b bg-muted/30">
+                <h4 className="text-sm font-medium mb-3">Preview:</h4>
+                <div className="flex items-center gap-3">
+                  <Avatar className={`w-12 h-12 border-2 ${rankColor}`}>
+                    <AvatarImage 
+                      src={(selectedNftForPfp ? userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.image_url : profile.profile_image_url) || undefined}
+                      alt="Preview"
+                    />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {profile.nickname?.slice(0, 2).toUpperCase() || profile.wallet_address.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{profile.nickname || `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}`}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Using: {selectedNftForPfp ? (userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name || 'Selected NFT') : 'Current PFP'}
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Scrollable NFT Grid */}
               <div className="flex-1 min-h-0 overflow-auto">
                 <div className="p-6">
                   {userNFTs.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {userNFTs.map((nft) => (
                         <div
                           key={nft.mint_address}
-                          className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-colors ${
+                          className={`relative cursor-pointer rounded-xl overflow-hidden border-2 transition-colors ${
                             selectedNftForPfp === nft.mint_address
                               ? "border-primary ring-2 ring-primary/20"
-                              : "border-transparent hover:border-border"
+                              : "border-border hover:border-foreground/20"
                           }`}
                           onClick={() => handleNftClick(nft.mint_address)}
+                          title={nft.name}
                         >
                           <div className="aspect-square">
                             <img
