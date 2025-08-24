@@ -450,7 +450,7 @@ export default function Profile() {
         onOpenChange={setBannerDialogOpen}
         profile={profile}
         loading={bioLoading} // Reusing bio loading state
-        isFirstChange={!profile?.banner_image_url}
+        isFirstChange={false} // Banner changes are never free
         onConfirm={async (file) => {
           const ok = await setBanner(file);
           return ok;

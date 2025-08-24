@@ -103,48 +103,36 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             </Alert>
 
             {/* Pricing Alert */}
-            {isFirstChange ? (
-              <Alert className="border-green-200 bg-green-50 text-green-700">
-                <DollarSign className="h-4 w-4" />
-                <AlertDescription>
-                  Your first banner change is <strong>FREE</strong>
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert className="bg-primary/10 border-primary/30 text-primary">
-                <Coins className="h-4 w-4" />
-                <AlertDescription>
-                  Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
-                </AlertDescription>
-              </Alert>
-            )}
+            <Alert className="bg-primary/10 border-primary/30 text-primary">
+              <Coins className="h-4 w-4" />
+              <AlertDescription>
+                Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+              </AlertDescription>
+            </Alert>
           </div>
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          {!isFirstChange && (
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="banner-payment-confirmation"
-                checked={paymentConfirmed}
-                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-              />
-              <label 
-                htmlFor="banner-payment-confirmation" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I understand I will be charged the amount shown for this banner change
-              </label>
-            </div>
-          )}
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="banner-payment-confirmation"
+              checked={paymentConfirmed}
+              onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
+            />
+            <label 
+              htmlFor="banner-payment-confirmation" 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              I understand I will be charged the amount shown for this banner change
+            </label>
+          </div>
           
           <Button
             className="w-full"
-            disabled={!selectedFile || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
+            disabled={!selectedFile || loading || !paymentConfirmed || pricingLoading}
             onClick={handleConfirm}
           >
             {loading ? 'Updating...' : 
-             isFirstChange ? 'Update Banner (FREE)' : 
              pricingLoading ? 'Calculating Price...' :
              `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
           </Button>
