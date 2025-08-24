@@ -68,6 +68,33 @@ export default function NFTDetail() {
     return `${minutes}m remaining`;
   };
 
+  const formatPropertyValue = (value: any): string => {
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    return String(value);
+  };
+
+  // System fields to exclude from properties display
+  const systemFields = new Set(['quantity_index', 'total_quantity', 'minted_at', 'explicit_content', 'standalone', 'edition', 'max_supply']);
+
+  // Get edition info from metadata
+  const getEditionInfo = () => {
+    if (nft?.metadata && typeof nft.metadata === 'object') {
+      const metadata = nft.metadata as any;
+      if (metadata.edition && metadata.max_supply) {
+        return `${metadata.edition}/${metadata.max_supply}`;
+      }
+      if (metadata.quantity_index && metadata.total_quantity) {
+        return `${metadata.quantity_index}/${metadata.total_quantity}`;
+      }
+    }
+    return null;
+  };
+
   const calculateFee = (price: number) => {
     return price * 0.025; // 2.5% fee
   };
@@ -308,35 +335,102 @@ export default function NFTDetail() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* NFT Image */}
+        {/* Left Column - NFT Image and Properties */}
         <div className="space-y-4">
-          <Card>
-            <div 
-              className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
-              onClick={handleFullscreenToggle}
-            >
-              <img
-                src={nft.image_url || "/placeholder.svg"}
-                alt={nft.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  const img = e.currentTarget as HTMLImageElement;
-                  if (img.src !== "/placeholder.svg") {
-                    img.src = "/placeholder.svg";
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* NFT Image - Sticky */}
+          <div className="sticky top-6">
+            <Card>
+              <div 
+                className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
+                onClick={handleFullscreenToggle}
+              >
+                <img
+                  src={nft.image_url || "/placeholder.svg"}
+                  alt={nft.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    if (img.src !== "/placeholder.svg") {
+                      img.src = "/placeholder.svg";
+                    }
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Badge variant="secondary" className="bg-black/50 text-white border-white/20">
+                    <Maximize2 className="h-3 w-3 mr-1" />
+                    View Fullscreen
+                  </Badge>
+                </div>
               </div>
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Badge variant="secondary" className="bg-black/50 text-white border-white/20">
-                  <Maximize2 className="h-3 w-3 mr-1" />
-                  View Fullscreen
-                </Badge>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
+          
+          {/* Properties */}
+          {nft.metadata && (
+            (() => {
+              const normalizeProperties = (metadata: any) => {
+                const properties: { trait_type: string; value: string; display_type?: string }[] = [];
+                
+                if (Array.isArray(metadata)) {
+                  // Standard trait format: [{ trait_type: "Background", value: "Blue" }]
+                  return metadata
+                    .filter(attr => attr && attr.trait_type && attr.value !== null && attr.value !== undefined)
+                    .filter(attr => !systemFields.has(attr.trait_type?.toLowerCase()));
+                } else if (typeof metadata === 'object' && metadata !== null) {
+                  // Object format: convert to trait format
+                  Object.entries(metadata).forEach(([key, value]) => {
+                    // Skip internal metadata fields
+                    if (systemFields.has(key) || value === null || value === undefined) {
+                      return;
+                    }
+                    
+                    properties.push({
+                      trait_type: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                      value: formatPropertyValue(value)
+                    });
+                  });
+                }
+                
+                return properties;
+              };
+              
+              const properties = normalizeProperties(nft.metadata);
+              
+              if (properties.length > 0) {
+                return (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Hash className="h-4 w-4" />
+                        Properties
+                        <Badge variant="outline" className="ml-auto text-xs">
+                          {properties.length} traits
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                        {properties.map((attr, index) => (
+                          <div key={index} className="border rounded-md p-2 bg-accent/5 hover:bg-accent/10 transition-colors">
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1 font-medium line-clamp-1">
+                              {attr.trait_type}
+                            </div>
+                            <div className="text-sm font-semibold text-foreground break-words line-clamp-2">
+                              {attr.value}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              }
+              return null;
+            })()
+          )}
         </div>
 
         {/* NFT Details */}
@@ -356,19 +450,10 @@ export default function NFTDetail() {
                   </Badge>
                 )}
                 {/* Compact Edition Info */}
-                {nft.metadata && typeof nft.metadata === 'object' && (
-                  <>
-                    {(nft.metadata as any).edition && (
-                      <Badge variant="outline" className="text-xs">
-                        Edition #{(nft.metadata as any).edition}
-                      </Badge>
-                    )}
-                    {(nft.metadata as any).max_supply && (nft.metadata as any).edition && (
-                      <Badge variant="secondary" className="text-xs">
-                        {(nft.metadata as any).edition}/{(nft.metadata as any).max_supply}
-                      </Badge>
-                    )}
-                  </>
+                {getEditionInfo() && (
+                  <Badge variant="outline" className="text-xs">
+                    Edition {getEditionInfo()}
+                  </Badge>
                 )}
               </div>
               <h1 className="text-3xl font-bold mb-2">{nft.name}</h1>
@@ -531,83 +616,6 @@ export default function NFTDetail() {
               </CardContent>
             </Card>
           </TooltipProvider>
-
-          {/* Properties */}
-          {nft.metadata && (
-            (() => {
-              const normalizeProperties = (metadata: any) => {
-                const properties: { trait_type: string; value: string; display_type?: string }[] = [];
-                
-                if (Array.isArray(metadata)) {
-                  // Standard trait format: [{ trait_type: "Background", value: "Blue" }]
-                  return metadata.filter(attr => attr && attr.trait_type && attr.value !== null && attr.value !== undefined);
-                } else if (typeof metadata === 'object' && metadata !== null) {
-                  // Object format: convert to trait format
-                  Object.entries(metadata).forEach(([key, value]) => {
-                    // Skip internal metadata fields
-                    if (['explicit_content', 'minted_at', 'standalone'].includes(key) || 
-                        value === null || value === undefined) {
-                      return;
-                    }
-                    
-                    // Handle nested objects by stringifying them properly
-                    let displayValue: string;
-                    if (typeof value === 'object') {
-                      if (Array.isArray(value)) {
-                        displayValue = value.join(', ');
-                      } else {
-                        displayValue = JSON.stringify(value, null, 0);
-                      }
-                    } else if (typeof value === 'boolean') {
-                      displayValue = value ? 'Yes' : 'No';
-                    } else {
-                      displayValue = String(value);
-                    }
-                    
-                    properties.push({
-                      trait_type: key.replace(/_/g, ' '),
-                      value: displayValue
-                    });
-                  });
-                }
-                
-                return properties;
-              };
-              
-              const properties = normalizeProperties(nft.metadata);
-              
-              if (properties.length > 0) {
-                return (
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Hash className="h-4 w-4" />
-                        Properties
-                        <Badge variant="outline" className="ml-auto text-xs">
-                          {properties.length} traits
-                        </Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {properties.map((attr, index) => (
-                          <div key={index} className="border rounded-lg p-3 bg-accent/5 hover:bg-accent/10 transition-colors">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1 font-medium">
-                              {attr.trait_type}
-                            </div>
-                            <div className="text-sm font-semibold text-foreground break-words">
-                              {attr.value}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              }
-              return null;
-            })()
-          )}
 
           {/* Boost Status/Control Section */}
           {publicKey === nft.owner_address && (
