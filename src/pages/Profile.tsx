@@ -12,9 +12,9 @@ import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,6 +35,7 @@ export default function Profile() {
   const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
   const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
+  const { toggleFollow, isFollowing } = useCreatorFollows();
   
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(profile?.wallet_address ? [profile.wallet_address] : []);
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
@@ -262,7 +263,7 @@ export default function Profile() {
             </div>
             
             <div className="mt-2">
-              <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1">
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-bold">{profile?.nickname || 'Set Nickname'}</h2>
                     <Button 
@@ -274,12 +275,6 @@ export default function Profile() {
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
-                
-                {profile?.profile_rank && (
-                  <Badge className={getRankBadge(profile.profile_rank).color}>
-                    {getRankBadge(profile.profile_rank).text} ⭐
-                  </Badge>
-                )}
               </div>
               
               <p className="text-sm text-muted-foreground mb-2">
@@ -323,38 +318,23 @@ export default function Profile() {
           <Card className="bg-secondary/5 border-secondary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="inline-flex items-center">
-                        <span className="text-2xl font-bold text-foreground mr-1">
-                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground mx-2">/</span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {profile?.trade_count || 0}
-                        </span>
-                        <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
-                          <Info className="w-3 h-3 text-white" />
-                        </div>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="text-sm space-y-1">
-                        <p className="font-semibold">🏆 Diamond: 1,000+ trades</p>
-                        <p className="font-semibold">🥇 Gold: 250+ trades</p>
-                        <p className="font-semibold">🥈 Silver: 50+ trades</p>
-                        <p className="font-semibold">🥉 Bronze: 10+ trades</p>
-                        <p className="font-semibold">🌟 Starter: 0-9 trades</p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <button
+                  onClick={() => profile?.wallet_address && toggleFollow(profile.wallet_address)}
+                  className="transition-colors duration-200"
+                  disabled={!profile?.wallet_address}
+                >
+                  <Heart className={`w-8 h-8 mr-2 ${
+                    profile?.wallet_address && isFollowing(profile.wallet_address)
+                      ? 'fill-red-500 text-red-500' 
+                      : 'text-muted-foreground hover:text-red-500'
+                  }`} />
+                </button>
+                <span className="text-2xl font-bold text-foreground mx-2">/</span>
+                <span className="text-2xl font-bold text-foreground">
+                  {profile?.trade_count || 0}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">Rank / Trades</p>
+              <p className="text-sm text-muted-foreground">Follow / Trades</p>
             </CardContent>
           </Card>
 
