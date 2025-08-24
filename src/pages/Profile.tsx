@@ -477,8 +477,67 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="following" className="mt-6">
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">Coming soon - Authors you follow will appear here</p>
+          <div className="flex justify-center">
+            <Card className="w-full max-w-md bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 border-primary/20">
+              <CardContent className="p-6 text-center">
+                <div className="mb-4">
+                  <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-primary/20">
+                    <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
+                    <AvatarFallback className="text-2xl font-bold bg-primary/10">
+                      {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <h3 className="text-xl font-bold mb-1">
+                    {profile?.nickname || 'Anonymous User'}
+                  </h3>
+                  
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {publicKey ? `${publicKey.slice(0,4)}...${publicKey.slice(-4)}` : ''}
+                  </p>
+                  
+                  {profile?.bio && (
+                    <p className="text-sm text-muted-foreground/80 italic mb-4 max-w-xs mx-auto">
+                      {profile.bio}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/50">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-1">
+                      <Grid3x3 className="w-4 h-4 text-primary mr-1" />
+                      <span className="font-semibold text-primary">
+                        {nfts?.length || 0}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">NFTs</p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-1">
+                      <span className="text-lg mr-1">
+                        {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
+                      </span>
+                      <span className="font-semibold text-foreground text-sm">
+                        {profile?.trade_count || 0}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Trades</p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-1">
+                      <Heart className="w-4 h-4 text-destructive mr-1" />
+                      <span className="font-semibold text-foreground">
+                        {nftLikes}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Likes</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
