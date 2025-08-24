@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,7 +56,9 @@ interface Creator {
 
 export default function Marketplace() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { publicKey } = useSolanaWallet();
+  
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
@@ -66,7 +68,23 @@ export default function Marketplace() {
   const [filterBy, setFilterBy] = useState("all");
   const [creatorFilter, setCreatorFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("nfts");
+  
+  // Initialize activeTab from URL parameter or default to "nfts"
+  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'creators' || tabParam === 'collections' || tabParam === 'nfts') {
+      return tabParam;
+    }
+    return "nfts";
+  });
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: "nfts" | "collections" | "creators") => {
+    setActiveTab(tab);
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
+  };
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
   const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
@@ -236,19 +254,19 @@ export default function Marketplace() {
       <div className="flex gap-4 mb-6">
         <Button
           variant={activeTab === "nfts" ? "default" : "outline"}
-          onClick={() => setActiveTab("nfts")}
+          onClick={() => handleTabChange("nfts")}
         >
           NFTs
         </Button>
         <Button
           variant={activeTab === "collections" ? "default" : "outline"}
-          onClick={() => setActiveTab("collections")}
+          onClick={() => handleTabChange("collections")}
         >
           Collections
         </Button>
-        <Button
+        <Button 
           variant={activeTab === "creators" ? "default" : "outline"}
-          onClick={() => setActiveTab("creators")}
+          onClick={() => handleTabChange("creators")}
         >
           Creators
         </Button>
