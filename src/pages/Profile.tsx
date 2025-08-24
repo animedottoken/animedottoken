@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3 } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
@@ -180,9 +180,7 @@ export default function Profile() {
             <Card className="bg-card/30 border-primary/10">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Avatar className="w-6 h-6">
-                    <AvatarFallback className="text-primary bg-transparent text-xs">P</AvatarFallback>
-                  </Avatar>
+                  <User className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">Profile Customization</h3>
                 <p className="text-sm text-muted-foreground">
