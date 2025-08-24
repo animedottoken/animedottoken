@@ -369,13 +369,13 @@ export default function Profile() {
 
           <Card className="bg-accent/5 border-accent/20">
             <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Heart className="w-5 h-5 text-destructive mr-1" />
-                <span className="text-2xl font-bold text-foreground">
-                  {nftLikes} / {profileLikes}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">NFT Likes / Profile Likes</p>
+               <div className="flex items-center justify-center mb-2">
+                 <Heart className="w-5 h-5 text-destructive mr-1" />
+                 <span className="text-2xl font-bold text-foreground">
+                   {profileLikes} / {nftLikes}
+                 </span>
+               </div>
+               <p className="text-sm text-muted-foreground">Profile Likes / NFT Likes</p>
             </CardContent>
           </Card>
         </div>
