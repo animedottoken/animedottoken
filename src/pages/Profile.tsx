@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2, Heart, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RefreshCw, Edit, Settings, BarChart3, Wallet, ExternalLink, User, Grid3X3, Clock, Plus, Trash2, Heart, Zap, Save, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Link, useSearchParams } from "react-router-dom";
@@ -26,6 +28,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { EditNFTDialog } from "@/components/EditNFTDialog";
 import { useUserBoostedListings } from "@/hooks/useUserBoostedListings";
 import { BoostedItemCard } from "@/components/BoostedItemCard";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Profile() {
   const { connected, publicKey } = useSolanaWallet();
@@ -39,6 +42,78 @@ export default function Profile() {
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'collections';
+  
+  // Profile editing state
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [displayName, setDisplayName] = useState('');
+  const [originalDisplayName, setOriginalDisplayName] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!publicKey) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('display_name')
+          .eq('wallet_address', publicKey)
+          .single();
+        
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+          console.error('Error fetching user profile:', error);
+          return;
+        }
+        
+        const name = data?.display_name || '';
+        setDisplayName(name);
+        setOriginalDisplayName(name);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    if (connected && publicKey) {
+      fetchUserProfile();
+    }
+  }, [connected, publicKey]);
+
+  const handleSaveProfile = async () => {
+    if (!publicKey) return;
+    
+    setProfileLoading(true);
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .upsert({
+          wallet_address: publicKey,
+          display_name: displayName || null
+        }, {
+          onConflict: 'wallet_address'
+        });
+      
+      if (error) {
+        console.error('Error saving profile:', error);
+        toast.error('Failed to save profile');
+        return;
+      }
+      
+      setOriginalDisplayName(displayName);
+      setIsEditingProfile(false);
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error('Failed to save profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setDisplayName(originalDisplayName);
+    setIsEditingProfile(false);
+  };
 
   // Auto-refresh collections when component mounts
   useEffect(() => {
@@ -139,11 +214,59 @@ export default function Profile() {
               <div className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-purple-500 flex items-center justify-center">
                 <User className="h-8 w-8 text-white" />
               </div>
-              <div>
-                <CardTitle className="text-2xl">My Profile</CardTitle>
-                <p className="text-muted-foreground">
-                  {publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'Not connected'}
-                </p>
+              <div className="flex-1">
+                {isEditingProfile ? (
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <Label htmlFor="displayName" className="text-sm font-medium">
+                        Display Name
+                      </Label>
+                      <Input
+                        id="displayName"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="Enter your display name"
+                        className="max-w-sm"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleSaveProfile}
+                        disabled={profileLoading}
+                        size="sm"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {profileLoading ? 'Saving...' : 'Save'}
+                      </Button>
+                      <Button
+                        onClick={handleCancelEdit}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <CardTitle className="text-2xl">
+                        {displayName || 'My Profile'}
+                      </CardTitle>
+                      <Button
+                        onClick={() => setIsEditingProfile(true)}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-muted-foreground">
+                      {publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'Not connected'}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
