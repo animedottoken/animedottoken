@@ -1,22 +1,24 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, TrendingUp, Crown, Rocket, Zap } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, TrendingUp, Crown, Rocket, Zap, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { BoostModal } from "@/components/BoostModal";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
+import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
-  const fromFavorites = searchParams.get('from') === 'favorites';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const isFullscreen = searchParams.get('view') === 'fs';
   const [nft, setNft] = useState<UserNFT | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBoostModalOpen, setIsBoostModalOpen] = useState(false);
@@ -107,6 +109,43 @@ export default function NFTDetail() {
 
     fetchNFT();
   }, [id]);
+
+  const handleFullscreenToggle = () => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (isFullscreen) {
+      newSearchParams.delete('view');
+    } else {
+      newSearchParams.set('view', 'fs');
+    }
+    setSearchParams(newSearchParams);
+  };
+
+  const handleFullscreenNavigate = (direction: 'prev' | 'next') => {
+    if (navigation.canNavigate) {
+      let newIndex: number;
+      if (direction === 'prev') {
+        newIndex = navigation.currentIndex > 1 ? navigation.currentIndex - 2 : navigation.totalItems - 1;
+      } else {
+        newIndex = navigation.currentIndex < navigation.totalItems ? navigation.currentIndex : 0;
+      }
+      
+      // Get the navigation items from search params
+      const navItems = searchParams.get('nav');
+      if (navItems) {
+        try {
+          const parsedItems = JSON.parse(decodeURIComponent(navItems));
+          const targetId = parsedItems[newIndex];
+          if (targetId) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('view', 'fs'); // Keep fullscreen mode
+            navigate(`/nft/${targetId}?${newParams.toString()}`, { replace: true });
+          }
+        } catch (error) {
+          console.error('Error parsing navigation items:', error);
+        }
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -205,11 +244,14 @@ export default function NFTDetail() {
         {/* NFT Image */}
         <div className="space-y-4">
           <Card>
-            <div className="aspect-square overflow-hidden rounded-lg bg-muted">
+            <div 
+              className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
+              onClick={handleFullscreenToggle}
+            >
               <img
                 src={nft.image_url || "/placeholder.svg"}
                 alt={nft.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   const img = e.currentTarget as HTMLImageElement;
                   if (img.src !== "/placeholder.svg") {
@@ -217,8 +259,20 @@ export default function NFTDetail() {
                   }
                 }}
               />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
             </div>
           </Card>
+          
+          <Button 
+            variant="outline" 
+            onClick={handleFullscreenToggle}
+            className="w-full"
+          >
+            <Maximize2 className="h-4 w-4 mr-2" />
+            View Fullscreen
+          </Button>
         </div>
 
         {/* NFT Details */}
@@ -389,6 +443,22 @@ export default function NFTDetail() {
         </div>
       </div>
       
+      {/* Fullscreen NFT Viewer */}
+      {nft && (
+        <FullscreenNFTViewer
+          isOpen={isFullscreen}
+          onClose={() => handleFullscreenToggle()}
+          nftId={nft.id}
+          nftName={nft.name}
+          nftImage={nft.image_url || "/placeholder.svg"}
+          collectionName={nft.collection_name}
+          onNavigate={handleFullscreenNavigate}
+          canNavigate={navigation.canNavigate}
+          currentIndex={navigation.currentIndex}
+          totalItems={navigation.totalItems}
+        />
+      )}
+
       {/* Boost Modal */}
       {nft && (
         <BoostModal
