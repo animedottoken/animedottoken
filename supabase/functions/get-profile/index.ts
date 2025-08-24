@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json",
 };
 
@@ -14,10 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const walletAddress = url.pathname.split('/').pop();
+    const { wallet_address } = await req.json();
 
-    if (!walletAddress) {
+    if (!wallet_address) {
       return new Response(JSON.stringify({ error: "Wallet address is required" }), {
         status: 400,
         headers: corsHeaders,
@@ -39,7 +38,7 @@ serve(async (req) => {
     const { data: profile, error } = await supabase
       .from("user_profiles")
       .select("*")
-      .eq("wallet_address", walletAddress)
+      .eq("wallet_address", wallet_address)
       .single();
 
     if (error && error.code !== 'PGRST116') {
@@ -52,12 +51,13 @@ serve(async (req) => {
     // Create default profile if doesn't exist
     if (!profile) {
       const defaultProfile = {
-        wallet_address: walletAddress,
+        wallet_address: wallet_address,
         nickname: null,
         trade_count: 0,
         profile_rank: 'DEFAULT',
         pfp_unlock_status: false,
         current_pfp_nft_mint_address: null,
+        profile_image_url: null
       };
 
       return new Response(JSON.stringify(defaultProfile), {
