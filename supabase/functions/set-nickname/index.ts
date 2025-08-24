@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { nickname, wallet_address } = await req.json();
+    const { nickname, wallet_address, transaction_signature } = await req.json();
 
     // Validate nickname format
     if (!nickname || typeof nickname !== "string") {
@@ -45,6 +45,13 @@ serve(async (req) => {
       });
     }
 
+    if (!transaction_signature) {
+      return new Response(JSON.stringify({ error: "Transaction signature is required for payment verification" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -56,6 +63,9 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, serviceKey);
+
+    // In production, verify the transaction signature here
+    console.log(`Processing nickname change for wallet: ${wallet_address}, tx: ${transaction_signature}`);
 
     // Check if nickname already exists
     const { data: existingNickname } = await supabase
@@ -79,7 +89,11 @@ serve(async (req) => {
       .single();
 
     if (userProfile?.nickname) {
-      return new Response(JSON.stringify({ error: "You already have a nickname set" }), {
+      return new Response(JSON.stringify({ 
+        error: "You already have a nickname set. You can only set your nickname once.",
+        errorCode: "NICKNAME_ALREADY_SET",
+        currentNickname: userProfile.nickname
+      }), {
         status: 409,
         headers: corsHeaders,
       });

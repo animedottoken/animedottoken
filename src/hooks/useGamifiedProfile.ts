@@ -70,7 +70,7 @@ export const useGamifiedProfile = () => {
     }
   }, [connected, publicKey]);
 
-  const setNickname = useCallback(async (nickname: string) => {
+  const setNickname = useCallback(async (nickname: string, transactionSignature?: string) => {
     if (!connected || !publicKey) {
       toast.error('Please connect your wallet first');
       return false;
@@ -79,10 +79,24 @@ export const useGamifiedProfile = () => {
     setNicknameLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('set-nickname', {
-        body: { nickname, wallet_address: publicKey },
+        body: { 
+          nickname, 
+          wallet_address: publicKey,
+          transaction_signature: transactionSignature 
+        },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific error cases with better messaging
+        if (error.message?.includes('NICKNAME_ALREADY_SET')) {
+          toast.error('You already have a nickname set. You can only set your nickname once.');
+        } else if (error.message?.includes('already taken')) {
+          toast.error('This nickname is already taken. Please choose a different one.');
+        } else {
+          toast.error(error.message || 'Failed to set nickname');
+        }
+        return false;
+      }
       
       toast.success(`Nickname "${nickname}" set successfully!`);
       await fetchProfile(); // Refresh profile

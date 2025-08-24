@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.set-pfp]
 verify_jwt = false
+
+[functions.get-anime-price]
+verify_jwt = false
