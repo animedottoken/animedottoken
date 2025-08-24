@@ -4,7 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Image as ImageIcon, AlertTriangle, DollarSign } from 'lucide-react';
+import { Image as ImageIcon, AlertTriangle, DollarSign, Coins } from 'lucide-react';
+import { useAnimePricing } from '@/hooks/useAnimePricing';
 
 interface NFTItem {
   mint_address?: string;
@@ -31,6 +32,7 @@ interface PfpPickerDialogProps {
 export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConfirm, loading, isFirstChange = true }: PfpPickerDialogProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
 
   const selectedImage = useMemo(() => {
     if (!selected) return profile?.profile_image_url;
@@ -69,10 +71,10 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert className="border-orange-200 bg-orange-50 text-orange-700">
-                  <AlertTriangle className="h-4 w-4" />
+                <Alert className="bg-primary/10 border-primary/30 text-primary">
+                  <Coins className="h-4 w-4" />
                   <AlertDescription>
-                    This change will cost <strong>2 USD</strong>. You will be charged after confirmation.
+                    This change will cost <strong>{pricingLoading ? 'Calculating...' : `${animeAmount.toLocaleString()} ANIME`}</strong> (~$2.00 USD)
                   </AlertDescription>
                 </Alert>
               )}
@@ -109,21 +111,24 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
                 htmlFor="payment-confirmation" 
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                I understand that I will be charged <strong>2 USD</strong> for this profile picture change
+                I understand that I will be charged <strong>{pricingLoading ? 'calculating...' : `${animeAmount.toLocaleString()} ANIME (~$2.00 USD)`}</strong> for this profile picture change
               </label>
             </div>
           )}
           
           <Button
             className="w-full"
-            disabled={!selected || loading || (!isFirstChange && !paymentConfirmed)}
+            disabled={!selected || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
             onClick={async () => {
               if (!selected) return;
               const ok = await onConfirm(selected);
               if (ok) onOpenChange(false);
             }}
           >
-            {loading ? 'Updating...' : isFirstChange ? 'Set Profile Picture (FREE)' : 'Confirm & Pay 2 USD'}
+            {loading ? 'Updating...' : 
+             isFirstChange ? 'Set Profile Picture (FREE)' : 
+             pricingLoading ? 'Calculating Price...' :
+             `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
           </Button>
         </div>
       </DialogContent>
