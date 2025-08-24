@@ -16,13 +16,8 @@ export const useFavorites = () => {
   const { publicKey } = useSolanaWallet();
 
   const loadFavorites = useCallback(() => {
-    if (!publicKey) {
-      setFavorites([]);
-      return;
-    }
-
-    // For now, using localStorage until we implement proper favorites system
-    const storageKey = `favorites_${publicKey}`;
+    // Use wallet-specific storage when connected, fallback to general storage
+    const storageKey = publicKey ? `favorites_${publicKey}` : 'favorites_anonymous';
     const stored = localStorage.getItem(storageKey);
     
     if (stored) {
@@ -38,23 +33,19 @@ export const useFavorites = () => {
   }, [publicKey]);
 
   const addToFavorites = useCallback((item: Omit<Favorite, 'added_at'>) => {
-    if (!publicKey) return;
-
     const favorite: Favorite = {
       ...item,
       added_at: new Date().toISOString()
     };
 
-    const storageKey = `favorites_${publicKey}`;
+    const storageKey = publicKey ? `favorites_${publicKey}` : 'favorites_anonymous';
     const updated = [...favorites, favorite];
     setFavorites(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
   }, [publicKey, favorites]);
 
   const removeFromFavorites = useCallback((itemId: string) => {
-    if (!publicKey) return;
-
-    const storageKey = `favorites_${publicKey}`;
+    const storageKey = publicKey ? `favorites_${publicKey}` : 'favorites_anonymous';
     const updated = favorites.filter(fav => fav.id !== itemId);
     setFavorites(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
