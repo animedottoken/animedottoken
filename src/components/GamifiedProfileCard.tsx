@@ -90,13 +90,8 @@ export const GamifiedProfileCard = () => {
   };
 
   const handleNftClick = (nftMintAddress: string) => {
+    // Select inside the same dialog; we'll show an inline confirmation bar
     setSelectedNftForPfp(nftMintAddress);
-    // Close the selection dialog before opening confirmation to avoid overlay conflicts
-    setPfpDialogOpen(false);
-    // Wait a tick for the close animation to finish so the old overlay unmounts
-    setTimeout(() => {
-      setPfpConfirmDialogOpen(true);
-    }, 150);
   };
 
   const handleConfirmPFP = async () => {
@@ -465,55 +460,37 @@ export const GamifiedProfileCard = () => {
                     </div>
                   )}
                 </div>
+
+                {selectedNftForPfp && (
+                  <div className="sticky bottom-0 left-0 right-0 bg-background/80 backdrop-blur border-t border-border p-3 rounded-b-md">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="w-10 h-10 border">
+                          <AvatarImage src={userNFTs.find(n => n.mint_address === selectedNftForPfp)?.image_url} alt="Selected" />
+                          <AvatarFallback className="text-xs">NFT</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium truncate">
+                            {userNFTs.find(n => n.mint_address === selectedNftForPfp)?.name || 'Selected NFT'}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {pfpPricing.loading ? 'Price loading…' : `${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT`}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button variant="outline" onClick={() => setSelectedNftForPfp(null)}>Cancel</Button>
+                        <Button onClick={handleConfirmPFP} disabled={pfpLoading}>
+                          {pfpLoading ? 'Processing…' : 'Confirm & Pay'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </DialogContent>
           </Dialog>
 
-          {/* PFP Confirmation Dialog */}
-          <Dialog open={pfpConfirmDialogOpen} onOpenChange={setPfpConfirmDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Profile Picture Change</DialogTitle>
-                <DialogDescription>Review the price and confirm to apply your new profile picture.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">Payment Required</span>
-                    <DollarSign className="w-4 h-4 text-primary" />
-                  </div>
-                  {pfpPricing.loading ? (
-                    <div className="animate-pulse">Loading pricing...</div>
-                  ) : (
-                    <div>
-                      <div className="text-lg font-bold">{formatTokenAmount(pfpPricing.animeAmount)} $ANIME</div>
-                      <div className="text-sm text-muted-foreground">
-                        ≈ {pfpPricing.usdPrice.toFixed(2)} USDT
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        This will be charged immediately
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Are you sure you want to change your profile picture? This action will charge your wallet.
-                </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1" onClick={() => setPfpConfirmDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    className="flex-1"
-                    onClick={handleConfirmPFP}
-                    disabled={pfpLoading}
-                  >
-                    {pfpLoading ? 'Processing...' : 'Confirm & Pay'}
-                  </Button>
-                </div>
-              </div>
-              </DialogContent>
-            </Dialog>
 
           {/* Bio Setting Dialog */}
           <Dialog open={bioDialogOpen} onOpenChange={setBioDialogOpen}>
