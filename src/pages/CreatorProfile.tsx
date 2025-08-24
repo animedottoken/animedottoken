@@ -283,7 +283,7 @@ export default function CreatorProfile() {
                 </Badge>
               </div>
               
-              {publicKey && creator.wallet_address !== publicKey && (
+              {publicKey && (
                 <Button
                   variant={isFollowing(creator.wallet_address) ? "default" : "outline"}
                   size="sm"
