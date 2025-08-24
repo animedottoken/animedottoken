@@ -323,12 +323,15 @@ export default function Profile() {
                   className="transition-colors duration-200"
                   disabled={!profile?.wallet_address}
                 >
-                  <Heart className={`w-8 h-8 mr-2 ${
+                  <Heart className={`w-6 h-6 mr-2 ${
                     profile?.wallet_address && isFollowing(profile.wallet_address)
                       ? 'fill-red-500 text-red-500' 
                       : 'text-muted-foreground hover:text-red-500'
                   }`} />
                 </button>
+                <span className="text-2xl font-bold text-foreground mr-1">
+                  {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                </span>
                 <span className="text-2xl font-bold text-foreground mx-2">/</span>
                 <span className="text-2xl font-bold text-foreground">
                   {profile?.trade_count || 0}
