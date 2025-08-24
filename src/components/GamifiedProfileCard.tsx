@@ -226,8 +226,7 @@ export const GamifiedProfileCard = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center">
-                    <Crown className="w-3 h-3 mr-1" />
-                    {rankBadge.text}
+                    <Crown className="w-3 h-3" />
                     <Info className="w-3 h-3 ml-1" />
                   </div>
                 </TooltipTrigger>
@@ -293,7 +292,9 @@ export const GamifiedProfileCard = () => {
           </div>
           <div className="p-3 rounded-lg bg-muted/50">
             <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
-            <div className="text-sm text-muted-foreground">Rank</div>
+            <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+              Rank <Info className="w-3 h-3" />
+            </div>
           </div>
         </div>
 
