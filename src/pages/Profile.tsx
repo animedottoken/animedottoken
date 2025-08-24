@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
@@ -13,6 +13,7 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
@@ -323,8 +324,22 @@ export default function Profile() {
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-5 h-5 text-yellow-500 mr-1" />
                 <span className="text-2xl font-bold text-foreground">
-                  {profile?.trade_count || 0} / {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                  {profile?.trade_count || 0} / 
                 </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex items-center">
+                        {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                        <Info className="w-3 h-3 ml-1 text-muted-foreground" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Rank based on trading activity:<br />
+                      Starter (0-9 trades) → Bronze (10-49) → Silver (50-199) → Gold (200+)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <p className="text-sm text-muted-foreground">Trades / Rank</p>
             </CardContent>
