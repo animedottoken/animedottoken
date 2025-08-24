@@ -207,78 +207,11 @@ export default function Profile() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Profile Header with Gamification */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="max-w-sm mx-auto">
+      <div className="flex justify-between items-start mb-6">
         <GamifiedProfileCard />
-      </div>
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-purple-500 flex items-center justify-center">
-                  <User className="h-8 w-8 text-white" />
-                </div>
-                <div className="flex-1">
-                  {isEditingProfile ? (
-                    <div className="space-y-3">
-                      <div className="space-y-1">
-                        <Label htmlFor="displayName" className="text-sm font-medium">
-                          Display Name
-                        </Label>
-                        <Input
-                          id="displayName"
-                          value={displayName}
-                          onChange={(e) => setDisplayName(e.target.value)}
-                          placeholder="Enter your display name"
-                          className="max-w-sm"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={handleSaveProfile}
-                          disabled={profileLoading}
-                          size="sm"
-                        >
-                          <Save className="h-4 w-4 mr-2" />
-                          {profileLoading ? 'Saving...' : 'Save'}
-                        </Button>
-                        <Button
-                          onClick={handleCancelEdit}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <CardTitle className="text-2xl">
-                          {displayName || 'My Profile'}
-                        </CardTitle>
-                        <Button
-                          onClick={() => setIsEditingProfile(true)}
-                          variant="ghost"
-                          size="sm"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="text-muted-foreground">
-                        {publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'Not connected'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
-                Devnet - Testing Mode
-              </Badge>
-            </div>
-          </CardHeader>
-        </Card>
+        <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
+          Devnet - Testing Mode
+        </Badge>
       </div>
 
       {/* Profile Tabs */}

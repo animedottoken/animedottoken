@@ -37,20 +37,13 @@ export const GamifiedProfileCard = () => {
 
   const handleAvatarClick = () => {
     if (!profile) return;
-    if (profile.pfp_unlock_status) {
-      setPfpDialogOpen(true);
-    } else {
-      setPfpUnlockDialogOpen(true);
-    }
+    setPfpDialogOpen(true);
   };
 
   const handleNicknameTitleClick = () => {
     if (!profile) return;
-    if (!profile.nickname) {
-      setNicknameDialogOpen(true);
-    } else {
-      toast.error('Nickname can only be set once.');
-    }
+    setNicknameInput(profile.nickname || '');
+    setNicknameDialogOpen(true);
   };
 
   const handleSetNickname = async () => {
@@ -69,7 +62,7 @@ export const GamifiedProfileCard = () => {
     
     // Show payment simulation
     toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-    toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ $${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
+    toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ ${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
       duration: 3000
     });
     
@@ -84,7 +77,7 @@ export const GamifiedProfileCard = () => {
     }
   };
 
-  const handleUnlockPFP = async () => {
+  const handleSetPFP = async (nftMintAddress: string) => {
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -95,27 +88,20 @@ export const GamifiedProfileCard = () => {
     
     // Show payment simulation
     toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-    toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ $${pfpPricing.usdPrice.toFixed(2)} USDT`, {
+    toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT`, {
       duration: 3000
     });
     
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const success = await unlockPFP(testTransactionSignature);
+    const success = await setPFP(nftMintAddress, testTransactionSignature);
     if (success) {
-      setPfpUnlockDialogOpen(false);
-      setPfpDialogOpen(true);
-      toast.success('✅ PFP unlocked successfully! (Test mode - no real payment)');
+      setPfpDialogOpen(false);
+      toast.success('✅ Profile picture updated successfully! (Test mode - no real payment)');
     }
   };
 
-  const handleSetPFP = async (nftMintAddress: string) => {
-    const success = await setPFP(nftMintAddress);
-    if (success) {
-      setPfpDialogOpen(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -152,7 +138,7 @@ export const GamifiedProfileCard = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-4">
-        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title={profile.pfp_unlock_status ? 'Change PFP' : 'Unlock Custom PFP'}>
+        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Change Profile Picture">
           <Avatar className={`w-20 h-20 border-4 ${rankColor} shadow-lg`}>
             <AvatarImage 
               src={profile.profile_image_url} 
@@ -191,26 +177,23 @@ export const GamifiedProfileCard = () => {
               </Tooltip>
             </TooltipProvider>
           </Badge>
-          {profile.pfp_unlock_status ? (
-            <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
-              <Edit className="w-3 h-3" />
-            </div>
-          ) : (
-            <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-muted text-muted-foreground border border-border rounded-full p-1">
-              <Lock className="w-3 h-3" />
-            </div>
-          )}
+          <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
+            <Edit className="w-3 h-3" />
+          </div>
         </div>
-        <CardTitle className="mt-4 text-lg flex items-center justify-center gap-2">
+        <CardTitle className="mt-4 text-lg flex flex-col items-center justify-center gap-1">
           <span
             onClick={handleNicknameTitleClick}
             role="button"
-            className={!profile.nickname ? 'cursor-pointer hover:underline' : 'cursor-pointer'}
-            title={!profile.nickname ? 'Set nickname' : 'Nickname can be set only once'}
+            className="cursor-pointer hover:underline flex items-center gap-2"
+            title={profile.nickname ? 'Change nickname' : 'Set nickname'}
           >
-            {profile.nickname || `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}`}
+            {profile.nickname || 'Set Nickname'}
+            <Edit className="w-4 h-4 text-muted-foreground" />
           </span>
-          {!profile.nickname && <Edit className="w-4 h-4 text-muted-foreground" />}
+          <span className="text-sm text-muted-foreground font-normal">
+            {profile.wallet_address.slice(0, 4)}...{profile.wallet_address.slice(-4)}
+          </span>
         </CardTitle>
       </CardHeader>
 
@@ -246,7 +229,7 @@ export const GamifiedProfileCard = () => {
                       <div>
                         <div className="text-lg font-bold">{formatTokenAmount(nicknamePricing.animeAmount)} $ANIME</div>
                         <div className="text-sm text-muted-foreground">
-                          ≈ ${nicknamePricing.usdPrice.toFixed(2)} USDT
+                          ≈ {nicknamePricing.usdPrice.toFixed(2)} USDT
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           Price updated every 30 seconds
@@ -265,7 +248,7 @@ export const GamifiedProfileCard = () => {
                       maxLength={15}
                     />
                     <div className="text-xs text-muted-foreground mt-1">
-                      Note: You can only set your nickname once
+                      Each nickname change requires payment
                     </div>
                   </div>
                   <Button 
@@ -280,53 +263,33 @@ export const GamifiedProfileCard = () => {
             </Dialog>
           )}
 
-          {/* PFP Feature */}
-          {!profile.pfp_unlock_status ? (
-            <Dialog open={pfpUnlockDialogOpen} onOpenChange={setPfpUnlockDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Unlock Custom Profile Picture</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="p-4 bg-muted/50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">Payment Required</span>
-                      <DollarSign className="w-4 h-4 text-primary" />
-                    </div>
-                    {pfpPricing.loading ? (
-                      <div className="animate-pulse">Loading pricing...</div>
-                    ) : (
-                      <div>
-                        <div className="text-lg font-bold">{formatTokenAmount(pfpPricing.animeAmount)} $ANIME</div>
-                        <div className="text-sm text-muted-foreground">
-                          ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Price updated every 30 seconds
-                        </div>
+          {/* PFP Selection Dialog */}
+          <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Choose Your Profile Picture</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">Payment Required</span>
+                    <DollarSign className="w-4 h-4 text-primary" />
+                  </div>
+                  {pfpPricing.loading ? (
+                    <div className="animate-pulse">Loading pricing...</div>
+                  ) : (
+                    <div>
+                      <div className="text-lg font-bold">{formatTokenAmount(pfpPricing.animeAmount)} $ANIME</div>
+                      <div className="text-sm text-muted-foreground">
+                        ≈ {pfpPricing.usdPrice.toFixed(2)} USDT
                       </div>
-                    )}
-                  </div>
-                  <Separator />
-                  <div className="text-sm text-muted-foreground">
-                    <p>Unlock the ability to set any NFT from your wallet as your profile picture. This is a one-time unlock that gives you permanent access to the custom PFP feature.</p>
-                  </div>
-                  <Button 
-                    onClick={handleUnlockPFP} 
-                    className="w-full"
-                    disabled={pfpLoading || pfpPricing.loading}
-                  >
-                    {pfpLoading ? 'Processing Payment...' : `Pay ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME`}
-                  </Button>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Price updated every 30 seconds • Each PFP change requires payment
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Choose Your Profile Picture</DialogTitle>
-                </DialogHeader>
+                <Separator />
                 <div className="grid grid-cols-3 gap-4 max-h-96 overflow-y-auto">
                   {userNFTs.map((nft) => (
                     <div
@@ -358,9 +321,9 @@ export const GamifiedProfileCard = () => {
                     </div>
                   )}
                 </div>
-              </DialogContent>
-            </Dialog>
-          )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>

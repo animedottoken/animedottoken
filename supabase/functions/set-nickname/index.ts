@@ -81,33 +81,24 @@ serve(async (req) => {
       });
     }
 
-    // Check if user already has a nickname
+    // Get existing user profile data for preserving other fields
     const { data: userProfile } = await supabase
       .from("user_profiles")
-      .select("nickname")
+      .select("*")
       .eq("wallet_address", wallet_address)
       .single();
 
-    if (userProfile?.nickname) {
-      return new Response(JSON.stringify({ 
-        error: "You already have a nickname set. You can only set your nickname once.",
-        errorCode: "NICKNAME_ALREADY_SET",
-        currentNickname: userProfile.nickname
-      }), {
-        status: 409,
-        headers: corsHeaders,
-      });
-    }
-
-    // Upsert the nickname
+    // Upsert the nickname while preserving other fields
     const { error } = await supabase
       .from("user_profiles")
       .upsert({ 
         wallet_address, 
         nickname,
         trade_count: userProfile?.trade_count || 0,
-        profile_rank: 'DEFAULT',
-        pfp_unlock_status: false
+        profile_rank: userProfile?.profile_rank || 'DEFAULT',
+        pfp_unlock_status: userProfile?.pfp_unlock_status || false,
+        current_pfp_nft_mint_address: userProfile?.current_pfp_nft_mint_address || null,
+        profile_image_url: userProfile?.profile_image_url || null
       }, { onConflict: "wallet_address" });
 
     if (error) {

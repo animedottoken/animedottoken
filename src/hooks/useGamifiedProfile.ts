@@ -136,7 +136,7 @@ export const useGamifiedProfile = () => {
     }
   }, [connected, publicKey, fetchProfile]);
 
-  const setPFP = useCallback(async (nftMintAddress: string) => {
+  const setPFP = useCallback(async (nftMintAddress: string, transactionSignature: string) => {
     if (!connected || !publicKey) {
       toast.error('Please connect your wallet first');
       return false;
@@ -145,7 +145,11 @@ export const useGamifiedProfile = () => {
     setPfpLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('set-pfp', {
-        body: { nft_mint_address: nftMintAddress, wallet_address: publicKey },
+        body: { 
+          nft_mint_address: nftMintAddress, 
+          wallet_address: publicKey,
+          transaction_signature: transactionSignature
+        },
       });
 
       if (error) throw error;
