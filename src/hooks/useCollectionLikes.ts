@@ -69,6 +69,11 @@ export const useCollectionLikes = () => {
         toast.success('Collection unliked!');
       }
       
+      // Dispatch event for instant sync across hooks/components
+      window.dispatchEvent(new CustomEvent('collection-like-toggled', {
+        detail: { collectionId, action }
+      }));
+      
       return true;
     } catch (err: any) {
       console.error('Error toggling collection like:', err);

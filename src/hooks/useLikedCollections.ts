@@ -162,6 +162,52 @@ export const useLikedCollections = () => {
 
   useEffect(() => {
     fetchLikedCollections();
+
+    // Set up real-time subscription for collection likes
+    if (publicKey) {
+      const channel = supabase
+        .channel('liked-collections-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'collection_likes',
+            filter: `user_wallet=eq.${publicKey}`
+          },
+          (payload) => {
+            console.log('🔥 Real-time liked collections change detected:', payload);
+            // Refresh liked collections when changes occur for this user
+            fetchLikedCollections();
+          }
+        )
+        .subscribe((status) => {
+          console.log('🔌 Liked Collections subscription status:', status);
+        });
+
+      // Listen for instant local sync events
+      const handleCollectionLikeToggled = (event: CustomEvent) => {
+        const { collectionId, action } = event.detail;
+        console.log('📡 Received collection-like-toggled event:', { collectionId, action });
+        
+        // Optimistically update local state
+        if (action === 'like') {
+          // We'd need collection details to add it properly, so just refetch
+          fetchLikedCollections();
+        } else {
+          // Remove from local state immediately
+          setLikedCollections(prev => prev.filter(c => c.id !== collectionId));
+        }
+      };
+
+      window.addEventListener('collection-like-toggled', handleCollectionLikeToggled as EventListener);
+
+      return () => {
+        console.log('🔌 Cleaning up liked collections subscription and events');
+        supabase.removeChannel(channel);
+        window.removeEventListener('collection-like-toggled', handleCollectionLikeToggled as EventListener);
+      };
+    }
   }, [publicKey]);
 
   return {
