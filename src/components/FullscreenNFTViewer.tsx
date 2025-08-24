@@ -148,10 +148,6 @@ export const FullscreenNFTViewer = ({
     }
   };
 
-  const calculateFee = (price: number) => {
-    return price * 0.025; // 2.5% fee
-  };
-
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -211,7 +207,6 @@ export const FullscreenNFTViewer = ({
                   <DollarSign className="h-4 w-4 text-green-400" />
                   <div>
                     <p className="text-white font-semibold">{price.toFixed(4)} {currency}</p>
-                    <p className="text-white/70 text-xs">+ {calculateFee(price).toFixed(4)} {currency} fee</p>
                   </div>
                 </div>
               )}
