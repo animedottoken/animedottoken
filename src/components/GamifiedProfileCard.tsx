@@ -34,6 +34,24 @@ export const GamifiedProfileCard = () => {
   const [pfpUnlockDialogOpen, setPfpUnlockDialogOpen] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
 
+  const handleAvatarClick = () => {
+    if (!profile) return;
+    if (profile.pfp_unlock_status) {
+      setPfpDialogOpen(true);
+    } else {
+      setPfpUnlockDialogOpen(true);
+    }
+  };
+
+  const handleNicknameTitleClick = () => {
+    if (!profile) return;
+    if (!profile.nickname) {
+      setNicknameDialogOpen(true);
+    } else {
+      toast.error('Nickname can only be set once.');
+    }
+  };
+
   const handleSetNickname = async () => {
     if (!nicknameInput.trim()) {
       toast.error('Please enter a nickname');
@@ -42,7 +60,7 @@ export const GamifiedProfileCard = () => {
 
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
-      return amount.toLocaleString('en-US');
+      return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
     // In a real implementation, this would trigger a Solana transaction
@@ -59,7 +77,7 @@ export const GamifiedProfileCard = () => {
   const handleUnlockPFP = async () => {
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
-      return amount.toLocaleString('en-US');
+      return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
     // In a real implementation, this would trigger a Solana transaction
@@ -109,13 +127,13 @@ export const GamifiedProfileCard = () => {
 
   // Format large numbers with spaces  
   const formatTokenAmount = (amount: number) => {
-    return amount.toLocaleString('en-US');
+    return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-4">
-        <div className="relative mx-auto">
+        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title={profile.pfp_unlock_status ? 'Change PFP' : 'Unlock Custom PFP'}>
           <Avatar className={`w-20 h-20 border-4 ${rankColor} shadow-lg`}>
             <AvatarImage 
               src={profile.profile_image_url} 
@@ -132,13 +150,26 @@ export const GamifiedProfileCard = () => {
             <Crown className="w-3 h-3 mr-1" />
             {rankBadge.text}
           </Badge>
-        </div>
-        <CardTitle className="mt-4 text-lg">
-          {profile.nickname || (
-            <span className="text-muted-foreground text-sm font-normal">
-              {profile.wallet_address.slice(0, 4)}...{profile.wallet_address.slice(-4)}
-            </span>
+          {profile.pfp_unlock_status ? (
+            <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
+              <Edit className="w-3 h-3" />
+            </div>
+          ) : (
+            <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-muted text-muted-foreground border border-border rounded-full p-1">
+              <Lock className="w-3 h-3" />
+            </div>
           )}
+        </div>
+        <CardTitle className="mt-4 text-lg flex items-center justify-center gap-2">
+          <span
+            onClick={handleNicknameTitleClick}
+            role="button"
+            className={!profile.nickname ? 'cursor-pointer hover:underline' : 'cursor-pointer'}
+            title={!profile.nickname ? 'Set nickname' : 'Nickname can be set only once'}
+          >
+            {profile.nickname || `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}`}
+          </span>
+          {!profile.nickname && <Edit className="w-4 h-4 text-muted-foreground" />}
         </CardTitle>
       </CardHeader>
 
@@ -158,12 +189,6 @@ export const GamifiedProfileCard = () => {
           {/* Nickname Setting */}
           {!profile.nickname && (
             <Dialog open={nicknameDialogOpen} onOpenChange={setNicknameDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Set Nickname
-                </Button>
-              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Set Your Nickname</DialogTitle>
@@ -217,16 +242,6 @@ export const GamifiedProfileCard = () => {
           {/* PFP Feature */}
           {!profile.pfp_unlock_status ? (
             <Dialog open={pfpUnlockDialogOpen} onOpenChange={setPfpUnlockDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="w-full text-orange-600 border-orange-600 hover:bg-orange-50"
-                  disabled={pfpLoading || pfpPricing.loading}
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Unlock Custom PFP
-                </Button>
-              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Unlock Custom Profile Picture</DialogTitle>
