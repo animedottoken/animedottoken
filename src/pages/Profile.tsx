@@ -33,7 +33,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { GamifiedProfileCard } from '@/components/GamifiedProfileCard';
 
 export default function Profile() {
-  const { connected, publicKey } = useSolanaWallet();
+  const { connected, publicKey, connect } = useSolanaWallet();
   const { collections, loading: collectionsLoading, refreshCollections } = useCollections();
   const { nfts, loading: nftsLoading, refreshNFTs } = useUserNFTs();
   const { burning, burnNFT } = useBurnNFT();
@@ -172,15 +172,20 @@ export default function Profile() {
           <CardContent className="p-12 text-center space-y-4">
             <User className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h2 className="text-2xl font-bold mb-2">Connect Your Wallet</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <p className="text-muted-foreground">
-                To view and customize your profile, please connect your wallet using the 
-                <span className="font-medium text-foreground"> "Connect Wallet" </span>
-                button in the top-right corner.
+                To view and customize your profile, please connect your wallet.
               </p>
               <p className="text-sm text-muted-foreground bg-success/10 p-3 rounded-lg border border-success/20 inline-block">
                 🔒 <span className="font-medium text-success">Safe Connection:</span> Connecting your wallet is completely secure and won't allow any charges without your explicit approval.
               </p>
+              <Button 
+                onClick={() => connect()}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4"
+                size="lg"
+              >
+                Connect Wallet
+              </Button>
             </div>
           </CardContent>
         </Card>
