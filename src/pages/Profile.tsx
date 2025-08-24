@@ -322,20 +322,20 @@ export default function Profile() {
           <Card className="bg-secondary/5 border-secondary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <Trophy className="w-5 h-5 text-yellow-500 mr-1" />
-                <span className="text-2xl font-bold text-foreground">
-                  {profile?.trade_count || 0} / 
-                </span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="inline-flex items-center text-lg font-semibold">
-                        <span className="mr-1">
+                      <span className="inline-flex items-center">
+                        <span className="text-2xl font-bold text-foreground mr-1">
                           {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
                         </span>
-                        {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
-                        <span className="mx-2">/</span>
-                        {profile?.trade_count || 0}
+                        <span className="text-2xl font-bold text-foreground">
+                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                        </span>
+                        <span className="text-2xl font-bold text-foreground mx-2">/</span>
+                        <span className="text-2xl font-bold text-foreground">
+                          {profile?.trade_count || 0}
+                        </span>
                         <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
                           <Info className="w-3 h-3 text-white" />
                         </div>
