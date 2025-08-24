@@ -88,6 +88,11 @@ export default function CreatorProfile() {
     followedCreators.map(f => f.wallet_address)
   );
 
+  // Get real-time stats for the current creator
+  const { getCreatorFollowerCount: getCurrentCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
+    wallet ? [wallet] : []
+  );
+
   // Navigation state
   const from = searchParams.get('from');
   const navParam = searchParams.get('nav');
@@ -529,10 +534,22 @@ export default function CreatorProfile() {
               <div className="flex items-center justify-center mb-2">
                 <Heart className="w-5 h-5 text-destructive mr-1" />
                 <span className="text-2xl font-bold text-foreground">
-                  {creator.follower_count} / {creator.nft_likes_count}
+                  {getCurrentCreatorFollowerCount(wallet || '')} / {getCreatorNFTLikeCount(wallet || '')}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">Profile Likes / NFT Likes</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p className="text-sm text-muted-foreground cursor-help flex items-center justify-center gap-1">
+                      Profile Likes / NFT Likes
+                      <Info className="w-3 h-3" />
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Profile follows / Total likes on this creator's NFTs</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardContent>
           </Card>
         </div>
