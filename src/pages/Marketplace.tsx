@@ -523,22 +523,37 @@ export default function Marketplace() {
                     )}
                   </div>
                   {creator.bio && (
-                    <p className="text-sm text-muted-foreground italic mb-3 line-clamp-2">
+                    <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
                       {creator.bio}
                     </p>
                   )}
-                  <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span>{creator.follower_count} likes</span>
-                    <span>•</span>
-                    <span>{creator.nft_likes_count} NFT likes</span>
-                    <span>•</span>
-                    <span>{creator.created_nfts} NFTs</span>
-                    <span>•</span>
-                    <span>{creator.created_collections} collections</span>
-                    <span>•</span>
-                    <span>{creator.trade_count} trades</span>
+                  
+                  {/* Compact Stats Layout */}
+                  <div className="space-y-3 mb-4">
+                    {/* Content Stats Row */}
+                    <div className="flex items-center justify-center gap-4 text-sm">
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium text-primary">{creator.created_nfts}</span>
+                        <span className="text-muted-foreground">NFTs</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium text-primary">{creator.created_collections}</span>
+                        <span className="text-muted-foreground">Collections</span>
+                      </div>
+                    </div>
+                    
+                    {/* Profile & Activity Stats Row */}
+                    <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                      <span>{creator.follower_count} likes</span>
+                      <span>•</span>
+                      <span>{creator.nft_likes_count} NFT likes</span>
+                      <span>•</span>
+                      <span>{creator.trade_count} trades</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center gap-2 mb-3">
+                  
+                  {/* Rank Badge */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
                     <Badge 
                       variant="outline" 
                       className={`${
@@ -549,7 +564,7 @@ export default function Marketplace() {
                         'border-green-500 text-green-600'
                       }`}
                     >
-                      <span>{creator.profile_rank === 'DEFAULT' ? 'Rookie' : creator.profile_rank}</span>
+                      <span>{creator.profile_rank === 'DEFAULT' ? 'Starter' : creator.profile_rank}</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -564,7 +579,7 @@ export default function Marketplace() {
                               <div>🥇 <strong>Gold</strong>: 250+ trades</div>
                               <div>🥈 <strong>Silver</strong>: 50+ trades</div>
                               <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                              <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                              <div>🎖️ <strong>Starter</strong>: 0-9 trades</div>
                               <div className="text-xs text-muted-foreground mt-2">
                                 Trade more NFTs to increase your rank!
                               </div>
