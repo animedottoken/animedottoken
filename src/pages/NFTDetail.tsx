@@ -577,10 +577,6 @@ export default function NFTDetail() {
               const properties = normalizeProperties(nft.metadata);
               
               if (properties.length > 0) {
-                // Show max 6 properties initially, with option to show more
-                const displayProperties = properties.slice(0, 6);
-                const hasMore = properties.length > 6;
-                
                 return (
                   <Card>
                     <CardHeader className="pb-3">
@@ -588,28 +584,23 @@ export default function NFTDetail() {
                         <Hash className="h-4 w-4" />
                         Properties
                         <Badge variant="outline" className="ml-auto text-xs">
-                          {properties.length}
+                          {properties.length} traits
                         </Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {displayProperties.map((attr, index) => (
-                          <div key={index} className="border rounded-md p-2 bg-accent/5">
-                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 truncate">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {properties.map((attr, index) => (
+                          <div key={index} className="border rounded-lg p-3 bg-accent/5 hover:bg-accent/10 transition-colors">
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1 font-medium">
                               {attr.trait_type}
                             </div>
-                            <div className="text-sm font-medium truncate" title={attr.value}>
+                            <div className="text-sm font-semibold text-foreground break-words">
                               {attr.value}
                             </div>
                           </div>
                         ))}
                       </div>
-                      {hasMore && (
-                        <Button variant="ghost" size="sm" className="w-full mt-3 h-8 text-xs">
-                          Show {properties.length - 6} more properties
-                        </Button>
-                      )}
                     </CardContent>
                   </Card>
                 );

@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users } from "lucide-react";
+import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
 import { NFTCard } from "@/components/NFTCard";
+import { PropertyFilter } from "@/components/PropertyFilter";
 // removed favorites import
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
@@ -71,6 +72,8 @@ export default function Marketplace() {
   const [filterBy, setFilterBy] = useState("all");
   const [creatorFilter, setCreatorFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showPropertyFilter, setShowPropertyFilter] = useState(false);
+  const [propertyFilters, setPropertyFilters] = useState<Record<string, string[]>>({});
   
   // Initialize activeTab from URL parameter or default to "nfts"
   const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">(() => {
@@ -224,7 +227,39 @@ export default function Marketplace() {
     else if (filterBy === "liked") matchesFilter = isNftLiked;
     else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
     
-    return matchesSearch && matchesFilter;
+    // Apply property filters
+    let matchesPropertyFilters = true;
+    if (Object.keys(propertyFilters).length > 0) {
+      matchesPropertyFilters = Object.entries(propertyFilters).every(([traitType, selectedValues]) => {
+        if (selectedValues.length === 0) return true;
+        
+        if (!nft.attributes) return false;
+        
+        let nftProperties: { trait_type: string; value: string }[] = [];
+        
+        if (Array.isArray(nft.attributes)) {
+          nftProperties = nft.attributes.filter(attr => attr?.trait_type && attr?.value);
+        } else if (typeof nft.attributes === 'object') {
+          nftProperties = Object.entries(nft.attributes)
+            .filter(([key, value]) => 
+              !['explicit_content', 'minted_at', 'standalone'].includes(key) && 
+              value !== null && value !== undefined
+            )
+            .map(([key, value]) => ({
+              trait_type: key.replace(/_/g, ' '),
+              value: String(value)
+            }));
+        }
+        
+        const matchingProperty = nftProperties.find(prop => 
+          prop.trait_type === traitType && selectedValues.includes(prop.value)
+        );
+        
+        return !!matchingProperty;
+      });
+    }
+    
+    return matchesSearch && matchesFilter && matchesPropertyFilters;
   });
 
   const sortedNfts = [...filteredNfts].sort((a, b) => {
@@ -366,6 +401,14 @@ export default function Marketplace() {
               >
                 <List className="h-4 w-4" />
               </Button>
+              <Button
+                variant={showPropertyFilter ? "default" : "outline"}
+                size="icon"
+                onClick={() => setShowPropertyFilter(!showPropertyFilter)}
+                title="Toggle property filters"
+              >
+                <Filter className="h-4 w-4" />
+              </Button>
             </div>
           </>
         )}
@@ -386,56 +429,82 @@ export default function Marketplace() {
 
       {/* Content */}
       {activeTab === "nfts" ? (
-        <div>
-          {/* Boosted NFTs Section */}
-          {boostedListings.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Zap className="h-6 w-6 text-yellow-500" />
-                Boosted Items
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {boostedListings.slice(0, 8).map((listing) => {
-                  // Create combined navigation array: boosted NFTs first, then regular NFTs
-                  const allNFTIds = [
-                    ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
-                    ...sortedNfts.map(nft => nft.id)
-                  ];
-                  const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
-                  
-                  return (
-                    <BoostedNFTCard 
-                      key={listing.id} 
-                      listing={listing} 
-                      navigationQuery={queryString}
-                    />
-                  );
-                })}
-              </div>
+        <div className="flex gap-6">
+          {/* Property Filter Sidebar */}
+          {showPropertyFilter && (
+            <div className="flex-shrink-0">
+              <PropertyFilter
+                nfts={filteredNfts}
+                selectedFilters={propertyFilters}
+                onFiltersChange={setPropertyFilters}
+              />
             </div>
           )}
+          
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Boosted NFTs Section */}
+            {boostedListings.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <Zap className="h-6 w-6 text-yellow-500" />
+                  Boosted Items
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {boostedListings.slice(0, 8).map((listing) => {
+                    // Create combined navigation array: boosted NFTs first, then regular NFTs
+                    const allNFTIds = [
+                      ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
+                      ...sortedNfts.map(nft => nft.id)
+                    ];
+                    const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                    
+                    return (
+                      <BoostedNFTCard 
+                        key={listing.id} 
+                        listing={listing} 
+                        navigationQuery={queryString}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-          {/* Regular NFTs */}
-          <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            : "space-y-4"
-          }>
-            {sortedNfts.map((nft) => {
-              // Create combined navigation array: boosted NFTs first, then regular NFTs
-              const allNFTIds = [
-                ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
-                ...sortedNfts.map(n => n.id)
-              ];
-              const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
-              
-              return (
-                <NFTCard 
-                  key={nft.id}
-                  nft={nft}
-                  navigationQuery={queryString}
-                />
-              );
-            })}
+            {/* Results Info */}
+            {(Object.keys(propertyFilters).length > 0 || searchTerm || filterBy !== "all") && (
+              <div className="mb-4 flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Showing {sortedNfts.length} NFTs
+                  {Object.keys(propertyFilters).length > 0 && (
+                    <span> with {Object.values(propertyFilters).reduce((acc, vals) => acc + vals.length, 0)} property filters</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Regular NFTs */}
+            <div className={viewMode === "grid" 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "space-y-4"
+            }>
+              {sortedNfts.map((nft) => {
+                // Create combined navigation array: boosted NFTs first, then regular NFTs
+                const allNFTIds = [
+                  ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
+                  ...sortedNfts.map(n => n.id)
+                ];
+                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                
+                return (
+                  <NFTCard 
+                    key={nft.id}
+                    nft={nft}
+                    navigationQuery={queryString}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       ) : activeTab === "collections" ? (
