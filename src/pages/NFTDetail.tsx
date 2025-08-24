@@ -416,7 +416,25 @@ export default function NFTDetail() {
                     )}
                   </div>
                   
-                  {publicKey !== nft.owner_address && (
+                  {!publicKey ? (
+                    // Not connected - show connection prompt
+                    <div className="text-center p-6 bg-muted/50 rounded-lg">
+                      <p className="text-muted-foreground mb-4">
+                        To buy this NFT, you need to connect your wallet first.
+                      </p>
+                      <Button onClick={() => toast.info("Please connect your Solana wallet using the button in the top navigation")}>
+                        Connect Wallet to Buy
+                      </Button>
+                    </div>
+                  ) : publicKey === nft.owner_address ? (
+                    // Owner viewing their own NFT
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <p className="text-muted-foreground">
+                        You own this NFT
+                      </p>
+                    </div>
+                  ) : (
+                    // Connected user can buy
                     <div className="flex gap-3">
                       <Button 
                         className="flex-1"
