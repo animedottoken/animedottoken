@@ -105,8 +105,9 @@ serve(async (req) => {
         bio: bio.trim(),
         bio_unlock_status: true,
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'wallet_address'
       })
-      .eq('wallet_address', walletAddress)
       .select()
       .single()
 
