@@ -45,11 +45,15 @@ export const useNFTLikes = () => {
     const wasLiked = likedNFTs.includes(nftId);
     setLoading(true);
 
-    // If creator address provided, dispatch optimistic update signal
+    // Dispatch optimistic update signals
+    const nftDelta = wasLiked ? -1 : 1;
+    window.dispatchEvent(new CustomEvent('nft-stats-update', {
+      detail: { nftId, delta: nftDelta }
+    }));
+    
     if (creatorAddress) {
-      const delta = wasLiked ? -1 : 1;
       window.dispatchEvent(new CustomEvent('creator-stats-update', {
-        detail: { wallet: creatorAddress, type: 'nft_like', delta }
+        detail: { wallet: creatorAddress, type: 'nft_like', delta: nftDelta }
       }));
     }
 
@@ -87,9 +91,13 @@ export const useNFTLikes = () => {
         toast.error(err.message || 'Failed to update like status');
       }
       
-      // Revert optimistic update on error if creator address provided
+      // Revert optimistic updates on error
+      const revertDelta = wasLiked ? 1 : -1;
+      window.dispatchEvent(new CustomEvent('nft-stats-update', {
+        detail: { nftId, delta: revertDelta }
+      }));
+      
       if (creatorAddress) {
-        const revertDelta = wasLiked ? 1 : -1;
         window.dispatchEvent(new CustomEvent('creator-stats-update', {
           detail: { wallet: creatorAddress, type: 'nft_like', delta: revertDelta }
         }));

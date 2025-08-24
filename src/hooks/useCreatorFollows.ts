@@ -34,12 +34,6 @@ export const useCreatorFollows = () => {
       return false;
     }
 
-    // Prevent self-follow
-    if (publicKey === creatorWallet) {
-      toast.error('You cannot follow yourself');
-      return false;
-    }
-
     const wasFollowing = followedCreators.includes(creatorWallet);
     setLoading(true);
 

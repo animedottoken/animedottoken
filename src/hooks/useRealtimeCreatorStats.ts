@@ -20,7 +20,7 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     }
     debounceRef.current = setTimeout(() => {
       loadCreatorStats();
-    }, 250);
+    }, 100);
   }, []);
 
   const loadCreatorStats = useCallback(async () => {
