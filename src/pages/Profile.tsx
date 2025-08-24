@@ -35,7 +35,7 @@ export default function Profile() {
   const [editingBio, setEditingBio] = useState(false);
   const [newNickname, setNewNickname] = useState('');
   const [newBio, setNewBio] = useState('');
-  const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
+  
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
 
   const handleNicknameUpdate = async () => {
@@ -243,18 +243,15 @@ export default function Profile() {
 
       {/* Enhanced Profile Section */}
       <div className="mb-8">
-        {/* Banner */}
-        <div className="relative w-full h-32 rounded-lg overflow-hidden group cursor-pointer" onClick={() => setBannerDialogOpen(true)}>
+        {/* Universal Banner */}
+        <div className="relative w-full h-32 rounded-lg overflow-hidden">
           <ImageLazyLoad
-            src={profile?.banner_image_url || '/placeholder.svg'}
-            alt="Banner"
+            src="/images/og-anime.jpg"
+            alt="Profile Banner"
             className="w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Camera className="w-8 h-8 text-white" />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         </div>
 
         {/* Profile Info */}
@@ -432,32 +429,6 @@ export default function Profile() {
         }}
       />
 
-      {/* Banner Monetization Dialog */}
-      <Dialog open={bannerDialogOpen} onOpenChange={setBannerDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Update Profile Banner</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">
-              Customize your profile banner to stand out in the community!
-            </p>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Camera className="w-5 h-5 text-primary" />
-                <span className="font-semibold">Banner Pricing</span>
-              </div>
-              <ul className="text-sm space-y-1">
-                <li>• First banner change: <strong>FREE</strong></li>
-                <li>• Additional changes: <strong>2 USD each</strong></li>
-              </ul>
-            </div>
-            <Button className="w-full" disabled>
-              Upload New Banner (Coming Soon)
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Collections Grid */}
       <h2 className="text-xl font-semibold mb-4">My Collections</h2>
