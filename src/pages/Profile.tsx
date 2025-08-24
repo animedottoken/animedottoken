@@ -246,7 +246,7 @@ export default function Profile() {
       {/* Enhanced Profile Section */}
       <div className="mb-8">
         {/* Universal Banner */}
-        <AspectRatio ratio={3 / 1} className="relative w-full rounded-lg overflow-hidden">
+        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden">
           <ImageLazyLoad
             src={profileBanner}
             alt="Profile Banner"
@@ -259,20 +259,20 @@ export default function Profile() {
         {/* Profile Info */}
         <div className="flex items-start justify-between mt-4">
           <div className="flex items-center gap-4">
-            <div className="relative -mt-10">
-              <Avatar className="w-20 h-20 rounded-full border-4 border-background bg-card">
+            <div className="relative -mt-16">
+              <Avatar className="w-40 h-40 rounded-full border-4 border-background bg-card">
                 <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-                <AvatarFallback className="text-xl font-bold">
+                <AvatarFallback className="text-3xl font-bold">
                   {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
               <button
                 onClick={() => setPfpDialogOpen(true)}
-                className="absolute bottom-0 right-0 p-1.5 rounded-full bg-background/80 border hover:bg-muted transition"
+                className="absolute bottom-0 right-0 p-2 rounded-full bg-background/80 border hover:bg-muted transition"
                 aria-label="Change profile picture"
                 title="Change profile picture"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-5 h-5" />
               </button>
             </div>
             

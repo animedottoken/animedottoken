@@ -13,6 +13,9 @@ import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { toast } from "sonner";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ImageLazyLoad } from "@/components/ImageLazyLoad";
+import profileBanner from '@/assets/profile-banner.jpg';
 
 interface Creator {
   wallet_address: string;
@@ -351,12 +354,25 @@ export default function CreatorProfile() {
         )}
       </div>
 
+      {/* Banner Section */}
+      <div className="mb-8">
+        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden">
+          <ImageLazyLoad
+            src={profileBanner}
+            alt="Profile Banner"
+            className="absolute inset-0 w-full h-full object-cover"
+            fallbackSrc="/placeholder.svg"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+        </AspectRatio>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Creator Profile Card */}
         <div className="lg:col-span-1">
           <Card>
             <CardContent className="p-6 text-center">
-              <Avatar className="w-24 h-24 mx-auto mb-4">
+              <Avatar className="w-48 h-48 mx-auto mb-4">
                 <AvatarImage 
                   src={creator.profile_image_url} 
                   alt={creator.nickname || creator.wallet_address} 
