@@ -628,7 +628,7 @@ export default function Marketplace() {
                     {/* Rank */}
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1">
                             <span>{getRankBadge(creator.profile_rank).icon}</span>
                             <span>{getRankBadge(creator.profile_rank).text}</span>
@@ -643,7 +643,7 @@ export default function Marketplace() {
                     {/* NFTs */}
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-primary">
                             <Grid3x3 className="w-3 h-3" />
                             <span>{creator.created_nfts}</span>
@@ -658,7 +658,7 @@ export default function Marketplace() {
                     {/* Profile Likes */}
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-destructive">
                             <Heart className="w-3 h-3" />
                             <span>{creator.follower_count}</span>
