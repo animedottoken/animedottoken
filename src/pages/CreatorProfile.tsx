@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink } from "lucide-react";
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
@@ -76,6 +76,7 @@ export default function CreatorProfile() {
   const [creatorCollections, setCreatorCollections] = useState<Collection[]>([]);
   const [likedNFTs, setLikedNFTs] = useState<NFT[]>([]);
   const [likedCollections, setLikedCollections] = useState<Collection[]>([]);
+  const [followedCreators, setFollowedCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("collections");
 
@@ -290,6 +291,23 @@ export default function CreatorProfile() {
         setLikedNFTs(creatorLikedNFTs);
         setLikedCollections(creatorLikedCollections);
 
+        // Fetch creators this creator follows
+        const { data: followedCreatorIds } = await supabase
+          .from('creator_follows')
+          .select('creator_wallet')
+          .eq('follower_wallet', wallet);
+
+        let followedCreatorsData: any[] = [];
+        if (followedCreatorIds && followedCreatorIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('user_profiles')
+            .select('wallet_address, nickname, bio, profile_image_url')
+            .in('wallet_address', followedCreatorIds.map(f => f.creator_wallet));
+          
+          followedCreatorsData = profiles || [];
+        }
+        setFollowedCreators(followedCreatorsData);
+
       } catch (error) {
         console.error('Error fetching creator data:', error);
       } finally {
@@ -488,15 +506,25 @@ export default function CreatorProfile() {
 
           <Card className="bg-primary/5 border-primary/20">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-foreground mb-2">{creatorCollections.length}</div>
-              <p className="text-sm text-muted-foreground">Collections</p>
+              <div className="flex items-center justify-center mb-2">
+                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
+                <span className="text-2xl font-bold text-primary">
+                  {creatorNFTs?.length || 0} / {creatorCollections?.length || 0}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
             </CardContent>
           </Card>
 
           <Card className="bg-accent/5 border-accent/20">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-foreground mb-2">{likedNFTs.length + likedCollections.length}</div>
-              <p className="text-sm text-muted-foreground">Liked Items</p>
+              <div className="flex items-center justify-center mb-2">
+                <Heart className="w-5 h-5 text-destructive mr-1" />
+                <span className="text-2xl font-bold text-foreground">
+                  {creator.follower_count} / {creator.nft_likes_count}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">Profile Likes / NFT Likes</p>
             </CardContent>
           </Card>
         </div>
@@ -505,10 +533,10 @@ export default function CreatorProfile() {
       {/* Tabs - Matching Profile.tsx structure */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="collections">Collections</TabsTrigger>
-          <TabsTrigger value="nfts">Owned NFTs</TabsTrigger>
-          <TabsTrigger value="liked-nfts">Liked NFTs</TabsTrigger>
-          <TabsTrigger value="liked-collections">Liked Collections</TabsTrigger>
+          <TabsTrigger value="collections">My Collections</TabsTrigger>
+          <TabsTrigger value="nfts">My NFTs</TabsTrigger>
+          <TabsTrigger value="liked-nfts">NFTs I Like</TabsTrigger>
+          <TabsTrigger value="following">Authors I Follow</TabsTrigger>
         </TabsList>
 
         {/* Collections Tab */}
@@ -671,57 +699,60 @@ export default function CreatorProfile() {
           )}
         </TabsContent>
 
-        {/* Liked Collections Tab */}
-        <TabsContent value="liked-collections" className="mt-6">
-          {likedCollections.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No liked collections yet</p>
-            </div>
-          ) : (
+        {/* Authors I Follow Tab */}
+        <TabsContent value="following" className="mt-6">
+          {followedCreators.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {likedCollections.map((collection) => (
+              {followedCreators.map((followedCreator) => (
                 <Card 
-                  key={collection.id}
-                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-                  onClick={() => navigate(`/collection/${collection.id}`)}
+                  key={followedCreator.wallet_address} 
+                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/profile/${followedCreator.wallet_address}`)}
                 >
-                  <div className="aspect-square relative overflow-hidden">
-                    <ImageLazyLoad
-                      src={collection.image_url}
-                      alt={collection.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      fallbackSrc="/placeholder.svg"
-                    />
-
-                    {/* Status badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {collection.verified && (
-                        <Badge variant="secondary" className="bg-blue-500/90 text-white">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                      {collection.name}
-                    </h3>
-                    
-                    {collection.description && (
-                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                        {collection.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {collection.items_redeemed}/{collection.items_total || '∞'} minted
-                      </span>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={followedCreator.profile_image_url || '/placeholder.svg'} />
+                        <AvatarFallback>
+                          {followedCreator.nickname?.charAt(0)?.toUpperCase() || followedCreator.wallet_address.slice(0, 1).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                            {followedCreator.nickname || `${followedCreator.wallet_address.slice(0, 4)}...${followedCreator.wallet_address.slice(-4)}`}
+                          </h3>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleFollow(followedCreator.wallet_address);
+                            }}
+                            className="transition-colors duration-200"
+                            aria-label="Unfollow"
+                          >
+                            <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                          </button>
+                        </div>
+                        
+                        <p className="text-sm text-muted-foreground truncate">
+                          {followedCreator.wallet_address.slice(0, 8)}...{followedCreator.wallet_address.slice(-8)}
+                        </p>
+                        
+                        {followedCreator.bio && (
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {followedCreator.bio}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Not following any creators yet</p>
             </div>
           )}
         </TabsContent>
