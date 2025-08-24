@@ -13,6 +13,7 @@ export interface GamifiedProfile {
   bio_unlock_status?: boolean;
   current_pfp_nft_mint_address?: string;
   profile_image_url?: string;
+  banner_image_url?: string;
 }
 
 export interface UserNFT {

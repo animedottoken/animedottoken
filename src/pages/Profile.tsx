@@ -246,7 +246,7 @@ export default function Profile() {
         {/* Banner */}
         <div className="relative w-full h-32 rounded-lg overflow-hidden group cursor-pointer" onClick={() => setBannerDialogOpen(true)}>
           <ImageLazyLoad
-            src={profile?.profile_image_url || '/placeholder.svg'}
+            src={profile?.banner_image_url || '/placeholder.svg'}
             alt="Banner"
             className="w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
