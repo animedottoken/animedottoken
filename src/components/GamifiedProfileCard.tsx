@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit, Crown, Lock, Image, DollarSign, Info } from 'lucide-react';
+import { Edit, Crown, Lock, Image, DollarSign, Info, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,6 +32,8 @@ export const GamifiedProfileCard = () => {
 
   // Creator stats for follower count and NFT likes
   const [creatorStats, setCreatorStats] = useState<{follower_count: number, nft_likes_count: number} | null>(null);
+  const [nftCount, setNftCount] = useState(0);
+  const [collectionCount, setCollectionCount] = useState(0);
 
   const nicknamePricing = useAnimePricing(1.00); // $1.00 USD for nickname
   const pfpPricing = useAnimePricing(2.00); // $2.00 USD for PFP unlock
@@ -58,9 +60,26 @@ export const GamifiedProfileCard = () => {
           .single();
         
         setCreatorStats(data || {follower_count: 0, nft_likes_count: 0});
+
+        // Get NFT count
+        const { count: nftCount } = await supabase
+          .from('nfts')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_address', profile.wallet_address);
+        
+        // Get collection count
+        const { count: collectionCount } = await supabase
+          .from('collections')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_address', profile.wallet_address);
+        
+        setNftCount(nftCount || 0);
+        setCollectionCount(collectionCount || 0);
       } catch (error) {
         console.error('Error fetching creator stats:', error);
         setCreatorStats({follower_count: 0, nft_likes_count: 0});
+        setNftCount(0);
+        setCollectionCount(0);
       }
     };
 
@@ -246,68 +265,123 @@ export const GamifiedProfileCard = () => {
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center pb-4">
-        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Click to change profile picture • Tip: Use 1:1 ratio images (square) for best results">
-          <Avatar className={`w-40 h-40 border-4 ${rankColor} shadow-lg`}>
-            <AvatarImage 
-              src={profile.profile_image_url} 
-              alt={profile.nickname || 'Profile'} 
-            />
-            <AvatarFallback className="text-lg font-bold bg-primary/10 text-primary">
-              {profile.nickname 
-                ? profile.nickname.slice(0, 2).toUpperCase() 
-                : profile.wallet_address.slice(0, 2).toUpperCase()
-              }
-            </AvatarFallback>
-          </Avatar>
-          <div className="absolute bottom-0 right-0 translate-x-2 translate-y-2 bg-primary/20 text-primary border border-primary/30 rounded-full p-1">
-            <Edit className="w-3 h-3" />
+      <CardContent className="p-6 text-center">
+        <Avatar className="w-24 h-24 mx-auto mb-4">
+          <AvatarImage 
+            src={profile.profile_image_url} 
+            alt={profile.nickname || 'Profile'} 
+          />
+          <AvatarFallback className="text-lg">
+            {profile.nickname 
+              ? profile.nickname.slice(0, 2).toUpperCase() 
+              : profile.wallet_address.slice(0, 2).toUpperCase()
+            }
+          </AvatarFallback>
+        </Avatar>
+
+        {/* Profile Info Section */}
+        <div className="mb-4">
+          <div className="mb-2">
+            <h3 className="text-lg font-semibold">
+              <span
+                onClick={handleNicknameTitleClick}
+                role="button"
+                className="cursor-pointer hover:underline"
+                title={profile.nickname ? 'Change nickname' : 'Set nickname'}
+              >
+                {profile.nickname || 'Set Nickname'}
+              </span>
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {profile.wallet_address.slice(0, 4)}...{profile.wallet_address.slice(-4)}
+            </p>
+          </div>
+          
+          {/* Profile Stats: Trades + Level */}
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <span className="text-sm text-muted-foreground">{profile.trade_count} trades</span>
+            <Badge 
+              variant="outline" 
+              className={`text-xs ${
+                profile.profile_rank === 'DIAMOND' ? 'border-purple-500 text-purple-600' :
+                profile.profile_rank === 'GOLD' ? 'border-yellow-500 text-yellow-600' :
+                profile.profile_rank === 'SILVER' ? 'border-gray-400 text-gray-600' :
+                profile.profile_rank === 'BRONZE' ? 'border-orange-500 text-orange-600' :
+                'border-green-500 text-green-600'
+              }`}
+            >
+              <span>{profile.profile_rank === 'DEFAULT' ? 'Rookie' : profile.profile_rank}</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="inline-flex items-center ml-1" aria-label="Rank info">
+                      <Info className="w-3 h-3" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <div className="space-y-2 text-sm">
+                      <div className="font-semibold">Ranking System:</div>
+                      <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
+                      <div>🥇 <strong>Gold</strong>: 250+ trades</div>
+                      <div>🥈 <strong>Silver</strong>: 50+ trades</div>
+                      <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
+                      <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Trade more NFTs to increase your rank!
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </Badge>
           </div>
         </div>
-        <CardTitle className="mt-6 text-lg flex flex-col items-center justify-center gap-1">
-          <span
-            onClick={handleNicknameTitleClick}
-            role="button"
-            className="cursor-pointer hover:underline flex items-center gap-2"
-            title={profile.nickname ? 'Change nickname' : 'Set nickname'}
-          >
-            {profile.nickname || 'Set Nickname'}
-            <Edit className="w-4 h-4 text-muted-foreground" />
-          </span>
-          <span className="text-sm text-muted-foreground font-normal">
-            {profile.wallet_address.slice(0, 4)}...{profile.wallet_address.slice(-4)}
-          </span>
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
+        
         {/* Bio Section */}
-        <div className="text-center">
-          <div 
-            className="cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
-            onClick={handleBioClick}
-            title={profile.bio ? 'Change bio' : 'Set bio (first time free!)'}
+        {profile.bio ? (
+          <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
+            {profile.bio}
+          </p>
+        ) : (
+          <div className="text-center mb-4">
+            <div 
+              className="cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors inline-block"
+              onClick={handleBioClick}
+              title="Set bio (first time free!)"
+            >
+              <p className="text-sm text-muted-foreground italic">moje bio 100 characters</p>
+            </div>
+          </div>
+        )}
+
+        {/* Follow Button - Heart Icon */}
+        <div className="mb-4">
+          <button
+            onClick={handleAvatarClick}
+            className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+            title="Change profile picture"
           >
-            {profile.bio ? (
-              <p className="text-sm text-muted-foreground italic">{profile.bio}</p>
-            ) : (
-              <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-                <span>Add bio (first time free!)</span>
-                <Edit className="w-3 h-3" />
-              </p>
-            )}
+            <Heart className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
+        
+        {/* Content Stats */}
+        <div className="flex items-center justify-center gap-4 text-sm mb-3">
+          <div className="flex items-center gap-1">
+            <span className="font-medium text-primary">{nftCount}</span>
+            <span className="text-muted-foreground">NFTs</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="font-medium text-primary">{collectionCount}</span>
+            <span className="text-muted-foreground">Collections</span>
           </div>
         </div>
-
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{creatorStats?.follower_count || 0}</div>
-            <div className="text-sm text-muted-foreground">Likes</div>
-          </div>
-          <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{creatorStats?.nft_likes_count || 0}</div>
-            <div className="text-sm text-muted-foreground">NFT Likes</div>
-          </div>
+         
+        {/* Activity Stats */}
+        <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
+          <span>{creatorStats?.follower_count || 0} likes</span>
+          <span>•</span>
+          <span>{creatorStats?.nft_likes_count || 0} NFT likes</span>
         </div>
 
         <div className="space-y-2">
