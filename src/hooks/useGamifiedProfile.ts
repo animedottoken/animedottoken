@@ -180,7 +180,8 @@ export const useGamifiedProfile = () => {
       const { data, error } = await supabase.functions.invoke('set-bio', {
         body: { 
           bio: bio.trim(),
-          transaction_signature: transactionSignature
+          transaction_signature: transactionSignature,
+          wallet_address: publicKey
         },
       });
 

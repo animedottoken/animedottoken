@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.upsert-profile]
 verify_jwt = false
+
+[functions.set-bio]
+verify_jwt = false

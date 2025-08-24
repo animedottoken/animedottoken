@@ -18,21 +18,30 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { bio, transaction_signature } = await req.json()
+    const { bio, transaction_signature, wallet_address: walletFromBody } = await req.json()
     
-    // Get the user's wallet address from the request headers
+    // Try to get the user's wallet address from JWT if present, otherwise from request body
+    let walletAddress = ''
     const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      throw new Error('Authorization header required')
+    if (authHeader) {
+      try {
+        const jwt = authHeader.replace('Bearer ', '')
+        const payload = JSON.parse(atob(jwt.split('.')[1]))
+        walletAddress = payload.wallet_address || ''
+      } catch (_) {
+        // ignore JWT parsing errors and fall back to body
+      }
     }
 
-    // Extract wallet address from JWT payload
-    const jwt = authHeader.replace('Bearer ', '')
-    const payload = JSON.parse(atob(jwt.split('.')[1]))
-    const walletAddress = payload.wallet_address
+    if (!walletAddress) {
+      walletAddress = walletFromBody || ''
+    }
 
     if (!walletAddress) {
-      throw new Error('Wallet address not found in token')
+      return new Response(
+        JSON.stringify({ error: 'wallet_address is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     console.log('Setting bio for wallet:', walletAddress, 'Bio:', bio)
@@ -58,15 +67,6 @@ serve(async (req) => {
       )
     }
 
-    if (!transaction_signature) {
-      return new Response(
-        JSON.stringify({ error: 'Transaction signature required' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
-    }
 
     // Get current profile
     const { data: currentProfile, error: fetchError } = await supabase
