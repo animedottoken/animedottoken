@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Maximize2, Share2, ShoppingCart, Gavel, DollarSign, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 
 interface FullscreenNFTViewerProps {
@@ -254,24 +255,39 @@ export const FullscreenNFTViewer = ({
 
       {/* Navigation Controls */}
       {canNavigate && (
-        <>
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={() => onNavigate?.('prev')}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 focus-visible:ring-violet-500 h-12 w-12"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={() => onNavigate?.('next')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 focus-visible:ring-violet-500 h-12 w-12"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        </>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => onNavigate?.('prev')}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="bg-black/90 text-white border-white/20">
+              Previous
+            </TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => onNavigate?.('next')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="bg-black/90 text-white border-white/20">
+              Next
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       {/* Bottom Navigation Info */}
