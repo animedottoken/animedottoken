@@ -519,13 +519,13 @@ export default function Profile() {
                 return (
                   <Card 
                     key={followedProfile.wallet_address} 
-                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer aspect-square"
+                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
                     onClick={() => navigate(`/profile/${followedProfile.wallet_address}`)}
                   >
                     <CardContent className="p-4 h-full flex flex-col">
                       {/* Avatar */}
                       <div className="flex-shrink-0 mb-3">
-                        <Avatar className="w-16 h-16 mx-auto">
+                        <Avatar className="w-24 h-24 mx-auto">
                           <AvatarImage 
                             src={followedProfile.profile_image_url || '/placeholder.svg'} 
                             alt="Profile" 
