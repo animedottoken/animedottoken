@@ -51,3 +51,6 @@ verify_jwt = false
 
 [functions.set-bio]
 verify_jwt = false
+
+[functions.export-trading-data]
+verify_jwt = true

@@ -10,6 +10,7 @@ import { Heart } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useToast } from "@/components/ui/use-toast"
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
+import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -223,7 +224,10 @@ export default function Profile() {
     <div className="container mx-auto py-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Profile</h1>
-        <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
+        <div className="flex items-center gap-3">
+          <ExportTradingDataButton variant="outline" size="sm" />
+          <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
+        </div>
       </div>
 
       {/* Profile Section */}
