@@ -53,9 +53,6 @@ export default function NFTDetail() {
     return null;
   };
 
-  const calculateFee = (price: number) => {
-    return price * 0.025; // 2.5% fee
-  };
 
   const handleBuyNow = async () => {
     if (!nft?.price || !publicKey) {
@@ -63,8 +60,7 @@ export default function NFTDetail() {
       return;
     }
     
-    const totalCost = nft.price + calculateFee(nft.price);
-    toast.info(`Processing purchase of ${nft.name} for ${totalCost.toFixed(4)} ${nft.currency || 'SOL'} (includes 2.5% marketplace fee)`);
+    toast.info(`Processing purchase of ${nft.name} for ${nft.price.toFixed(4)} ${nft.currency || 'SOL'}`);
   };
 
   const handlePlaceBid = async () => {
@@ -408,9 +404,6 @@ export default function NFTDetail() {
                         <span className="text-2xl font-bold">{nft.price}</span>
                         <span className="text-lg text-muted-foreground">{nft.currency}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        + {calculateFee(nft.price).toFixed(4)} {nft.currency} marketplace fee (2.5%)
-                      </p>
                     </div>
                     {nft.royalty_percentage && nft.royalty_percentage > 0 && (
                       <div className="text-right">
