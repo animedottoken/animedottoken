@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User, Trash2 } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User, Trash2, Eye, Plus } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
@@ -121,7 +121,7 @@ export default function Profile() {
             className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
             onClick={() => navigate(`/collection/${collection.id}`)}
           >
-            <div className="aspect-square relative overflow-hidden">
+            <div className="aspect-square relative overflow-hidden group/image">
               <ImageLazyLoad
                 src={collection.image_url}
                 alt={collection.name}
@@ -135,7 +135,7 @@ export default function Profile() {
                   e.stopPropagation();
                   toggleLike(collection.id);
                 }}
-                className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
+                className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
                   isLiked(collection.id)
                     ? 'bg-red-500 text-white'
                     : 'bg-black/50 text-white hover:bg-black/70'
@@ -145,7 +145,7 @@ export default function Profile() {
               </button>
 
               {/* Status badges */}
-              <div className="absolute top-2 left-2 flex flex-col gap-1">
+              <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                 {collection.is_live && (
                   <Badge variant="secondary" className="bg-green-500/90 text-white">
                     Live
@@ -156,6 +156,74 @@ export default function Profile() {
                     Verified
                   </Badge>
                 )}
+              </div>
+
+              {/* Overlay Actions */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/collection/${collection.id}`);
+                    }}
+                    className="bg-white/90 text-black hover:bg-white"
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    View
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/mint?edit=${collection.id}`);
+                    }}
+                    className="bg-white/90 text-black hover:bg-white border-white/20"
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/mint/nft?collection=${collection.id}`);
+                    }}
+                    className="bg-primary/90 text-white hover:bg-primary"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Mint
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deleting}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDialog({
+                        open: true,
+                        title: 'Delete Collection',
+                        description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
+                        onConfirm: async () => {
+                          setConfirmDialog(prev => ({ ...prev, loading: true }));
+                          const res = await deleteCollection(collection.id, collection.name);
+                          if (res.success) {
+                            refreshCollections();
+                          }
+                          setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                        }
+                      });
+                    }}
+                    className="bg-red-500/90 text-white hover:bg-red-500"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Burn
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -171,63 +239,17 @@ export default function Profile() {
               )}
 
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  <span className="text-muted-foreground">
-                    {collection.items_redeemed}/{collection.max_supply || '∞'} minted
+              <div className="flex items-center gap-4">
+                <span className="text-muted-foreground">
+                  {collection.items_redeemed}/{collection.max_supply || '∞'} minted
+                </span>
+                {collection.mint_price > 0 && (
+                  <span className="font-medium">
+                    {collection.mint_price} SOL
                   </span>
-                  {collection.mint_price > 0 && (
-                    <span className="font-medium">
-                      {collection.mint_price} SOL
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
-
-              {/* Actions: Edit / Mint / Burn */}
-              <div className="mt-4 flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/mint?edit=${collection.id}`);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/mint/nft?collection=${collection.id}`);
-                  }}
-                >
-                  Mint
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  disabled={deleting}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setConfirmDialog({
-                      open: true,
-                      title: 'Delete Collection',
-                      description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
-                      onConfirm: async () => {
-                        setConfirmDialog(prev => ({ ...prev, loading: true }));
-                        const res = await deleteCollection(collection.id, collection.name);
-                        if (res.success) {
-                          refreshCollections();
-                        }
-                        setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                      }
-                    });
-                  }}
-                >
-                  Burn
-                </Button>
-              </div>
+            </div>
             </CardContent>
           </Card>
         ))}
