@@ -34,6 +34,7 @@ import { NFTCard } from '@/components/NFTCard';
 import { EditNFTDialog } from '@/components/EditNFTDialog';
 import { useBurnNFT } from '@/hooks/useBurnNFT';
 import { useDeleteCollection } from '@/hooks/useDeleteCollection';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -61,6 +62,18 @@ export default function Profile() {
   const [followedProfiles, setFollowedProfiles] = useState<any[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(false);
   const [editDialogNFTId, setEditDialogNFTId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    loading?: boolean;
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+  });
 
   // Fetch profile details for followed creators
   useEffect(() => {
@@ -195,13 +208,21 @@ export default function Profile() {
                   size="sm"
                   variant="destructive"
                   disabled={deleting}
-                  onClick={async (e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
-                    if (!confirm(`Delete collection "${collection.name}"? This cannot be undone.`)) return;
-                    const res = await deleteCollection(collection.id, collection.name);
-                    if (res.success) {
-                      refreshCollections();
-                    }
+                    setConfirmDialog({
+                      open: true,
+                      title: 'Delete Collection',
+                      description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
+                      onConfirm: async () => {
+                        setConfirmDialog(prev => ({ ...prev, loading: true }));
+                        const res = await deleteCollection(collection.id, collection.name);
+                        if (res.success) {
+                          refreshCollections();
+                        }
+                        setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                      }
+                    });
                   }}
                 >
                   Burn
@@ -520,9 +541,17 @@ export default function Profile() {
                             toast.error('Mint address missing for this NFT');
                             return;
                           }
-                          if (!confirm(`Burn NFT "${nft.name}"? This cannot be undone.`)) return;
-                          const res = await burnNFT(nft.id, nft.mint_address);
-                          if (res.success) refreshNFTs();
+                          setConfirmDialog({
+                            open: true,
+                            title: 'Burn NFT',
+                            description: `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`,
+                            onConfirm: async () => {
+                              setConfirmDialog(prev => ({ ...prev, loading: true }));
+                              const res = await burnNFT(nft.id, nft.mint_address);
+                              if (res.success) refreshNFTs();
+                              setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                            }
+                          });
                         }
                       }
                     ]}
@@ -773,11 +802,24 @@ export default function Profile() {
         profile={profile}
         loading={bioLoading} // Reusing bio loading state
         isFirstChange={false} // Banner changes are never free
-        onConfirm={async (file) => {
-          const ok = await setBanner(file);
-          return ok;
-        }}
-      />
-    </div>
-  );
-}
+          onConfirm={async (file) => {
+            const ok = await setBanner(file);
+            return ok;
+          }}
+        />
+        
+        {/* Confirm Dialog */}
+        <ConfirmDialog
+          open={confirmDialog.open}
+          onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          confirmText="Confirm"
+          cancelText="Cancel"
+          variant="destructive"
+          onConfirm={confirmDialog.onConfirm}
+          loading={confirmDialog.loading}
+        />
+      </div>
+    );
+  }

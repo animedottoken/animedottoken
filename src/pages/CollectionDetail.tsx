@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,7 @@ import { useDeleteCollection } from "@/hooks/useDeleteCollection";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { truncateAddress } from "@/utils/addressUtils";
 
 export default function CollectionDetail() {
@@ -45,6 +47,19 @@ export default function CollectionDetail() {
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { deleting, deleteCollection } = useDeleteCollection();
+  
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    loading?: boolean;
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+  });
   
   // Navigation context for moving between collections
   const navigation = useNavigationContext(collectionId!, 'collection');
@@ -448,30 +463,38 @@ export default function CollectionDetail() {
                                <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={async (e) => {
+                                onClick={(e) => {
                                   e.stopPropagation(); // Prevent card click when burning
-                                  if (!confirm(`Are you sure you want to burn "${nft.name}"? This action cannot be undone.`)) {
-                                    return;
-                                  }
-                                  
-                                  try {
-                                    const { data, error } = await supabase.functions.invoke('burn-nft', {
-                                      body: {
-                                        nft_id: nft.id,
-                                        wallet_address: publicKey
+                                  setConfirmDialog({
+                                    open: true,
+                                    title: 'Burn NFT',
+                                    description: `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`,
+                                    onConfirm: async () => {
+                                      setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                      
+                                      try {
+                                        const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                          body: {
+                                            nft_id: nft.id,
+                                            wallet_address: publicKey
+                                          }
+                                        });
+                                        
+                                        if (data?.success) {
+                                          toast.success('NFT burned successfully');
+                                          // Refresh the page to update the mints list
+                                          window.location.reload();
+                                        } else {
+                                          toast.error(data?.error || 'Failed to burn NFT');
+                                        }
+                                      } catch (error) {
+                                        console.error('Error burning NFT:', error);
+                                        toast.error('Failed to burn NFT');
+                                      } finally {
+                                        setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                       }
-                                    });
-                                    
-                                    if (data?.success) {
-                                      toast.success('NFT burned successfully');
-                                      // Refresh the page to update the mints list
-                                      window.location.reload();
-                                    } else {
-                                      toast.error(data?.error || 'Failed to burn NFT');
                                     }
-                                  } catch (error) {
-                                    toast.error('Failed to burn NFT');
-                                  }
+                                  });
                                 }}
                                 className="text-destructive hover:text-destructive"
                               >
@@ -488,6 +511,19 @@ export default function CollectionDetail() {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Confirm Dialog */}
+        <ConfirmDialog
+          open={confirmDialog.open}
+          onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+          title={confirmDialog.title}
+          description={confirmDialog.description}
+          confirmText="Confirm"
+          cancelText="Cancel"
+          variant="destructive"
+          onConfirm={confirmDialog.onConfirm}
+          loading={confirmDialog.loading}
+        />
       </main>
     </>
   );
