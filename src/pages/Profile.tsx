@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLikedNFTs } from '@/hooks/useLikedNFTs';
+import { useLikedCollections } from '@/hooks/useLikedCollections';
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
@@ -38,6 +39,7 @@ export default function Profile() {
   const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
   const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
+  const { likedCollections: likedCollectionsData, loading: likedCollectionsLoading } = useLikedCollections();
   const { toggleFollow, isFollowing, followedCreators } = useCreatorFollows();
   
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
@@ -418,9 +420,10 @@ export default function Profile() {
 
       {/* Content Tabs */}
       <Tabs defaultValue="collections" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="collections">My Collections</TabsTrigger>
           <TabsTrigger value="nfts">My NFTs</TabsTrigger>
+          <TabsTrigger value="liked-collections">Collections I Like</TabsTrigger>
           <TabsTrigger value="liked-nfts">NFTs I Like</TabsTrigger>
           <TabsTrigger value="following">Authors I Follow</TabsTrigger>
         </TabsList>
@@ -461,6 +464,94 @@ export default function Profile() {
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No NFTs found</p>
               <Button onClick={() => navigate('/marketplace')}>Browse Marketplace</Button>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="liked-collections" className="mt-6">
+          {likedCollectionsLoading ? (
+            <p>Loading liked collections...</p>
+          ) : likedCollectionsData.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {likedCollectionsData.map((collection) => (
+                <Card 
+                  key={collection.id}
+                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
+                  onClick={() => navigate(`/collection/${collection.id}`)}
+                >
+                  <div className="aspect-square relative overflow-hidden">
+                    <ImageLazyLoad
+                      src={collection.image_url}
+                      alt={collection.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fallbackSrc="/placeholder.svg"
+                    />
+                    
+                    {/* Heart button for unliking collections */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLike(collection.id);
+                      }}
+                      className="absolute top-2 right-2 p-2 rounded-full transition-all duration-200 bg-red-500 text-white hover:bg-red-600"
+                    >
+                      <Heart className="w-4 h-4 fill-current" />
+                    </button>
+
+                    {/* Status badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {collection.is_live && (
+                        <Badge variant="secondary" className="bg-green-500/90 text-white">
+                          Live
+                        </Badge>
+                      )}
+                      {collection.verified && (
+                        <Badge variant="secondary" className="bg-blue-500/90 text-white">
+                          Verified
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                      {collection.name}
+                    </h3>
+                    
+                    {collection.site_description && (
+                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                        {collection.site_description}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-4">
+                        <span className="text-muted-foreground">
+                          {collection.items_redeemed}/{collection.max_supply || '∞'} minted
+                        </span>
+                        {collection.mint_price > 0 && (
+                          <span className="font-medium">
+                            {collection.mint_price} SOL
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground/70 mt-2">
+                      Liked on {new Date(collection.liked_at).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No liked collections yet</p>
+              <p className="text-sm text-muted-foreground/70 mb-4">
+                Explore the marketplace and like collections to see them here
+              </p>
+              <Button onClick={() => navigate('/marketplace?tab=collections')}>Browse Collections</Button>
             </div>
           )}
         </TabsContent>
