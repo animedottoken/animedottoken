@@ -318,7 +318,7 @@ export const GamifiedProfileCard = () => {
                 'border-green-500 text-green-600'
               }`}
             >
-              <span>{profile.profile_rank === 'DEFAULT' ? 'Rookie' : profile.profile_rank}</span>
+              <span>{profile.profile_rank === 'DEFAULT' ? 'Starter' : profile.profile_rank}</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -333,7 +333,7 @@ export const GamifiedProfileCard = () => {
                       <div>🥇 <strong>Gold</strong>: 250+ trades</div>
                       <div>🥈 <strong>Silver</strong>: 50+ trades</div>
                       <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                      <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                      <div>🎖️ <strong>Starter</strong>: 0-9 trades</div>
                       <div className="text-xs text-muted-foreground mt-2">
                         Trade more NFTs to increase your rank!
                       </div>

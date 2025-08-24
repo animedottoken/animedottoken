@@ -226,7 +226,7 @@ export const useGamifiedProfile = () => {
       case 'SILVER': return { text: 'Silver', color: 'bg-slate-400' };
       case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500' };
       case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400' };
-      default: return { text: 'Rookie', color: 'bg-muted' };
+      default: return { text: 'Starter', color: 'bg-muted' };
     }
   }, []);
 

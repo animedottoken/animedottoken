@@ -11,9 +11,10 @@ import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
+import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -22,14 +23,19 @@ export default function Profile() {
   const { publicKey, connected, connect } = useSolanaWallet();
   const { collections, loading, refreshCollections } = useCollections();
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
-  const { profile, setNickname, setBio, getRankBadge, getRankColor, nicknameLoading, bioLoading } = useGamifiedProfile();
+  const { profile, setNickname, setBio, setPFP, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
+  
+  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(profile?.wallet_address ? [profile.wallet_address] : []);
+  const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
+  const nftLikes = profile?.wallet_address ? getCreatorNFTLikeCount(profile.wallet_address) : 0;
   
   const [editingNickname, setEditingNickname] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [newNickname, setNewNickname] = useState('');
   const [newBio, setNewBio] = useState('');
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
+  const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
 
   const handleNicknameUpdate = async () => {
     if (!newNickname.trim()) {
@@ -253,12 +259,22 @@ export default function Profile() {
         {/* Profile Info */}
         <div className="flex items-start justify-between mt-4">
           <div className="flex items-center gap-4">
-            <Avatar className="w-20 h-20 rounded-full border-4 border-background -mt-10 relative bg-card">
-              <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-              <AvatarFallback className="text-xl font-bold">
-                {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative -mt-10">
+              <Avatar className="w-20 h-20 rounded-full border-4 border-background bg-card">
+                <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
+                <AvatarFallback className="text-xl font-bold">
+                  {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => setPfpDialogOpen(true)}
+                className="absolute bottom-0 right-0 p-1.5 rounded-full bg-background/80 border hover:bg-muted transition"
+                aria-label="Change profile picture"
+                title="Change profile picture"
+              >
+                <Camera className="w-4 h-4" />
+              </button>
+            </div>
             
             <div className="mt-2">
               <div className="flex items-center gap-2 mb-1">
@@ -302,7 +318,7 @@ export default function Profile() {
               </div>
               
               <p className="text-sm text-muted-foreground mb-2">
-                {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
+                {publicKey ? `${publicKey.slice(0,4)}...${publicKey.slice(-4)}` : ''}
               </p>
 
               {/* Bio Section */}
@@ -367,7 +383,7 @@ export default function Profile() {
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-5 h-5 text-secondary mr-1" />
-                <span className="text-2xl font-bold text-secondary">{collections?.length || 0}</span>
+                <span className="text-2xl font-bold text-foreground">{collections?.length || 0}</span>
               </div>
               <p className="text-sm text-muted-foreground">Collections</p>
             </CardContent>
@@ -386,14 +402,44 @@ export default function Profile() {
           <Card className="bg-muted/5 border-muted/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <Heart className="w-5 h-5 text-red-500 mr-1" />
-                <span className="text-2xl font-bold text-foreground">{likedCollections?.length || 0}</span>
+              <Heart className="w-5 h-5 text-destructive mr-1" />
+              <span className="text-2xl font-bold text-foreground">{profileLikes}</span>
               </div>
               <p className="text-sm text-muted-foreground">Likes</p>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <div className="mt-2 text-xs text-muted-foreground">
+        {profile && (<span>{profileLikes} likes • {nftLikes} NFT likes</span>)}
+      </div>
+
+      {/* PFP Selection Dialog */}
+      <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
+        <DialogContent className="sm:max-w-[680px]">
+          <DialogHeader>
+            <DialogTitle>Select an NFT for your profile picture</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {nfts && nfts.length > 0 ? (
+              nfts.map((nft) => (
+                <button key={nft.mint_address} onClick={async () => {
+                  const ok = await setPFP(nft.mint_address, 'simulated_transaction_signature');
+                  if (ok) {
+                    setPfpDialogOpen(false);
+                    toast.success('Profile picture updated! First change is free, next changes will cost 2 USD.');
+                  }
+                }} className="relative rounded-lg overflow-hidden border hover:shadow">
+                  <img src={nft.image_url} alt={nft.name} className="w-full h-full object-cover aspect-square" loading="lazy" />
+                </button>
+              ))
+            ) : (
+              <p className="text-muted-foreground text-sm col-span-full">No NFTs found.</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Banner Monetization Dialog */}
       <Dialog open={bannerDialogOpen} onOpenChange={setBannerDialogOpen}>
