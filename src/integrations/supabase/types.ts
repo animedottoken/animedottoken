@@ -214,6 +214,27 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_follows: {
+        Row: {
+          created_at: string
+          creator_wallet: string
+          follower_wallet: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          creator_wallet: string
+          follower_wallet: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          creator_wallet?: string
+          follower_wallet?: string
+          id?: string
+        }
+        Relationships: []
+      }
       marketplace_activities: {
         Row: {
           activity_type: string
@@ -396,6 +417,35 @@ export type Database = {
             columns: ["collection_id"]
             isOneToOne: false
             referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nft_likes: {
+        Row: {
+          created_at: string
+          id: string
+          nft_id: string
+          user_wallet: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nft_id: string
+          user_wallet: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nft_id?: string
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_likes_nft_id_fkey"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nfts"
             referencedColumns: ["id"]
           },
         ]
@@ -669,6 +719,28 @@ export type Database = {
           updated_at?: string | null
           verified?: boolean | null
           whitelist_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      creator_follow_stats: {
+        Row: {
+          creator_wallet: string | null
+          follower_count: number | null
+        }
+        Relationships: []
+      }
+      creator_nft_like_stats: {
+        Row: {
+          creator_wallet: string | null
+          nft_likes_count: number | null
+        }
+        Relationships: []
+      }
+      creators_public_stats: {
+        Row: {
+          follower_count: number | null
+          nft_likes_count: number | null
+          wallet_address: string | null
         }
         Relationships: []
       }
