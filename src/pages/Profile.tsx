@@ -508,35 +508,35 @@ export default function Profile() {
 
       {/* Content Tabs */}
       <Tabs defaultValue="collections" className="w-full">
-        <div className="overflow-x-auto">
-          <TabsList className="inline-flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground min-w-fit gap-1">
+        <div className="w-full overflow-x-auto overflow-y-hidden pb-2">
+          <TabsList className="flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground w-full min-w-max md:justify-center">
             <TabsTrigger 
               value="collections" 
-              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
             >
               My Collections
             </TabsTrigger>
             <TabsTrigger 
               value="nfts"
-              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
             >
               My NFTs
             </TabsTrigger>
             <TabsTrigger 
               value="liked-collections"
-              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+              className="flex-shrink-0 whitespace-nowrap px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
             >
               Collections I Like
             </TabsTrigger>
             <TabsTrigger 
               value="liked-nfts"
-              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
             >
               NFTs I Like
             </TabsTrigger>
             <TabsTrigger 
               value="following"
-              className="whitespace-nowrap px-4 py-2 text-sm font-medium transition-all"
+              className="flex-shrink-0 whitespace-nowrap px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
             >
               Authors I Follow
             </TabsTrigger>
