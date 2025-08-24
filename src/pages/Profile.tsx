@@ -5,18 +5,59 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
+import { useUserNFTs } from '@/hooks/useUserNFTs';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { publicKey, connected, connect } = useSolanaWallet();
   const { collections, loading, refreshCollections } = useCollections();
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
-  const { profile } = useGamifiedProfile();
+  const { profile, setNickname, setBio, getRankBadge, getRankColor, nicknameLoading, bioLoading } = useGamifiedProfile();
+  const { nfts } = useUserNFTs();
+  
+  const [editingNickname, setEditingNickname] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+  const [newNickname, setNewNickname] = useState('');
+  const [newBio, setNewBio] = useState('');
+  const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
+
+  const handleNicknameUpdate = async () => {
+    if (!newNickname.trim()) {
+      toast.error('Please enter a nickname');
+      return;
+    }
+    
+    const success = await setNickname(newNickname.trim());
+    if (success) {
+      setEditingNickname(false);
+      setNewNickname('');
+    }
+  };
+
+  const handleBioUpdate = async () => {
+    if (!newBio.trim()) {
+      toast.error('Please enter a bio');
+      return;
+    }
+    
+    // For now, we'll simulate payment - in real app this would integrate with Solana payment
+    const success = await setBio(newBio.trim(), 'simulated_transaction_signature');
+    if (success) {
+      setEditingBio(false);
+      setNewBio('');
+      toast.success('Bio updated! First change is free, next changes will cost 2 USD.');
+    }
+  };
 
   const renderCollectionsGrid = () => {
     if (collections.length === 0) {
@@ -193,28 +234,193 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Profile Section */}
+      {/* Enhanced Profile Section */}
       <div className="mb-8">
-        <div className="relative w-full h-32 rounded-md overflow-hidden">
+        {/* Banner */}
+        <div className="relative w-full h-32 rounded-lg overflow-hidden group cursor-pointer" onClick={() => setBannerDialogOpen(true)}>
           <ImageLazyLoad
             src={profile?.profile_image_url || '/placeholder.svg'}
             alt="Banner"
             className="w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
           />
-          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent"></div>
-        </div>
-        <div className="flex items-center mt-2">
-          <Avatar className="w-16 h-16 rounded-full border-2 border-white -mt-8 mr-4 relative">
-            <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="text-lg font-semibold">{profile?.nickname || 'Unnamed User'}</h2>
-            <p className="text-muted-foreground">{publicKey}</p>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Camera className="w-8 h-8 text-white" />
           </div>
         </div>
+
+        {/* Profile Info */}
+        <div className="flex items-start justify-between mt-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-20 h-20 rounded-full border-4 border-background -mt-10 relative bg-card">
+              <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
+              <AvatarFallback className="text-xl font-bold">
+                {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="mt-2">
+              <div className="flex items-center gap-2 mb-1">
+                {editingNickname ? (
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      value={newNickname} 
+                      onChange={(e) => setNewNickname(e.target.value)}
+                      placeholder="Enter nickname"
+                      className="w-48"
+                    />
+                    <Button size="sm" onClick={handleNicknameUpdate} disabled={nicknameLoading}>
+                      Save
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingNickname(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold">{profile?.nickname || 'Set Nickname'}</h2>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => {
+                        setNewNickname(profile?.nickname || '');
+                        setEditingNickname(true);
+                      }}
+                      className="p-1 h-auto"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+                
+                {profile?.profile_rank && (
+                  <Badge className={getRankBadge(profile.profile_rank).color}>
+                    {getRankBadge(profile.profile_rank).text} ⭐
+                  </Badge>
+                )}
+              </div>
+              
+              <p className="text-sm text-muted-foreground mb-2">
+                {publicKey?.slice(0, 8)}...{publicKey?.slice(-8)}
+              </p>
+
+              {/* Bio Section */}
+              <div className="max-w-md">
+                {editingBio ? (
+                  <div className="space-y-2">
+                    <Textarea 
+                      value={newBio}
+                      onChange={(e) => setNewBio(e.target.value)}
+                      placeholder="Tell us about yourself (100 characters max)"
+                      maxLength={100}
+                      className="resize-none"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" onClick={handleBioUpdate} disabled={bioLoading}>
+                        Save Bio
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditingBio(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      First bio change is free. Next changes cost 2 USD.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-muted-foreground text-sm italic">
+                      {profile?.bio || 'Add your bio (100 characters max)'}
+                    </p>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => {
+                        setNewBio(profile?.bio || '');
+                        setEditingBio(true);
+                      }}
+                      className="p-1 h-auto"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Star className="w-5 h-5 text-primary mr-1" />
+                <span className="text-2xl font-bold text-primary">{nfts?.length || 0}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">NFTs</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-secondary/5 border-secondary/20">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Trophy className="w-5 h-5 text-secondary mr-1" />
+                <span className="text-2xl font-bold text-secondary">{collections?.length || 0}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Collections</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-accent/5 border-accent/20">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Coins className="w-5 h-5 text-accent mr-1" />
+                <span className="text-2xl font-bold text-accent">{profile?.trade_count || 0}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Trades</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/5 border-muted/20">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Heart className="w-5 h-5 text-red-500 mr-1" />
+                <span className="text-2xl font-bold text-foreground">{likedCollections?.length || 0}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Likes</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      {/* Banner Monetization Dialog */}
+      <Dialog open={bannerDialogOpen} onOpenChange={setBannerDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Profile Banner</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Customize your profile banner to stand out in the community!
+            </p>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Camera className="w-5 h-5 text-primary" />
+                <span className="font-semibold">Banner Pricing</span>
+              </div>
+              <ul className="text-sm space-y-1">
+                <li>• First banner change: <strong>FREE</strong></li>
+                <li>• Additional changes: <strong>2 USD each</strong></li>
+              </ul>
+            </div>
+            <Button className="w-full" disabled>
+              Upload New Banner (Coming Soon)
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Collections Grid */}
       <h2 className="text-xl font-semibold mb-4">My Collections</h2>
