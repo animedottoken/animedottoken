@@ -13,6 +13,7 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -372,13 +373,67 @@ export default function Profile() {
       </div>
 
 
-      {/* Collections Grid */}
-      <h2 className="text-xl font-semibold mb-4">My Collections</h2>
-      {loading ? (
-        <p>Loading collections...</p>
-      ) : (
-        renderCollectionsGrid()
-      )}
+      {/* Content Tabs */}
+      <Tabs defaultValue="collections" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="collections">My Collections</TabsTrigger>
+          <TabsTrigger value="nfts">My NFTs</TabsTrigger>
+          <TabsTrigger value="liked-nfts">NFTs I Like</TabsTrigger>
+          <TabsTrigger value="following">Authors I Follow</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="collections" className="mt-6">
+          {loading ? (
+            <p>Loading collections...</p>
+          ) : (
+            renderCollectionsGrid()
+          )}
+        </TabsContent>
+
+        <TabsContent value="nfts" className="mt-6">
+          {nfts && nfts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {nfts.map((nft) => (
+                <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                  <div className="aspect-square relative overflow-hidden">
+                    <ImageLazyLoad
+                      src={nft.image_url}
+                      alt={nft.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fallbackSrc="/placeholder.svg"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
+                      {nft.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {nft.mint_address.slice(0, 8)}...{nft.mint_address.slice(-8)}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">No NFTs found</p>
+              <Button onClick={() => navigate('/marketplace')}>Browse Marketplace</Button>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="liked-nfts" className="mt-6">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Coming soon - Your liked NFTs will appear here</p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="following" className="mt-6">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Coming soon - Authors you follow will appear here</p>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Bio Edit Dialog */}
       <BioEditDialog
