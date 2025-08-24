@@ -32,7 +32,8 @@ export const GamifiedProfileCard = () => {
 
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
-  const [pfpUnlockDialogOpen, setPfpUnlockDialogOpen] = useState(false);
+  const [pfpConfirmDialogOpen, setPfpConfirmDialogOpen] = useState(false);
+  const [selectedNftForPfp, setSelectedNftForPfp] = useState<string | null>(null);
   const [nicknameInput, setNicknameInput] = useState('');
 
   const handleAvatarClick = () => {
@@ -77,7 +78,14 @@ export const GamifiedProfileCard = () => {
     }
   };
 
-  const handleSetPFP = async (nftMintAddress: string) => {
+  const handleNftClick = (nftMintAddress: string) => {
+    setSelectedNftForPfp(nftMintAddress);
+    setPfpConfirmDialogOpen(true);
+  };
+
+  const handleConfirmPFP = async () => {
+    if (!selectedNftForPfp) return;
+    
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -95,9 +103,11 @@ export const GamifiedProfileCard = () => {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const success = await setPFP(nftMintAddress, testTransactionSignature);
+    const success = await setPFP(selectedNftForPfp, testTransactionSignature);
     if (success) {
       setPfpDialogOpen(false);
+      setPfpConfirmDialogOpen(false);
+      setSelectedNftForPfp(null);
       toast.success('✅ Profile picture updated successfully! (Test mode - no real payment)');
     }
   };
@@ -151,7 +161,7 @@ export const GamifiedProfileCard = () => {
               }
             </AvatarFallback>
           </Avatar>
-          <Badge className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 ${rankBadge.color} text-white text-xs cursor-help`}>
+          <Badge className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 ${rankBadge.color} text-white text-xs cursor-help z-10`}>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -161,7 +171,7 @@ export const GamifiedProfileCard = () => {
                     <Info className="w-3 h-3 ml-1" />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
+                <TooltipContent className="max-w-xs z-50">
                   <div className="space-y-2 text-sm">
                     <div className="font-semibold">Ranking System:</div>
                     <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
@@ -181,7 +191,7 @@ export const GamifiedProfileCard = () => {
             <Edit className="w-3 h-3" />
           </div>
         </div>
-        <CardTitle className="mt-4 text-lg flex flex-col items-center justify-center gap-1">
+        <CardTitle className="mt-6 text-lg flex flex-col items-center justify-center gap-1">
           <span
             onClick={handleNicknameTitleClick}
             role="button"
@@ -204,19 +214,18 @@ export const GamifiedProfileCard = () => {
             <div className="text-sm text-muted-foreground">Trades</div>
           </div>
           <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{profile.profile_rank}</div>
+            <div className="text-2xl font-bold text-primary">{getRankBadge(profile.profile_rank).text}</div>
             <div className="text-sm text-muted-foreground">Rank</div>
           </div>
         </div>
 
         <div className="space-y-2">
           {/* Nickname Setting */}
-          {!profile.nickname && (
-            <Dialog open={nicknameDialogOpen} onOpenChange={setNicknameDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Set Your Nickname</DialogTitle>
-                </DialogHeader>
+          <Dialog open={nicknameDialogOpen} onOpenChange={setNicknameDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{profile.nickname ? 'Change Your Nickname' : 'Set Your Nickname'}</DialogTitle>
+              </DialogHeader>
                 <div className="space-y-4">
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
@@ -261,7 +270,6 @@ export const GamifiedProfileCard = () => {
                 </div>
               </DialogContent>
             </Dialog>
-          )}
 
           {/* PFP Selection Dialog */}
           <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
@@ -295,7 +303,7 @@ export const GamifiedProfileCard = () => {
                     <div
                       key={nft.mint_address}
                       className="cursor-pointer border-2 border-transparent hover:border-primary rounded-lg p-2 transition-colors"
-                      onClick={() => handleSetPFP(nft.mint_address)}
+                      onClick={() => handleNftClick(nft.mint_address)}
                     >
                       <div className="aspect-square mb-2">
                         {nft.image_url ? (
@@ -320,6 +328,51 @@ export const GamifiedProfileCard = () => {
                       <p>No NFTs found in your wallet</p>
                     </div>
                   )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* PFP Confirmation Dialog */}
+          <Dialog open={pfpConfirmDialogOpen} onOpenChange={setPfpConfirmDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Profile Picture Change</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">Payment Required</span>
+                    <DollarSign className="w-4 h-4 text-primary" />
+                  </div>
+                  {pfpPricing.loading ? (
+                    <div className="animate-pulse">Loading pricing...</div>
+                  ) : (
+                    <div>
+                      <div className="text-lg font-bold">{formatTokenAmount(pfpPricing.animeAmount)} $ANIME</div>
+                      <div className="text-sm text-muted-foreground">
+                        ≈ {pfpPricing.usdPrice.toFixed(2)} USDT
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        This will be charged immediately
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Are you sure you want to change your profile picture? This action will charge your wallet.
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => setPfpConfirmDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    className="flex-1"
+                    onClick={handleConfirmPFP}
+                    disabled={pfpLoading || pfpPricing.loading}
+                  >
+                    {pfpLoading ? 'Processing...' : 'Confirm & Pay'}
+                  </Button>
                 </div>
               </div>
             </DialogContent>
