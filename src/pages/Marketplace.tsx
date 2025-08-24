@@ -383,77 +383,98 @@ export default function Marketplace() {
         )}
       </div>
 
-      {/* Boosted NFTs Section */}
-      {activeTab === "nfts" && boostedListings.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <Zap className="h-6 w-6 text-yellow-500" />
-            Boosted Items
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {boostedListings.slice(0, 8).map((listing) => (
-              <BoostedNFTCard key={listing.id} listing={listing} />
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Content */}
       {activeTab === "nfts" ? (
-        <div className={viewMode === "grid" 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          : "space-y-4"
-        }>
-          {sortedNfts.map((nft) => (
-             <Card 
-               key={nft.id}
-               className="group hover:shadow-lg transition-all cursor-pointer relative"
-               onClick={() => {
-                 const navIds = sortedNfts.map(n => n.id);
-                 const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-                 navigate(`/nft/${nft.id}?${queryString}`);
-               }}
-             >
-                <div className="aspect-square overflow-hidden rounded-t-lg">
-                  <img
-                    src={nft.image_url || "/placeholder.svg"}
-                    alt={nft.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold truncate">{nft.name}</h3>
-                    <div className="flex gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        disabled={likeLoading}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleLike(nft.id);
-                        }}
-                        className={isLiked(nft.id) ? "text-destructive" : "text-muted-foreground"}
-                      >
-                        <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
-                      </Button>
+        <div>
+          {/* Boosted NFTs Section */}
+          {boostedListings.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Zap className="h-6 w-6 text-yellow-500" />
+                Boosted Items
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {boostedListings.slice(0, 8).map((listing) => {
+                  // Create combined navigation array: boosted NFTs first, then regular NFTs
+                  const allNFTIds = [
+                    ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
+                    ...sortedNfts.map(nft => nft.id)
+                  ];
+                  const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                  
+                  return (
+                    <BoostedNFTCard 
+                      key={listing.id} 
+                      listing={listing} 
+                      navigationQuery={queryString}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Regular NFTs */}
+          <div className={viewMode === "grid" 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            : "space-y-4"
+          }>
+            {sortedNfts.map((nft) => {
+              // Create combined navigation array: boosted NFTs first, then regular NFTs
+              const allNFTIds = [
+                ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
+                ...sortedNfts.map(n => n.id)
+              ];
+              const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+              
+              return (
+                <Card 
+                  key={nft.id}
+                  className="group hover:shadow-lg transition-all cursor-pointer relative"
+                  onClick={() => navigate(`/nft/${nft.id}?${queryString}`)}
+                >
+                  <div className="aspect-square overflow-hidden rounded-t-lg">
+                    <img
+                      src={nft.image_url || "/placeholder.svg"}
+                      alt={nft.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold truncate">{nft.name}</h3>
+                      <div className="flex gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          disabled={likeLoading}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLike(nft.id);
+                          }}
+                          className={isLiked(nft.id) ? "text-destructive" : "text-muted-foreground"}
+                        >
+                          <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    {nft.is_listed && nft.price ? (
-                      <div className="text-lg font-bold text-primary">
-                        {nft.price} SOL
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">
-                        Not Listed
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-             </Card>
-           ))}
-         </div>
+                    <div className="flex items-center justify-between mt-2">
+                      {nft.is_listed && nft.price ? (
+                        <div className="text-lg font-bold text-primary">
+                          {nft.price} SOL
+                        </div>
+                      ) : (
+                        <div className="text-sm text-muted-foreground">
+                          Not Listed
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
       ) : activeTab === "collections" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCollections.map((collection) => (

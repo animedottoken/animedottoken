@@ -20,9 +20,10 @@ interface BoostedListing {
 
 interface BoostedNFTCardProps {
   listing: BoostedListing;
+  navigationQuery?: string;
 }
 
-export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
+export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const navigate = useNavigate();
   const [nftPrice, setNftPrice] = useState<number | null>(null);
@@ -96,7 +97,7 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
   };
 
   const handleViewDetails = () => {
-    navigate(`/nft/${listing.nft_id}?from=marketplace`);
+    navigate(`/nft/${listing.nft_id}?${navigationQuery || 'from=marketplace'}`);
   };
 
   return (
