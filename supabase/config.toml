@@ -20,3 +20,15 @@ verify_jwt = false
 
 [functions.create-boost]
 verify_jwt = false
+
+[functions.get-profile]
+verify_jwt = false
+
+[functions.set-nickname]
+verify_jwt = false
+
+[functions.unlock-pfp]
+verify_jwt = false
+
+[functions.set-pfp]
+verify_jwt = false

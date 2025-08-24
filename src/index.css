@@ -130,4 +130,29 @@ body {
   .required-field {
     @apply text-primary font-semibold;
   }
+
+  /* Profile rank border styles for gamified profiles */
+  .pfp-border-bronze {
+    border: 3px solid hsl(32, 95%, 44%);
+    box-shadow: 0 0 15px hsla(32, 95%, 44%, 0.3);
+  }
+
+  .pfp-border-silver {
+    border: 3px solid hsl(210, 18%, 55%);
+    box-shadow: 0 0 15px hsla(210, 18%, 55%, 0.3);
+  }
+
+  .pfp-border-gold {
+    border: 3px solid hsl(48, 100%, 67%);
+    box-shadow: 0 0 15px hsla(48, 100%, 67%, 0.3);
+  }
+
+  .pfp-border-diamond {
+    border: 3px solid hsl(184, 81%, 56%);
+    box-shadow: 0 0 15px hsla(184, 81%, 56%, 0.3);
+  }
+
+  .pfp-border-default {
+    border: 3px solid hsl(var(--border));
+  }
 }

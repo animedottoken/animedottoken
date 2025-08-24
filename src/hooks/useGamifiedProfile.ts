@@ -1,0 +1,190 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+export interface GamifiedProfile {
+  wallet_address: string;
+  nickname?: string;
+  trade_count: number;
+  profile_rank: 'DEFAULT' | 'BRONZE' | 'SILVER' | 'GOLD' | 'DIAMOND';
+  pfp_unlock_status: boolean;
+  current_pfp_nft_mint_address?: string;
+  profile_image_url?: string;
+}
+
+export interface UserNFT {
+  mint_address: string;
+  name: string;
+  image_url?: string;
+  symbol?: string;
+}
+
+export const useGamifiedProfile = () => {
+  const [profile, setProfile] = useState<GamifiedProfile | null>(null);
+  const [userNFTs, setUserNFTs] = useState<UserNFT[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const [pfpLoading, setPfpLoading] = useState(false);
+  const { publicKey, connected } = useSolanaWallet();
+
+  const fetchProfile = useCallback(async () => {
+    if (!connected || !publicKey) {
+      setProfile(null);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-profile', {
+        body: { wallet_address: publicKey },
+      });
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      toast.error('Failed to load profile');
+    } finally {
+      setLoading(false);
+    }
+  }, [connected, publicKey]);
+
+  const fetchUserNFTs = useCallback(async () => {
+    if (!connected || !publicKey) {
+      setUserNFTs([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('nfts')
+        .select('mint_address, name, image_url, symbol')
+        .eq('owner_address', publicKey);
+
+      if (error) throw error;
+      setUserNFTs(data || []);
+    } catch (err) {
+      console.error('Error fetching user NFTs:', err);
+      toast.error('Failed to load your NFTs');
+    }
+  }, [connected, publicKey]);
+
+  const setNickname = useCallback(async (nickname: string) => {
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
+      return false;
+    }
+
+    setNicknameLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('set-nickname', {
+        body: { nickname, wallet_address: publicKey },
+      });
+
+      if (error) throw error;
+      
+      toast.success(`Nickname "${nickname}" set successfully!`);
+      await fetchProfile(); // Refresh profile
+      return true;
+    } catch (err: any) {
+      console.error('Error setting nickname:', err);
+      toast.error(err.message || 'Failed to set nickname');
+      return false;
+    } finally {
+      setNicknameLoading(false);
+    }
+  }, [connected, publicKey, fetchProfile]);
+
+  const unlockPFP = useCallback(async (transactionSignature: string) => {
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
+      return false;
+    }
+
+    setPfpLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('unlock-pfp', {
+        body: { wallet_address: publicKey, transaction_signature: transactionSignature },
+      });
+
+      if (error) throw error;
+      
+      toast.success('PFP feature unlocked successfully!');
+      await fetchProfile(); // Refresh profile
+      return true;
+    } catch (err: any) {
+      console.error('Error unlocking PFP:', err);
+      toast.error(err.message || 'Failed to unlock PFP feature');
+      return false;
+    } finally {
+      setPfpLoading(false);
+    }
+  }, [connected, publicKey, fetchProfile]);
+
+  const setPFP = useCallback(async (nftMintAddress: string) => {
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
+      return false;
+    }
+
+    setPfpLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('set-pfp', {
+        body: { nft_mint_address: nftMintAddress, wallet_address: publicKey },
+      });
+
+      if (error) throw error;
+      
+      toast.success('Profile picture updated successfully!');
+      await fetchProfile(); // Refresh profile
+      return true;
+    } catch (err: any) {
+      console.error('Error setting PFP:', err);
+      toast.error(err.message || 'Failed to set profile picture');
+      return false;
+    } finally {
+      setPfpLoading(false);
+    }
+  }, [connected, publicKey, fetchProfile]);
+
+  const getRankColor = useCallback((rank: string) => {
+    switch (rank) {
+      case 'BRONZE': return 'border-amber-600';
+      case 'SILVER': return 'border-slate-400';
+      case 'GOLD': return 'border-yellow-500';
+      case 'DIAMOND': return 'border-cyan-400';
+      default: return 'border-border';
+    }
+  }, []);
+
+  const getRankBadge = useCallback((rank: string) => {
+    switch (rank) {
+      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600' };
+      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400' };
+      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500' };
+      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400' };
+      default: return { text: 'Rookie', color: 'bg-muted' };
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+    fetchUserNFTs();
+  }, [fetchProfile, fetchUserNFTs]);
+
+  return {
+    profile,
+    userNFTs,
+    loading,
+    nicknameLoading,
+    pfpLoading,
+    setNickname,
+    unlockPFP,
+    setPFP,
+    getRankColor,
+    getRankBadge,
+    fetchProfile,
+    fetchUserNFTs,
+  };
+};
