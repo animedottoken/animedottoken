@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
@@ -34,26 +35,12 @@ export default function Profile() {
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
   const nftLikes = profile?.wallet_address ? getCreatorNFTLikeCount(profile.wallet_address) : 0;
   
-  const [editingNickname, setEditingNickname] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
-  const [newNickname, setNewNickname] = useState('');
   const [newBio, setNewBio] = useState('');
   
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
-
-  const handleNicknameUpdate = async () => {
-    if (!newNickname.trim()) {
-      toast.error('Please enter a nickname');
-      return;
-    }
-    
-    const success = await setNickname(newNickname.trim(), 'simulated_transaction_signature');
-    if (success) {
-      setEditingNickname(false);
-      setNewNickname('');
-    }
-  };
+  const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
 
   const handleBioUpdate = async () => {
     if (!newBio.trim()) {
@@ -290,37 +277,17 @@ export default function Profile() {
             
             <div className="mt-2">
               <div className="flex items-center gap-2 mb-1">
-                {editingNickname ? (
-                  <div className="flex items-center gap-2">
-                    <Input 
-                      value={newNickname} 
-                      onChange={(e) => setNewNickname(e.target.value)}
-                      placeholder="Enter nickname"
-                      className="w-48"
-                    />
-                    <Button size="sm" onClick={handleNicknameUpdate} disabled={nicknameLoading}>
-                      Save
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setEditingNickname(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-bold">{profile?.nickname || 'Set Nickname'}</h2>
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      onClick={() => {
-                        setNewNickname(profile?.nickname || '');
-                        setEditingNickname(true);
-                      }}
+                      onClick={() => setNicknameDialogOpen(true)}
                       className="p-1 h-auto"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
-                )}
                 
                 {profile?.profile_rank && (
                   <Badge className={getRankBadge(profile.profile_rank).color}>
@@ -352,9 +319,9 @@ export default function Profile() {
                         Cancel
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      First bio change is free. Next changes cost 2 USDT.
-                    </p>
+                     <p className="text-xs text-muted-foreground">
+                       First bio change is free. Next changes cost 2 USDT.
+                     </p>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -427,6 +394,30 @@ export default function Profile() {
         {profile && (<span>{profileLikes} likes • {nftLikes} NFT likes</span>)}
       </div>
 
+      {/* Collections Grid */}
+      <h2 className="text-xl font-semibold mb-4">My Collections</h2>
+      {loading ? (
+        <p>Loading collections...</p>
+      ) : (
+        renderCollectionsGrid()
+      )}
+
+      {/* Nickname Edit Dialog */}
+      <NicknameEditDialog
+        open={nicknameDialogOpen}
+        onOpenChange={setNicknameDialogOpen}
+        profile={profile}
+        loading={nicknameLoading}
+        currentNickname={profile?.nickname}
+        onConfirm={async (nickname) => {
+          const ok = await setNickname(nickname, 'simulated_transaction_signature');
+          if (ok) {
+            toast.success('Nickname updated successfully!');
+          }
+          return ok;
+        }}
+      />
+
       {/* PFP Selection Dialog */}
       <PfpPickerDialog
         open={pfpDialogOpen}
@@ -456,15 +447,6 @@ export default function Profile() {
           return ok;
         }}
       />
-
-
-      {/* Collections Grid */}
-      <h2 className="text-xl font-semibold mb-4">My Collections</h2>
-      {loading ? (
-        <p>Loading collections...</p>
-      ) : (
-        renderCollectionsGrid()
-      )}
     </div>
   );
 }
