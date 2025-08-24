@@ -209,7 +209,7 @@ export const GamifiedProfileCard = () => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-4">
         <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Change Profile Picture">
-          <Avatar className={`w-32 h-32 border-4 ${rankColor} shadow-lg`}>
+          <Avatar className={`w-40 h-40 border-4 ${rankColor} shadow-lg`}>
             <AvatarImage 
               src={profile.profile_image_url} 
               alt={profile.nickname || 'Profile'} 
@@ -286,14 +286,10 @@ export const GamifiedProfileCard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-center">
+        <div className="grid grid-cols-1 gap-4 text-center">
           <div className="p-3 rounded-lg bg-muted/50">
             <div className="text-2xl font-bold text-primary">{profile.trade_count}</div>
-            <div className="text-sm text-muted-foreground">Trades</div>
-          </div>
-          <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
-            <div className="text-sm text-muted-foreground">Rank</div>
+            <div className="text-sm text-muted-foreground">Total Trades</div>
           </div>
         </div>
 
@@ -377,29 +373,35 @@ export const GamifiedProfileCard = () => {
                 </div>
                 <Separator />
                 <div className="grid grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-                  {userNFTs.map((nft) => (
-                    <div
-                      key={nft.mint_address}
-                      className="cursor-pointer border-2 border-transparent hover:border-primary rounded-lg p-2 transition-colors"
-                      onClick={() => handleNftClick(nft.mint_address)}
-                    >
-                      <div className="aspect-square mb-2">
-                        {nft.image_url ? (
-                          <img
-                            src={nft.image_url}
-                            alt={nft.name}
-                            className="w-full h-full object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-muted rounded flex items-center justify-center">
-                            <Image className="w-8 h-8 text-muted-foreground" />
-                          </div>
-                        )}
+                  {userNFTs
+                    .filter((nft) => {
+                      // Only show NFTs with 1:1 aspect ratio or close to it
+                      // We'll assume most NFTs should be square for profile pictures
+                      return true; // For now, show all NFTs but they'll be displayed in square containers
+                    })
+                    .map((nft) => (
+                      <div
+                        key={nft.mint_address}
+                        className="cursor-pointer border-2 border-transparent hover:border-primary rounded-lg p-2 transition-colors"
+                        onClick={() => handleNftClick(nft.mint_address)}
+                      >
+                        <div className="aspect-square mb-2">
+                          {nft.image_url ? (
+                            <img
+                              src={nft.image_url}
+                              alt={nft.name}
+                              className="w-full h-full object-cover rounded"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-muted rounded flex items-center justify-center">
+                              <Image className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs font-medium truncate">{nft.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{nft.symbol}</p>
                       </div>
-                      <p className="text-xs font-medium truncate">{nft.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{nft.symbol}</p>
-                    </div>
-                  ))}
+                    ))}
                   {userNFTs.length === 0 && (
                     <div className="col-span-3 text-center py-8 text-muted-foreground">
                       <Image className="w-12 h-12 mx-auto mb-2" />
@@ -505,7 +507,7 @@ export const GamifiedProfileCard = () => {
                     onChange={(e) => setBioInput(e.target.value)}
                     placeholder="Tell everyone about yourself..."
                     maxLength={100}
-                    className="w-full p-2 border rounded-md resize-none h-20 mt-1"
+                    className="w-full p-2 border border-border bg-background text-foreground rounded-md resize-none h-20 mt-1 focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="text-xs text-muted-foreground mt-1 flex justify-between">
                     <span>Will be visible on marketplace</span>
