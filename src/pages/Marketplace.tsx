@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ChevronLeft, ChevronRight, Star, Grid3x3 } from "lucide-react";
+import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ChevronLeft, ChevronRight, Grid3x3 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
@@ -110,11 +110,11 @@ export default function Marketplace() {
 
   const getRankBadge = (rank: string) => {
     switch (rank) {
-      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600' };
-      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400' };
-      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500' };
-      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400' };
-      default: return { text: 'Starter', color: 'bg-muted' };
+      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600', icon: '🥉' };
+      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400', icon: '🥈' };
+      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500', icon: '🥇' };
+      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400', icon: '🏆' };
+      default: return { text: 'Starter', color: 'bg-muted', icon: '🌟' };
     }
   };
   
@@ -630,7 +630,7 @@ export default function Marketplace() {
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1">
-                            <span>⭐</span>
+                            <span>{getRankBadge(creator.profile_rank).icon}</span>
                             <span>{getRankBadge(creator.profile_rank).text}</span>
                           </div>
                         </div>
