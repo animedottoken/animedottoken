@@ -15,6 +15,7 @@ import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -320,24 +321,47 @@ export default function Profile() {
               <div className="flex items-center justify-center mb-2">
                 <button
                   onClick={() => profile?.wallet_address && toggleFollow(profile.wallet_address)}
-                  className="transition-colors duration-200"
+                  className="transition-colors duration-200 mr-2"
                   disabled={!profile?.wallet_address}
                 >
-                  <Heart className={`w-6 h-6 mr-2 ${
+                  <Heart className={`w-5 h-5 ${
                     profile?.wallet_address && isFollowing(profile.wallet_address)
                       ? 'fill-red-500 text-red-500' 
                       : 'text-muted-foreground hover:text-red-500'
                   }`} />
                 </button>
-                <span className="text-2xl font-bold text-foreground mr-1">
-                  {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
-                </span>
-                <span className="text-2xl font-bold text-foreground mx-2">/</span>
-                <span className="text-2xl font-bold text-foreground">
-                  {profile?.trade_count || 0}
-                </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex items-center">
+                        <span className="text-2xl font-bold text-foreground mr-1">
+                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
+                        </span>
+                        <span className="text-2xl font-bold text-foreground">
+                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                        </span>
+                        <span className="text-2xl font-bold text-foreground mx-2">/</span>
+                        <span className="text-2xl font-bold text-foreground">
+                          {profile?.trade_count || 0}
+                        </span>
+                        <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
+                          <Info className="w-3 h-3 text-white" />
+                        </div>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-sm space-y-1">
+                        <p className="font-semibold">🏆 Diamond: 1,000+ trades</p>
+                        <p className="font-semibold">🥇 Gold: 250+ trades</p>
+                        <p className="font-semibold">🥈 Silver: 50+ trades</p>
+                        <p className="font-semibold">🥉 Bronze: 10+ trades</p>
+                        <p className="font-semibold">🌟 Starter: 0-9 trades</p>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <p className="text-sm text-muted-foreground">Follow / Trades</p>
+              <p className="text-sm text-muted-foreground">Rank / Trades</p>
             </CardContent>
           </Card>
 
