@@ -414,8 +414,6 @@ export const GamifiedProfileCard = () => {
                       key={nft.mint_address}
                       className="cursor-pointer group"
                       onClick={() => handleNftClick(nft.mint_address)}
-                      onMouseEnter={() => setSelectedNftForPfp(nft.mint_address)}
-                      onMouseLeave={() => setSelectedNftForPfp(null)}
                     >
                       <div className="relative p-2">
                         {/* Circular NFT Preview */}
