@@ -170,7 +170,7 @@ export default function Profile() {
           </TabsTrigger>
           <TabsTrigger value="favorites" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
-            Favorites
+            Favorites ({favorites.length})
           </TabsTrigger>
         </TabsList>
 
