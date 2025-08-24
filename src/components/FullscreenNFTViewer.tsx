@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Maximize2, Download, Share2 } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Maximize2, Share2, ShoppingCart, Gavel, DollarSign, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -15,6 +15,12 @@ interface FullscreenNFTViewerProps {
   canNavigate?: boolean;
   currentIndex?: number;
   totalItems?: number;
+  price?: number;
+  currency?: string;
+  isListed?: boolean;
+  royaltyPercentage?: number;
+  onBuyNow?: () => void;
+  onPlaceBid?: () => void;
 }
 
 export const FullscreenNFTViewer = ({
@@ -27,7 +33,13 @@ export const FullscreenNFTViewer = ({
   onNavigate,
   canNavigate = false,
   currentIndex = 1,
-  totalItems = 1
+  totalItems = 1,
+  price,
+  currency = 'SOL',
+  isListed = false,
+  royaltyPercentage,
+  onBuyNow,
+  onPlaceBid
 }: FullscreenNFTViewerProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -135,19 +147,8 @@ export const FullscreenNFTViewer = ({
     }
   };
 
-  const handleDownload = () => {
-    try {
-      const link = document.createElement('a');
-      link.href = nftImage;
-      link.download = `${nftName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success('Image download started');
-    } catch (error) {
-      console.error('Error downloading image:', error);
-      toast.error('Failed to download image');
-    }
+  const calculateFee = (price: number) => {
+    return price * 0.025; // 2.5% fee
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -165,45 +166,88 @@ export const FullscreenNFTViewer = ({
       onClick={handleOverlayClick}
     >
       {/* Header Controls */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-4">
-        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="text-xs">
-              NFT
-            </Badge>
-            <div>
-              <h2 className="text-white font-semibold text-lg">{nftName}</h2>
-              {collectionName && (
-                <p className="text-white/70 text-sm">{collectionName}</p>
-              )}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/90 via-black/60 to-transparent p-4 pb-8">
+        <div className="max-w-screen-xl mx-auto space-y-4">
+          {/* Top Row - Title and Controls */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-xs">
+                NFT
+              </Badge>
+              <div>
+                <h2 className="text-white font-semibold text-lg">{nftName}</h2>
+                {collectionName && (
+                  <p className="text-white/70 text-sm">{collectionName}</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="text-white hover:bg-white/10"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-white hover:bg-white/10"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleShare}
-              className="text-white hover:bg-white/10"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDownload}
-              className="text-white hover:bg-white/10"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-white hover:bg-white/10"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          {/* Bottom Row - Price and Actions */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              {isListed && price && (
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-green-400" />
+                  <div>
+                    <p className="text-white font-semibold">{price.toFixed(4)} {currency}</p>
+                    <p className="text-white/70 text-xs">+ {calculateFee(price).toFixed(4)} {currency} fee</p>
+                  </div>
+                </div>
+              )}
+              
+              {royaltyPercentage && (
+                <div className="flex items-center gap-2">
+                  <Award className="h-4 w-4 text-purple-400" />
+                  <div>
+                    <p className="text-white/70 text-xs">Royalty</p>
+                    <p className="text-white text-sm">{royaltyPercentage}%</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Action buttons */}
+            {isListed && price && (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={onBuyNow}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Buy Now
+                </Button>
+                <Button
+                  onClick={onPlaceBid}
+                  size="sm"
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  <Gavel className="h-4 w-4 mr-2" />
+                  Place Bid
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -245,8 +289,8 @@ export const FullscreenNFTViewer = ({
       )}
 
       {/* Main Image Container */}
-      <div className="absolute inset-0 flex items-center justify-center p-4 pt-20 pb-20">
-        <div className="relative max-w-full max-h-full">
+      <div className="absolute inset-0 flex items-center justify-center p-4 pt-32 pb-20">
+        <div className="relative w-full h-full flex items-center justify-center">
           {!isImageLoaded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -257,7 +301,7 @@ export const FullscreenNFTViewer = ({
             ref={imageRef}
             src={nftImage}
             alt={nftName}
-            className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
+            className={`max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300 ${
               isImageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
             loading="eager"

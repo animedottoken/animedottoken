@@ -629,6 +629,12 @@ export default function NFTDetail() {
           canNavigate={navigation.canNavigate}
           currentIndex={navigation.currentIndex}
           totalItems={navigation.totalItems}
+          price={nft.price}
+          currency={nft.currency}
+          isListed={nft.is_listed}
+          royaltyPercentage={nft.royalty_percentage}
+          onBuyNow={handleBuyNow}
+          onPlaceBid={() => setIsBidModalOpen(true)}
         />
       )}
 
