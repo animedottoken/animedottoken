@@ -508,8 +508,8 @@ export default function Profile() {
 
       {/* Content Tabs */}
       <Tabs defaultValue="collections" className="w-full">
-        <div className="w-full overflow-x-auto overflow-y-hidden pb-2">
-          <TabsList className="flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground w-full min-w-max md:justify-center">
+        <div className="w-full overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" >
+          <TabsList className="flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground min-w-max md:mx-auto md:justify-center">
             <TabsTrigger 
               value="collections" 
               className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
