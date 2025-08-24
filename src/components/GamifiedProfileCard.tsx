@@ -93,7 +93,10 @@ export const GamifiedProfileCard = () => {
     setSelectedNftForPfp(nftMintAddress);
     // Close the selection dialog before opening confirmation to avoid overlay conflicts
     setPfpDialogOpen(false);
-    setPfpConfirmDialogOpen(true);
+    // Wait a tick for the close animation to finish so the old overlay unmounts
+    setTimeout(() => {
+      setPfpConfirmDialogOpen(true);
+    }, 150);
   };
 
   const handleConfirmPFP = async () => {
