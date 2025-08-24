@@ -480,9 +480,9 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <Card className="group hover:shadow-lg transition-all duration-300">
               <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 flex items-center justify-center">
-                <Avatar className="w-20 h-20 border-4 border-primary/20">
+                <Avatar className="w-32 h-32 border-4 border-primary/20">
                   <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
-                  <AvatarFallback className="text-xl font-bold bg-primary/10">
+                  <AvatarFallback className="text-2xl font-bold bg-primary/10">
                     {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -492,22 +492,22 @@ export default function Profile() {
                 <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
                   {profile?.nickname || 'Anonymous User'}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-2 truncate">
-                  {publicKey ? `${publicKey.slice(0,4)}...${publicKey.slice(-4)}` : ''}
-                </p>
                 
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1">
-                    <Grid3x3 className="w-3 h-3 text-primary" />
-                    <span className="text-xs">{nfts?.length || 0} NFTs</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm">
-                      {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
-                    </span>
-                    <span className="text-xs">{profile?.trade_count || 0}</span>
-                  </div>
+                <div className="flex items-center gap-1 mb-2">
+                  <Heart className="w-4 h-4 text-destructive" />
+                  <span className="text-sm font-medium">{profileLikes} Profile Likes</span>
                 </div>
+                
+                {profile?.bio && (
+                  <p className="text-sm text-muted-foreground italic line-clamp-2">
+                    {profile.bio}
+                  </p>
+                )}
+                {!profile?.bio && (
+                  <p className="text-sm text-muted-foreground/60 italic">
+                    No bio added yet
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
