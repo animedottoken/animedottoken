@@ -349,49 +349,13 @@ export const GamifiedProfileCard = () => {
 
           {/* PFP Selection Dialog */}
           <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Choose Your Profile Picture</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">Payment Required</span>
-                    <DollarSign className="w-4 h-4 text-primary" />
-                  </div>
-                  {pfpPricing.loading ? (
-                    <div className="animate-pulse">Loading pricing...</div>
-                  ) : (
-                    <div>
-                      <div className="text-lg font-bold">{formatTokenAmount(pfpPricing.animeAmount)} $ANIME</div>
-                      <div className="text-sm text-muted-foreground">
-                        ≈ {pfpPricing.usdPrice.toFixed(2)} USDT
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Price updated every 30 seconds • Each PFP change requires payment
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <Separator />
-                
-                {/* Image Quality Guidelines */}
-                <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span className="font-medium text-blue-800 dark:text-blue-200 text-sm">Image Recommendations</span>
-                  </div>
-                  <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                    <div>• <strong>Best ratio:</strong> 1:1 (square images) for perfect display</div>
-                    <div>• <strong>Resolution:</strong> Minimum 400x400px, recommended 800x800px or higher</div>
-                    <div>• <strong>Quality:</strong> High quality images look better in your profile</div>
-                    <div>• <strong>Note:</strong> Non-square images will be cropped to fit the circular frame</div>
-                  </div>
-                </div>
-                <Separator />
-                
                 {/* Live Preview Section */}
-                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+                <div className="p-3 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
                       <div className="text-sm font-medium text-primary mb-2">Live Preview:</div>
