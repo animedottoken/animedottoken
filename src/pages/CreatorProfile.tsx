@@ -58,13 +58,41 @@ export default function CreatorProfile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Optimistic like toggle to update counts immediately
+  // Optimistic follow toggle to update counts immediately
+  const handleToggleFollow = async (creatorWallet: string) => {
+    const wasFollowing = isFollowing(creatorWallet);
+    const ok = await toggleFollow(creatorWallet);
+    if (ok) {
+      setCreator(prev => prev ? { 
+        ...prev, 
+        follower_count: Math.max(0, (prev.follower_count || 0) + (wasFollowing ? -1 : 1)) 
+      } : prev);
+    }
+  };
   const handleToggleLike = async (nftId: string) => {
     const wasLiked = isLiked(nftId);
     const ok = await toggleLike(nftId);
     if (ok) {
       setCreatorNFTs(prev => prev.map(n => n.id === nftId ? { ...n, likes_count: Math.max(0, n.likes_count + (wasLiked ? -1 : 1)) } : n));
       setCreator(prev => prev ? { ...prev, nft_likes_count: Math.max(0, (prev.nft_likes_count || 0) + (wasLiked ? -1 : 1)) } : prev);
+    }
+  };
+
+  // Refresh follower count for creator from DB (used for realtime events)
+  const refreshFollowerCount = async () => {
+    try {
+      if (!wallet) return;
+      const { data: stats } = await supabase
+        .from('creators_public_stats')
+        .select('follower_count')
+        .eq('wallet_address', wallet)
+        .single();
+
+      if (stats) {
+        setCreator(prev => prev ? { ...prev, follower_count: stats.follower_count || 0 } : prev);
+      }
+    } catch (e) {
+      console.error('Error refreshing follower count:', e);
     }
   };
 
@@ -91,12 +119,15 @@ export default function CreatorProfile() {
     }
   };
 
-  // Subscribe to realtime like changes and refresh counts
+  // Subscribe to realtime changes and refresh counts
   useEffect(() => {
     const channel = supabase
       .channel('creator-profile-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'nft_likes' }, () => {
         refreshLikeCounts();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'creator_follows' }, () => {
+        refreshFollowerCount();
       })
       .subscribe();
 
@@ -347,7 +378,7 @@ export default function CreatorProfile() {
                 <button
                   aria-label={isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator'}
                   disabled={followLoading}
-                  onClick={() => toggleFollow(creator.wallet_address)}
+                  onClick={() => handleToggleFollow(creator.wallet_address)}
                   className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
                 >
                   <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
