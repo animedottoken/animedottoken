@@ -97,6 +97,27 @@ export default function Marketplace() {
   
   const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   
+  // Helper functions for rank display
+  const getRankColor = (rank: string) => {
+    switch (rank) {
+      case 'BRONZE': return 'border-amber-600';
+      case 'SILVER': return 'border-slate-400';
+      case 'GOLD': return 'border-yellow-500';
+      case 'DIAMOND': return 'border-cyan-400';
+      default: return 'border-border';
+    }
+  };
+
+  const getRankBadge = (rank: string) => {
+    switch (rank) {
+      case 'BRONZE': return { text: 'Bronze', color: 'bg-amber-600' };
+      case 'SILVER': return { text: 'Silver', color: 'bg-slate-400' };
+      case 'GOLD': return { text: 'Gold', color: 'bg-yellow-500' };
+      case 'DIAMOND': return { text: 'Diamond', color: 'bg-cyan-400' };
+      default: return { text: 'Starter', color: 'bg-muted' };
+    }
+  };
+  
   // Update creator follower count locally when follow status changes
   const handleCreatorFollow = async (creatorWallet: string) => {
     const isCurrentlyFollowing = isFollowing(creatorWallet);
@@ -540,85 +561,112 @@ export default function Marketplace() {
                 navigate(`/profile/${creator.wallet_address}?${queryString}`);
               }}
             >
-              <CardContent className="p-6 text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
-                  <AvatarImage 
-                    src={creator.profile_image_url} 
-                    alt={creator.nickname || creator.wallet_address} 
-                  />
-                  <AvatarFallback className="text-xl">
-                    {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+               <CardContent className="p-6 text-center">
+                {/* Avatar with rank border */}
+                <div className="relative mb-4">
+                  <Avatar className={`w-24 h-24 mx-auto border-2 ${getRankColor(creator.profile_rank)}`}>
+                    <AvatarImage 
+                      src={creator.profile_image_url} 
+                      alt={creator.nickname || creator.wallet_address} 
+                    />
+                    <AvatarFallback className="text-xl">
+                      {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {/* Rank badge */}
+                  {creator.profile_rank !== 'DEFAULT' && (
+                    <Badge className={`absolute -bottom-1 -right-1 ${getRankBadge(creator.profile_rank).color} text-white text-xs px-1`}>
+                      <Crown className="w-2 h-2 mr-0.5" />
+                      {getRankBadge(creator.profile_rank).text[0]}
+                    </Badge>
+                  )}
+                </div>
 
                 {/* Profile Info Section */}
                 <div className="mb-4">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="font-semibold">
-                      {creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}
+                      {creator.nickname || 'Anonymous'}
                     </h3>
                     {creator.verified && (
                       <Badge variant="secondary" className="text-xs">✓</Badge>
                     )}
-                  </div>
-                  
-                  {/* Profile Stats: Trades + Level */}
-                  <div className="flex items-center justify-center gap-3 mb-2">
-                    <span className="text-sm text-muted-foreground">{creator.trade_count} trades</span>
+                    {/* Follow button */}
                     <button
-                      onClick={() => toggleFollow(creator.wallet_address)}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
-                      aria-label={isFollowing(creator.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!publicKey) {
+                          toast.error('Please connect your wallet to like creators');
+                          return;
+                        }
+                        handleCreatorFollow(creator.wallet_address);
+                      }}
+                      className="inline-flex items-center justify-center p-1 rounded-md hover:bg-muted transition-colors"
+                      aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
                       disabled={followLoading}
                     >
-                      <Heart className={`w-4 h-4 ${isFollowing(creator.wallet_address) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
-                      <span className="text-xs">{isFollowing(creator.wallet_address) ? 'Following' : 'Follow'}</span>
+                      <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-4 h-4`} />
                     </button>
                   </div>
+                  
+                  {/* Wallet Address */}
+                  <p className="text-sm text-muted-foreground">
+                    {creator.wallet_address.slice(0, 4)}...{creator.wallet_address.slice(-4)}
+                  </p>
                 </div>
                 
+                {/* Bio */}
                 {creator.bio && (
-                  <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {creator.bio}
                   </p>
                 )}
 
-                {/* Follow Button - positioned after bio, before stats */}
+                {/* Follow status button */}
                 <div className="mb-4">
                   <button
-                    aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
-                    disabled={followLoading}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!publicKey) {
-                        toast.error('Please connect your wallet to like creators');
+                        toast.error('Please connect your wallet to follow creators');
                         return;
                       }
-                      handleCreatorFollow(creator.wallet_address);
+                      toggleFollow(creator.wallet_address);
                     }}
-                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full border transition-all duration-200 hover:scale-105"
+                    aria-label={isFollowing(creator.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
+                    disabled={followLoading}
                   >
-                    <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
+                    <Heart className={`w-3 h-3 ${isFollowing(creator.wallet_address) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
+                    <span className="text-xs">{isFollowing(creator.wallet_address) ? 'Following' : 'Follow'}</span>
                   </button>
                 </div>
                 
-                {/* Content Stats */}
-                <div className="flex items-center justify-center gap-4 text-sm mb-3">
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium text-primary">{creator.created_nfts}</span>
-                    <span className="text-muted-foreground">NFTs</span>
+                {/* Stats in profile header format */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {/* Rank / Trades */}
+                  <div className="text-center p-2 rounded-lg bg-muted/50">
+                    <div className="text-sm font-medium">
+                      ⭐ {getRankBadge(creator.profile_rank).text} / {creator.trade_count}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Rank / Trades</div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium text-primary">{creator.created_collections}</span>
-                    <span className="text-muted-foreground">Collections</span>
+                  
+                  {/* NFTs / Collections */}
+                  <div className="text-center p-2 rounded-lg bg-muted/50">
+                    <div className="text-sm font-medium text-primary">
+                      🎨 {creator.created_nfts} / {creator.created_collections}
+                    </div>
+                    <div className="text-xs text-muted-foreground">NFTs / Collections</div>
                   </div>
-                </div>
-                 
-                {/* Activity Stats */}
-                <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-                  <span>{creator.follower_count} likes</span>
-                  <span>•</span>
-                  <span>{creator.nft_likes_count} NFT likes</span>
+                  
+                  {/* Profile Likes / NFT Likes */}
+                  <div className="text-center p-2 rounded-lg bg-muted/50">
+                    <div className="text-sm font-medium text-destructive">
+                      ❤️ {creator.follower_count}/{creator.nft_likes_count}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Profile Likes / NFT Likes</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
