@@ -23,10 +23,11 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { BioEditDialog } from '@/components/BioEditDialog';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -36,9 +37,11 @@ export default function Profile() {
   const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
   const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
-  const { toggleFollow, isFollowing } = useCreatorFollows();
+  const { toggleFollow, isFollowing, followedCreators } = useCreatorFollows();
   
-  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(profile?.wallet_address ? [profile.wallet_address] : []);
+  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
+    profile?.wallet_address ? [profile.wallet_address, ...followedCreators] : followedCreators
+  );
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
   const nftLikes = profile?.wallet_address ? getCreatorNFTLikeCount(profile.wallet_address) : 0;
   
@@ -46,6 +49,36 @@ export default function Profile() {
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
   const [bioDialogOpen, setBioDialogOpen] = useState(false);
+  const [followedProfiles, setFollowedProfiles] = useState<any[]>([]);
+  const [loadingProfiles, setLoadingProfiles] = useState(false);
+
+  // Fetch profile details for followed creators
+  useEffect(() => {
+    const fetchFollowedProfiles = async () => {
+      if (followedCreators.length === 0) {
+        setFollowedProfiles([]);
+        return;
+      }
+
+      setLoadingProfiles(true);
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('wallet_address, nickname, bio, profile_image_url')
+          .in('wallet_address', followedCreators);
+
+        if (error) throw error;
+        setFollowedProfiles(data || []);
+      } catch (error) {
+        console.error('Error fetching followed profiles:', error);
+        setFollowedProfiles([]);
+      } finally {
+        setLoadingProfiles(false);
+      }
+    };
+
+    fetchFollowedProfiles();
+  }, [followedCreators]);
 
   const renderCollectionsGrid = () => {
     if (collections.length === 0) {
@@ -477,46 +510,70 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="following" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <Card className="group hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  {/* Avatar */}
-                  <Avatar className="w-40 h-40 border-4 border-primary/20">
-                    <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
-                    <AvatarFallback className="text-3xl font-bold bg-primary/10">
-                      {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  {/* Name */}
-                  <h3 className="font-semibold text-xl group-hover:text-primary transition-colors">
-                    {profile?.nickname || 'Anonymous User'}
-                  </h3>
-                  
-                  {/* Profile Likes */}
-                  <div className="flex items-center gap-2" title="Profile Likes">
-                    <Heart className="w-5 h-5 text-destructive" />
-                    <span className="text-lg font-medium">{profileLikes}</span>
-                  </div>
-                  
-                  {/* Bio */}
-                  <div className="w-full">
-                    {profile?.bio && (
-                      <p className="text-base text-muted-foreground line-clamp-3 leading-relaxed">
-                        {profile.bio}
-                      </p>
-                    )}
-                    {!profile?.bio && (
-                      <p className="text-base text-muted-foreground/60 italic">
-                        No bio added yet
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {loadingProfiles ? (
+            <p>Loading followed profiles...</p>
+          ) : followedProfiles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {followedProfiles.map((followedProfile) => {
+                const followerCount = getCreatorFollowerCount(followedProfile.wallet_address);
+                return (
+                  <Card 
+                    key={followedProfile.wallet_address} 
+                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer aspect-square"
+                    onClick={() => navigate(`/profile/${followedProfile.wallet_address}`)}
+                  >
+                    <CardContent className="p-4 h-full flex flex-col">
+                      {/* Avatar */}
+                      <div className="flex-shrink-0 mb-3">
+                        <Avatar className="w-16 h-16 mx-auto">
+                          <AvatarImage 
+                            src={followedProfile.profile_image_url || '/placeholder.svg'} 
+                            alt="Profile" 
+                          />
+                          <AvatarFallback className="text-lg font-bold">
+                            {followedProfile.nickname?.charAt(0)?.toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      
+                      {/* Name */}
+                      <h3 className="font-semibold text-center mb-2 group-hover:text-primary transition-colors truncate">
+                        {followedProfile.nickname || 'Anonymous User'}
+                      </h3>
+                      
+                      {/* Profile Likes */}
+                      <div className="flex items-center justify-center gap-2 mb-3" title="Profile likes">
+                        <Heart className="w-4 h-4 text-destructive" />
+                        <span className="text-sm font-medium">{followerCount}</span>
+                      </div>
+                      
+                      {/* Bio */}
+                      <div className="flex-1 flex items-center">
+                        {followedProfile.bio ? (
+                          <p className="text-xs text-muted-foreground line-clamp-3 text-center">
+                            {followedProfile.bio}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground/60 italic text-center">
+                            No bio added yet
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">You haven't liked any profiles yet</p>
+              <p className="text-sm text-muted-foreground/70 mb-4">
+                Like profiles to see them here - including your own!
+              </p>
+              <Button onClick={() => navigate('/marketplace')}>Explore Creators</Button>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
