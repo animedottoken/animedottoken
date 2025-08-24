@@ -736,6 +736,13 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_nft_likes_stats: {
+        Row: {
+          creator_wallet: string | null
+          nft_likes_count: number | null
+        }
+        Relationships: []
+      }
       creators_public_stats: {
         Row: {
           follower_count: number | null
