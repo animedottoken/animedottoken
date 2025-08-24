@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3 } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
@@ -310,7 +310,7 @@ export default function Profile() {
           <Card className="bg-primary/5 border-primary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <Star className="w-5 h-5 text-primary mr-1" />
+                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
                 <span className="text-2xl font-bold text-primary">
                   {nfts?.length || 0} / {collections?.length || 0}
                 </span>
