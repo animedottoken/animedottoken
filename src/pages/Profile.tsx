@@ -15,6 +15,7 @@ import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
@@ -33,6 +34,7 @@ export default function Profile() {
   const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
   const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
   const { nfts } = useUserNFTs();
+  const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
   
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(profile?.wallet_address ? [profile.wallet_address] : []);
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
@@ -423,9 +425,48 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="liked-nfts" className="mt-6">
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">Coming soon - Your liked NFTs will appear here</p>
-          </div>
+          {likedNFTsLoading ? (
+            <p>Loading liked NFTs...</p>
+          ) : likedNFTs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {likedNFTs.map((nft) => (
+                <Card 
+                  key={nft.id} 
+                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/nft/${nft.id}`)}
+                >
+                  <div className="aspect-square relative overflow-hidden">
+                    <ImageLazyLoad
+                      src={nft.image_url}
+                      alt={nft.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fallbackSrc="/placeholder.svg"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
+                      {nft.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground truncate">
+                      Creator: {nft.creator_address.slice(0, 8)}...{nft.creator_address.slice(-8)}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      Liked on {new Date(nft.liked_at).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No liked NFTs yet</p>
+              <p className="text-sm text-muted-foreground/70 mb-4">
+                Explore the marketplace and like NFTs to see them here
+              </p>
+              <Button onClick={() => navigate('/marketplace')}>Browse NFTs</Button>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="following" className="mt-6">
