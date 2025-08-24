@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ANIME_PAIR_ADDRESS } from '@/constants/token';
 
 interface PricingInfo {
   usdPrice: number;
@@ -22,11 +23,10 @@ export const useAnimePricing = (usdAmount: number) => {
       try {
         setPricingInfo(prev => ({ ...prev, loading: true, error: null }));
         
-        // Use DexScreener like the main page - using a mock pair address for now
-        // Replace with actual ANIME token pair address
-        const pairAddress = "ANIME_PAIR_ADDRESS_HERE";
+        // Use DexScreener like the main page
+        const pairAddress = ANIME_PAIR_ADDRESS;
         
-        let animePrice = 0.02; // Fallback price: 1 ANIME = 0.02 USDT
+        let animePrice = 0.00004; // Fallback price: ~$0.00004 per ANIME
         
         try {
           const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/solana/${pairAddress}`);
@@ -52,11 +52,11 @@ export const useAnimePricing = (usdAmount: number) => {
         });
       } catch (err) {
         // Fallback calculation
-        const fallbackAnimeAmount = Math.ceil(usdAmount / 0.02);
+        const fallbackAnimeAmount = Math.ceil(usdAmount / 0.00004);
         setPricingInfo({
           usdPrice: usdAmount,
           animeAmount: fallbackAnimeAmount,
-          animePrice: 0.02,
+          animePrice: 0.00004,
           loading: false,
           error: err instanceof Error ? err.message : 'Using fallback pricing'
         });
