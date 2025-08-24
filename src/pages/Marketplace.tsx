@@ -630,8 +630,7 @@ export default function Marketplace() {
                       <TooltipTrigger asChild>
                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
                           <div className="text-sm font-medium flex items-center justify-center gap-1">
-                            <Star className="w-3 h-3" />
-                            {getRankBadge(creator.profile_rank).text}
+                            ⭐ {getRankBadge(creator.profile_rank).text}
                           </div>
                         </div>
                       </TooltipTrigger>
