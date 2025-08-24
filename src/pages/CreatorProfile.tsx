@@ -68,6 +68,9 @@ export default function CreatorProfile() {
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < navCreators.length - 1;
 
+  // Debug logging
+  console.log('Navigation debug:', { from, navParam, navCreators, currentIndex, wallet });
+
   // Navigation functions
   const handlePrevious = () => {
     if (hasPrevious) {
@@ -320,8 +323,8 @@ export default function CreatorProfile() {
           Back to {from === 'marketplace' ? 'Marketplace' : 'Creators'}
         </Button>
 
-        {/* Navigation Controls */}
-        {navCreators.length > 1 && (
+        {/* Navigation Controls - Show for testing even with one creator */}
+        {navCreators.length >= 1 && (
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
