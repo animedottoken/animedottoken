@@ -64,7 +64,7 @@ export default function Profile() {
     if (success) {
       setEditingBio(false);
       setNewBio('');
-      toast.success('Bio updated! First change is free, next changes will cost 2 USD.');
+      toast.success('Bio updated! First change is free, next changes will cost 2 USDT.');
     }
   };
 
@@ -341,7 +341,7 @@ export default function Profile() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      First bio change is free. Next changes cost 2 USD.
+                      First bio change is free. Next changes cost 2 USDT.
                     </p>
                   </div>
                 ) : (

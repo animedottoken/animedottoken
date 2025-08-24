@@ -74,7 +74,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
                 <Alert className="bg-primary/10 border-primary/30 text-primary">
                   <Coins className="h-4 w-4" />
                   <AlertDescription>
-                    This change will cost <strong>{pricingLoading ? 'Calculating...' : `${animeAmount.toLocaleString()} ANIME`}</strong> (~$2.00 USD)
+                    Profile picture change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
                   </AlertDescription>
                 </Alert>
               )}
@@ -111,7 +111,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
                 htmlFor="payment-confirmation" 
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                I understand that I will be charged <strong>{pricingLoading ? 'calculating...' : `${animeAmount.toLocaleString()} ANIME (~$2.00 USD)`}</strong> for this profile picture change
+                I understand I will be charged the amount shown for this profile picture change
               </label>
             </div>
           )}
