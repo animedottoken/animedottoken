@@ -479,35 +479,39 @@ export default function Profile() {
         <TabsContent value="following" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <Card className="group hover:shadow-lg transition-all duration-300">
-              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 flex items-center justify-center">
-                <Avatar className="w-32 h-32 border-4 border-primary/20">
-                  <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
-                  <AvatarFallback className="text-2xl font-bold bg-primary/10">
-                    {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              
               <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
-                  {profile?.nickname || 'Anonymous User'}
-                </h3>
-                
-                <div className="flex items-center gap-1 mb-2">
-                  <Heart className="w-4 h-4 text-destructive" />
-                  <span className="text-sm font-medium">{profileLikes} Profile Likes</span>
+                <div className="flex items-center gap-4">
+                  {/* Avatar */}
+                  <Avatar className="w-40 h-40 border-4 border-primary/20 flex-shrink-0">
+                    <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
+                    <AvatarFallback className="text-3xl font-bold bg-primary/10">
+                      {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Profile Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors truncate">
+                      {profile?.nickname || 'Anonymous User'}
+                    </h3>
+                    
+                    <div className="flex items-center gap-1 mb-2">
+                      <Heart className="w-4 h-4 text-destructive" />
+                      <span className="text-sm font-medium">{profileLikes} Profile Likes</span>
+                    </div>
+                    
+                    {profile?.bio && (
+                      <p className="text-sm text-muted-foreground italic line-clamp-2">
+                        {profile.bio}
+                      </p>
+                    )}
+                    {!profile?.bio && (
+                      <p className="text-sm text-muted-foreground/60 italic">
+                        No bio added yet
+                      </p>
+                    )}
+                  </div>
                 </div>
-                
-                {profile?.bio && (
-                  <p className="text-sm text-muted-foreground italic line-clamp-2">
-                    {profile.bio}
-                  </p>
-                )}
-                {!profile?.bio && (
-                  <p className="text-sm text-muted-foreground/60 italic">
-                    No bio added yet
-                  </p>
-                )}
               </CardContent>
             </Card>
           </div>
