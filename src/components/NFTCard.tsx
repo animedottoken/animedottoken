@@ -7,6 +7,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 
+interface OverlayAction {
+  label: string;
+  icon: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+  variant?: 'default' | 'destructive' | 'outline';
+  disabled?: boolean;
+}
+
 interface NFTCardProps {
   nft: {
     id: string;
@@ -22,9 +30,10 @@ interface NFTCardProps {
     attributes?: any;
   };
   navigationQuery?: string;
+  overlayActions?: OverlayAction[];
 }
 
-export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
+export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const navigate = useNavigate();
   const [ownerNickname, setOwnerNickname] = useState<string>('');
@@ -94,7 +103,7 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
         
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10 flex gap-2">
             <Button 
               size="sm" 
               variant="outline"
@@ -106,6 +115,21 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
               <Eye className="h-4 w-4 mr-2" />
               View
             </Button>
+            {overlayActions?.map((action, index) => (
+              <Button
+                key={index}
+                size="sm"
+                variant={action.variant || "outline"}
+                disabled={action.disabled}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  action.onClick(e);
+                }}
+              >
+                {action.icon}
+                <span className="ml-2">{action.label}</span>
+              </Button>
+            ))}
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User } from 'lucide-react';
+import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User, Trash2 } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
@@ -60,6 +60,7 @@ export default function Profile() {
   const [bioDialogOpen, setBioDialogOpen] = useState(false);
   const [followedProfiles, setFollowedProfiles] = useState<any[]>([]);
   const [loadingProfiles, setLoadingProfiles] = useState(false);
+  const [editDialogNFTId, setEditDialogNFTId] = useState<string | null>(null);
 
   // Fetch profile details for followed creators
   useEffect(() => {
@@ -488,29 +489,33 @@ export default function Profile() {
                 const queryString = `from=profile&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
                 
                 return (
-                  <div key={nft.id} className="space-y-2">
-                    <NFTCard
-                      nft={{
-                        id: nft.id,
-                        name: nft.name,
-                        image_url: nft.image_url || '',
-                        price: nft.price,
-                        owner_address: nft.owner_address,
-                        creator_address: nft.creator_address,
-                        mint_address: nft.mint_address,
-                        is_listed: nft.is_listed || false,
-                        collection_id: nft.collection_id,
-                        description: nft.description,
-                      }}
-                      navigationQuery={queryString}
-                    />
-                    <div className="flex items-center gap-2">
-                      <EditNFTDialog nft={nft} onUpdate={refreshNFTs} />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        disabled={burning}
-                        onClick={async () => {
+                  <NFTCard
+                    key={nft.id}
+                    nft={{
+                      id: nft.id,
+                      name: nft.name,
+                      image_url: nft.image_url || '',
+                      price: nft.price,
+                      owner_address: nft.owner_address,
+                      creator_address: nft.creator_address,
+                      mint_address: nft.mint_address,
+                      is_listed: nft.is_listed || false,
+                      collection_id: nft.collection_id,
+                      description: nft.description,
+                    }}
+                    navigationQuery={queryString}
+                    overlayActions={[
+                      {
+                        label: 'Edit',
+                        icon: <Edit className="h-4 w-4" />,
+                        onClick: () => setEditDialogNFTId(nft.id)
+                      },
+                      {
+                        label: 'Burn',
+                        icon: <Trash2 className="h-4 w-4" />,
+                        variant: 'destructive' as const,
+                        disabled: burning,
+                        onClick: async () => {
                           if (!nft.mint_address) {
                             toast.error('Mint address missing for this NFT');
                             return;
@@ -518,12 +523,10 @@ export default function Profile() {
                           if (!confirm(`Burn NFT "${nft.name}"? This cannot be undone.`)) return;
                           const res = await burnNFT(nft.id, nft.mint_address);
                           if (res.success) refreshNFTs();
-                        }}
-                      >
-                        Burn
-                      </Button>
-                    </div>
-                  </div>
+                        }
+                      }
+                    ]}
+                  />
                 );
               })}
             </div>
@@ -532,6 +535,19 @@ export default function Profile() {
               <p className="text-muted-foreground mb-4">No NFTs found</p>
               <Button onClick={() => navigate('/marketplace')}>Browse Marketplace</Button>
             </div>
+          )}
+          
+          {/* Edit NFT Dialog */}
+          {editDialogNFTId && nfts && (
+            <EditNFTDialog 
+              nft={nfts.find(n => n.id === editDialogNFTId)!} 
+              onUpdate={() => {
+                refreshNFTs();
+                setEditDialogNFTId(null);
+              }}
+              open={true}
+              onOpenChange={(open) => !open && setEditDialogNFTId(null)}
+            />
           )}
         </TabsContent>
 

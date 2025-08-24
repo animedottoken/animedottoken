@@ -15,6 +15,8 @@ import type { UserNFT } from "@/hooks/useUserNFTs";
 interface EditNFTDialogProps {
   nft: UserNFT;
   onUpdate?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Helper functions to convert between NFT attributes and PropertiesEditor format
@@ -65,9 +67,13 @@ const propertiesToAttributes = (properties: Property[], originalAttributes: any)
   return result;
 };
 
-export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
+export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange: externalOnOpenChange }: EditNFTDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Use external control if provided, otherwise use internal state
+  const dialogOpen = externalOpen !== undefined ? externalOpen : isOpen;
+  const setDialogOpen = externalOnOpenChange || setIsOpen;
   const [formData, setFormData] = useState({
     name: nft.name,
     description: nft.description || '',
@@ -77,7 +83,7 @@ export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (dialogOpen) {
       setFormData({
         name: nft.name,
         description: nft.description || '',
@@ -86,7 +92,7 @@ export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
       });
       setProperties(attributesToProperties(nft.metadata));
     }
-  }, [isOpen, nft]);
+  }, [dialogOpen, nft]);
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
@@ -116,7 +122,7 @@ export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
       if (error) throw error;
 
       toast.success('NFT updated successfully!');
-      setIsOpen(false);
+      setDialogOpen(false);
       onUpdate?.();
     } catch (error) {
       console.error('Error updating NFT:', error);
@@ -135,13 +141,16 @@ export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Edit className="h-4 w-4 mr-1" />
-          Edit
-        </Button>
-      </DialogTrigger>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {/* Only show trigger if no external control */}
+      {externalOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button size="sm">
+            <Edit className="h-4 w-4 mr-1" />
+            Edit
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit NFT Settings</DialogTitle>
@@ -305,7 +314,7 @@ export function EditNFTDialog({ nft, onUpdate }: EditNFTDialogProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-2 justify-end pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={loading}>
