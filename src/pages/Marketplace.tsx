@@ -87,7 +87,7 @@ export default function Marketplace() {
   };
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
-  const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
+  
   const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
 
