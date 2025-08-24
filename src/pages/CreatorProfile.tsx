@@ -317,27 +317,12 @@ export default function CreatorProfile() {
                 )}
               </div>
               
-              {creator.bio && (
-                <p className="text-sm text-muted-foreground italic mb-4">
-                  {creator.bio}
-                </p>
-              )}
-              
-               <div className="grid grid-cols-2 gap-4 text-center mb-4">
-                 <div className="p-3 rounded-lg bg-muted/50">
-                   <div className="text-2xl font-bold text-primary">{creator.follower_count}</div>
-                   <div className="text-sm text-muted-foreground">Likes</div>
-                 </div>
-                 <div className="p-3 rounded-lg bg-muted/50">
-                   <div className="text-2xl font-bold text-primary">{creator.nft_likes_count}</div>
-                   <div className="text-sm text-muted-foreground">NFT Likes</div>
-                 </div>
-               </div>
-              
-              <div className="flex items-center justify-center gap-2 mb-4">
+              {/* Profile Stats: Trades + Level */}
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <span className="text-sm text-muted-foreground">{creator.trade_count} trades</span>
                 <Badge 
                   variant="outline" 
-                  className={`${
+                  className={`text-xs ${
                     creator.profile_rank === 'DIAMOND' ? 'border-purple-500 text-purple-600' :
                     creator.profile_rank === 'GOLD' ? 'border-yellow-500 text-yellow-600' :
                     creator.profile_rank === 'SILVER' ? 'border-gray-400 text-gray-600' :
@@ -345,7 +330,7 @@ export default function CreatorProfile() {
                     'border-green-500 text-green-600'
                   }`}
                 >
-                  <span>{creator.profile_rank === 'DEFAULT' ? 'Rookie' : creator.profile_rank}</span>
+                  <span>{creator.profile_rank === 'DEFAULT' ? 'Starter' : creator.profile_rank}</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -360,7 +345,7 @@ export default function CreatorProfile() {
                           <div>🥇 <strong>Gold</strong>: 250+ trades</div>
                           <div>🥈 <strong>Silver</strong>: 50+ trades</div>
                           <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                          <div>🎖️ <strong>Rookie</strong>: 0-9 trades</div>
+                          <div>🎖️ <strong>Starter</strong>: 0-9 trades</div>
                           <div className="text-xs text-muted-foreground mt-2">
                             Trade more NFTs to increase your rank!
                           </div>
@@ -371,16 +356,44 @@ export default function CreatorProfile() {
                 </Badge>
               </div>
               
-              {publicKey && (
-                <button
-                  aria-label={isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator'}
-                  disabled={followLoading}
-                  onClick={() => handleToggleFollow(creator.wallet_address)}
-                  className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-                >
-                  <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
-                </button>
+              {creator.bio && (
+                <p className="text-sm text-muted-foreground italic mb-4 line-clamp-2">
+                  {creator.bio}
+                </p>
               )}
+
+              {/* Follow Button - positioned after bio, before stats */}
+              {publicKey && (
+                <div className="mb-4">
+                  <button
+                    aria-label={isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator'}
+                    disabled={followLoading}
+                    onClick={() => handleToggleFollow(creator.wallet_address)}
+                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                  >
+                    <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
+                  </button>
+                </div>
+              )}
+              
+              {/* Content Stats */}
+              <div className="flex items-center justify-center gap-4 text-sm mb-3">
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-primary">{creator.created_nfts}</span>
+                  <span className="text-muted-foreground">NFTs</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-primary">{creatorCollections.length}</span>
+                  <span className="text-muted-foreground">Collections</span>
+                </div>
+              </div>
+               
+              {/* Activity Stats */}
+              <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
+                <span>{creator.follower_count} likes</span>
+                <span>•</span>
+                <span>{creator.nft_likes_count} NFT likes</span>
+              </div>
             </CardContent>
           </Card>
         </div>
