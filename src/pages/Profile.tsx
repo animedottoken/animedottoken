@@ -140,41 +140,114 @@ export default function Profile() {
     );
   };
 
+  if (!connected) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
+        <div className="container mx-auto px-4 py-16">
+          {/* Hero Section */}
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              My Profile
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Connect your Solana wallet to view and manage your NFT collections, track your creations, and engage with the community.
+            </p>
+          </div>
+
+          {/* Connect Wallet Card */}
+          <div className="max-w-md mx-auto mb-16">
+            <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-xl font-semibold mb-4">Connect Your Wallet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Connect your Solana wallet to access your profile and manage your NFT collections.
+                </p>
+                <Button 
+                  onClick={() => connect()}
+                  className="w-full bg-primary hover:bg-primary/90"
+                >
+                  Connect Wallet
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Feature highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="bg-card/30 border-primary/10">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold mb-2">Manage Collections</h3>
+                <p className="text-sm text-muted-foreground">
+                  View and organize all your created NFT collections in one place.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/30 border-primary/10">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Avatar className="w-6 h-6">
+                    <AvatarFallback className="text-primary bg-transparent text-xs">P</AvatarFallback>
+                  </Avatar>
+                </div>
+                <h3 className="font-semibold mb-2">Profile Customization</h3>
+                <p className="text-sm text-muted-foreground">
+                  Customize your profile with banners, avatars, and personal information.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/30 border-primary/10">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Badge variant="outline" className="border-primary/20 text-primary">
+                    <span className="text-xs">LIVE</span>
+                  </Badge>
+                </div>
+                <h3 className="font-semibold mb-2">Track Performance</h3>
+                <p className="text-sm text-muted-foreground">
+                  Monitor your collection metrics, likes, and community engagement.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Profile</h1>
-        {!connected ? (
-          <Button onClick={() => connect()}>Connect Wallet</Button>
-        ) : (
-          <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
-        )}
+        <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
       </div>
 
       {/* Profile Section */}
-      {connected && (
-        <div className="mb-8">
-          <div className="relative w-full h-32 rounded-md overflow-hidden">
-            <ImageLazyLoad
-              src={profile.banner_image_url || '/placeholder.svg'}
-              alt="Banner"
-              className="w-full h-full object-cover"
-              fallbackSrc="/placeholder.svg"
-            />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent"></div>
-          </div>
-          <div className="flex items-center mt-2">
-            <Avatar className="w-16 h-16 rounded-full border-2 border-white -mt-8 mr-4 relative">
-              <AvatarImage src={profile.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-lg font-semibold">{profile.nickname || 'Unnamed User'}</h2>
-              <p className="text-muted-foreground">{publicKey}</p>
-            </div>
+      <div className="mb-8">
+        <div className="relative w-full h-32 rounded-md overflow-hidden">
+          <ImageLazyLoad
+            src={profile.banner_image_url || '/placeholder.svg'}
+            alt="Banner"
+            className="w-full h-full object-cover"
+            fallbackSrc="/placeholder.svg"
+          />
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent"></div>
+        </div>
+        <div className="flex items-center mt-2">
+          <Avatar className="w-16 h-16 rounded-full border-2 border-white -mt-8 mr-4 relative">
+            <AvatarImage src={profile.profile_image_url || '/placeholder.svg'} alt="Avatar" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-lg font-semibold">{profile.nickname || 'Unnamed User'}</h2>
+            <p className="text-muted-foreground">{publicKey}</p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Collections Grid */}
       <h2 className="text-xl font-semibold mb-4">My Collections</h2>
