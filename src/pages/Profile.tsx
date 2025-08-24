@@ -479,34 +479,36 @@ export default function Profile() {
         <TabsContent value="following" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <Card className="group hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center space-y-4">
                   {/* Avatar */}
-                  <Avatar className="w-40 h-40 border-4 border-primary/20 flex-shrink-0">
+                  <Avatar className="w-40 h-40 border-4 border-primary/20">
                     <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Profile" />
                     <AvatarFallback className="text-3xl font-bold bg-primary/10">
                       {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   
-                  {/* Profile Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors truncate">
-                      {profile?.nickname || 'Anonymous User'}
-                    </h3>
-                    
-                    <div className="flex items-center gap-1 mb-2">
-                      <Heart className="w-4 h-4 text-destructive" />
-                      <span className="text-sm font-medium">{profileLikes} Profile Likes</span>
-                    </div>
-                    
+                  {/* Name */}
+                  <h3 className="font-semibold text-xl group-hover:text-primary transition-colors">
+                    {profile?.nickname || 'Anonymous User'}
+                  </h3>
+                  
+                  {/* Profile Likes */}
+                  <div className="flex items-center gap-2" title="Profile Likes">
+                    <Heart className="w-5 h-5 text-destructive" />
+                    <span className="text-lg font-medium">{profileLikes}</span>
+                  </div>
+                  
+                  {/* Bio */}
+                  <div className="w-full">
                     {profile?.bio && (
-                      <p className="text-sm text-muted-foreground italic line-clamp-2">
+                      <p className="text-base text-muted-foreground line-clamp-3 leading-relaxed">
                         {profile.bio}
                       </p>
                     )}
                     {!profile?.bio && (
-                      <p className="text-sm text-muted-foreground/60 italic">
+                      <p className="text-base text-muted-foreground/60 italic">
                         No bio added yet
                       </p>
                     )}
