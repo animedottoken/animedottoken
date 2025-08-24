@@ -329,17 +329,14 @@ export default function NFTDetail() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                 <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Badge variant="secondary" className="bg-black/50 text-white border-white/20">
+                  <Maximize2 className="h-3 w-3 mr-1" />
+                  View Fullscreen
+                </Badge>
+              </div>
             </div>
           </Card>
-          
-          <Button 
-            variant="outline" 
-            onClick={handleFullscreenToggle}
-            className="w-full"
-          >
-            <Maximize2 className="h-4 w-4 mr-2" />
-            View Fullscreen
-          </Button>
         </div>
 
         {/* NFT Details */}
@@ -347,30 +344,31 @@ export default function NFTDetail() {
           <TooltipProvider>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Badge variant="secondary" className="text-xs cursor-help">NFT</Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Non-Fungible Token - A unique digital asset</p>
-                  </TooltipContent>
-                </Tooltip>
+                <Badge variant="secondary" className="text-xs">NFT</Badge>
                 {nft.symbol && (
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Badge variant="outline" className="text-xs cursor-help">
-                        {nft.symbol}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Collection Symbol</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <Badge variant="outline" className="text-xs">
+                    {nft.symbol}
+                  </Badge>
                 )}
                 {nft.is_listed && (
                   <Badge variant="default" className="text-xs bg-green-600">
                     Listed for Sale
                   </Badge>
+                )}
+                {/* Compact Edition Info */}
+                {nft.metadata && typeof nft.metadata === 'object' && (
+                  <>
+                    {(nft.metadata as any).edition && (
+                      <Badge variant="outline" className="text-xs">
+                        Edition #{(nft.metadata as any).edition}
+                      </Badge>
+                    )}
+                    {(nft.metadata as any).max_supply && (nft.metadata as any).edition && (
+                      <Badge variant="secondary" className="text-xs">
+                        {(nft.metadata as any).edition}/{(nft.metadata as any).max_supply}
+                      </Badge>
+                    )}
+                  </>
                 )}
               </div>
               <h1 className="text-3xl font-bold mb-2">{nft.name}</h1>
@@ -537,63 +535,88 @@ export default function NFTDetail() {
           {/* Properties */}
           {nft.metadata && (
             (() => {
-              // Handle both array format and object format
-              if (Array.isArray(nft.metadata) && nft.metadata.length > 0) {
-                // Standard trait format: [{ trait_type: "Background", value: "Blue" }]
+              const normalizeProperties = (metadata: any) => {
+                const properties: { trait_type: string; value: string; display_type?: string }[] = [];
+                
+                if (Array.isArray(metadata)) {
+                  // Standard trait format: [{ trait_type: "Background", value: "Blue" }]
+                  return metadata.filter(attr => attr && attr.trait_type && attr.value !== null && attr.value !== undefined);
+                } else if (typeof metadata === 'object' && metadata !== null) {
+                  // Object format: convert to trait format
+                  Object.entries(metadata).forEach(([key, value]) => {
+                    // Skip internal metadata fields
+                    if (['explicit_content', 'minted_at', 'standalone'].includes(key) || 
+                        value === null || value === undefined) {
+                      return;
+                    }
+                    
+                    // Handle nested objects by stringifying them properly
+                    let displayValue: string;
+                    if (typeof value === 'object') {
+                      if (Array.isArray(value)) {
+                        displayValue = value.join(', ');
+                      } else {
+                        displayValue = JSON.stringify(value, null, 0);
+                      }
+                    } else if (typeof value === 'boolean') {
+                      displayValue = value ? 'Yes' : 'No';
+                    } else {
+                      displayValue = String(value);
+                    }
+                    
+                    properties.push({
+                      trait_type: key.replace(/_/g, ' '),
+                      value: displayValue
+                    });
+                  });
+                }
+                
+                return properties;
+              };
+              
+              const properties = normalizeProperties(nft.metadata);
+              
+              if (properties.length > 0) {
+                // Show max 6 properties initially, with option to show more
+                const displayProperties = properties.slice(0, 6);
+                const hasMore = properties.length > 6;
+                
                 return (
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Properties</CardTitle>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Hash className="h-4 w-4" />
+                        Properties
+                        <Badge variant="outline" className="ml-auto text-xs">
+                          {properties.length}
+                        </Badge>
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-3">
-                        {nft.metadata.map((attr: any, index: number) => (
-                          <div key={index} className="border rounded-lg p-3">
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                    <CardContent className="pt-0">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {displayProperties.map((attr, index) => (
+                          <div key={index} className="border rounded-md p-2 bg-accent/5">
+                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 truncate">
                               {attr.trait_type}
                             </div>
-                            <div className="font-medium">{attr.value}</div>
+                            <div className="text-sm font-medium truncate" title={attr.value}>
+                              {attr.value}
+                            </div>
                           </div>
                         ))}
                       </div>
+                      {hasMore && (
+                        <Button variant="ghost" size="sm" className="w-full mt-3 h-8 text-xs">
+                          Show {properties.length - 6} more properties
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 );
-              } else if (typeof nft.metadata === 'object' && nft.metadata !== null) {
-                // Object format: { "Background": "Blue", "Eyes": "Green" }
-                const entries = Object.entries(nft.metadata).filter(([key, value]) => 
-                  // Filter out internal metadata fields
-                  !['explicit_content', 'minted_at', 'standalone'].includes(key) &&
-                  value !== null && value !== undefined
-                );
-                
-                if (entries.length > 0) {
-                  return (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Properties</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 gap-3">
-                          {entries.map(([key, value], index) => (
-                            <div key={index} className="border rounded-lg p-3">
-                              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                                {key.replace(/_/g, ' ')}
-                              </div>
-                              <div className="font-medium">
-                                {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                }
               }
               return null;
             })()
-           )}
+          )}
 
           {/* Boost Status/Control Section */}
           {publicKey === nft.owner_address && (
