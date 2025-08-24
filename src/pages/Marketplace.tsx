@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users, ThumbsUp } from "lucide-react";
+import { Search, Grid, List, SortAsc, SortDesc, Filter, Crown, Rocket, Zap, Heart, Info, UserPlus, UserMinus, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
-import { useFavorites } from "@/hooks/useFavorites";
+// removed favorites import
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
@@ -178,13 +178,13 @@ export default function Marketplace() {
 
   const filteredNfts = nfts.filter(nft => {
     const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const isNftFavorite = isFavorite(nft.id);
+    const isNftLiked = isLiked(nft.id);
     const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
     
     let matchesFilter = true;
     if (filterBy === "listed") matchesFilter = nft.is_listed;
     else if (filterBy === "unlisted") matchesFilter = !nft.is_listed;
-    else if (filterBy === "favorites") matchesFilter = isNftFavorite;
+    else if (filterBy === "liked") matchesFilter = isNftLiked;
     else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
     
     return matchesSearch && matchesFilter;
@@ -295,7 +295,7 @@ export default function Marketplace() {
                 <SelectItem value="all">All NFTs</SelectItem>
                 <SelectItem value="listed">Listed</SelectItem>
                 <SelectItem value="unlisted">Unlisted</SelectItem>
-                <SelectItem value="favorites">❤️ Favorites</SelectItem>
+                <SelectItem value="liked">❤️ Liked</SelectItem>
                 <SelectItem value="followed_creators">👥 From Liked</SelectItem>
               </SelectContent>
             </Select>
@@ -392,34 +392,14 @@ export default function Marketplace() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isFavorite(nft.id)) {
-                            removeFromFavorites(nft.id);
-                          } else {
-                            addToFavorites({
-                              id: nft.id,
-                              name: nft.name,
-                              image_url: nft.image_url,
-                              type: 'nft'
-                            });
-                          }
-                        }}
-                        className={isFavorite(nft.id) ? "text-red-500" : ""}
-                      >
-                        <Heart className={`h-4 w-4 ${isFavorite(nft.id) ? "fill-current" : ""}`} />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
                         disabled={likeLoading}
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleLike(nft.id);
                         }}
-                        className={isLiked(nft.id) ? "text-blue-500" : ""}
+                        className={isLiked(nft.id) ? "text-destructive" : "text-muted-foreground"}
                       >
-                        <ThumbsUp className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
+                        <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
                       </Button>
                     </div>
                   </div>
@@ -558,7 +538,7 @@ export default function Marketplace() {
                       }}
                       className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
                     >
-                      <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'} w-5 h-5`} />
+                      <Heart className={`${isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
                     </button>
                   )}
                 </CardContent>
