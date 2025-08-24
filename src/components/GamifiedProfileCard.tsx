@@ -20,21 +20,26 @@ export const GamifiedProfileCard = () => {
     loading,
     nicknameLoading,
     pfpLoading,
+    bioLoading,
     setNickname,
     unlockPFP,
     setPFP,
+    setBio,
     getRankColor,
     getRankBadge,
   } = useGamifiedProfile();
 
   const nicknamePricing = useAnimePricing(1.00); // $1.00 USD for nickname
   const pfpPricing = useAnimePricing(2.00); // $2.00 USD for PFP unlock
+  const bioPricing = useAnimePricing(2.00); // $2.00 USD for bio changes after first time
 
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
   const [pfpConfirmDialogOpen, setPfpConfirmDialogOpen] = useState(false);
+  const [bioDialogOpen, setBioDialogOpen] = useState(false);
   const [selectedNftForPfp, setSelectedNftForPfp] = useState<string | null>(null);
   const [nicknameInput, setNicknameInput] = useState('');
+  const [bioInput, setBioInput] = useState('');
 
   const handleAvatarClick = () => {
     if (!profile) return;
@@ -45,6 +50,12 @@ export const GamifiedProfileCard = () => {
     if (!profile) return;
     setNicknameInput(profile.nickname || '');
     setNicknameDialogOpen(true);
+  };
+
+  const handleBioClick = () => {
+    if (!profile) return;
+    setBioInput(profile.bio || '');
+    setBioDialogOpen(true);
   };
 
   const handleSetNickname = async () => {
@@ -112,6 +123,55 @@ export const GamifiedProfileCard = () => {
     }
   };
 
+  const handleSetBio = async () => {
+    if (!bioInput.trim()) {
+      toast.error('Please enter a bio');
+      return;
+    }
+
+    if (bioInput.trim().length > 100) {
+      toast.error('Bio must be 100 characters or less');
+      return;
+    }
+
+    // Format large numbers with spaces
+    const formatTokenAmount = (amount: number) => {
+      return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    };
+
+    // Check if this is first time (free) or requires payment
+    const isFirstTime = !profile?.bio && !profile?.bio_unlock_status;
+    
+    let testTransactionSignature = '';
+    
+    if (!isFirstTime) {
+      // TEST MODE: Simulate payment for bio changes after first time
+      testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Show payment simulation
+      toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
+      toast.info(`Paying: ${formatTokenAmount(bioPricing.animeAmount)} $ANIME ≈ ${bioPricing.usdPrice.toFixed(2)} USDT`, {
+        duration: 3000
+      });
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } else {
+      testTransactionSignature = `free_first_time_${Date.now()}`;
+      toast.success('🎉 First bio is free!');
+    }
+    
+    const success = await setBio(bioInput.trim(), testTransactionSignature);
+    if (success) {
+      setBioDialogOpen(false);
+      setBioInput('');
+      if (isFirstTime) {
+        toast.success('✅ Bio set successfully! (First time free)');
+      } else {
+        toast.success('✅ Bio updated successfully! (Test mode - no real payment)');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -149,7 +209,7 @@ export const GamifiedProfileCard = () => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-4">
         <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Change Profile Picture">
-          <Avatar className={`w-20 h-20 border-4 ${rankColor} shadow-lg`}>
+          <Avatar className={`w-32 h-32 border-4 ${rankColor} shadow-lg`}>
             <AvatarImage 
               src={profile.profile_image_url} 
               alt={profile.nickname || 'Profile'} 
@@ -208,13 +268,31 @@ export const GamifiedProfileCard = () => {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Bio Section */}
+        <div className="text-center">
+          <div 
+            className="cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
+            onClick={handleBioClick}
+            title={profile.bio ? 'Change bio' : 'Set bio (first time free!)'}
+          >
+            {profile.bio ? (
+              <p className="text-sm text-muted-foreground italic">{profile.bio}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                <span>Add bio (first time free!)</span>
+                <Edit className="w-3 h-3" />
+              </p>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-4 text-center">
           <div className="p-3 rounded-lg bg-muted/50">
             <div className="text-2xl font-bold text-primary">{profile.trade_count}</div>
             <div className="text-sm text-muted-foreground">Trades</div>
           </div>
           <div className="p-3 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{getRankBadge(profile.profile_rank).text}</div>
+            <div className="text-2xl font-bold text-primary">{profile.trade_count >= 1000 ? 'Diamond' : profile.trade_count >= 250 ? 'Gold' : profile.trade_count >= 50 ? 'Silver' : profile.trade_count >= 10 ? 'Bronze' : 'Rookie'}</div>
             <div className="text-sm text-muted-foreground">Rank</div>
           </div>
         </div>
@@ -374,6 +452,76 @@ export const GamifiedProfileCard = () => {
                     {pfpLoading ? 'Processing...' : 'Confirm & Pay'}
                   </Button>
                 </div>
+              </div>
+              </DialogContent>
+            </Dialog>
+
+          {/* Bio Setting Dialog */}
+          <Dialog open={bioDialogOpen} onOpenChange={setBioDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {profile.bio ? 'Change Your Bio' : 'Set Your Bio'}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {!profile.bio && !profile.bio_unlock_status ? (
+                  <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-green-800 dark:text-green-200">First Bio - FREE!</span>
+                      <span className="text-2xl">🎉</span>
+                    </div>
+                    <div className="text-sm text-green-700 dark:text-green-300">
+                      Your first bio is completely free. Future changes will cost 2 USDT.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Payment Required</span>
+                      <DollarSign className="w-4 h-4 text-primary" />
+                    </div>
+                    {bioPricing.loading ? (
+                      <div className="animate-pulse">Loading pricing...</div>
+                    ) : (
+                      <div>
+                        <div className="text-lg font-bold">{formatTokenAmount(bioPricing.animeAmount)} $ANIME</div>
+                        <div className="text-sm text-muted-foreground">
+                          ≈ {bioPricing.usdPrice.toFixed(2)} USDT
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Price updated every 30 seconds
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <Separator />
+                <div>
+                  <Label htmlFor="bio">Bio (max 100 characters)</Label>
+                  <textarea
+                    id="bio"
+                    value={bioInput}
+                    onChange={(e) => setBioInput(e.target.value)}
+                    placeholder="Tell everyone about yourself..."
+                    maxLength={100}
+                    className="w-full p-2 border rounded-md resize-none h-20 mt-1"
+                  />
+                  <div className="text-xs text-muted-foreground mt-1 flex justify-between">
+                    <span>Will be visible on marketplace</span>
+                    <span>{bioInput.length}/100</span>
+                  </div>
+                </div>
+                <Button 
+                  onClick={handleSetBio} 
+                  className="w-full"
+                  disabled={bioLoading || (profile.bio || profile.bio_unlock_status ? bioPricing.loading : false)}
+                >
+                  {bioLoading ? 'Processing...' : 
+                    (!profile.bio && !profile.bio_unlock_status) ? 'Set Bio (Free!)' : 
+                    `Pay ${formatTokenAmount(bioPricing.animeAmount)} $ANIME`
+                  }
+                </Button>
               </div>
             </DialogContent>
           </Dialog>

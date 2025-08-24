@@ -36,16 +36,29 @@ interface Collection {
   creator_address: string;
 }
 
+interface Creator {
+  id: string;
+  wallet_address: string;
+  nickname?: string;
+  bio?: string;
+  profile_image_url?: string;
+  trade_count: number;
+  profile_rank: string;
+  verified: boolean;
+  created_nfts: number;
+}
+
 export default function Marketplace() {
   const navigate = useNavigate();
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [filterBy, setFilterBy] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [activeTab, setActiveTab] = useState<"nfts" | "collections">("nfts");
+  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("nfts");
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
   const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
@@ -80,6 +93,43 @@ export default function Marketplace() {
         console.error('Error loading collections:', collectionError);
       } else {
         setCollections(collectionData || []);
+      }
+
+      // Load Creators
+      const { data: creatorData, error: creatorError } = await supabase
+        .from('user_profiles')
+        .select(`
+          id,
+          wallet_address,
+          nickname,
+          bio,
+          profile_image_url,
+          trade_count,
+          profile_rank,
+          verified
+        `)
+        .not('nickname', 'is', null)
+        .order('trade_count', { ascending: false })
+        .limit(50);
+
+      if (creatorError) {
+        console.error('Error loading creators:', creatorError);
+      } else {
+        // Get NFT count for each creator
+        const creatorsWithCounts = await Promise.all(
+          (creatorData || []).map(async (creator) => {
+            const { count } = await supabase
+              .from('nfts')
+              .select('*', { count: 'exact', head: true })
+              .eq('creator_address', creator.wallet_address);
+            
+            return {
+              ...creator,
+              created_nfts: count || 0
+            };
+          })
+        );
+        setCreators(creatorsWithCounts);
       }
     } catch (error) {
       console.error('Error loading marketplace data:', error);
@@ -127,6 +177,12 @@ export default function Marketplace() {
     collection.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredCreators = creators.filter(creator =>
+    (creator.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+     creator.wallet_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     creator.bio?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -168,6 +224,12 @@ export default function Marketplace() {
           onClick={() => setActiveTab("collections")}
         >
           Collections
+        </Button>
+        <Button
+          variant={activeTab === "creators" ? "default" : "outline"}
+          onClick={() => setActiveTab("creators")}
+        >
+          Creators
         </Button>
       </div>
 
@@ -307,9 +369,9 @@ export default function Marketplace() {
                   </div>
                 </CardContent>
              </Card>
-          ))}
-        </div>
-      ) : (
+           ))}
+         </div>
+      ) : activeTab === "collections" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCollections.map((collection) => (
             <Card 
@@ -339,6 +401,63 @@ export default function Marketplace() {
                   <span>{collection.items_redeemed} items</span>
                 </div>
               </CardContent>
+             </Card>
+           ))}
+         </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredCreators.map((creator) => (
+            <Card 
+              key={creator.id}
+              className="group hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => navigate(`/profile/${creator.wallet_address}`)}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="mb-4">
+                  <div className="w-16 h-16 mx-auto mb-3">
+                    {creator.profile_image_url ? (
+                      <ImageLazyLoad
+                        src={creator.profile_image_url}
+                        alt={creator.nickname || 'Creator'}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted rounded-full flex items-center justify-center text-muted-foreground text-lg font-bold">
+                        {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <h3 className="font-semibold">
+                      {creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}
+                    </h3>
+                    {creator.verified && (
+                      <Badge variant="secondary" className="text-xs">✓</Badge>
+                    )}
+                  </div>
+                  {creator.bio && (
+                    <p className="text-sm text-muted-foreground italic mb-2 line-clamp-2">
+                      {creator.bio}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                    <span>{creator.trade_count} trades</span>
+                    <span>{creator.created_nfts} NFTs</span>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={`mt-2 ${
+                      creator.profile_rank === 'DIAMOND' ? 'border-purple-500 text-purple-600' :
+                      creator.profile_rank === 'GOLD' ? 'border-yellow-500 text-yellow-600' :
+                      creator.profile_rank === 'SILVER' ? 'border-gray-400 text-gray-600' :
+                      creator.profile_rank === 'BRONZE' ? 'border-orange-500 text-orange-600' :
+                      'border-green-500 text-green-600'
+                    }`}
+                  >
+                    {creator.profile_rank === 'DEFAULT' ? 'Rookie' : creator.profile_rank}
+                  </Badge>
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -354,6 +473,12 @@ export default function Marketplace() {
       {activeTab === "collections" && filteredCollections.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No collections found matching your criteria.</p>
+        </div>
+      )}
+
+      {activeTab === "creators" && filteredCreators.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No creators found matching your criteria.</p>
         </div>
       )}
     </div>

@@ -6,9 +6,11 @@ import { toast } from 'sonner';
 export interface GamifiedProfile {
   wallet_address: string;
   nickname?: string;
+  bio?: string;
   trade_count: number;
   profile_rank: 'DEFAULT' | 'BRONZE' | 'SILVER' | 'GOLD' | 'DIAMOND';
   pfp_unlock_status: boolean;
+  bio_unlock_status?: boolean;
   current_pfp_nft_mint_address?: string;
   profile_image_url?: string;
 }
@@ -26,6 +28,7 @@ export const useGamifiedProfile = () => {
   const [loading, setLoading] = useState(false);
   const [nicknameLoading, setNicknameLoading] = useState(false);
   const [pfpLoading, setPfpLoading] = useState(false);
+  const [bioLoading, setBioLoading] = useState(false);
   const { publicKey, connected } = useSolanaWallet();
 
   const fetchProfile = useCallback(async () => {
@@ -166,6 +169,46 @@ export const useGamifiedProfile = () => {
     }
   }, [connected, publicKey, fetchProfile]);
 
+  const setBio = useCallback(async (bio: string, transactionSignature: string): Promise<boolean> => {
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
+      return false;
+    }
+
+    setBioLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('set-bio', {
+        body: { 
+          bio: bio.trim(),
+          transaction_signature: transactionSignature
+        },
+      });
+
+      if (error) {
+        console.error('Error setting bio:', error);
+        toast.error(error.message || 'Failed to set bio');
+        return false;
+      }
+
+      if (data.error) {
+        console.error('Error in set-bio response:', data.error);
+        toast.error(data.error);
+        return false;
+      }
+
+      // Refresh profile data
+      await fetchProfile();
+      
+      return true;
+    } catch (error) {
+      console.error('Error setting bio:', error);
+      toast.error('Failed to set bio');
+      return false;
+    } finally {
+      setBioLoading(false);
+    }
+  }, [connected, publicKey, fetchProfile]);
+
   const getRankColor = useCallback((rank: string) => {
     switch (rank) {
       case 'BRONZE': return 'border-amber-600';
@@ -197,9 +240,11 @@ export const useGamifiedProfile = () => {
     loading,
     nicknameLoading,
     pfpLoading,
+    bioLoading,
     setNickname,
     unlockPFP,
     setPFP,
+    setBio,
     getRankColor,
     getRankBadge,
     fetchProfile,
