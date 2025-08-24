@@ -275,6 +275,19 @@ export default function Profile() {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
+                    <button
+                      onClick={() => profile?.wallet_address && toggleFollow(profile.wallet_address)}
+                      className="transition-colors duration-200"
+                      disabled={!profile?.wallet_address}
+                      aria-label={profile?.wallet_address && isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
+                      title={profile?.wallet_address && isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
+                    >
+                      <Heart className={`w-5 h-5 ${
+                        profile?.wallet_address && isFollowing(profile.wallet_address)
+                          ? 'fill-red-500 text-red-500' 
+                          : 'text-muted-foreground hover:text-red-500'
+                      }`} />
+                    </button>
                   </div>
               </div>
               
@@ -319,17 +332,6 @@ export default function Profile() {
           <Card className="bg-secondary/5 border-secondary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <button
-                  onClick={() => profile?.wallet_address && toggleFollow(profile.wallet_address)}
-                  className="transition-colors duration-200 mr-2"
-                  disabled={!profile?.wallet_address}
-                >
-                  <Heart className={`w-5 h-5 ${
-                    profile?.wallet_address && isFollowing(profile.wallet_address)
-                      ? 'fill-red-500 text-red-500' 
-                      : 'text-muted-foreground hover:text-red-500'
-                  }`} />
-                </button>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
