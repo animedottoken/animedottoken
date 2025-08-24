@@ -208,7 +208,7 @@ export const GamifiedProfileCard = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center pb-4">
-        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Change Profile Picture">
+        <div className="relative mx-auto cursor-pointer" onClick={handleAvatarClick} role="button" aria-label="Change profile picture" title="Click to change profile picture • Tip: Use 1:1 ratio images (square) for best results">
           <Avatar className={`w-40 h-40 border-4 ${rankColor} shadow-lg`}>
             <AvatarImage 
               src={profile.profile_image_url} 
@@ -374,6 +374,22 @@ export const GamifiedProfileCard = () => {
                   )}
                 </div>
                 <Separator />
+                
+                {/* Image Quality Guidelines */}
+                <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="font-medium text-blue-800 dark:text-blue-200 text-sm">Image Recommendations</span>
+                  </div>
+                  <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                    <div>• <strong>Best ratio:</strong> 1:1 (square images) for perfect display</div>
+                    <div>• <strong>Resolution:</strong> Minimum 400x400px, recommended 800x800px or higher</div>
+                    <div>• <strong>Quality:</strong> High quality images look better in your profile</div>
+                    <div>• <strong>Note:</strong> Non-square images will be cropped to fit the circular frame</div>
+                  </div>
+                </div>
+                <Separator />
+                
                 <div className="grid grid-cols-3 gap-4 max-h-96 overflow-y-auto">
                   {userNFTs
                     .filter((nft) => {
