@@ -51,6 +51,7 @@ interface Creator {
   profile_rank: string;
   verified: boolean;
   created_nfts: number;
+  created_collections: number;
   follower_count: number;
   nft_likes_count: number;
 }
@@ -183,8 +184,14 @@ export default function Marketplace() {
         const creatorsWithStats = await Promise.all(
           (creatorData || []).map(async (creator) => {
             // Get NFT count
-            const { count } = await supabase
+            const { count: nftCount } = await supabase
               .from('nfts')
+              .select('*', { count: 'exact', head: true })
+              .eq('creator_address', creator.wallet_address);
+            
+            // Get collection count
+            const { count: collectionCount } = await supabase
+              .from('collections')
               .select('*', { count: 'exact', head: true })
               .eq('creator_address', creator.wallet_address);
             
@@ -197,7 +204,8 @@ export default function Marketplace() {
             
             return {
               ...creator,
-              created_nfts: count || 0,
+              created_nfts: nftCount || 0,
+              created_collections: collectionCount || 0,
               follower_count: statsData?.follower_count || 0,
               nft_likes_count: statsData?.nft_likes_count || 0,
             };
@@ -525,6 +533,8 @@ export default function Marketplace() {
                     <span>{creator.nft_likes_count} NFT likes</span>
                     <span>•</span>
                     <span>{creator.created_nfts} NFTs</span>
+                    <span>•</span>
+                    <span>{creator.created_collections} collections</span>
                     <span>•</span>
                     <span>{creator.trade_count} trades</span>
                   </div>
