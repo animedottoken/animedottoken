@@ -622,51 +622,54 @@ export default function Marketplace() {
                   </p>
                 )}
 
-                {/* Follow status button */}
-                <div className="mb-4">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!publicKey) {
-                        toast.error('Please connect your wallet to follow creators');
-                        return;
-                      }
-                      toggleFollow(creator.wallet_address);
-                    }}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full border transition-all duration-200 hover:scale-105"
-                    aria-label={isFollowing(creator.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
-                    disabled={followLoading}
-                  >
-                    <Heart className={`w-3 h-3 ${isFollowing(creator.wallet_address) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
-                    <span className="text-xs">{isFollowing(creator.wallet_address) ? 'Following' : 'Follow'}</span>
-                  </button>
-                </div>
-                
-                {/* Stats in profile header format */}
+                {/* Stats with icons and tooltips */}
                 <div className="grid grid-cols-3 gap-2 mb-4">
-                  {/* Rank / Trades */}
-                  <div className="text-center p-2 rounded-lg bg-muted/50">
-                    <div className="text-sm font-medium">
-                      ⭐ {getRankBadge(creator.profile_rank).text} / {creator.trade_count}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Rank / Trades</div>
-                  </div>
-                  
-                  {/* NFTs / Collections */}
-                  <div className="text-center p-2 rounded-lg bg-muted/50">
-                    <div className="text-sm font-medium text-primary">
-                      🎨 {creator.created_nfts} / {creator.created_collections}
-                    </div>
-                    <div className="text-xs text-muted-foreground">NFTs / Collections</div>
-                  </div>
-                  
-                  {/* Profile Likes / NFT Likes */}
-                  <div className="text-center p-2 rounded-lg bg-muted/50">
-                    <div className="text-sm font-medium text-destructive">
-                      ❤️ {creator.follower_count}/{creator.nft_likes_count}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Profile Likes / NFT Likes</div>
-                  </div>
+                  <TooltipProvider>
+                    {/* Rank */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                          <div className="text-sm font-medium flex items-center justify-center gap-1">
+                            <Crown className="w-3 h-3" />
+                            {creator.trade_count}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Rank</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    {/* NFTs */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                          <div className="text-sm font-medium flex items-center justify-center gap-1 text-primary">
+                            <Zap className="w-3 h-3" />
+                            {creator.created_nfts}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>NFTs</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    {/* Likes */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help">
+                          <div className="text-sm font-medium flex items-center justify-center gap-1 text-destructive">
+                            <Heart className="w-3 h-3" />
+                            {creator.nft_likes_count}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Likes</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </CardContent>
             </Card>
