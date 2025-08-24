@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-
+const FAVORITES_EVENT = 'favorites-updated';
 interface Favorite {
   id: string;
   name: string;
@@ -39,9 +39,10 @@ export const useFavorites = () => {
     };
 
     const storageKey = publicKey ? `favorites_${publicKey}` : 'favorites_anonymous';
-    const updated = [...favorites, favorite];
+    const updated = [...favorites.filter(f => f.id !== item.id), favorite];
     setFavorites(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent(FAVORITES_EVENT, { detail: { key: storageKey } }));
   }, [publicKey, favorites]);
 
   const removeFromFavorites = useCallback((itemId: string) => {
@@ -49,6 +50,7 @@ export const useFavorites = () => {
     const updated = favorites.filter(fav => fav.id !== itemId);
     setFavorites(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent(FAVORITES_EVENT, { detail: { key: storageKey } }));
   }, [publicKey, favorites]);
 
   const isFavorite = useCallback((itemId: string) => {
@@ -57,6 +59,14 @@ export const useFavorites = () => {
 
   useEffect(() => {
     loadFavorites();
+  }, [loadFavorites]);
+
+  useEffect(() => {
+    const handler = () => {
+      loadFavorites();
+    };
+    window.addEventListener(FAVORITES_EVENT, handler);
+    return () => window.removeEventListener(FAVORITES_EVENT, handler);
   }, [loadFavorites]);
 
   return {
