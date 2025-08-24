@@ -28,7 +28,7 @@ export const useNFTLikes = () => {
     }
   }, [connected, publicKey]);
 
-  const toggleLike = useCallback(async (nftId: string) => {
+  const toggleLike = useCallback(async (nftId: string, creatorAddress?: string) => {
     if (!connected || !publicKey) {
       toast.error('Please connect your wallet first');
       return false;
@@ -42,10 +42,19 @@ export const useNFTLikes = () => {
       return false;
     }
 
+    const wasLiked = likedNFTs.includes(nftId);
     setLoading(true);
+
+    // If creator address provided, dispatch optimistic update signal
+    if (creatorAddress) {
+      const delta = wasLiked ? -1 : 1;
+      window.dispatchEvent(new CustomEvent('creator-stats-update', {
+        detail: { wallet: creatorAddress, type: 'nft_like', delta }
+      }));
+    }
+
     try {
-      const isLiked = likedNFTs.includes(nftId);
-      const action = isLiked ? 'unlike' : 'like';
+      const action = wasLiked ? 'unlike' : 'like';
 
       const { data, error } = await supabase.functions.invoke('like-nft', {
         body: { 
@@ -77,6 +86,15 @@ export const useNFTLikes = () => {
       } else {
         toast.error(err.message || 'Failed to update like status');
       }
+      
+      // Revert optimistic update on error if creator address provided
+      if (creatorAddress) {
+        const revertDelta = wasLiked ? 1 : -1;
+        window.dispatchEvent(new CustomEvent('creator-stats-update', {
+          detail: { wallet: creatorAddress, type: 'nft_like', delta: revertDelta }
+        }));
+      }
+      
       return false;
     } finally {
       setLoading(false);

@@ -34,10 +34,23 @@ export const useCreatorFollows = () => {
       return false;
     }
 
+    // Prevent self-follow
+    if (publicKey === creatorWallet) {
+      toast.error('You cannot follow yourself');
+      return false;
+    }
+
+    const wasFollowing = followedCreators.includes(creatorWallet);
     setLoading(true);
+
+    // Dispatch optimistic update signal
+    const delta = wasFollowing ? -1 : 1;
+    window.dispatchEvent(new CustomEvent('creator-stats-update', {
+      detail: { wallet: creatorWallet, type: 'follow', delta }
+    }));
+
     try {
-      const isFollowing = followedCreators.includes(creatorWallet);
-      const action = isFollowing ? 'unfollow' : 'follow';
+      const action = wasFollowing ? 'unfollow' : 'follow';
 
       const { data, error } = await supabase.functions.invoke('toggle-follow', {
         body: { 
@@ -62,6 +75,13 @@ export const useCreatorFollows = () => {
     } catch (err: any) {
       console.error('Error toggling follow:', err);
       toast.error(err.message || 'Failed to update follow status');
+      
+      // Revert optimistic update on error
+      const revertDelta = wasFollowing ? 1 : -1;
+      window.dispatchEvent(new CustomEvent('creator-stats-update', {
+        detail: { wallet: creatorWallet, type: 'follow', delta: revertDelta }
+      }));
+      
       return false;
     } finally {
       setLoading(false);

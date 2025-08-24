@@ -18,6 +18,7 @@ import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { toast } from "sonner";
+import { useRealtimeCreatorStats } from "@/hooks/useRealtimeCreatorStats";
 import { normalizeAttributes } from '@/lib/attributes';
 
 interface NFT {
@@ -84,6 +85,10 @@ export default function Marketplace() {
   
   const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   
+  // Use real-time creator stats for the creators grid
+  const creatorWallets = creators.map(c => c.wallet_address);
+  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(creatorWallets);
+  
   // Helper functions for rank display
   const getRankColor = (rank: string) => {
     switch (rank) {
@@ -105,26 +110,10 @@ export default function Marketplace() {
     }
   };
   
-  // Update creator follower count locally when follow status changes
+  // Handle creator follow - now using real-time stats, no local state update needed
   const handleCreatorFollow = async (creatorWallet: string) => {
-    const isCurrentlyFollowing = isFollowing(creatorWallet);
-    
     try {
       await toggleFollow(creatorWallet);
-      
-      // Update the local creator stats immediately
-      setCreators(prevCreators => 
-        prevCreators.map(creator => 
-          creator.wallet_address === creatorWallet 
-            ? { 
-                ...creator, 
-                follower_count: isCurrentlyFollowing 
-                  ? Math.max(0, creator.follower_count - 1)
-                  : creator.follower_count + 1
-              }
-            : creator
-        )
-      );
     } catch (error) {
       console.error('Error toggling follow:', error);
     }
@@ -627,8 +616,8 @@ export default function Marketplace() {
                   </p>
                 )}
 
-                {/* Stats with icons and tooltips */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                 {/* Stats with icons and tooltips */}
+                 <div className="grid grid-cols-4 gap-2 mb-4">
                   <TooltipProvider>
                     {/* Rank */}
                     <Tooltip>
@@ -660,20 +649,35 @@ export default function Marketplace() {
                       </TooltipContent>
                     </Tooltip>
                     
-                    {/* Profile Likes */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
-                          <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-destructive">
-                            <Heart className="w-3 h-3" />
-                            <span>{creator.follower_count}</span>
-                          </div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Profile Likes</p>
-                      </TooltipContent>
-                    </Tooltip>
+                     {/* Profile Likes */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
+                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-destructive">
+                             <Heart className="w-3 h-3" />
+                             <span>{getCreatorFollowerCount(creator.wallet_address)}</span>
+                           </div>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>Profile Likes</p>
+                       </TooltipContent>
+                     </Tooltip>
+                     
+                     {/* NFT Likes */}
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="text-center p-2 rounded-lg bg-muted/50 cursor-help h-16 flex items-center justify-center">
+                           <div className="text-sm font-medium flex flex-col items-center justify-center gap-1 text-primary">
+                             <Heart className="w-3 h-3 fill-current" />
+                             <span>{getCreatorNFTLikeCount(creator.wallet_address)}</span>
+                           </div>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>NFT Likes</p>
+                       </TooltipContent>
+                     </Tooltip>
                   </TooltipProvider>
                 </div>
               </CardContent>

@@ -93,6 +93,22 @@ export default function CreatorProfile() {
     wallet ? [wallet] : []
   );
 
+  // Listen for cross-page creator stats updates to refresh current creator
+  useEffect(() => {
+    const handleStatsUpdate = (event: CustomEvent) => {
+      const { wallet: updatedWallet } = event.detail;
+      if (updatedWallet === wallet) {
+        // Creator stats will update automatically via useRealtimeCreatorStats
+      }
+    };
+
+    window.addEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+    };
+  }, [wallet]);
+
   // Navigation state
   const from = searchParams.get('from');
   const navParam = searchParams.get('nav');
@@ -134,32 +150,34 @@ export default function CreatorProfile() {
     }
   };
 
-  // Toggle follow with optimistic update
+  // Toggle follow with real-time stats
   const handleToggleFollow = async (creatorWallet: string) => {
     if (!publicKey) {
       toast.error('Please connect your wallet to follow creators');
       return;
     }
-    const wasFollowing = isFollowing(creatorWallet);
-    const ok = await toggleFollow(creatorWallet);
-    if (ok) {
-      setCreator(prev => prev ? { 
-        ...prev, 
-        follower_count: Math.max(0, (prev.follower_count || 0) + (wasFollowing ? -1 : 1)) 
-      } : prev);
+    try {
+      // Real-time stats will update automatically via cross-page signals
+      await toggleFollow(creatorWallet);
+    } catch (error) {
+      console.error('Error toggling follow:', error);
     }
   };
 
-  // Toggle NFT like with optimistic update
+  // Toggle NFT like with real-time stats
   const handleToggleLike = async (nftId: string) => {
     if (!publicKey) {
       toast.error('Please connect your wallet to like NFTs');
       return;
     }
-    const wasLiked = isLiked(nftId);
-    const ok = await toggleLike(nftId);
-    if (ok) {
-      setCreatorNFTs(prev => prev.map(n => n.id === nftId ? { ...n, likes_count: Math.max(0, n.likes_count + (wasLiked ? -1 : 1)) } : n));
+    const nft = creatorNFTs.find(n => n.id === nftId);
+    if (!nft) return;
+
+    try {
+      // Pass creator address for optimistic updates (use wallet as creator address since this is the creator's own NFTs)
+      await toggleLike(nftId, wallet || undefined);
+    } catch (error) {
+      console.error('Error toggling NFT like:', error);
     }
   };
 

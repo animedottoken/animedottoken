@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface CreatorStats {
@@ -11,8 +11,19 @@ interface CreatorStats {
 export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
   const [creatorStats, setCreatorStats] = useState<CreatorStats>({});
   const [loading, setLoading] = useState(true);
+  const debounceRef = useRef<NodeJS.Timeout>();
 
-  const loadCreatorStats = async () => {
+  // Debounced refresh to prevent rapid successive updates
+  const debouncedRefresh = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      loadCreatorStats();
+    }, 250);
+  }, []);
+
+  const loadCreatorStats = useCallback(async () => {
     if (walletAddresses.length === 0) {
       setCreatorStats({});
       setLoading(false);
@@ -44,12 +55,36 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [walletAddresses.join(',')]);
+
+  // Optimistically update creator stats from cross-page signals
+  const handleCreatorStatsUpdate = useCallback((event: CustomEvent) => {
+    const { wallet, type, delta } = event.detail;
+    if (walletAddresses.includes(wallet)) {
+      setCreatorStats(prev => ({
+        ...prev,
+        [wallet]: {
+          follower_count: type === 'follow' 
+            ? Math.max(0, (prev[wallet]?.follower_count || 0) + delta)
+            : (prev[wallet]?.follower_count || 0),
+          nft_likes_count: type === 'nft_like' 
+            ? Math.max(0, (prev[wallet]?.nft_likes_count || 0) + delta)
+            : (prev[wallet]?.nft_likes_count || 0),
+        }
+      }));
+      // Also trigger a debounced refresh to sync with database
+      debouncedRefresh();
+    }
+  }, [walletAddresses, debouncedRefresh]);
 
   useEffect(() => {
     loadCreatorStats();
 
-    // Set up real-time subscription for creator stats changes
+    // Listen for cross-page creator stats updates
+    const handleStatsUpdate = (event: CustomEvent) => handleCreatorStatsUpdate(event);
+    window.addEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+
+    // Set up filtered real-time subscription for creator stats changes
     const channel = supabase
       .channel('creator_stats_realtime')
       .on(
@@ -57,12 +92,18 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
         {
           event: '*',
           schema: 'public',
-          table: 'creator_follows'
+          table: 'creator_follows',
+          filter: walletAddresses.length > 0 
+            ? `creator_wallet=in.(${walletAddresses.join(',')})`
+            : undefined
         },
         (payload) => {
           console.log('Creator follows change detected in stats:', payload);
-          // Refresh stats when any creator follow changes
-          loadCreatorStats();
+          // Only refresh if the change affects our tracked creators
+          const affectedWallet = (payload.new as any)?.creator_wallet || (payload.old as any)?.creator_wallet;
+          if (walletAddresses.includes(affectedWallet)) {
+            debouncedRefresh();
+          }
         }
       )
       .on(
@@ -72,18 +113,37 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
           schema: 'public',
           table: 'nft_likes'
         },
-        (payload) => {
+        async (payload) => {
           console.log('NFT likes change detected in creator stats:', payload);
-          // Refresh stats when any NFT like changes (affects nft_likes_count)
-          loadCreatorStats();
+          // For NFT likes, we need to check if the NFT belongs to one of our tracked creators
+          try {
+            const nftId = (payload.new as any)?.nft_id || (payload.old as any)?.nft_id;
+            if (nftId) {
+              const { data: nftData } = await supabase
+                .from('nfts')
+                .select('creator_address')
+                .eq('id', nftId)
+                .single();
+              
+              if (nftData && walletAddresses.includes(nftData.creator_address)) {
+                debouncedRefresh();
+              }
+            }
+          } catch (error) {
+            console.error('Error checking NFT creator for stats update:', error);
+          }
         }
       )
       .subscribe();
 
     return () => {
+      window.removeEventListener('creator-stats-update', handleStatsUpdate as EventListener);
       supabase.removeChannel(channel);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
-  }, [walletAddresses.join(',')]);
+  }, [walletAddresses.join(','), loadCreatorStats, handleCreatorStatsUpdate, debouncedRefresh]);
 
   const getCreatorFollowerCount = (walletAddress: string): number => {
     return creatorStats[walletAddress]?.follower_count || 0;
