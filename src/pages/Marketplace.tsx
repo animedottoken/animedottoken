@@ -505,7 +505,7 @@ export default function Marketplace() {
           style={{ cursor: 'pointer' }}
             >
               <CardContent className="p-6 text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-3">
+                <Avatar className="w-24 h-24 mx-auto mb-4">
                   <AvatarImage 
                     src={creator.profile_image_url} 
                     alt={creator.nickname || creator.wallet_address} 
@@ -514,25 +514,6 @@ export default function Marketplace() {
                     {creator.nickname?.slice(0, 2).toUpperCase() || creator.wallet_address.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-
-                {/* Follow Button - positioned below avatar */}
-                <div className="mb-4">
-                  <button
-                    aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
-                    disabled={followLoading}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!publicKey) {
-                        toast.error('Please connect your wallet to like creators');
-                        return;
-                      }
-                      toggleFollow(creator.wallet_address);
-                    }}
-                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-                  >
-                    <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
-                  </button>
-                </div>
 
                 {/* Profile Info Section */}
                 <div className="mb-4">
@@ -590,6 +571,25 @@ export default function Marketplace() {
                     {creator.bio}
                   </p>
                 )}
+
+                {/* Follow Button - positioned after bio, before stats */}
+                <div className="mb-4">
+                  <button
+                    aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
+                    disabled={followLoading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!publicKey) {
+                        toast.error('Please connect your wallet to like creators');
+                        return;
+                      }
+                      toggleFollow(creator.wallet_address);
+                    }}
+                    className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
+                  >
+                    <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
+                  </button>
+                </div>
                 
                 {/* Content Stats */}
                 <div className="flex items-center justify-center gap-4 text-sm mb-3">
