@@ -94,6 +94,41 @@ export default function Marketplace() {
 
   useEffect(() => {
     loadMarketplaceData();
+
+    // Set up real-time subscription for marketplace updates
+    const channel = supabase
+      .channel('marketplace_updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'creator_follows'
+        },
+        (payload) => {
+          console.log('Creator follows change detected in marketplace:', payload);
+          // Reload marketplace data to update creator stats
+          loadMarketplaceData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'nft_likes'
+        },
+        (payload) => {
+          console.log('NFT likes change detected in marketplace:', payload);
+          // Reload marketplace data to update stats
+          loadMarketplaceData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadMarketplaceData = async () => {

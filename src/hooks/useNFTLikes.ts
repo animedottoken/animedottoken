@@ -74,6 +74,28 @@ export const useNFTLikes = () => {
 
   useEffect(() => {
     loadLikedNFTs();
+
+    // Set up real-time subscription for NFT likes
+    const channel = supabase
+      .channel('nft_likes_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'nft_likes'
+        },
+        (payload) => {
+          console.log('NFT likes change detected:', payload);
+          // Refresh liked NFTs when any change occurs
+          loadLikedNFTs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [loadLikedNFTs]);
 
   return {
