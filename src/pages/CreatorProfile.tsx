@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
-import { useFavorites } from "@/hooks/useFavorites";
 
 interface Creator {
   wallet_address: string;
@@ -53,7 +52,6 @@ export default function CreatorProfile() {
   const { publicKey } = useSolanaWallet();
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
-  const { addToFavorites, removeFromFavorites, isFavorite, loading: favoriteLoading } = useFavorites();
   const [creator, setCreator] = useState<Creator | null>(null);
   const [creatorNFTs, setCreatorNFTs] = useState<NFT[]>([]);
   const [creatorCollections, setCreatorCollections] = useState<Collection[]>([]);
@@ -466,31 +464,6 @@ export default function CreatorProfile() {
                       )}
                       <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <span>{collection.items_redeemed}/{collection.items_total} items</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (isFavorite(collection.id)) {
-                              removeFromFavorites(collection.id);
-                            } else {
-                              addToFavorites({
-                                id: collection.id,
-                                name: collection.name,
-                                image_url: collection.image_url,
-                                type: 'collection'
-                              });
-                            }
-                          }}
-                          disabled={favoriteLoading}
-                          className="p-1 hover:bg-muted rounded"
-                        >
-                          <Heart 
-                            className={`w-4 h-4 ${
-                              isFavorite(collection.id) 
-                                ? 'fill-current text-primary' 
-                                : 'text-muted-foreground'
-                            }`} 
-                          />
-                        </button>
                       </div>
                     </CardContent>
                   </Card>

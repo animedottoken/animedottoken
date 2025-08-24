@@ -26,7 +26,7 @@ import {
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
-import { useFavorites } from "@/hooks/useFavorites";
+
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,7 +43,6 @@ export default function CollectionDetail() {
   const { connected, publicKey } = useSolanaWallet();
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { deleting, deleteCollection } = useDeleteCollection();
   
   // Navigation context for moving between collections
@@ -211,20 +210,6 @@ export default function CollectionDetail() {
                         {collection.symbol}
                       </Badge>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        if (isFavorite(collection.id)) {
-                          removeFromFavorites(collection.id);
-                        } else {
-                          addToFavorites({ id: collection.id, name: collection.name, image_url: collection.image_url, type: 'collection' });
-                        }
-                      }}
-                      aria-label={isFavorite(collection.id) ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Heart className={`w-5 h-5 ${isFavorite(collection.id) ? 'fill-current text-primary' : 'text-muted-foreground'}`} />
-                    </Button>
                   </div>
                   
                   {collection.description && (

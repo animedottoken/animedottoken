@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Crown, Rocket, TrendingUp, Eye, Heart } from 'lucide-react';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 interface BoostedListing {
@@ -23,7 +23,7 @@ interface BoostedNFTCardProps {
 }
 
 export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const navigate = useNavigate();
   const [nftPrice, setNftPrice] = useState<number | null>(null);
   const [listed, setListed] = useState<boolean>(false);
@@ -90,15 +90,8 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isFavorite(listing.nft_id)) {
-      removeFromFavorites(listing.nft_id);
-    } else {
-      addToFavorites({
-        id: listing.nft_id,
-        name: listing.nft_name,
-        image_url: listing.nft_image_url,
-        type: 'nft'
-      });
+    if (!likeLoading) {
+      toggleLike(listing.nft_id);
     }
   };
 
@@ -153,9 +146,10 @@ export const BoostedNFTCard = ({ listing }: BoostedNFTCardProps) => {
               variant="ghost" 
               size="sm" 
               onClick={handleLike}
-              className={isFavorite(listing.nft_id) ? "text-red-500" : ""}
+              disabled={likeLoading}
+              className={isLiked(listing.nft_id) ? "text-red-500" : ""}
             >
-              <Heart className={`h-4 w-4 ${isFavorite(listing.nft_id) ? "fill-current" : ""}`} />
+              <Heart className={`h-4 w-4 ${isLiked(listing.nft_id) ? "fill-current" : ""}`} />
             </Button>
           </div>
           
