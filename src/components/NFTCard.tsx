@@ -77,6 +77,21 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
           }}
         />
         
+        {/* Heart button - moved to top right corner */}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleLike}
+          disabled={likeLoading}
+          className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
+            isLiked(nft.id)
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-black/50 text-white hover:bg-black/70'
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
+        </Button>
+        
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center">
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -114,16 +129,6 @@ export const NFTCard = ({ nft, navigationQuery }: NFTCardProps) => {
               )}
             </Link>
           </div>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleLike}
-            disabled={likeLoading}
-            className={`shrink-0 ${isLiked(nft.id) ? "text-red-500" : "text-muted-foreground"}`}
-          >
-            <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
-          </Button>
         </div>
         
         <div className="flex items-center justify-between">

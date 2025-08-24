@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { supabase } from '@/integrations/supabase/client';
+import { NFTCard } from '@/components/NFTCard';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -439,26 +440,29 @@ export default function Profile() {
         <TabsContent value="nfts" className="mt-6">
           {nfts && nfts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {nfts.map((nft) => (
-                <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  <div className="aspect-square relative overflow-hidden">
-                    <ImageLazyLoad
-                      src={nft.image_url}
-                      alt={nft.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      fallbackSrc="/placeholder.svg"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
-                      {nft.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {nft.mint_address.slice(0, 8)}...{nft.mint_address.slice(-8)}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              {nfts.map((nft) => {
+                const allNFTIds = nfts.map(n => n.id);
+                const queryString = `from=profile&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                
+                return (
+                  <NFTCard
+                    key={nft.id}
+                    nft={{
+                      id: nft.id,
+                      name: nft.name,
+                      image_url: nft.image_url || '',
+                      price: nft.price,
+                      owner_address: nft.owner_address,
+                      creator_address: nft.creator_address,
+                      mint_address: nft.mint_address,
+                      is_listed: nft.is_listed || false,
+                      collection_id: nft.collection_id,
+                      description: nft.description,
+                    }}
+                    navigationQuery={queryString}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12">
