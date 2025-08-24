@@ -192,8 +192,21 @@ export const GamifiedProfileCard = () => {
   if (!profile) {
     return (
       <Card className="w-full max-w-md mx-auto">
-        <CardContent className="p-6 text-center">
-          <p className="text-muted-foreground">Connect your wallet to view your profile</p>
+        <CardContent className="p-6 text-center space-y-4">
+          <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+            <Lock className="w-8 h-8 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold text-foreground">Connect Your Wallet</h3>
+            <p className="text-sm text-muted-foreground">
+              To view and customize your profile, please connect your wallet using the 
+              <span className="font-medium text-foreground"> "Connect Wallet" </span>
+              button in the top-right corner.
+            </p>
+            <p className="text-xs text-muted-foreground bg-green-50 dark:bg-green-950 p-2 rounded border border-green-200 dark:border-green-800">
+              🔒 <span className="font-medium text-green-700 dark:text-green-300">Safe Connection:</span> Connecting your wallet is completely secure and won't allow any charges without your explicit approval.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
