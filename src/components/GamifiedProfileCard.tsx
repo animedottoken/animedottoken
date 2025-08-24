@@ -363,48 +363,61 @@ export const GamifiedProfileCard = () => {
 
           {/* PFP Selection Dialog */}
           <Dialog open={pfpDialogOpen} onOpenChange={setPfpDialogOpen}>
-            <DialogContent className="sm:max-w-[720px] h-[85vh] flex flex-col p-0">
-              {/* Fixed Header */}
-              <div className="flex-shrink-0 p-6 pb-4 border-b bg-background">
-                <DialogTitle className="text-xl font-semibold">Choose Your Profile Picture</DialogTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Select one of your NFTs to use as your profile picture
-                </p>
-              </div>
-
-              {/* Fixed Live Preview (always visible) */}
-              <div className="flex-shrink-0 p-6 pb-4 border-b bg-muted/30">
-                <h4 className="text-sm font-medium mb-3">Preview:</h4>
-                <div className="flex items-center gap-3">
-                  <Avatar className={`w-12 h-12 border-2 ${rankColor}`}>
-                    <AvatarImage 
-                      src={(selectedNftForPfp ? userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.image_url : profile.profile_image_url) || undefined}
-                      alt="Preview"
-                    />
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {profile.nickname?.slice(0, 2).toUpperCase() || profile.wallet_address.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{profile.nickname || `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}`}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Using: {selectedNftForPfp ? (userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name || 'Selected NFT') : 'Current PFP'}
-                    </p>
+            <DialogContent className="sm:max-w-[680px] h-[90vh] flex flex-col p-0">
+              {/* Combined Header & Preview Section */}
+              <div className="flex-shrink-0 p-6 border-b bg-gradient-to-r from-background to-muted/30">
+                <div className="flex items-start gap-6">
+                  {/* Large Preview */}
+                  <div className="flex-shrink-0">
+                    <h3 className="text-lg font-semibold mb-3">Choose Your Profile Picture</h3>
+                    <div className="relative">
+                      <Avatar className={`w-24 h-24 border-4 ${rankColor} shadow-lg`}>
+                        <AvatarImage 
+                          src={(selectedNftForPfp ? userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.image_url : profile.profile_image_url) || undefined}
+                          alt="Preview"
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-primary/10 text-primary text-lg">
+                          {profile.nickname?.slice(0, 2).toUpperCase() || profile.wallet_address.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      {selectedNftForPfp && (
+                        <div className="absolute -top-1 -right-1">
+                          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <Image className="w-3 h-3 text-primary-foreground" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Preview Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="mb-3">
+                      <p className="font-semibold text-lg">{profile.nickname || `${profile.wallet_address.slice(0, 6)}...${profile.wallet_address.slice(-4)}`}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedNftForPfp ? (userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name || 'Selected NFT') : 'Current Profile Picture'}
+                      </p>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      <p>Cost: {formatTokenAmount(pfpPricing.animeAmount)} ANIME (${pfpPricing.usdPrice})</p>
+                      <p className="mt-1">Select an NFT from your collection below</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Scrollable NFT Grid */}
               <div className="flex-1 min-h-0 overflow-auto">
-                <div className="p-6">
+                <div className="p-4">
                   {userNFTs.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                       {userNFTs.map((nft) => (
                         <div
                           key={nft.mint_address}
-                          className={`relative cursor-pointer rounded-xl overflow-hidden border-2 transition-colors ${
+                          className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-colors ${
                             selectedNftForPfp === nft.mint_address
-                              ? "border-primary ring-2 ring-primary/20"
+                              ? "border-primary ring-1 ring-primary/30"
                               : "border-border hover:border-foreground/20"
                           }`}
                           onClick={() => handleNftClick(nft.mint_address)}
@@ -418,13 +431,13 @@ export const GamifiedProfileCard = () => {
                               loading="lazy"
                             />
                           </div>
-                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                            <p className="text-white text-xs font-medium truncate">{nft.name}</p>
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                            <p className="text-white text-[10px] font-medium truncate">{nft.name}</p>
                           </div>
                           {selectedNftForPfp === nft.mint_address && (
-                            <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-                              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                                <Crown className="w-5 h-5 text-primary-foreground" />
+                            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Image className="w-3 h-3 text-primary-foreground" />
                               </div>
                             </div>
                           )}
