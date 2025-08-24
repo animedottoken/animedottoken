@@ -15,6 +15,7 @@ import { BidModal } from "@/components/BidModal";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
+import { normalizeAttributes } from '@/lib/attributes';
 
 interface ExtendedNFT extends UserNFT {
   price?: number;
@@ -67,19 +68,6 @@ export default function NFTDetail() {
     }
     return `${minutes}m remaining`;
   };
-
-  const formatPropertyValue = (value: any): string => {
-    if (Array.isArray(value)) {
-      return value.join(', ');
-    }
-    if (typeof value === 'object' && value !== null) {
-      return JSON.stringify(value);
-    }
-    return String(value);
-  };
-
-  // System fields to exclude from properties display
-  const systemFields = new Set(['quantity_index', 'total_quantity', 'minted_at', 'explicit_content', 'standalone', 'edition', 'max_supply']);
 
   // Get edition info from metadata
   const getEditionInfo = () => {
@@ -371,33 +359,7 @@ export default function NFTDetail() {
           {/* Properties */}
           {nft.metadata && (
             (() => {
-              const normalizeProperties = (metadata: any) => {
-                const properties: { trait_type: string; value: string; display_type?: string }[] = [];
-                
-                if (Array.isArray(metadata)) {
-                  // Standard trait format: [{ trait_type: "Background", value: "Blue" }]
-                  return metadata
-                    .filter(attr => attr && attr.trait_type && attr.value !== null && attr.value !== undefined)
-                    .filter(attr => !systemFields.has(attr.trait_type?.toLowerCase()));
-                } else if (typeof metadata === 'object' && metadata !== null) {
-                  // Object format: convert to trait format
-                  Object.entries(metadata).forEach(([key, value]) => {
-                    // Skip internal metadata fields
-                    if (systemFields.has(key) || value === null || value === undefined) {
-                      return;
-                    }
-                    
-                    properties.push({
-                      trait_type: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                      value: formatPropertyValue(value)
-                    });
-                  });
-                }
-                
-                return properties;
-              };
-              
-              const properties = normalizeProperties(nft.metadata);
+              const properties = normalizeAttributes(nft.metadata);
               
               if (properties.length > 0) {
                 return (

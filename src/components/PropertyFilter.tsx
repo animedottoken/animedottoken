@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Filter, X, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { normalizeAttributes, normalizeTraitType } from '@/lib/attributes';
 
 interface PropertyValue {
   value: string;
@@ -34,21 +35,8 @@ export function PropertyFilter({ nfts, onFiltersChange, selectedFilters }: Prope
     nfts.forEach(nft => {
       if (!nft.attributes) return;
       
-      let properties: { trait_type: string; value: string }[] = [];
-      
-      if (Array.isArray(nft.attributes)) {
-        properties = nft.attributes.filter(attr => attr?.trait_type && attr?.value);
-      } else if (typeof nft.attributes === 'object') {
-        properties = Object.entries(nft.attributes)
-          .filter(([key, value]) => 
-            !['explicit_content', 'minted_at', 'standalone'].includes(key) && 
-            value !== null && value !== undefined
-          )
-          .map(([key, value]) => ({
-            trait_type: key.replace(/_/g, ' '),
-            value: String(value)
-          }));
-      }
+      // Use shared normalization function
+      const properties = normalizeAttributes(nft.attributes);
       
       properties.forEach(({ trait_type, value }) => {
         if (!propertyMap.has(trait_type)) {

@@ -18,6 +18,7 @@ import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { toast } from "sonner";
+import { normalizeAttributes } from '@/lib/attributes';
 
 interface NFT {
   id: string;
@@ -235,21 +236,8 @@ export default function Marketplace() {
         
         if (!nft.attributes) return false;
         
-        let nftProperties: { trait_type: string; value: string }[] = [];
-        
-        if (Array.isArray(nft.attributes)) {
-          nftProperties = nft.attributes.filter(attr => attr?.trait_type && attr?.value);
-        } else if (typeof nft.attributes === 'object') {
-          nftProperties = Object.entries(nft.attributes)
-            .filter(([key, value]) => 
-              !['explicit_content', 'minted_at', 'standalone'].includes(key) && 
-              value !== null && value !== undefined
-            )
-            .map(([key, value]) => ({
-              trait_type: key.replace(/_/g, ' '),
-              value: String(value)
-            }));
-        }
+        // Use shared normalization function
+        const nftProperties = normalizeAttributes(nft.attributes);
         
         const matchingProperty = nftProperties.find(prop => 
           prop.trait_type === traitType && selectedValues.includes(prop.value)
