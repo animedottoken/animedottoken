@@ -14,7 +14,7 @@ import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
-
+import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 export const GamifiedProfileCard = () => {
   const {
     profile,
@@ -30,6 +30,8 @@ export const GamifiedProfileCard = () => {
     getRankColor,
     getRankBadge,
   } = useGamifiedProfile();
+
+  const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
 
   // Creator stats for follower count and NFT likes
   const [creatorStats, setCreatorStats] = useState<{follower_count: number, nft_likes_count: number} | null>(null);
@@ -267,18 +269,28 @@ export const GamifiedProfileCard = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardContent className="p-6 text-center">
-        <Avatar className="w-24 h-24 mx-auto mb-4">
-          <AvatarImage 
-            src={profile.profile_image_url} 
-            alt={profile.nickname || 'Profile'} 
-          />
-          <AvatarFallback className="text-lg">
-            {profile.nickname 
-              ? profile.nickname.slice(0, 2).toUpperCase() 
-              : profile.wallet_address.slice(0, 2).toUpperCase()
-            }
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative w-24 h-24 mx-auto mb-4">
+          <Avatar onClick={handleAvatarClick} title="Change profile picture" className="w-24 h-24 cursor-pointer ring-2 ring-transparent hover:ring-primary transition">
+            <AvatarImage 
+              src={profile.profile_image_url} 
+              alt={profile.nickname || 'Profile'} 
+            />
+            <AvatarFallback className="text-lg">
+              {profile.nickname 
+                ? profile.nickname.slice(0, 2).toUpperCase() 
+                : profile.wallet_address.slice(0, 2).toUpperCase()
+              }
+            </AvatarFallback>
+          </Avatar>
+          <button
+            onClick={handleAvatarClick}
+            className="absolute -bottom-1 -right-1 inline-flex items-center justify-center w-8 h-8 rounded-full border bg-background hover:bg-muted transition"
+            aria-label="Change profile picture"
+            title="Change profile picture"
+          >
+            <Image className="w-4 h-4" />
+          </button>
+        </div>
 
         {/* Profile Info Section */}
         <div className="mb-4">
@@ -355,22 +367,18 @@ export const GamifiedProfileCard = () => {
           </div>
         )}
 
-        {/* Profile actions: self view */}
-        <div className="mb-4 flex items-center justify-center gap-3">
+        {/* Profile Like/Follow */}
+        <div className="mb-4">
           <button
-            aria-disabled
-            className="inline-flex items-center justify-center p-2 rounded-md border text-muted-foreground/70 cursor-not-allowed"
-            title="You can't follow your own profile"
-          >
-            <Heart className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleAvatarClick}
+            aria-label={isFollowing(profile.wallet_address) ? 'Unlike profile' : 'Like profile'}
+            disabled={followLoading}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFollow(profile.wallet_address);
+            }}
             className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-            title="Change profile picture"
-            aria-label="Change profile picture"
           >
-            <Image className="w-5 h-5" />
+            <Heart className={`${isFollowing(profile.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
           </button>
         </div>
         
