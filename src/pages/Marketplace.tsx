@@ -466,8 +466,8 @@ export default function Marketplace() {
                       ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
                       ...sortedNfts.map(nft => nft.id)
                     ];
-                    const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
-                    
+                    const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                
                     return (
                       <BoostedNFTCard 
                         key={listing.id} 
@@ -503,7 +503,7 @@ export default function Marketplace() {
                   ...boostedListings.slice(0, 8).map(boost => boost.nft_id),
                   ...sortedNfts.map(n => n.id)
                 ];
-                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
                 
                 return (
                   <NFTCard 
@@ -524,7 +524,7 @@ export default function Marketplace() {
               className="group hover:shadow-lg transition-all cursor-pointer"
               onClick={() => {
                 const navIds = filteredCollections.map(c => c.id);
-                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
                 navigate(`/collection/${collection.id}?${queryString}`);
               }}
             >
@@ -557,7 +557,7 @@ export default function Marketplace() {
               className="group hover:shadow-lg transition-all cursor-pointer"
               onClick={() => {
                 const navCreators = filteredCreators.map(c => c.wallet_address);
-                const queryString = `from=marketplace&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
+                const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
                 navigate(`/profile/${creator.wallet_address}?${queryString}`);
               }}
             >
