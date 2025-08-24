@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,11 +22,18 @@ interface NicknameEditDialogProps {
 }
 
 export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentNickname }: NicknameEditDialogProps) {
-  const [nickname, setNickname] = useState(currentNickname || '');
+  const [nickname, setNickname] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(1.00); // 1 USDT for nickname
   
   const isFirstChange = !profile?.nickname;
+
+  // Pre-populate with current nickname when dialog opens
+  useEffect(() => {
+    if (open) {
+      setNickname(currentNickname || '');
+    }
+  }, [open, currentNickname]);
 
   const handleConfirm = async () => {
     if (!nickname.trim()) return;

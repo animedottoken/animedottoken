@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,11 +22,18 @@ interface BioEditDialogProps {
 }
 
 export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentBio }: BioEditDialogProps) {
-  const [bio, setBio] = useState(currentBio || '');
+  const [bio, setBio] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00); // 2 USDT for bio
   
   const isFirstChange = !profile?.bio;
+
+  // Pre-populate with current bio when dialog opens
+  useEffect(() => {
+    if (open) {
+      setBio(currentBio || '');
+    }
+  }, [open, currentBio]);
 
   const handleConfirm = async () => {
     if (!bio.trim()) return;

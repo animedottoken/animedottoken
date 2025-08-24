@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -28,6 +28,13 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+
+  // Set current banner as preview when dialog opens
+  useEffect(() => {
+    if (open && profile?.banner_image_url && !selectedFile) {
+      setPreviewUrl(profile.banner_image_url);
+    }
+  }, [open, profile?.banner_image_url, selectedFile]);
 
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);

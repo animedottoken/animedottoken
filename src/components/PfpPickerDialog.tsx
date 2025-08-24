@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ interface ProfileLike {
   wallet_address: string;
   nickname?: string;
   profile_image_url?: string;
+  current_pfp_nft_mint_address?: string;
 }
 
 interface PfpPickerDialogProps {
@@ -33,6 +34,13 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
   const [selected, setSelected] = useState<string | null>(null);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+
+  // Pre-select current PFP NFT when dialog opens
+  useEffect(() => {
+    if (open && profile?.current_pfp_nft_mint_address) {
+      setSelected(profile.current_pfp_nft_mint_address);
+    }
+  }, [open, profile?.current_pfp_nft_mint_address]);
 
   const selectedImage = useMemo(() => {
     if (!selected) return profile?.profile_image_url;
