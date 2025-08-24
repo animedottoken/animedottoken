@@ -64,6 +64,42 @@ export type Database = {
           },
         ]
       }
+      collection_likes: {
+        Row: {
+          collection_id: string
+          created_at: string
+          id: string
+          user_wallet: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string
+          id?: string
+          user_wallet: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string
+          id?: string
+          user_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_likes_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_likes_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_whitelist: {
         Row: {
           collection_id: string | null
@@ -629,6 +665,28 @@ export type Database = {
           },
         ]
       }
+      collection_like_counts: {
+        Row: {
+          collection_id: string | null
+          like_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_likes_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_likes_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collections_public: {
         Row: {
           banner_image_url: string | null
@@ -719,6 +777,13 @@ export type Database = {
           updated_at?: string | null
           verified?: boolean | null
           whitelist_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      creator_collection_like_stats: {
+        Row: {
+          collection_likes_count: number | null
+          creator_wallet: string | null
         }
         Relationships: []
       }

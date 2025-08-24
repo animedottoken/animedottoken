@@ -1,3 +1,4 @@
+
 project_id = "eztzddykjnmnpoeyfqcg"
 
 [functions.create-mint-job]
@@ -37,6 +38,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.like-nft]
+verify_jwt = false
+
+[functions.like-collection]
 verify_jwt = false
 
 [functions.toggle-follow]
