@@ -571,7 +571,7 @@ export default function Profile() {
               <p className="text-sm text-muted-foreground/70 mb-4">
                 Like profiles to see them here - including your own!
               </p>
-              <Button onClick={() => navigate('/marketplace')}>Explore Creators</Button>
+              <Button onClick={() => navigate('/marketplace?tab=creators')}>Explore Creators</Button>
             </div>
           )}
         </TabsContent>
