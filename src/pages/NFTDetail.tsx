@@ -6,14 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, TrendingUp, Crown, Rocket, Zap, Maximize2, ShoppingCart, Gavel, DollarSign, Award } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
-import { BoostModal } from "@/components/BoostModal";
 import { BidModal } from "@/components/BidModal";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
-import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 import { normalizeAttributes } from '@/lib/attributes';
 import { truncateAddress } from "@/utils/addressUtils";
@@ -34,41 +32,12 @@ export default function NFTDetail() {
   const isFullscreen = searchParams.get('view') === 'fs';
   const [nft, setNft] = useState<ExtendedNFT | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isBoostModalOpen, setIsBoostModalOpen] = useState(false);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const { publicKey } = useSolanaWallet();
-  const { boostedListings } = useBoostedListings();
   
   // Navigation context for moving between NFTs
   const navigation = useNavigationContext(id!, 'nft');
-
-  // Find active boost for this NFT
-  const currentBoost = boostedListings.find(boost => boost.nft_id === id && boost.is_active);
-
-  const getTierIcon = (tier: string) => {
-    switch (tier) {
-      case 'god': return <Crown className="h-4 w-4 text-yellow-500" />;
-      case 'top': return <Rocket className="h-4 w-4 text-blue-500" />;
-      default: return <TrendingUp className="h-4 w-4 text-green-500" />;
-    }
-  };
-
-  const getTimeRemaining = (endTime: string) => {
-    const now = new Date();
-    const end = new Date(endTime);
-    const diff = end.getTime() - now.getTime();
-    
-    if (diff <= 0) return 'Expired';
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m remaining`;
-    }
-    return `${minutes}m remaining`;
-  };
 
   // Get edition info from metadata
   const getEditionInfo = () => {
@@ -580,64 +549,6 @@ export default function NFTDetail() {
             </Card>
           </TooltipProvider>
 
-          {/* Boost Status/Control Section */}
-          {publicKey === nft.owner_address && (
-            <Card>
-              <CardContent className="p-4">
-                {currentBoost ? (
-                  // Show current boost status
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-5 w-5 text-primary" />
-                      <h3 className="font-semibold">Active Boost</h3>
-                      <Badge variant="secondary" className="ml-auto">
-                        Rank #{currentBoost.bid_rank}
-                      </Badge>
-                    </div>
-                    
-                    <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          {getTierIcon(currentBoost.tier)}
-                          <span className="font-medium text-sm">
-                            {currentBoost.tier.toUpperCase()} TIER
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-primary">
-                            {Number(currentBoost.bid_amount).toLocaleString()} $ANIME
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-xs text-muted-foreground">
-                        🕐 {getTimeRemaining(currentBoost.end_time)}
-                      </div>
-                    </div>
-                    
-                    <p className="text-xs text-muted-foreground text-center">
-                      Your NFT is currently boosted with premium visibility in the marketplace
-                    </p>
-                  </div>
-                ) : (
-                  // Show boost button if no active boost
-                  <div className="space-y-3">
-                    <Button 
-                      onClick={() => setIsBoostModalOpen(true)}
-                      className="w-full"
-                      variant="outline"
-                    >
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      Boost Item
-                    </Button>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Boost your NFT for premium visibility in the marketplace
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
       
