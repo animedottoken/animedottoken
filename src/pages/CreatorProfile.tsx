@@ -323,24 +323,16 @@ export default function CreatorProfile() {
                 </p>
               )}
               
-              <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground mb-4">
-                <div className="text-center">
-                  <div className="font-semibold text-foreground">{creator.follower_count}</div>
-                  <div>Likes</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-foreground">{creator.nft_likes_count}</div>
-                  <div>NFT Likes</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-foreground">{creator.created_nfts}</div>
-                  <div>NFTs</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-foreground">{creator.trade_count}</div>
-                  <div>Trades</div>
-                </div>
-              </div>
+               <div className="grid grid-cols-2 gap-4 text-center mb-4">
+                 <div className="p-3 rounded-lg bg-muted/50">
+                   <div className="text-2xl font-bold text-primary">{creator.follower_count}</div>
+                   <div className="text-sm text-muted-foreground">Likes</div>
+                 </div>
+                 <div className="p-3 rounded-lg bg-muted/50">
+                   <div className="text-2xl font-bold text-primary">{creator.nft_likes_count}</div>
+                   <div className="text-sm text-muted-foreground">NFT Likes</div>
+                 </div>
+               </div>
               
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Badge 
