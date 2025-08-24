@@ -390,36 +390,90 @@ export const GamifiedProfileCard = () => {
                 </div>
                 <Separator />
                 
-                <div className="grid grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-                  {userNFTs
-                    .filter((nft) => {
-                      // Only show NFTs with 1:1 aspect ratio or close to it
-                      // We'll assume most NFTs should be square for profile pictures
-                      return true; // For now, show all NFTs but they'll be displayed in square containers
-                    })
-                    .map((nft) => (
-                      <div
-                        key={nft.mint_address}
-                        className="cursor-pointer border-2 border-transparent hover:border-primary rounded-lg p-2 transition-colors"
-                        onClick={() => handleNftClick(nft.mint_address)}
-                      >
-                        <div className="aspect-square mb-2">
-                          {nft.image_url ? (
-                            <img
-                              src={nft.image_url}
-                              alt={nft.name}
-                              className="w-full h-full object-cover rounded"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-muted rounded flex items-center justify-center">
-                              <Image className="w-8 h-8 text-muted-foreground" />
+                {/* Live Preview Section */}
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="text-sm font-medium text-primary mb-2">Live Preview:</div>
+                      <Avatar className={`w-16 h-16 border-2 ${rankColor}`}>
+                        {selectedNftForPfp ? (
+                          <AvatarImage 
+                            src={userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.image_url} 
+                            alt="Preview" 
+                          />
+                        ) : (
+                          <AvatarImage 
+                            src={profile.profile_image_url} 
+                            alt="Current" 
+                          />
+                        )}
+                        <AvatarFallback className="text-sm bg-primary/10 text-primary">
+                          {profile.nickname?.slice(0, 2).toUpperCase() || profile.wallet_address.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-muted-foreground">
+                        {selectedNftForPfp 
+                          ? `Selected: ${userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name}` 
+                          : 'Hover over an NFT to preview • Click to select'
+                        }
+                      </div>
+                      {selectedNftForPfp && (
+                        <div className="text-xs text-primary mt-1">
+                          Ready to set as profile picture
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+
+                <div className="grid grid-cols-3 gap-4 max-h-80 overflow-y-auto">
+                  {userNFTs.map((nft) => (
+                    <div
+                      key={nft.mint_address}
+                      className="cursor-pointer group"
+                      onClick={() => handleNftClick(nft.mint_address)}
+                      onMouseEnter={() => setSelectedNftForPfp(nft.mint_address)}
+                      onMouseLeave={() => setSelectedNftForPfp(null)}
+                    >
+                      <div className="relative p-2">
+                        {/* Circular NFT Preview */}
+                        <div className="relative">
+                          <Avatar className={`w-20 h-20 mx-auto transition-all duration-200 ${
+                            selectedNftForPfp === nft.mint_address 
+                              ? `border-4 ${rankColor} scale-105` 
+                              : 'border-2 border-border group-hover:border-primary group-hover:scale-105'
+                          }`}>
+                            {nft.image_url ? (
+                              <AvatarImage 
+                                src={nft.image_url}
+                                alt={nft.name}
+                              />
+                            ) : (
+                              <AvatarFallback className="bg-muted">
+                                <Image className="w-8 h-8 text-muted-foreground" />
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          {selectedNftForPfp === nft.mint_address && (
+                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                              <Crown className="w-3 h-3 text-primary-foreground" />
                             </div>
                           )}
                         </div>
-                        <p className="text-xs font-medium truncate">{nft.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{nft.symbol}</p>
+                        
+                        {/* NFT Info */}
+                        <div className="text-xs text-center mt-2">
+                          <div className="font-medium truncate">{nft.name}</div>
+                          <div className="text-muted-foreground truncate text-[10px]">
+                            {nft.symbol}
+                          </div>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                   {userNFTs.length === 0 && (
                     <div className="col-span-3 text-center py-8 text-muted-foreground">
                       <Image className="w-12 h-12 mx-auto mb-2" />
