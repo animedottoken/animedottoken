@@ -305,14 +305,16 @@ export default function Profile() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           <Card className="bg-primary/5 border-primary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
                 <Star className="w-5 h-5 text-primary mr-1" />
-                <span className="text-2xl font-bold text-primary">{nfts?.length || 0}</span>
+                <span className="text-2xl font-bold text-primary">
+                  {nfts?.length || 0} / {collections?.length || 0}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">NFTs</p>
+              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
             </CardContent>
           </Card>
 
@@ -320,29 +322,23 @@ export default function Profile() {
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-5 h-5 text-secondary mr-1" />
-                <span className="text-2xl font-bold text-foreground">{collections?.length || 0}</span>
+                <span className="text-2xl font-bold text-foreground">
+                  {profile?.trade_count || 0} / {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">Collections</p>
+              <p className="text-sm text-muted-foreground">Trades / Rank</p>
             </CardContent>
           </Card>
 
           <Card className="bg-accent/5 border-accent/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <Coins className="w-5 h-5 text-accent mr-1" />
-                <span className="text-2xl font-bold text-accent">{profile?.trade_count || 0}</span>
+                <Heart className="w-5 h-5 text-destructive mr-1" />
+                <span className="text-2xl font-bold text-foreground">
+                  {nftLikes} / {profileLikes}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">Trades</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-muted/5 border-muted/20">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-              <Heart className="w-5 h-5 text-destructive mr-1" />
-              <span className="text-2xl font-bold text-foreground">{profileLikes}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Likes</p>
+              <p className="text-sm text-muted-foreground">NFT Likes / Profile Likes</p>
             </CardContent>
           </Card>
         </div>
