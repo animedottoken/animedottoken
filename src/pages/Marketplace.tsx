@@ -565,40 +565,15 @@ export default function Marketplace() {
                   {/* Profile Stats: Trades + Level */}
                   <div className="flex items-center justify-center gap-3 mb-2">
                     <span className="text-sm text-muted-foreground">{creator.trade_count} trades</span>
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${
-                        creator.profile_rank === 'DIAMOND' ? 'border-purple-500 text-purple-600' :
-                        creator.profile_rank === 'GOLD' ? 'border-yellow-500 text-yellow-600' :
-                        creator.profile_rank === 'SILVER' ? 'border-gray-400 text-gray-600' :
-                        creator.profile_rank === 'BRONZE' ? 'border-orange-500 text-orange-600' :
-                        'border-green-500 text-green-600'
-                      }`}
+                    <button
+                      onClick={() => toggleFollow(creator.wallet_address)}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
+                      aria-label={isFollowing(creator.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
+                      disabled={followLoading}
                     >
-                      <span>{creator.profile_rank === 'DEFAULT' ? 'Starter' : creator.profile_rank}</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button className="inline-flex items-center ml-1" aria-label="Rank info">
-                              <Info className="w-3 h-3" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <div className="space-y-2 text-sm">
-                              <div className="font-semibold">Ranking System:</div>
-                              <div>🏆 <strong>Diamond</strong>: 1,000+ trades</div>
-                              <div>🥇 <strong>Gold</strong>: 250+ trades</div>
-                              <div>🥈 <strong>Silver</strong>: 50+ trades</div>
-                              <div>🥉 <strong>Bronze</strong>: 10+ trades</div>
-                              <div>🎖️ <strong>Starter</strong>: 0-9 trades</div>
-                              <div className="text-xs text-muted-foreground mt-2">
-                                Trade more NFTs to increase your rank!
-                              </div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </Badge>
+                      <Heart className={`w-4 h-4 ${isFollowing(creator.wallet_address) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
+                      <span className="text-xs">{isFollowing(creator.wallet_address) ? 'Following' : 'Follow'}</span>
+                    </button>
                   </div>
                 </div>
                 
