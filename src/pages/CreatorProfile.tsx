@@ -9,8 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
+import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useCollectionLikes } from "@/hooks/useCollectionLikes";
 import { toast } from "sonner";
@@ -71,6 +73,7 @@ export default function CreatorProfile() {
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
   const { isLiked: isCollectionLiked, toggleLike: toggleCollectionLike } = useCollectionLikes();
+  
   const [creator, setCreator] = useState<Creator | null>(null);
   const [creatorNFTs, setCreatorNFTs] = useState<NFT[]>([]);
   const [creatorCollections, setCreatorCollections] = useState<Collection[]>([]);
@@ -79,6 +82,11 @@ export default function CreatorProfile() {
   const [followedCreators, setFollowedCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("collections");
+  
+  // Get follower counts for followed creators
+  const { getCreatorFollowerCount } = useRealtimeCreatorStats(
+    followedCreators.map(f => f.wallet_address)
+  );
 
   // Navigation state
   const from = searchParams.get('from');
@@ -702,57 +710,30 @@ export default function CreatorProfile() {
         {/* Authors I Follow Tab */}
         <TabsContent value="following" className="mt-6">
           {followedCreators.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {followedCreators.map((followedCreator) => (
-                <Card 
-                  key={followedCreator.wallet_address} 
-                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
-                  onClick={() => navigate(`/profile/${followedCreator.wallet_address}`)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={followedCreator.profile_image_url || '/placeholder.svg'} />
-                        <AvatarFallback>
-                          {followedCreator.nickname?.charAt(0)?.toUpperCase() || followedCreator.wallet_address.slice(0, 1).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                            {followedCreator.nickname || `${followedCreator.wallet_address.slice(0, 4)}...${followedCreator.wallet_address.slice(-4)}`}
-                          </h3>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleFollow(followedCreator.wallet_address);
-                            }}
-                            className="transition-colors duration-200"
-                            aria-label="Unfollow"
-                          >
-                            <Heart className="w-4 h-4 fill-red-500 text-red-500" />
-                          </button>
-                        </div>
-                        
-                        <p className="text-sm text-muted-foreground truncate">
-                          {followedCreator.wallet_address.slice(0, 8)}...{followedCreator.wallet_address.slice(-8)}
-                        </p>
-                        
-                        {followedCreator.bio && (
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {followedCreator.bio}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {followedCreators.map((followedCreator) => {
+                const followerCount = getCreatorFollowerCount(followedCreator.wallet_address);
+                return (
+                  <FollowedAuthorCard
+                    key={followedCreator.wallet_address}
+                    wallet_address={followedCreator.wallet_address}
+                    nickname={followedCreator.nickname}
+                    bio={followedCreator.bio}
+                    profile_image_url={followedCreator.profile_image_url}
+                    followerCount={followerCount}
+                    onClick={(walletAddress) => navigate(`/profile/${walletAddress}`)}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Not following any creators yet</p>
+              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">You haven't liked any profiles yet</p>
+              <p className="text-sm text-muted-foreground/70 mb-4">
+                Like profiles to see them here - including your own!
+              </p>
+              <Button onClick={() => navigate('/marketplace?tab=creators')}>Explore Creators</Button>
             </div>
           )}
         </TabsContent>

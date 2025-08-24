@@ -9,10 +9,11 @@ import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User } 
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
-import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
-import { useUserNFTs } from '@/hooks/useUserNFTs';
-import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
-import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { useGamifiedProfile } from "@/hooks/useGamifiedProfile";
+import { useUserNFTs } from "@/hooks/useUserNFTs";
+import { useRealtimeCreatorStats } from "@/hooks/useRealtimeCreatorStats";
+import { useCreatorFollows } from "@/hooks/useCreatorFollows";
+import { FollowedAuthorCard } from "@/components/FollowedAuthorCard";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -517,50 +518,15 @@ export default function Profile() {
               {followedProfiles.map((followedProfile) => {
                 const followerCount = getCreatorFollowerCount(followedProfile.wallet_address);
                 return (
-                  <Card 
-                    key={followedProfile.wallet_address} 
-                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
-                    onClick={() => navigate(`/profile/${followedProfile.wallet_address}`)}
-                  >
-                    <CardContent className="p-4 h-full flex flex-col">
-                      {/* Avatar */}
-                      <div className="flex-shrink-0 mb-3">
-                        <Avatar className="w-24 h-24 mx-auto">
-                          <AvatarImage 
-                            src={followedProfile.profile_image_url || '/placeholder.svg'} 
-                            alt="Profile" 
-                          />
-                          <AvatarFallback className="text-lg font-bold">
-                            {followedProfile.nickname?.charAt(0)?.toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      
-                      {/* Name */}
-                      <h3 className="font-semibold text-center mb-2 group-hover:text-primary transition-colors truncate">
-                        {followedProfile.nickname || 'Anonymous User'}
-                      </h3>
-                      
-                      {/* Profile Likes */}
-                      <div className="flex items-center justify-center gap-2 mb-3" title="Profile likes">
-                        <Heart className="w-4 h-4 text-destructive" />
-                        <span className="text-sm font-medium">{followerCount}</span>
-                      </div>
-                      
-                      {/* Bio */}
-                      <div className="flex-1 flex items-center">
-                        {followedProfile.bio ? (
-                          <p className="text-xs text-muted-foreground line-clamp-3 text-center">
-                            {followedProfile.bio}
-                          </p>
-                        ) : (
-                          <p className="text-xs text-muted-foreground/60 italic text-center">
-                            No bio added yet
-                          </p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <FollowedAuthorCard
+                    key={followedProfile.wallet_address}
+                    wallet_address={followedProfile.wallet_address}
+                    nickname={followedProfile.nickname}
+                    bio={followedProfile.bio}
+                    profile_image_url={followedProfile.profile_image_url}
+                    followerCount={followerCount}
+                    onClick={(walletAddress) => navigate(`/profile/${walletAddress}`)}
+                  />
                 );
               })}
             </div>
