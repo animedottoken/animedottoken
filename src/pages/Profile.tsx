@@ -321,7 +321,7 @@ export default function Profile() {
           <Card className="bg-secondary/5 border-secondary/20">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center mb-2">
-                <Trophy className="w-5 h-5 text-secondary mr-1" />
+                <Trophy className="w-5 h-5 text-yellow-500 mr-1" />
                 <span className="text-2xl font-bold text-foreground">
                   {profile?.trade_count || 0} / {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
                 </span>
