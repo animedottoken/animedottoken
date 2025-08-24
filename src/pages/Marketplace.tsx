@@ -48,7 +48,7 @@ export default function Marketplace() {
   const [activeTab, setActiveTab] = useState<"nfts" | "collections">("nfts");
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { addToFavorites, removeFromFavorites, isFavorite, favorites } = useFavorites();
 
   useEffect(() => {
     loadMarketplaceData();
@@ -96,13 +96,17 @@ export default function Marketplace() {
       (filterBy === "unlisted" && !nft.is_listed) ||
       (filterBy === "favorites" && isNftFavorite);
     
-    // Debug log for favorites filter
+    // Debug logging for favorites filter
     if (filterBy === "favorites") {
+      console.log(`Favorites filter active. Total favorites: ${favorites.length}`);
       console.log(`NFT ${nft.name} (${nft.id}): isFavorite = ${isNftFavorite}`);
+      console.log(`Current favorites:`, favorites.map(f => f.id));
     }
     
     return matchesSearch && matchesFilter;
   });
+
+  console.log(`Filter: ${filterBy}, Total NFTs: ${nfts.length}, Filtered: ${filteredNfts.length}, Favorites count: ${favorites.length}`);
 
   const sortedNfts = [...filteredNfts].sort((a, b) => {
     switch (sortBy) {
