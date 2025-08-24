@@ -395,7 +395,7 @@ export const GamifiedProfileCard = () => {
                       <div className="text-sm text-muted-foreground">
                         {selectedNftForPfp 
                           ? `Selected: ${userNFTs.find(nft => nft.mint_address === selectedNftForPfp)?.name}` 
-                          : 'Hover over an NFT to preview • Click to select'
+                          : 'Click an NFT to preview • Then confirm below'
                         }
                       </div>
                       {selectedNftForPfp && (
@@ -421,7 +421,7 @@ export const GamifiedProfileCard = () => {
                           <Avatar className={`w-20 h-20 mx-auto transition-all duration-200 ${
                             selectedNftForPfp === nft.mint_address 
                               ? `border-4 ${rankColor} scale-105` 
-                              : 'border-2 border-border group-hover:border-primary group-hover:scale-105'
+                              : 'border-2 border-border'
                           }`}>
                             {nft.image_url ? (
                               <AvatarImage 
