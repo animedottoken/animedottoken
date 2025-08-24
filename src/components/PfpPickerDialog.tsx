@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Image as ImageIcon } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Image as ImageIcon, AlertTriangle, DollarSign } from 'lucide-react';
 
 interface NFTItem {
   mint_address?: string;
@@ -23,10 +25,12 @@ interface PfpPickerDialogProps {
   nfts: NFTItem[] | undefined;
   onConfirm: (mintAddress: string) => Promise<boolean>;
   loading?: boolean;
+  isFirstChange?: boolean;
 }
 
-export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConfirm, loading }: PfpPickerDialogProps) {
+export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConfirm, loading, isFirstChange = true }: PfpPickerDialogProps) {
   const [selected, setSelected] = useState<string | null>(null);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
   const selectedImage = useMemo(() => {
     if (!selected) return profile?.profile_image_url;
@@ -52,9 +56,26 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
                 <ImageIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-sm text-muted-foreground mt-2">
-              <div>First change is free. Next changes cost 2 USD.</div>
-              <div className="mt-1">Pick any NFT you own. You’ll see the live preview here.</div>
+            <div className="text-sm mt-2">
+              <div className="text-muted-foreground mb-3">
+                Pick any NFT you own. You'll see the live preview here.
+              </div>
+              
+              {isFirstChange ? (
+                <Alert className="border-green-200 bg-green-50 text-green-700">
+                  <DollarSign className="h-4 w-4" />
+                  <AlertDescription>
+                    Your first profile picture change is <strong>FREE</strong>
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert className="border-orange-200 bg-orange-50 text-orange-700">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    This change will cost <strong>2 USD</strong>. You will be charged after confirmation.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           </div>
         </div>
@@ -76,17 +97,33 @@ export function PfpPickerDialog({ open, onOpenChange, profile, nfts = [], onConf
             <p className="text-sm text-muted-foreground">No NFTs found in your wallet.</p>
           )}
         </div>
-        <div className="p-6 pt-0">
+        <div className="p-6 pt-0 space-y-4">
+          {!isFirstChange && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="payment-confirmation"
+                checked={paymentConfirmed}
+                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
+              />
+              <label 
+                htmlFor="payment-confirmation" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I understand that I will be charged <strong>2 USD</strong> for this profile picture change
+              </label>
+            </div>
+          )}
+          
           <Button
             className="w-full"
-            disabled={!selected || loading}
+            disabled={!selected || loading || (!isFirstChange && !paymentConfirmed)}
             onClick={async () => {
               if (!selected) return;
               const ok = await onConfirm(selected);
               if (ok) onOpenChange(false);
             }}
           >
-            {loading ? 'Updating...' : 'Confirm'}
+            {loading ? 'Updating...' : isFirstChange ? 'Set Profile Picture (FREE)' : 'Confirm & Pay 2 USD'}
           </Button>
         </div>
       </DialogContent>

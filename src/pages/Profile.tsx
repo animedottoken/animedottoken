@@ -422,10 +422,11 @@ export default function Profile() {
         profile={profile}
         nfts={nfts}
         loading={pfpLoading}
+        isFirstChange={!profile?.profile_image_url}
         onConfirm={async (mint) => {
           const ok = await setPFP(mint, 'simulated_transaction_signature');
           if (ok) {
-            toast.success('Profile picture updated! First change is free, next changes will cost 2 USD.');
+            toast.success('Profile picture updated!');
           }
           return ok;
         }}
