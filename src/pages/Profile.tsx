@@ -19,6 +19,7 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -245,15 +246,15 @@ export default function Profile() {
       {/* Enhanced Profile Section */}
       <div className="mb-8">
         {/* Universal Banner */}
-        <div className="relative w-full h-32 rounded-lg overflow-hidden">
+        <AspectRatio ratio={3 / 1} className="relative w-full rounded-lg overflow-hidden">
           <ImageLazyLoad
             src={profileBanner}
             alt="Profile Banner"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             fallbackSrc="/placeholder.svg"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-        </div>
+        </AspectRatio>
 
         {/* Profile Info */}
         <div className="flex items-start justify-between mt-4">
