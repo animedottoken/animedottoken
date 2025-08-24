@@ -58,6 +58,51 @@ export default function CreatorProfile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Optimistic like toggle to update counts immediately
+  const handleToggleLike = async (nftId: string) => {
+    const wasLiked = isLiked(nftId);
+    const ok = await toggleLike(nftId);
+    if (ok) {
+      setCreatorNFTs(prev => prev.map(n => n.id === nftId ? { ...n, likes_count: Math.max(0, n.likes_count + (wasLiked ? -1 : 1)) } : n));
+      setCreator(prev => prev ? { ...prev, nft_likes_count: Math.max(0, (prev.nft_likes_count || 0) + (wasLiked ? -1 : 1)) } : prev);
+    }
+  };
+
+  // Refresh like counts for creator NFTs from DB (used for realtime events)
+  const refreshLikeCounts = async () => {
+    try {
+      if (creatorNFTs.length === 0) return;
+      const ids = creatorNFTs.map(n => n.id);
+      const { data: likeRows } = await supabase
+        .from('nft_likes')
+        .select('nft_id')
+        .in('nft_id', ids);
+
+      const counts: Record<string, number> = {};
+      (likeRows || []).forEach((r: any) => {
+        counts[r.nft_id] = (counts[r.nft_id] || 0) + 1;
+      });
+
+      setCreatorNFTs(prev => prev.map(n => ({ ...n, likes_count: counts[n.id] || 0 })));
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      setCreator(prev => prev ? { ...prev, nft_likes_count: total } : prev);
+    } catch (e) {
+      console.error('Error refreshing like counts:', e);
+    }
+  };
+
+  // Subscribe to realtime like changes and refresh counts
+  useEffect(() => {
+    const channel = supabase
+      .channel('creator-profile-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'nft_likes' }, () => {
+        refreshLikeCounts();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [wallet, creatorNFTs.length]);
+
   useEffect(() => {
     const fetchCreatorData = async () => {
       if (!wallet) return;
@@ -105,17 +150,34 @@ export default function CreatorProfile() {
           });
         }
 
-        // Process NFTs data
+        // Process NFTs data with like counts
         if (nfts) {
+          const nftIds = nfts.map(n => n.id);
+
+          // Load like rows for these NFTs
+          const { data: likeRows } = await supabase
+            .from('nft_likes')
+            .select('nft_id')
+            .in('nft_id', nftIds);
+
+          const counts: Record<string, number> = {};
+          (likeRows || []).forEach((r: any) => {
+            counts[r.nft_id] = (counts[r.nft_id] || 0) + 1;
+          });
+
           setCreatorNFTs(nfts.map(nft => ({
             id: nft.id,
             name: nft.name,
             image_url: nft.image_url,
             price: nft.price,
             collection_address: nft.collection_id,
-            collection_name: undefined, // Will implement separately if needed
-            likes_count: 0 // We'll implement this separately
+            collection_name: undefined,
+            likes_count: counts[nft.id] || 0
           })));
+
+          // Update creator NFT like total
+          const totalLikes = Object.values(counts).reduce((a, b) => a + b, 0);
+          setCreator(prev => prev ? { ...prev, nft_likes_count: totalLikes } : prev);
         }
 
         // Process Collections data
@@ -331,7 +393,7 @@ export default function CreatorProfile() {
                           {/* Heart like button */}
                             <button
                               aria-label={isLiked(nft.id) ? 'Unlike NFT' : 'Like NFT'}
-                              onClick={(e) => { e.stopPropagation(); toggleLike(nft.id); }}
+                              onClick={(e) => { e.stopPropagation(); handleToggleLike(nft.id); }}
                               disabled={nftLikeLoading}
                               className="absolute top-2 right-2 z-10 p-2 rounded-md border bg-background/80 backdrop-blur hover:bg-muted transition-colors"
                             >
@@ -413,7 +475,7 @@ export default function CreatorProfile() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              toggleLike(nft.id);
+                              handleToggleLike(nft.id);
                             }}
                             disabled={nftLikeLoading}
                             className="p-1 hover:bg-muted rounded"
