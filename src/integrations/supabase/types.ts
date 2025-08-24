@@ -491,6 +491,7 @@ export type Database = {
         Row: {
           banner_image_url: string | null
           bio: string | null
+          bio_unlock_status: boolean | null
           created_at: string
           current_pfp_nft_mint_address: string | null
           discord_handle: string | null
@@ -510,6 +511,7 @@ export type Database = {
         Insert: {
           banner_image_url?: string | null
           bio?: string | null
+          bio_unlock_status?: boolean | null
           created_at?: string
           current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
@@ -529,6 +531,7 @@ export type Database = {
         Update: {
           banner_image_url?: string | null
           bio?: string | null
+          bio_unlock_status?: boolean | null
           created_at?: string
           current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
