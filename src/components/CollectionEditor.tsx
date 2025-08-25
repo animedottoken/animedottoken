@@ -114,10 +114,12 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
+                <Settings className="w-3 h-3 mr-1" />
+                Settings
                 {isExpanded ? (
-                  <><Settings className="w-3 h-3 mr-1" /><ChevronUp className="w-3 h-3 mr-1" />Settings</>
+                  <ChevronUp className="w-3 h-3 ml-1" />
                 ) : (
-                  <><Settings className="w-3 h-3 mr-1" /><ChevronDown className="w-3 h-3 mr-1" />Settings</>
+                  <ChevronDown className="w-3 h-3 ml-1" />
                 )}
               </Button>
             </div>
