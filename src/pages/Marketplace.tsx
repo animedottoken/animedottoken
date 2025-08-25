@@ -20,6 +20,7 @@ import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { toast } from "sonner";
 import { useRealtimeCreatorStats } from "@/hooks/useRealtimeCreatorStats";
 import { normalizeAttributes } from '@/lib/attributes';
+import { getAttributeValue, hasRequiredListingFields, getNFTCategory, getNFTRoyalty, getNFTExplicitContent } from '@/lib/attributeHelpers';
 
 interface NFT {
   id: string;
@@ -245,14 +246,10 @@ export default function Marketplace() {
     const isNftLiked = isLiked(nft.id);
     const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
 
-    // Normalize attributes for consistent access (category, royalties, explicit)
-    const nftProps = normalizeAttributes(nft.attributes || {});
-    const getProp = (key: string) => nftProps.find(p => p.trait_type === key)?.value as any;
-    const category = (getProp('category') as string) || '';
-    const royaltyRaw = getProp('royalty_percentage');
-    const royalty = royaltyRaw !== undefined && royaltyRaw !== null ? parseFloat(String(royaltyRaw)) : undefined;
-    const explicitRaw = getProp('explicit_content');
-    const explicit = explicitRaw === true || String(explicitRaw).toLowerCase() === 'true' || String(explicitRaw).toLowerCase() === 'yes' || String(explicitRaw) === '1';
+    // Use robust attribute helpers to extract values regardless of format
+    const category = getNFTCategory(nft.attributes);
+    const royalty = getNFTRoyalty(nft.attributes);
+    const explicit = getNFTExplicitContent(nft.attributes);
 
     // Base filter selections
     let matchesFilter = true;
@@ -261,14 +258,8 @@ export default function Marketplace() {
     else if (filterBy === "liked") matchesFilter = isNftLiked;
     else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
 
-    // Enforce mandatory listing rules: listed NFTs must have required fields
-    const mandatoryValid = !nft.is_listed || (
-      Boolean(nft.name?.trim()) &&
-      (nft.price ?? 0) > 0 &&
-      Boolean(category) &&
-      typeof royalty === 'number' && !Number.isNaN(royalty) && royalty >= 0 && royalty <= 50 &&
-      explicitRaw !== undefined
-    );
+    // Enforce mandatory listing rules using the robust helper
+    const mandatoryValid = hasRequiredListingFields(nft);
 
     // Property filters (existing sidebar)
     let matchesPropertyFilters = true;
