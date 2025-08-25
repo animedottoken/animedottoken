@@ -232,11 +232,9 @@ export default function Profile() {
                         title: 'Delete Collection',
                         description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
                         onConfirm: async () => {
+                          // CRITICAL: This deletion flow must NEVER cause UI flickering or scroll jumps
+                          // Collections grid must remain mounted throughout the entire process
                           setConfirmDialog(prev => ({ ...prev, loading: true }));
-                          // Save scroll position to sessionStorage for persistence across re-renders
-                          const currentScrollPosition = window.scrollY;
-                          sessionStorage.setItem('deletion-scroll-position', currentScrollPosition.toString());
-                          console.log('🔄 Saving scroll position before deletion:', currentScrollPosition);
                           
                           const res = await deleteCollection(collection.id, collection.name);
                           if (res.success) {
