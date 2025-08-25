@@ -258,29 +258,33 @@ export default function Profile() {
               </div>
             </div>
 
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                {collection.name}
-              </h3>
-              
-              {collection.site_description && (
-                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                  {collection.site_description}
-                </p>
-              )}
+            <CardContent className="p-4 flex flex-col h-full">
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                  {collection.name}
+                </h3>
+                
+                {collection.site_description && (
+                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                    {collection.site_description}
+                  </p>
+                )}
 
-              <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-4">
-                <span className="text-muted-foreground">
-                  {collection.items_redeemed}/{collection.max_supply || '∞'} minted
-                </span>
-                        {collection.mint_price > 0 && (
-                          <span className="font-medium">
-                            <span className="text-primary">Price</span> {collection.mint_price} SOL
-                          </span>
-                        )}
+                <div className="text-sm mb-2">
+                  <span className="text-muted-foreground">
+                    {collection.items_redeemed}/{collection.max_supply || '∞'} minted
+                  </span>
+                </div>
               </div>
-            </div>
+              
+              {/* Price positioned bottom right */}
+              <div className="flex justify-end">
+                {collection.mint_price > 0 && (
+                  <span className="font-medium text-sm">
+                    <span className="text-primary">Price</span> {collection.mint_price} SOL
+                  </span>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -710,31 +714,35 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                      {collection.name}
-                    </h3>
-                    
-                    {collection.site_description && (
-                      <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                        {collection.site_description}
-                      </p>
-                    )}
+                  <CardContent className="p-4 flex flex-col h-full">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                        {collection.name}
+                      </h3>
+                      
+                      {collection.site_description && (
+                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                          {collection.site_description}
+                        </p>
+                      )}
 
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-4">
+                      <div className="text-sm mb-2">
                         <span className="text-muted-foreground">
                           {collection.items_redeemed}/{collection.max_supply || '∞'} minted
                         </span>
-                        {collection.mint_price > 0 && (
-                          <span className="font-medium">
-                            <span className="text-primary">Price</span> {collection.mint_price} SOL
-                          </span>
-                        )}
                       </div>
                     </div>
                     
-                    <p className="text-xs text-muted-foreground/70 mt-2">
+                    {/* Price positioned bottom right */}
+                    <div className="flex justify-end mb-2">
+                      {collection.mint_price > 0 && (
+                        <span className="font-medium text-sm">
+                          <span className="text-primary">Price</span> {collection.mint_price} SOL
+                        </span>
+                      )}
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground/70">
                       Liked on {new Date(collection.liked_at).toLocaleDateString()}
                     </p>
                   </CardContent>
