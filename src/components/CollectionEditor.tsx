@@ -26,8 +26,9 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
-  // Use the most current collection data, prioritizing refreshed RPC data
-  const currentCollection = collection ? { ...initialCollection, ...collection } : initialCollection;
+  // Always use the passed collection data for consistency
+  // The parent component handles data refreshing
+  const currentCollection = initialCollection;
   
   // Check ownership using the initial collection data to avoid masked creator_address from secured API
   const isOwner = publicKey === initialCollection.creator_address;
@@ -38,8 +39,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const handleUpdate = async (updates: any) => {
     try {
       await updateCollection(currentCollection.id, updates);
-      // Force refresh to get the updated data immediately
-      await refreshCollection();
+      // Notify parent to refresh data
+      onClose();
     } catch (error) {
       console.error('Update failed:', error);
     }

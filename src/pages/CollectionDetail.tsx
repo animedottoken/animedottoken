@@ -56,8 +56,9 @@ export default function CollectionDetail() {
   const ownedCollection = collections.find(c => c.id === collectionId);
   const isOwner = connected && ownedCollection !== undefined;
   
-  // Use owned collection data if available (has unmasked addresses), otherwise use fetched collection
-  const displayCollection = ownedCollection || collection;
+  // Always use the refreshed collection data from RPC for consistency
+  // Only use ownedCollection for ownership verification (has unmasked creator_address)
+  const displayCollection = collection;
   
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
