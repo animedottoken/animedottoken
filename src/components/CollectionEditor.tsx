@@ -34,6 +34,14 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const itemsRedeemed = currentCollection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
 
+  // Debug ownership check
+  console.log('CollectionEditor Debug:', {
+    publicKey,
+    creator_address: initialCollection.creator_address,
+    isOwner,
+    collectionName: initialCollection.name
+  });
+
   const handleUpdate = async (updates: any) => {
     try {
       await updateCollection(currentCollection.id, updates);
