@@ -53,7 +53,7 @@ export default function CollectionDetail() {
   const fromFavorites = searchParams.get('from') === 'favorites';
   const { connected, publicKey } = useSolanaWallet();
   const { collection, loading: collectionLoading, refreshCollection } = useCollection(collectionId!);
-  const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
+  const { mints, loading: mintsLoading, refreshMints } = useCollectionMints(collectionId);
   const { deleting, deleteCollection } = useDeleteCollection();
   
   // Get user's collections for reliable ownership checking
@@ -131,6 +131,7 @@ export default function CollectionDetail() {
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version (silent to prevent scroll jump)
     refreshCollection(true);
+    refreshMints();
   };
 
   if (collectionLoading) {
@@ -568,6 +569,7 @@ export default function CollectionDetail() {
               collection={editorCollection} 
               mints={mints}
               onRefreshCollection={() => refreshCollection(true)}
+              onRefreshMints={refreshMints}
               startInEditMode={searchParams.get('edit') === '1'}
               onClose={() => {
                 // Remove edit parameter from URL

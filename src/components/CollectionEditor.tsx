@@ -21,10 +21,11 @@ interface CollectionEditorProps {
   onClose: () => void;
   mints: any[];
   onRefreshCollection: () => void;
+  onRefreshMints?: () => void;
   startInEditMode?: boolean;
 }
 
-export const CollectionEditor = ({ collection: initialCollection, onClose, mints, onRefreshCollection, startInEditMode = false }: CollectionEditorProps) => {
+export const CollectionEditor = ({ collection: initialCollection, onClose, mints, onRefreshCollection, onRefreshMints, startInEditMode = false }: CollectionEditorProps) => {
   const { updateCollection } = useCollections({ autoLoad: false });
   const { publicKey } = useSolanaWallet();
   const { collection, refreshCollection } = useCollection(initialCollection.id);
@@ -122,6 +123,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
       if (data?.success) {
         toast.success(data.message);
         onRefreshCollection(); // Refresh to show updated counts
+        onRefreshMints?.(); // Refresh mints to update the grid
         
         if (data.errors && data.errors.length > 0) {
           console.warn('Some operations had errors:', data.errors);
