@@ -46,8 +46,11 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const handleUpdate = async (updates: any) => {
     try {
       await updateCollection(currentCollection.id, updates);
-      // Refresh data without closing editor
-      onRefreshCollection();
+      
+      // Only refresh if it's not just a locked_fields change to prevent page jumping
+      if (!updates.locked_fields || Object.keys(updates).length > 1) {
+        onRefreshCollection();
+      }
     } catch (error) {
       console.error('Update failed:', error);
     }

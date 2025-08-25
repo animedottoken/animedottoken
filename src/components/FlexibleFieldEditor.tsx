@@ -38,9 +38,11 @@ interface FlexibleFieldEditorProps {
 export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleFieldEditorProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
+  const [localLockedFields, setLocalLockedFields] = useState<string[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Safely handle locked_fields as it might be Json type from Supabase
-  const lockedFields = Array.isArray(collection.locked_fields) ? collection.locked_fields as string[] : [];
+  const lockedFields = localLockedFields.length > 0 ? localLockedFields : (Array.isArray(collection.locked_fields) ? collection.locked_fields as string[] : []);
   const itemsRedeemed = collection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
 
@@ -238,14 +240,38 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   };
 
   const toggleFieldLock = async (fieldName: string) => {
-    if (!isOwner) return;
+    if (!isOwner || isUpdating) return;
     
     const currentLocked = lockedFields.includes(fieldName);
     const newLockedFields = currentLocked 
       ? lockedFields.filter(f => f !== fieldName)
       : [...lockedFields, fieldName];
     
-    await onUpdate({ locked_fields: newLockedFields });
+    // Store current scroll position and field element
+    const scrollPosition = window.scrollY;
+    const fieldElement = document.getElementById(`field-${fieldName}`);
+    
+    // Optimistic update
+    setLocalLockedFields(newLockedFields);
+    setIsUpdating(true);
+    
+    try {
+      await onUpdate({ locked_fields: newLockedFields });
+      
+      // Restore scroll position after a brief delay
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+        if (fieldElement) {
+          fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    } catch (error) {
+      // Revert optimistic update on error
+      setLocalLockedFields(Array.isArray(collection.locked_fields) ? collection.locked_fields as string[] : []);
+      console.error('Failed to toggle field lock:', error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const renderField = (fieldName: string) => {
@@ -387,7 +413,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     }
 
     return (
-      <div key={fieldName} className="flex items-center justify-between p-4 border rounded-lg">
+      <div key={fieldName} id={`field-${fieldName}`} className="flex items-center justify-between p-4 border rounded-lg">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <Label className="font-medium">{rule.label}</Label>
@@ -406,21 +432,37 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
           </div>
           
           <div className="text-sm text-muted-foreground mb-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge 
-                    variant={badgeInfo?.variant || 'outline'}
-                    className="mr-2 cursor-help"
-                  >
-                    {badgeInfo?.text}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{badgeInfo?.reason}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge 
+                      variant={badgeInfo?.variant || 'outline'}
+                      className="cursor-help"
+                    >
+                      {badgeInfo?.text}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{badgeInfo?.reason}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              {/* Orange Unlock text for creator-locked fields */}
+              {isOwner && lockedFields.includes(fieldName) && badgeInfo?.variant !== 'chainlocked' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFieldLock(fieldName);
+                  }}
+                  className="text-orange-500 hover:text-orange-600 font-medium cursor-pointer"
+                  disabled={isUpdating}
+                >
+                  Unlock
+                </button>
+              )}
+            </div>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
                 <Infinity className="h-4 w-4" />
@@ -445,29 +487,37 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         
         <div className="flex items-center gap-2">
           {!isLocked && isOwner && (
-            <Button size="sm" onClick={() => startEditing(fieldName)}>
+            <Button size="sm" onClick={() => startEditing(fieldName)} disabled={isUpdating}>
               Edit
             </Button>
           )}
           
           {creatorCanToggleLock && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFieldLock(fieldName);
-              }}
-              className="h-8 w-8 p-0"
-              aria-label={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
-              title={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
-            >
-              {lockedFields.includes(fieldName) ? (
-                <Lock className="h-4 w-4" />
-              ) : (
-                <Unlock className="h-4 w-4" />
-              )}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFieldLock(fieldName);
+                    }}
+                    className="h-8 w-8 p-0"
+                    disabled={isUpdating}
+                  >
+                    {lockedFields.includes(fieldName) ? (
+                      <Lock className="h-4 w-4" />
+                    ) : (
+                      <Unlock className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       </div>
