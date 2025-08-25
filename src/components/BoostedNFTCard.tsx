@@ -186,36 +186,34 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <div className="flex-1 mr-2">
-              <h3 className="font-semibold line-clamp-1 mb-1">{listing.nft_name}</h3>
-              
-              {/* Description */}
-              {description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
-                  {description}
-                </p>
+        <div className="p-4 flex flex-col h-full">
+          <div className="flex-1">
+            <h3 className="font-semibold line-clamp-1 mb-1">{listing.nft_name}</h3>
+            
+            {/* Description */}
+            {description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
+                {description}
+              </p>
+            )}
+            
+            {/* Owner info */}
+            <Link 
+              to={`/creator/${listing.owner_address}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <span>
+                {ownerNickname || truncateAddress(listing.owner_address)}
+              </span>
+              {ownerVerified && (
+                <CheckCircle className="h-3 w-3 text-primary" />
               )}
-              
-              {/* Owner info */}
-              <Link 
-                to={`/creator/${listing.owner_address}`}
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                <span>
-                  {ownerNickname || truncateAddress(listing.owner_address)}
-                </span>
-                {ownerVerified && (
-                  <CheckCircle className="h-3 w-3 text-primary" />
-                )}
-              </Link>
-            </div>
+            </Link>
           </div>
           
-          {/* Price display */}
-          <div>
+          {/* Price positioned bottom right */}
+          <div className="flex justify-end mt-2">
             {listed && nftPrice !== null ? (
               <PriceTag amount={nftPrice} currency="SOL" size="sm" />
             ) : (

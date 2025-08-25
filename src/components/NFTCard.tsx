@@ -148,27 +148,26 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
       </div>
       
       <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex-1 mr-2">
-            <h3 className="font-semibold truncate mb-1">{nft.name}</h3>
-            
-            {/* Owner info */}
-            <Link 
-              to={`/creator/${nft.owner_address}`}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span>
-                {ownerNickname || truncateAddress(nft.owner_address)}
-              </span>
-              {ownerVerified && (
-                <CheckCircle className="h-3 w-3 text-primary" />
-              )}
-            </Link>
-          </div>
+        <div className="flex-1">
+          <h3 className="font-semibold truncate mb-1">{nft.name}</h3>
+          
+          {/* Owner info */}
+          <Link 
+            to={`/creator/${nft.owner_address}`}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
+          >
+            <span>
+              {ownerNickname || truncateAddress(nft.owner_address)}
+            </span>
+            {ownerVerified && (
+              <CheckCircle className="h-3 w-3 text-primary" />
+            )}
+          </Link>
         </div>
         
-        <div className="flex items-center justify-between">
+        {/* Price positioned bottom right */}
+        <div className="flex justify-end">
           {nft.is_listed && nft.price ? (
             <PriceTag amount={nft.price} currency="SOL" size="sm" />
           ) : (
