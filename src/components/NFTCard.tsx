@@ -111,7 +111,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
                 e.stopPropagation();
                 handleViewDetails();
               }}
-              className="bg-white/90 text-black hover:bg-white border-white/20"
+              className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20"
             >
               <Eye className="h-4 w-4" />
               <span className="ml-1 hidden sm:inline">View</span>
@@ -129,7 +129,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
                 className={`${
                   action.variant === 'destructive' 
                     ? 'bg-red-500/90 text-white hover:bg-red-500 border-red-500/20' 
-                    : 'bg-white/90 text-black hover:bg-white border-white/20'
+                    : 'bg-white/90 text-black hover:bg-white hover:!text-black border-white/20'
                 }`}
               >
                 {action.icon}

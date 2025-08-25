@@ -180,7 +180,7 @@ export default function Profile() {
                       e.stopPropagation();
                       navigate(`/collection/${collection.id}`);
                     }}
-                    className="bg-white/90 text-black hover:bg-white border-white/20"
+                    className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20"
                   >
                     <Edit className="w-4 h-4" />
                     <span className="ml-1 hidden sm:inline">Edit</span>
