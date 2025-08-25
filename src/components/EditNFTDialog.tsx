@@ -157,6 +157,20 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Data Storage Info Banner */}
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-950/30 dark:to-emerald-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start gap-3">
+              <div className="flex items-center gap-2 text-sm">
+                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                <span className="text-blue-700 dark:text-blue-300">Permanent blockchain data (name, properties)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                <span className="text-emerald-700 dark:text-emerald-300">App database data (price, listing)</span>
+              </div>
+            </div>
+          </div>
+
           {/* NFT Image Preview */}
           <div className="flex justify-center">
             <div className="w-32 h-32 bg-muted rounded-lg overflow-hidden">
@@ -239,25 +253,37 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
           {/* Editable Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Basic Information</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Basic Information
+                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+              </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Update your NFT's basic details
+                These changes will be stored permanently on the blockchain and visible in all wallets and marketplaces.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4">
                 <div>
-                  <Label htmlFor="name">Name *</Label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor="name">Name *</Label>
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                  </div>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter NFT name"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Permanently stored on blockchain, visible in all wallets
+                  </p>
                 </div>
 
                 <div>
-                  <Label htmlFor="symbol">Symbol</Label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor="symbol">Symbol</Label>
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                  </div>
                   <Input
                     id="symbol"
                     value={formData.symbol}
@@ -267,7 +293,10 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor="description">Description</Label>
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                  </div>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -276,38 +305,80 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     rows={3}
                   />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <div>
+          {/* Listing Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Listing & Price
+                <Badge variant="offchain" className="text-xs">Off-Chain Data</Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Listing information is stored in our app database and can be changed anytime.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
                   <Label htmlFor="price">Price (SOL)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="0.00"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Setting a price will automatically list your NFT. Leave empty to unlist.
-                  </p>
+                  <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
                 </div>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0.00"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Setting a price will automatically list your NFT for sale. Leave empty to unlist.
+                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Properties */}
-          <PropertiesEditor
-            properties={properties}
-            onChange={setProperties}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Properties & Traits
+                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Properties are stored permanently on the blockchain and affect rarity and marketplace filters.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <PropertiesEditor
+                properties={properties}
+                onChange={setProperties}
+              />
+            </CardContent>
+          </Card>
 
           {/* Legend */}
-          <Card className="bg-muted/50">
+          <Card className="bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-950/30 dark:to-emerald-950/30 border-blue-200 dark:border-blue-800">
             <CardContent className="pt-6">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Fields marked with * are required</span>
-                <span>Changes will be reflected immediately on-chain</span>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Fields marked with * are required</span>
+                  <div className="flex items-center gap-1">
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    <span className="text-blue-700 dark:text-blue-300">Permanent</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">💡 On-chain changes are permanent and visible everywhere</span>
+                  <div className="flex items-center gap-1">
+                    <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                    <span className="text-emerald-700 dark:text-emerald-300">Flexible</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -250,6 +250,11 @@ export default function CollectionDetail() {
                         {displayCollection.symbol}
                       </Badge>
                     )}
+                    {/* Data Origin Indicators */}
+                    <div className="flex items-center gap-1">
+                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                      <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                    </div>
                   </div>
                   
                   {displayCollection?.description && (

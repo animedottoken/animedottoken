@@ -209,9 +209,11 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     const creatorLocked = lockedFields.includes(fieldName);
     const chainLocked = !rule.canEdit();
     
-    if (creatorLocked) return 'Locked by creator';
-    if (chainLocked) return rule.badge + ' (Chain rule)';
-    return rule.badge;
+    if (creatorLocked) return { text: 'Creator Locked', variant: 'locked' as const, reason: 'Locked by creator settings' };
+    if (chainLocked && rule.badge === 'Chain-Locked') return { text: 'Chain Locked', variant: 'chainlocked' as const, reason: 'Cannot be changed after first mint' };
+    if (rule.badge === 'On-Chain') return { text: 'On-Chain', variant: 'onchain' as const, reason: 'Stored permanently on blockchain' };
+    if (rule.badge === 'Off-Chain') return { text: 'Off-Chain', variant: 'offchain' as const, reason: 'Stored in app database, can be changed' };
+    return { text: rule.badge, variant: 'outline' as const, reason: '' };
   };
 
   const startEditing = (fieldName: string) => {
@@ -252,7 +254,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     const value = collection[fieldName as keyof Collection];
     const isLocked = isFieldLocked(fieldName);
     const isEditing = editingField === fieldName;
-    const badge = getFieldBadge(fieldName);
+    const badgeInfo = getFieldBadge(fieldName);
     const creatorCanToggleLock = isOwner && rule.canEdit() && !hasMintedNFTs;
 
     if (isEditing) {
@@ -403,17 +405,21 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
           </div>
           
           <div className="text-sm text-muted-foreground mb-2">
-            <Badge 
-              variant={
-                rule.badge === 'Chain-Locked' ? 'destructive' :
-                rule.badge === 'On-Chain' ? 'secondary' :
-                rule.badge === 'Off-Chain' ? 'outline' :
-                'default'
-              }
-              className="mr-2"
-            >
-              {rule.badge}
-            </Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge 
+                    variant={badgeInfo?.variant || 'outline'}
+                    className="mr-2 cursor-help"
+                  >
+                    {badgeInfo?.text}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{badgeInfo?.reason}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
                 <Infinity className="h-4 w-4" />
@@ -470,20 +476,29 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       
       {isOwner && (
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-2">Legend</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+          <h4 className="font-medium mb-3">Data Storage & Editability Legend</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">On-Chain</Badge>
+              <Badge variant="onchain">On-Chain</Badge>
               <span>Stored permanently on blockchain</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">Off-Chain</Badge>
-              <span>Stored in app database, can be changed</span>
+              <Badge variant="offchain">Off-Chain</Badge>
+              <span>Stored in app database, editable</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="destructive">Chain-Locked</Badge>
-              <span>Cannot be changed after first mint</span>
+              <Badge variant="chainlocked">Chain Locked</Badge>
+              <span>Cannot change after first mint</span>
             </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="locked">Creator Locked</Badge>
+              <span>Locked by you for safety</span>
+            </div>
+          </div>
+          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-xs text-blue-700 dark:text-blue-300">
+              💡 <strong>Tip:</strong> On-chain data is permanent and visible in wallets/marketplaces. Off-chain data is flexible but only visible in this app.
+            </p>
           </div>
         </div>
       )}

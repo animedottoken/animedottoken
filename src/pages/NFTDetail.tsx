@@ -378,6 +378,9 @@ export default function NFTDetail() {
                     Listed for Sale
                   </Badge>
                 )}
+                {/* Data Origin Indicators */}
+                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+                <Badge variant="offchain" className="text-xs">App Data</Badge>
                 {/* Compact Edition Info */}
                 {getEditionInfo() && (
                   <Badge variant="outline" className="text-xs">
