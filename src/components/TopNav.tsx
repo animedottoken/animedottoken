@@ -101,7 +101,7 @@ export const TopNav = () => {
   // For tablet and desktop, show top navigation
   if (!isMobile) {
     return (
-      <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
+      <header className="h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm">
         <button 
           onClick={handleHomeNavigation}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
