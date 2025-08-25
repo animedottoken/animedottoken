@@ -157,9 +157,9 @@ export const useStandaloneMint = () => {
             standalone: true,
             quantity_index: j + 1,
             total_quantity: quantity,
-            explicit_content: nftData.explicit_content || false,
-            category: nftData.category || null,
-            royalty_percentage: nftData.royalty_percentage || 0
+            explicit_content: nftData.explicit_content ?? false,
+            category: nftData.category || "Other",
+            royalty_percentage: nftData.royalty_percentage ?? 0
           },
           // Note: traits column removed - using attributes instead
           is_listed: nftData.list_after_mint || false,

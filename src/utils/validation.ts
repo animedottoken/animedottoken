@@ -144,21 +144,13 @@ export const validateStandaloneNFTData = (data: any, imageFile?: File | null): V
 export const validateNFTListing = (data: any): ValidationError[] => {
   const errors: ValidationError[] = [];
 
-  // Mandatory fields for listing
+  // Only require name, price, and explicit content - category and royalties have defaults
   if (!data.name?.trim()) {
     errors.push({ field: 'name', message: 'NFT name is required for listing' });
   }
 
   if (!data.price || data.price <= 0) {
     errors.push({ field: 'price', message: 'Price is required for listing' });
-  }
-
-  if (!data.category?.trim()) {
-    errors.push({ field: 'category', message: 'Category is required for listing' });
-  }
-
-  if (data.royalty_percentage === undefined || data.royalty_percentage < 0 || data.royalty_percentage > 50) {
-    errors.push({ field: 'royalty_percentage', message: 'Royalty percentage (0-50%) is required for listing' });
   }
 
   // Explicit content declaration is mandatory (boolean, can be true or false)

@@ -19,6 +19,7 @@ const badgeVariants = cva(
         offchain: "border-transparent bg-emerald-500 text-white hover:bg-emerald-600",
         locked: "border-transparent bg-orange-500 text-white hover:bg-orange-600",
         chainlocked: "border-transparent bg-red-500 text-white hover:bg-red-600",
+        required: "border-transparent bg-emerald-600 text-white hover:bg-emerald-700",
       },
     },
     defaultVariants: {

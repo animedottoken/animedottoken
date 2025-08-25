@@ -38,22 +38,11 @@ export const getAttributeValue = (attributes: any, targetKey: string): any => {
 export const hasRequiredListingFields = (nft: any): boolean => {
   if (!nft.is_listed) return true; // Not listed, no requirements
 
-  // Basic NFT fields
+  // Only require basic NFT fields and explicit content - category/royalty have defaults
   if (!nft.name?.trim() || (nft.price ?? 0) <= 0) return false;
 
-  // Required attribute fields
-  const category = getAttributeValue(nft.attributes, 'category');
-  const royaltyRaw = getAttributeValue(nft.attributes, 'royalty_percentage');
+  // Check explicit content is defined (category and royalty default to "Other" and 0)
   const explicitRaw = getAttributeValue(nft.attributes, 'explicit_content');
-
-  // Check category exists
-  if (!category || String(category).trim() === '') return false;
-
-  // Check royalty is valid number
-  const royalty = royaltyRaw !== undefined && royaltyRaw !== null ? parseFloat(String(royaltyRaw)) : undefined;
-  if (typeof royalty !== 'number' || Number.isNaN(royalty) || royalty < 0 || royalty > 50) return false;
-
-  // Check explicit content is defined
   if (explicitRaw === undefined || explicitRaw === null) return false;
 
   return true;
@@ -64,7 +53,7 @@ export const hasRequiredListingFields = (nft: any): boolean => {
  */
 export const getNFTCategory = (attributes: any): string => {
   const category = getAttributeValue(attributes, 'category');
-  return category ? String(category).trim() : '';
+  return category ? String(category).trim() : 'Other';
 };
 
 /**
