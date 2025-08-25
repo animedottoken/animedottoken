@@ -49,9 +49,9 @@ export const CollectionBannerDialog = ({
     try {
       setUploading(true);
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with cache-busting timestamp
       const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${collectionId}-banner.${fileExt}`;
+      const fileName = `${collectionId}-banner-${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('collection-images')
