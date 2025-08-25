@@ -20,6 +20,9 @@ interface FullscreenNFTViewerProps {
   currency?: string;
   isListed?: boolean;
   royaltyPercentage?: number;
+  editionInfo?: string;
+  ownerAddress?: string;
+  currentUserAddress?: string;
   onBuyNow?: () => void;
   onPlaceBid?: () => void;
 }
@@ -39,6 +42,9 @@ export const FullscreenNFTViewer = ({
   currency = 'SOL',
   isListed = false,
   royaltyPercentage,
+  editionInfo,
+  ownerAddress,
+  currentUserAddress,
   onBuyNow,
   onPlaceBid
 }: FullscreenNFTViewerProps) => {
@@ -46,6 +52,9 @@ export const FullscreenNFTViewer = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  
+  // Check if current user owns this NFT
+  const isOwner = currentUserAddress && ownerAddress === currentUserAddress;
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -171,6 +180,11 @@ export const FullscreenNFTViewer = ({
               <Badge variant="secondary" className="text-xs">
                 NFT
               </Badge>
+              {editionInfo && (
+                <Badge variant="outline" className="text-xs text-white border-white/20">
+                  Edition {editionInfo}
+                </Badge>
+              )}
               <div>
                 <h2 className="text-white font-semibold text-lg">{nftName}</h2>
                 {collectionName && (
@@ -222,11 +236,15 @@ export const FullscreenNFTViewer = ({
               )}
             </div>
             
-            {/* Action buttons */}
-            {isListed && price && (
+            {/* Action buttons - Only show if not owner */}
+            {!isOwner && isListed && price && (
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={onBuyNow}
+                  onClick={() => {
+                    if (confirm(`Are you sure you want to buy "${nftName}" for ${price.toFixed(4)} ${currency}?`)) {
+                      onBuyNow?.();
+                    }
+                  }}
                   size="sm"
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
@@ -243,6 +261,13 @@ export const FullscreenNFTViewer = ({
                   Place Bid
                 </Button>
               </div>
+            )}
+            
+            {/* Owner indicator */}
+            {isOwner && (
+              <Badge variant="outline" className="text-white border-white/20">
+                You own this NFT
+              </Badge>
             )}
           </div>
         </div>

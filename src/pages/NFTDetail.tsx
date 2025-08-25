@@ -666,6 +666,9 @@ export default function NFTDetail() {
           currency={nft.currency}
           isListed={nft.is_listed}
           royaltyPercentage={nft.royalty_percentage}
+          editionInfo={getEditionInfo() || undefined}
+          ownerAddress={nft.owner_address}
+          currentUserAddress={publicKey || undefined}
           onBuyNow={handleBuyNow}
           onPlaceBid={() => setIsBidModalOpen(true)}
         />
