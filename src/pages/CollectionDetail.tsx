@@ -361,6 +361,7 @@ export default function CollectionDetail() {
                                     : navigation.source === 'marketplace'
                                     ? '/marketplace'
                                     : '/profile';
+                                  // Don't save scroll position since we're going to a different page
                                   navigate(backUrl);
                                   }
                                 }}

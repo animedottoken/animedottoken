@@ -49,6 +49,21 @@ export default function Profile() {
   const { burning, burnNFT } = useBurnNFT();
   const { deleting, deleteCollection } = useDeleteCollection();
   
+  // Save and restore scroll position
+  useEffect(() => {
+    const savedScrollPosition = sessionStorage.getItem('profile-scroll-position');
+    if (savedScrollPosition) {
+      window.scrollTo(0, parseInt(savedScrollPosition));
+      sessionStorage.removeItem('profile-scroll-position');
+    }
+  }, []);
+
+  // Save scroll position before navigating to collection
+  const handleCollectionClick = (collectionId: string) => {
+    sessionStorage.setItem('profile-scroll-position', window.scrollY.toString());
+    navigate(`/collection/${collectionId}`);
+  };
+  
   const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
     profile?.wallet_address ? [profile.wallet_address, ...followedCreators] : followedCreators
   );
@@ -119,7 +134,7 @@ export default function Profile() {
           <Card 
             key={collection.id}
             className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-            onClick={() => navigate(`/collection/${collection.id}`)}
+            onClick={() => handleCollectionClick(collection.id)}
           >
             <div className="aspect-square relative overflow-hidden group/image">
               <ImageLazyLoad
@@ -167,7 +182,7 @@ export default function Profile() {
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/collection/${collection.id}`);
+                      handleCollectionClick(collection.id);
                     }}
                     className="bg-white/90 text-black hover:bg-white"
                   >
@@ -180,7 +195,7 @@ export default function Profile() {
                     variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/collection/${collection.id}`);
+                      handleCollectionClick(collection.id);
                     }}
                     className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
                     title="Edit Collection"
@@ -216,9 +231,14 @@ export default function Profile() {
                         description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
                         onConfirm: async () => {
                           setConfirmDialog(prev => ({ ...prev, loading: true }));
+                          const currentScrollPosition = window.scrollY;
                           const res = await deleteCollection(collection.id, collection.name);
                           if (res.success) {
-                            refreshCollections();
+                            await refreshCollections();
+                            // Restore scroll position after refresh
+                            setTimeout(() => {
+                              window.scrollTo(0, currentScrollPosition);
+                            }, 100);
                           }
                           setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                         }
@@ -646,7 +666,7 @@ export default function Profile() {
                 <Card 
                   key={collection.id}
                   className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-                  onClick={() => navigate(`/collection/${collection.id}`)}
+                  onClick={() => handleCollectionClick(collection.id)}
                 >
                   <div className="aspect-square relative overflow-hidden">
                     <ImageLazyLoad
