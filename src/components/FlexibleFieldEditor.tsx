@@ -446,18 +446,16 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         <div className="flex items-center gap-2">
           {creatorCanToggleLock && (
             <div className="flex items-center gap-2">
-              {lockedFields.includes(fieldName) && (
-                <Badge 
-                  variant="destructive"
-                  className="bg-orange-500 hover:bg-orange-600 cursor-pointer text-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFieldLock(fieldName);
-                  }}
-                >
-                  Unlock
-                </Badge>
-              )}
+              <Badge
+                variant={lockedFields.includes(fieldName) ? 'locked' : 'outline'}
+                className="cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFieldLock(fieldName);
+                }}
+              >
+                {lockedFields.includes(fieldName) ? 'Unlock' : 'Lock'}
+              </Badge>
               <Button
                 size="sm"
                 variant="ghost"
@@ -466,6 +464,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                   toggleFieldLock(fieldName);
                 }}
                 className="h-8 w-8 p-0"
+                aria-label={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
+                title={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
               >
                 {lockedFields.includes(fieldName) ? (
                   <Lock className="h-4 w-4" />
