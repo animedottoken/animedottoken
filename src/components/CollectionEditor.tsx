@@ -130,6 +130,29 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
         </CardHeader>
         {isExpanded && (
           <CardContent>
+            {/* Legend Section */}
+            <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <Badge variant="onchain">On-Chain</Badge>
+                  <span className="font-normal">Stored permanently on blockchain</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="offchain">Off-Chain</Badge>
+                  <span className="font-normal">Stored in app database, editable</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="chainlocked">Chain Locked</Badge>
+                  <span className="font-normal">Cannot change after first mint</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="locked">Creator Locked</Badge>
+                  <span className="font-normal">Locked by you for safety</span>
+                </div>
+              </div>
+            </div>
+            
             <FlexibleFieldEditor
               collection={currentCollection}
               onUpdate={handleUpdate}
