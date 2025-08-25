@@ -47,10 +47,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
     try {
       await updateCollection(currentCollection.id, updates);
       
-      // Only refresh if it's not just a locked_fields change to prevent page jumping
-      if (!updates.locked_fields || Object.keys(updates).length > 1) {
-        onRefreshCollection();
-      }
+      // Always refresh but silently to prevent page jumping
+      onRefreshCollection();
     } catch (error) {
       console.error('Update failed:', error);
     }

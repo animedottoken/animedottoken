@@ -95,8 +95,8 @@ export default function CollectionDetail() {
   }, [displayCollection, connected, publicKey, searchParams, isOwner]);
 
   const handleCollectionUpdate = (updatedCollection: any) => {
-    // Refresh collection data to get latest version
-    refreshCollection();
+    // Refresh collection data to get latest version (silent to prevent scroll jump)
+    refreshCollection(true);
   };
 
   if (collectionLoading) {
@@ -299,14 +299,14 @@ export default function CollectionDetail() {
                                }
                              });
                              
-                             if (data?.success) {
-                               refreshCollection();
-                               toast.success(
-                                 displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
-                                 {
-                                   description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
-                                 }
-                               );
+                              if (data?.success) {
+                                refreshCollection(true);
+                                toast.success(
+                                  displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                                  {
+                                    description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                  }
+                                );
                              } else {
                                toast.error('Failed to update collection status');
                              }
@@ -339,7 +339,7 @@ export default function CollectionDetail() {
                                 toast.error('Failed to mint collection on-chain');
                               } else {
                                 toast.success('Collection minted successfully on-chain! 🎉');
-                                refreshCollection();
+                                refreshCollection(true);
                               }
                             } catch (error) {
                               toast.error('Failed to mint collection on-chain');
@@ -484,7 +484,7 @@ export default function CollectionDetail() {
             <CollectionEditor 
               collection={editorCollection} 
               mints={mints}
-              onRefreshCollection={refreshCollection}
+              onRefreshCollection={() => refreshCollection(true)}
               startInEditMode={searchParams.get('edit') === '1'}
               onClose={() => {
                 // Remove edit parameter from URL

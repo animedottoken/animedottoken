@@ -11,9 +11,11 @@ export const useCollection = (collectionId: string) => {
     loadCollection();
   }, [collectionId]);
 
-  const loadCollection = async () => {
+  const loadCollection = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
       
       // Use the secure function to get collection details with appropriate wallet masking
       const { data, error } = await supabase
@@ -34,12 +36,14 @@ export const useCollection = (collectionId: string) => {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setCollection(null);
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
-  const refreshCollection = () => {
-    loadCollection();
+  const refreshCollection = (silent = false) => {
+    loadCollection(silent);
   };
 
   return {
