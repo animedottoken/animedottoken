@@ -67,7 +67,7 @@ export default function CollectionDetail() {
   const displayCollection = collection;
   // Create merged data for editor with unmasked creator_address
   const editorCollection = ownedCollection && collection ? { ...collection, creator_address: ownedCollection.creator_address, treasury_wallet: ownedCollection.treasury_wallet } : collection;
-  
+  const isMinted = Boolean(displayCollection?.collection_mint_address) || ((displayCollection?.items_redeemed || 0) > 0) || (mints.length > 0);
   
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -253,11 +253,11 @@ export default function CollectionDetail() {
                 <div className="absolute top-4 right-4">
                   <ProfileStyleEditButton
                     onClick={() => setShowBannerDialog(true)}
-                     tooltipContent={
-                       ((displayCollection?.items_redeemed || 0) > 0) 
+                    tooltipContent={
+                       isMinted 
                          ? "Change banner (2 USDT in ANIME)" 
                          : "Change banner (possible until minted)"
-                     }
+                    }
                   />
                 </div>
               )}
@@ -278,7 +278,7 @@ export default function CollectionDetail() {
                   )}
                   
                   {/* Avatar Edit Button - Profile Style */}
-                  {isOwner && ((displayCollection?.items_redeemed || 0) === 0) && (
+                  {isOwner && !isMinted && (
                     <div className="absolute -bottom-1 -right-1">
                       <ProfileStyleEditButton
                         onClick={() => setShowAvatarDialog(true)}
@@ -728,7 +728,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.image_url}
           onSaved={() => refreshCollection(true)}
-          isMinted={(displayCollection?.items_redeemed || 0) > 0}
+          isMinted={isMinted}
         />
 
         {/* Banner Edit Dialog */}
@@ -738,7 +738,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.banner_image_url}
           onSaved={() => refreshCollection(true)}
-          isMinted={(displayCollection?.items_redeemed || 0) > 0}
+          isMinted={isMinted}
         />
       </main>
     </>

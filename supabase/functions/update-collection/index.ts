@@ -77,7 +77,7 @@ serve(async (req) => {
     // Verify collection ownership and get current state
     const { data: collection, error: fetchError } = await supabase
       .from('collections')
-      .select('creator_address, items_redeemed, locked_fields, supply_mode')
+      .select('creator_address, items_redeemed, locked_fields, supply_mode, collection_mint_address')
       .eq('id', collection_id)
       .single()
 
@@ -92,6 +92,7 @@ serve(async (req) => {
     const lockedFields = collection.locked_fields || [];
     const itemsRedeemed = collection.items_redeemed || 0;
     const currentSupplyMode = collection.supply_mode || 'fixed';
+    const minted = (itemsRedeemed > 0) || Boolean(collection.collection_mint_address);
 
     // Prepare update data
     const updateData: any = {}
@@ -181,7 +182,7 @@ serve(async (req) => {
     
     // Avatar changes (image_url) - free until minted, then locked
     if (updates.image_url !== undefined) {
-      if (itemsRedeemed === 0) {
+      if (!minted) {
         updateData.image_url = updates.image_url
       } else {
         return new Response(
@@ -193,7 +194,7 @@ serve(async (req) => {
     
     // Banner changes (banner_image_url) - free until minted, then requires payment
     if (updates.banner_image_url !== undefined) {
-      if (itemsRedeemed === 0) {
+      if (!minted) {
         // Free banner change before minting
         updateData.banner_image_url = updates.banner_image_url
       } else {
