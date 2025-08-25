@@ -180,7 +180,9 @@ export default function Profile() {
                       e.stopPropagation();
                       navigate(`/collection/${collection.id}`);
                     }}
-                    className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20"
+                    className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
+                    title="Edit Collection"
+                    aria-label="Edit Collection"
                   >
                     <Edit className="w-4 h-4" />
                     <span className="ml-1 hidden sm:inline">Edit</span>
@@ -192,7 +194,9 @@ export default function Profile() {
                       e.stopPropagation();
                       navigate(`/mint/nft?collection=${collection.id}`);
                     }}
-                    className="bg-primary/90 text-white hover:bg-primary"
+                    className="bg-primary/90 text-white hover:bg-primary hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
+                    title="Mint NFT"
+                    aria-label="Mint new NFT in this collection"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="ml-1 hidden sm:inline">Mint</span>
@@ -218,7 +222,9 @@ export default function Profile() {
                         }
                       });
                     }}
-                    className="bg-red-500/90 text-white hover:bg-red-500"
+                    className="bg-red-500/90 text-white hover:bg-red-500 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 transition-all duration-200"
+                    title="Burn Collection"
+                    aria-label="Burn/Delete this collection permanently"
                   >
                     <Trash2 className="w-4 h-4" />
                     <span className="ml-1 hidden sm:inline">Burn</span>
