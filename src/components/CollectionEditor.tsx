@@ -46,8 +46,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const handleUpdate = async (updates: any) => {
     try {
       await updateCollection(currentCollection.id, updates);
-      // Notify parent to refresh data
-      onClose();
+      // Refresh data without closing editor
+      onRefreshCollection();
     } catch (error) {
       console.error('Update failed:', error);
     }

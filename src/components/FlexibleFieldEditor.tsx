@@ -445,18 +445,35 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         
         <div className="flex items-center gap-2">
           {creatorCanToggleLock && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => toggleFieldLock(fieldName)}
-              className="h-8 w-8 p-0"
-            >
-              {lockedFields.includes(fieldName) ? (
-                <Lock className="h-4 w-4" />
-              ) : (
-                <Unlock className="h-4 w-4" />
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFieldLock(fieldName);
+                }}
+                className="h-8 w-8 p-0"
+              >
+                {lockedFields.includes(fieldName) ? (
+                  <Lock className="h-4 w-4" />
+                ) : (
+                  <Unlock className="h-4 w-4" />
+                )}
+              </Button>
+              {lockedFields.includes(fieldName) && (
+                <Badge 
+                  variant="destructive"
+                  className="bg-orange-500 hover:bg-orange-600 cursor-pointer text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFieldLock(fieldName);
+                  }}
+                >
+                  Unlock
+                </Badge>
               )}
-            </Button>
+            </div>
           )}
           
           {!isLocked && isOwner && (
