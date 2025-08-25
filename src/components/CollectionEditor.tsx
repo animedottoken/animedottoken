@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame, ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -30,6 +30,8 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
+  // State to control editing mode
+  const [isExpanded, setIsExpanded] = useState(startInEditMode);
   
   // Always use the passed collection data for consistency
   // The parent component handles data refreshing
@@ -103,24 +105,36 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
+              <FileText className="h-5 w-5" />
               Collection Details
             </div>
             <div className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? (
+                  <><ChevronUp className="w-3 h-3 mr-1" />Settings</>
+                ) : (
+                  <><ChevronDown className="w-3 h-3 mr-1" />Settings</>
+                )}
+              </Button>
             </div>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Collection information and settings. Click "Settings" to modify.
           </p>
         </CardHeader>
-        <CardContent>
-          <FlexibleFieldEditor
-            collection={currentCollection}
-            onUpdate={handleUpdate}
-            isOwner={isOwner}
-          />
-        </CardContent>
+        {isExpanded && (
+          <CardContent>
+            <FlexibleFieldEditor
+              collection={currentCollection}
+              onUpdate={handleUpdate}
+              isOwner={isOwner}
+            />
+          </CardContent>
+        )}
       </Card>
 
     </div>
