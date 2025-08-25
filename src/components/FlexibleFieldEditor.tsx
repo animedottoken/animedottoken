@@ -256,7 +256,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     const isLocked = isFieldLocked(fieldName);
     const isEditing = editingField === fieldName;
     const badgeInfo = getFieldBadge(fieldName);
-    const creatorCanToggleLock = isOwner && rule.canEdit() && !hasMintedNFTs;
+    const creatorCanToggleLock = isOwner && !hasMintedNFTs && badgeInfo?.variant !== 'chainlocked';
 
     if (isEditing) {
       return (
