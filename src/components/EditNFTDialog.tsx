@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Edit, Calendar, ExternalLink, Coins } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -178,6 +179,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
   };
 
   return (
+    <TooltipProvider>
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {/* Only show trigger if no external control */}
       {externalOpen === undefined && (
@@ -279,7 +281,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Basic Information
-                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                  </TooltipContent>
+                </Tooltip>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 {nft.mint_address 
@@ -293,7 +302,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="name">Name *</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <Input
                     id="name"
@@ -313,7 +329,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="symbol">Symbol</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <Input
                     id="symbol"
@@ -327,7 +350,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="description">Description</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <Textarea
                     id="description"
@@ -353,7 +383,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Listing on marketplace
-                <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Stored in our app database - can be changed anytime</p>
+                  </TooltipContent>
+                </Tooltip>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Listing information is stored in our app database and can be changed anytime.
@@ -444,7 +481,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Properties & Traits
-                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                  </TooltipContent>
+                </Tooltip>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 {nft.mint_address 
@@ -475,5 +519,6 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
         </div>
       </DialogContent>
     </Dialog>
+    </TooltipProvider>
   );
 }
