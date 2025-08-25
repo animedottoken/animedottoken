@@ -81,7 +81,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
     description: nft.description || '',
     symbol: nft.symbol || '',
     price: nft.price?.toString() || '',
-    category: nft.metadata?.category || '',
+    category: nft.metadata?.category || 'Other',
     royalty_percentage: nft.metadata?.royalty_percentage?.toString() || '0',
     explicit_content: nft.metadata?.explicit_content || false,
   });
@@ -94,7 +94,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
         description: nft.description || '',
         symbol: nft.symbol || '',
         price: nft.price?.toString() || '',
-        category: nft.metadata?.category || '',
+        category: nft.metadata?.category || 'Other',
         royalty_percentage: nft.metadata?.royalty_percentage?.toString() || '0',
         explicit_content: nft.metadata?.explicit_content || false,
       });
@@ -108,34 +108,30 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
       return;
     }
 
-    const price = formData.price ? parseFloat(formData.price) : null;
-    const isListing = price !== null && price > 0;
-
-    // Validate mandatory fields for listing
-    if (isListing) {
-      const missingFields = [];
-      if (!formData.category?.trim()) missingFields.push('Category');
-      if (!formData.royalty_percentage || parseFloat(formData.royalty_percentage) < 0) missingFields.push('Royalties');
-      
-      if (missingFields.length > 0) {
-        toast.error(`To list your NFT, please fill in: ${missingFields.join(', ')}`);
+    // Handle price validation: empty = delist, must be > 0 if provided
+    let priceVal = null;
+    if (formData.price.trim()) {
+      priceVal = parseFloat(formData.price);
+      if (isNaN(priceVal) || priceVal <= 0) {
+        toast.error('Price must be greater than 0 or leave it empty to delist');
         return;
       }
     }
+    
+    const isListing = priceVal !== null;
 
     setLoading(true);
 
     try {
-      // Prepare updated attributes with mandatory listing fields
+      // Prepare updated attributes with defaults
       const updatedAttributes = propertiesToAttributes(properties, nft.metadata) || {};
       
-      // Store mandatory listing fields in attributes for consistency
-      if (formData.category?.trim()) {
-        updatedAttributes.category = formData.category.trim();
-      }
-      if (formData.royalty_percentage) {
-        updatedAttributes.royalty_percentage = parseFloat(formData.royalty_percentage);
-      }
+      // Store fields with proper defaults
+      const categoryFinal = formData.category?.trim() || 'Other';
+      const royaltyFinal = Math.max(0, Math.min(50, parseFloat(formData.royalty_percentage || '0') || 0));
+      
+      updatedAttributes.category = categoryFinal;
+      updatedAttributes.royalty_percentage = royaltyFinal;
       updatedAttributes.explicit_content = formData.explicit_content;
       
       // Update NFT in database
@@ -145,7 +141,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
           name: formData.name.trim(),
           description: formData.description.trim() || null,
           symbol: formData.symbol.trim() || null,
-          price: price,
+          price: priceVal,
           is_listed: isListing,
           attributes: updatedAttributes,
           updated_at: new Date().toISOString()
@@ -373,115 +369,80 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             </CardContent>
           </Card>
 
-          {/* Listing Information */}
+          {/* Listing on marketplace */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                Listing & Price
-                <Badge variant="offchain" className="text-xs">Off-Chain Data</Badge>
+                Listing on marketplace
+                <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Listing information is stored in our app database and can be changed anytime.
               </p>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Label htmlFor="price">Price (SOL)</Label>
-                  <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
-                </div>
+                <Label htmlFor="price">Price (SOL)</Label>
                 <Input
                   id="price"
                   type="number"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  placeholder="0.00"
+                  placeholder="e.g. 0.25"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Setting a price will automatically list your NFT for sale. Leave empty to unlist.
+                  Setting a price greater than 0 lists your NFT. Leave empty to delist.
                 </p>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Marketplace Requirements */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                Marketplace Requirements
-                <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                These fields have sensible defaults but can be customized if needed.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <details className="space-y-4">
-                <summary className="cursor-pointer text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  ⚙️ Advanced Settings (Category & Royalties)
-                </summary>
-                
-                <div className="grid gap-4 pl-4 pt-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Label htmlFor="category">Category</Label>
-                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
-                    </div>
-                    <Select
-                      value={formData.category || ''}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Other (default)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Art">Art</SelectItem>
-                        <SelectItem value="Gaming">Gaming</SelectItem>
-                        <SelectItem value="Music">Music</SelectItem>
-                        <SelectItem value="Photography">Photography</SelectItem>
-                        <SelectItem value="Collectibles">Collectibles</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formData.category ? `Selected: ${formData.category}` : "Will default to 'Other' if not set"}
-                    </p>
-                  </div>
+              <div>
+                <Label htmlFor="royalty">Creator Royalties (%)</Label>
+                <Input
+                  id="royalty"
+                  type="number"
+                  min="0"
+                  max="50"
+                  step="0.5"
+                  value={formData.royalty_percentage}
+                  onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Percentage you earn on secondary sales (0-50%)
+                </p>
+              </div>
 
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Label htmlFor="royalty">Creator Royalties (%)</Label>
-                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
-                    </div>
-                    <Input
-                      id="royalty"
-                      type="number"
-                      min="0"
-                      max="50"
-                      step="0.5"
-                      value={formData.royalty_percentage}
-                      onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
-                      placeholder="0 (default)"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formData.royalty_percentage ? `${formData.royalty_percentage}% earnings on secondary sales` : "Will default to 0% if not set"}
-                    </p>
-                  </div>
-                </div>
-              </details>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Other" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Art">Art</SelectItem>
+                    <SelectItem value="Gaming">Gaming</SelectItem>
+                    <SelectItem value="Music">Music</SelectItem>
+                    <SelectItem value="Photography">Photography</SelectItem>
+                    <SelectItem value="Collectibles">Collectibles</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  NFT category for marketplace filtering
+                </p>
+              </div>
 
-              {/* Explicit Content - Always Visible */}
               <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="explicit-content" className="text-base font-medium">
-                        Content Declaration
-                      </Label>
-                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
-                    </div>
+                    <Label htmlFor="explicit-content" className="text-base font-medium">
+                      Content Declaration
+                    </Label>
                     <p className="text-sm text-muted-foreground">
                       Declare if your NFT contains explicit or sensitive content
                     </p>
@@ -493,7 +454,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {formData.explicit_content ? "⚠️ Marked as explicit/sensitive content" : "✅ Safe for all audiences (default)"}
+                  {formData.explicit_content ? "⚠️ Marked as explicit/sensitive content" : "✅ Safe for all audiences"}
                 </p>
               </div>
             </CardContent>
