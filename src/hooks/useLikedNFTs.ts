@@ -9,6 +9,11 @@ interface LikedNFT {
   mint_address: string;
   creator_address: string;
   owner_address: string;
+  price?: number;
+  is_listed: boolean;
+  collection_id?: string;
+  description?: string;
+  attributes?: any;
   liked_at: string;
 }
 
@@ -38,7 +43,12 @@ export const useLikedNFTs = () => {
             image_url,
             mint_address,
             creator_address,
-            owner_address
+            owner_address,
+            price,
+            is_listed,
+            collection_id,
+            description,
+            attributes
           )
         `)
         .eq('user_wallet', publicKey)
@@ -58,6 +68,11 @@ export const useLikedNFTs = () => {
           mint_address: item.nfts.mint_address,
           creator_address: item.nfts.creator_address,
           owner_address: item.nfts.owner_address,
+          price: item.nfts.price,
+          is_listed: item.nfts.is_listed,
+          collection_id: item.nfts.collection_id,
+          description: item.nfts.description,
+          attributes: item.nfts.attributes,
           liked_at: item.created_at,
         })) || [];
 

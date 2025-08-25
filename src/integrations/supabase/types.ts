@@ -335,6 +335,30 @@ export type Database = {
           },
         ]
       }
+      marketplace_settings: {
+        Row: {
+          created_at: string
+          id: string
+          platform_fee_percentage: number
+          platform_wallet_address: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          platform_fee_percentage?: number
+          platform_wallet_address?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          platform_fee_percentage?: number
+          platform_wallet_address?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mint_job_items: {
         Row: {
           batch_number: number

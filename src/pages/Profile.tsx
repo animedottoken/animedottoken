@@ -770,13 +770,14 @@ export default function Profile() {
                       id: nft.id,
                       name: nft.name,
                       image_url: nft.image_url || '',
-                      price: undefined,
+                      price: nft.price,
                       owner_address: nft.owner_address,
                       creator_address: nft.creator_address,
                       mint_address: nft.mint_address,
-                      is_listed: false,
-                      collection_id: undefined,
-                      description: undefined,
+                      is_listed: nft.is_listed,
+                      collection_id: nft.collection_id,
+                      description: nft.description,
+                      attributes: nft.attributes,
                     }}
                     navigationQuery={queryString}
                   />
