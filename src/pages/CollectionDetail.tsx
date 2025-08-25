@@ -256,7 +256,7 @@ export default function CollectionDetail() {
                      tooltipContent={
                        ((displayCollection?.items_redeemed || 0) > 0) 
                          ? "Change banner (2 USDT in ANIME)" 
-                         : "Change banner (free until minted)"
+                         : "Change banner (possible until minted)"
                      }
                   />
                 </div>
@@ -282,7 +282,7 @@ export default function CollectionDetail() {
                     <div className="absolute -bottom-1 -right-1">
                       <ProfileStyleEditButton
                         onClick={() => setShowAvatarDialog(true)}
-                        tooltipContent="Change avatar (free until minted)"
+                        tooltipContent="Change avatar (possible until minted)"
                         size="sm"
                       />
                     </div>
