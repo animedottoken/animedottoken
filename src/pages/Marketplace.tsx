@@ -386,8 +386,8 @@ export default function Marketplace() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
+      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-6">
+        <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={`Search ${activeTab}...`}
@@ -400,7 +400,7 @@ export default function Marketplace() {
         {activeTab === "nfts" && (
           <>
             <Select value={filterBy} onValueChange={setFilterBy}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-[130px]">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
@@ -414,7 +414,7 @@ export default function Marketplace() {
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[130px]">
                 <SortAsc className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
@@ -428,7 +428,7 @@ export default function Marketplace() {
             </Select>
 
             <Select value={explicitFilter} onValueChange={(v) => setExplicitFilter(v as 'all' | 'safe' | 'explicit')}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-[130px]">
                 <SelectValue placeholder="Content" />
               </SelectTrigger>
               <SelectContent>
@@ -439,7 +439,7 @@ export default function Marketplace() {
             </Select>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -453,19 +453,19 @@ export default function Marketplace() {
               </SelectContent>
             </Select>
 
-            <div className="hidden md:flex items-center gap-2">
-              <Input type="number" inputMode="decimal" placeholder="Min Price" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className="w-28" />
+            <div className="flex items-center gap-1">
+              <Input type="number" inputMode="decimal" placeholder="Min $" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className="w-24" />
               <span className="text-sm text-muted-foreground">-</span>
-              <Input type="number" inputMode="decimal" placeholder="Max Price" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className="w-28" />
+              <Input type="number" inputMode="decimal" placeholder="Max $" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className="w-24" />
             </div>
 
-            <div className="hidden lg:flex items-center gap-2">
-              <Input type="number" inputMode="decimal" placeholder="Min Roy%" value={royaltyMin} onChange={(e) => setRoyaltyMin(e.target.value)} className="w-24" />
+            <div className="flex items-center gap-1">
+              <Input type="number" inputMode="decimal" placeholder="Min Roy%" value={royaltyMin} onChange={(e) => setRoyaltyMin(e.target.value)} className="w-20" />
               <span className="text-sm text-muted-foreground">-</span>
-              <Input type="number" inputMode="decimal" placeholder="Max Roy%" value={royaltyMax} onChange={(e) => setRoyaltyMax(e.target.value)} className="w-24" />
+              <Input type="number" inputMode="decimal" placeholder="Max Roy%" value={royaltyMax} onChange={(e) => setRoyaltyMax(e.target.value)} className="w-20" />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <Button
                 variant={viewMode === "grid" ? "default" : "outline"}
                 size="icon"
