@@ -28,6 +28,7 @@ import {
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useCollections } from "@/hooks/useCollections";
 
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
@@ -48,6 +49,16 @@ export default function CollectionDetail() {
   const { mints, loading: mintsLoading } = useCollectionMints(collectionId);
   const { deleting, deleteCollection } = useDeleteCollection();
   
+  // Get user's collections for reliable ownership checking
+  const { collections } = useCollections({ autoLoad: !!publicKey });
+  
+  // Find the owned collection (unmasked) for reliable ownership checking
+  const ownedCollection = collections.find(c => c.id === collectionId);
+  const isOwner = connected && ownedCollection !== undefined;
+  
+  // Use owned collection data if available (has unmasked addresses), otherwise use fetched collection
+  const displayCollection = ownedCollection || collection;
+  
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     title: string;
@@ -67,14 +78,14 @@ export default function CollectionDetail() {
   // Auto-scroll to editor when ?edit=1 is present (no blocking/error messaging)
   useEffect(() => {
     const wantsEdit = searchParams.get('edit');
-    if (!wantsEdit || !collection) return;
+    if (!wantsEdit || !displayCollection) return;
 
     const el = document.getElementById('collection-editor');
     if (el) {
       setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
     // Note: The editor itself is shown only to the owner; we don't block or show errors here.
-  }, [collection, connected, publicKey, searchParams]);
+  }, [displayCollection, connected, publicKey, searchParams]);
 
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version
@@ -130,8 +141,8 @@ export default function CollectionDetail() {
   return (
     <>
       <Helmet>
-        <title>{collection.name} - Collection Details</title>
-        <meta name="description" content={`View ${collection.name} collection details and minted NFTs`} />
+        <title>{displayCollection?.name || 'Collection'} - Collection Details</title>
+        <meta name="description" content={`View ${displayCollection?.name || 'Collection'} collection details and minted NFTs`} />
       </Helmet>
       
       <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
@@ -183,10 +194,10 @@ export default function CollectionDetail() {
           <Card className="mb-8 overflow-hidden">
             <div className="relative">
               <AspectRatio ratio={3/1}>
-                {collection.banner_image_url ? (
+                {displayCollection?.banner_image_url ? (
                   <img
-                    src={collection.banner_image_url}
-                    alt={`${collection.name} banner`}
+                    src={displayCollection.banner_image_url}
+                    alt={`${displayCollection.name} banner`}
                     className="object-cover w-full h-full"
                   />
                 ) : (
@@ -199,15 +210,15 @@ export default function CollectionDetail() {
               {/* Square NFT Avatar Overlay */}
               <div className="absolute -bottom-12 left-8">
                 <div className="w-24 h-24 border-4 border-background rounded-lg overflow-hidden">
-                  {collection.image_url ? (
+                  {displayCollection?.image_url ? (
                     <img
-                      src={collection.image_url}
-                      alt={`${collection.name} avatar`}
+                      src={displayCollection.image_url}
+                      alt={`${displayCollection.name} avatar`}
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center text-2xl font-semibold">
-                      {collection.name.slice(0, 2).toUpperCase()}
+                      {displayCollection?.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -215,13 +226,13 @@ export default function CollectionDetail() {
 
               {/* Status Badges */}
               <div className="absolute top-4 right-4 flex gap-2">
-                {collection.verified && (
+                {displayCollection?.verified && (
                   <Badge variant="secondary" className="bg-blue-500 text-white">
                     <Verified className="w-3 h-3 mr-1" />
                     Verified
                   </Badge>
                 )}
-                {collection.is_live && (
+                {displayCollection?.is_live && (
                   <Badge variant="secondary" className="bg-green-500 text-white">
                     Live
                   </Badge>
@@ -233,17 +244,17 @@ export default function CollectionDetail() {
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold">{collection.name}</h1>
-                    {collection.symbol && (
+                    <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
+                    {displayCollection?.symbol && (
                       <Badge variant="outline" className="text-sm">
-                        {collection.symbol}
+                        {displayCollection.symbol}
                       </Badge>
                     )}
                   </div>
                   
-                  {collection.description && (
+                  {displayCollection?.description && (
                     <p className="text-muted-foreground mb-4 max-w-2xl">
-                      {collection.description}
+                      {displayCollection.description}
                     </p>
                   )}
 
@@ -254,23 +265,23 @@ export default function CollectionDetail() {
                       <div className="text-sm text-muted-foreground">Minted</div>
                     </div>
                     <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{collection.max_supply || '∞'}</div>
+                      <div className="text-2xl font-bold text-primary">{displayCollection?.max_supply || '∞'}</div>
                       <div className="text-sm text-muted-foreground">Max Supply</div>
                     </div>
                     <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{collection.mint_price || 0}</div>
+                      <div className="text-2xl font-bold text-primary">{displayCollection?.mint_price || 0}</div>
                       <div className="text-sm text-muted-foreground">Price (SOL)</div>
                     </div>
                     <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{collection.royalty_percentage || 0}%</div>
+                      <div className="text-2xl font-bold text-primary">{displayCollection?.royalty_percentage || 0}%</div>
                       <div className="text-sm text-muted-foreground">Royalties</div>
                     </div>
                   </div>
 
                   {/* External Links */}
-                  {collection.external_links && Array.isArray(collection.external_links) && collection.external_links.length > 0 && (
+                  {displayCollection?.external_links && Array.isArray(displayCollection.external_links) && displayCollection.external_links.length > 0 && (
                     <div className="flex gap-2 mb-4">
-                      {(collection.external_links as any[]).map((link: any, index: number) => (
+                      {(displayCollection.external_links as any[]).map((link: any, index: number) => (
                         <Button
                           key={index}
                           variant="outline"
@@ -294,16 +305,16 @@ export default function CollectionDetail() {
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 min-w-[200px]">
                   {/* Collection Owner Controls - Only show for owned collections */}
-                  {connected && publicKey === collection.creator_address && (
+                  {isOwner && (
                     <Button
-                      variant={collection.is_live ? "destructive" : "default"}
+                      variant={displayCollection?.is_live ? "destructive" : "default"}
                       size="lg"
                       onClick={async () => {
                         try {
                           const { data, error } = await supabase.functions.invoke('update-collection', {
                             body: {
-                              collection_id: collection.id,
-                              updates: { is_live: !collection.is_live }
+                              collection_id: displayCollection?.id,
+                              updates: { is_live: !displayCollection?.is_live }
                             }
                           });
                           
@@ -311,9 +322,9 @@ export default function CollectionDetail() {
                             // Refresh collection to show updated status
                             refreshCollection();
                             toast.success(
-                              collection.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                              displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
                               {
-                                description: collection.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
                               }
                             );
                           } else {
@@ -324,11 +335,11 @@ export default function CollectionDetail() {
                         }
                       }}
                     >
-                      {collection.is_live ? 'Pause Minting' : 'Go Live'}
+                      {displayCollection?.is_live ? 'Pause Minting' : 'Go Live'}
                     </Button>
                   )}
                   
-                  {connected && publicKey === collection.creator_address && (
+                  {isOwner && (
                     <>
                       <Button 
                         variant="outline" 
@@ -356,16 +367,16 @@ export default function CollectionDetail() {
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Collection</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete "{collection.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
-                              </AlertDialogDescription>
+                               <AlertDialogDescription>
+                                 Are you sure you want to delete "{displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
+                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={async () => {
-                                  const result = await deleteCollection(collection.id, collection.name);
-                                  if (result.success) {
+                                 onClick={async () => {
+                                   const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
+                                   if (result.success) {
                                    const backUrl = navigation.source === 'favorites' 
                                     ? '/profile?tab=favorites' 
                                     : navigation.source === 'collections' 
@@ -394,12 +405,15 @@ export default function CollectionDetail() {
           </Card>
 
           {/* Collection Editor - Only show for collection owner */}
-          {connected && publicKey === collection.creator_address && (
+          {isOwner && displayCollection && (
             <div id="collection-editor" className="mb-8">
-              <CollectionEditor 
-                collection={collection as any}
-                onClose={() => {}}
-              />
+            <CollectionEditor 
+              collection={displayCollection} 
+              onClose={() => {
+                // Refresh the page data after closing editor
+                refreshCollection();
+              }}
+            />
             </div>
           )}
 
@@ -434,7 +448,7 @@ export default function CollectionDetail() {
                     Start minting NFTs from this collection to see them here.
                   </p>
                   <Button asChild>
-                    <Link to={`/mint?collection=${collection.slug || collection.id}`}>
+                    <Link to={`/mint?collection=${displayCollection?.slug || displayCollection?.id}`}>
                       <Plus className="w-4 h-4 mr-2" />
                       Create First NFT
                     </Link>
