@@ -12,6 +12,7 @@ interface FileUploadProps {
   placeholder?: string
   aspectRatio?: number
   maxSizeText?: string
+  allowRemove?: boolean
 }
 
 export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
@@ -23,7 +24,8 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     previewUrl, 
     placeholder = "Click to upload image",
     aspectRatio = 1,
-    maxSizeText = "Maximum file size: 10MB"
+    maxSizeText = "Maximum file size: 10MB",
+    allowRemove = true
   }, ref) => {
     const [preview, setPreview] = React.useState<string | null>(previewUrl || null)
     const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -105,19 +107,24 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                   <Button
                     size="sm"
                     variant="secondary"
-                    onClick={handleClick}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClick();
+                    }}
                     className="bg-white/90 text-black hover:bg-white"
                   >
                     Change
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleRemove}
-                    className="bg-red-500/90 hover:bg-red-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  {allowRemove && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleRemove}
+                      className="bg-red-500/90 hover:bg-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

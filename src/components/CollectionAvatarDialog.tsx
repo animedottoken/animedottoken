@@ -39,9 +39,10 @@ export const CollectionAvatarDialog = ({
     try {
       setUploading(true);
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with timestamp to bypass caching
       const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${collectionId}-avatar.${fileExt}`;
+      const timestamp = Date.now();
+      const fileName = `${collectionId}-avatar-${timestamp}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('collection-images')
@@ -109,6 +110,7 @@ export const CollectionAvatarDialog = ({
             placeholder="Click to upload avatar"
             aspectRatio={1}
             maxSizeText="Maximum file size: 10MB"
+            allowRemove={false}
           />
         </div>
 
