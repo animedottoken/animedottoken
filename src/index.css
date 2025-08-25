@@ -108,6 +108,7 @@ All colors MUST be HSL. */
 @layer base {
   html {
     scrollbar-gutter: stable both-edges;
+    scrollbar-width: thin;
   }
   
   * {
@@ -118,7 +119,14 @@ All colors MUST be HSL. */
     @apply bg-background text-foreground font-sans;
     background-image: var(--gradient-accent);
     background-attachment: fixed;
-    overflow-x: hidden; /* Prevent horizontal scrollbars/layout shift */
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Prevent layout shift from dropdowns */
+  [data-radix-popper-content-wrapper] {
+    will-change: transform;
+    contain: layout;
   }
 
   /* Hide number input spinners globally */
