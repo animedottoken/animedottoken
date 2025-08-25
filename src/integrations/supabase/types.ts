@@ -597,6 +597,60 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount_anime: number
+          amount_usdt: number
+          anime_price: number
+          collection_id: string
+          created_at: string
+          id: string
+          payment_type: string
+          tx_signature: string
+          verified: boolean
+          wallet_address: string
+        }
+        Insert: {
+          amount_anime: number
+          amount_usdt: number
+          anime_price: number
+          collection_id: string
+          created_at?: string
+          id?: string
+          payment_type: string
+          tx_signature: string
+          verified?: boolean
+          wallet_address: string
+        }
+        Update: {
+          amount_anime?: number
+          amount_usdt?: number
+          anime_price?: number
+          collection_id?: string
+          created_at?: string
+          id?: string
+          payment_type?: string
+          tx_signature?: string
+          verified?: boolean
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           banner_image_url: string | null
