@@ -13,6 +13,7 @@ import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { BidModal } from "@/components/BidModal";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
+import { EditNFTDialog } from "@/components/EditNFTDialog";
 import { normalizeAttributes } from '@/lib/attributes';
 import { truncateAddress } from "@/utils/addressUtils";
 import { PriceTag } from '@/components/ui/price-tag';
@@ -34,6 +35,7 @@ export default function NFTDetail() {
   const [nft, setNft] = useState<ExtendedNFT | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const { publicKey, connect } = useSolanaWallet();
   
@@ -111,83 +113,83 @@ export default function NFTDetail() {
     setBidAmount('');
   };
 
-  useEffect(() => {
-    const fetchNFT = async () => {
-      if (!id) return;
+  const fetchNFT = useCallback(async () => {
+    if (!id) return;
 
-      try {
-        // Fetch NFT with extended data including price, listings, and royalties
-        const { data, error } = await supabase
-          .from('nfts')
-          .select(`
-            id,
+    try {
+      // Fetch NFT with extended data including price, listings, and royalties
+      const { data, error } = await supabase
+        .from('nfts')
+        .select(`
+          id,
+          name,
+          symbol,
+          description,
+          image_url,
+          mint_address,
+          collection_id,
+          owner_address,
+          creator_address,
+          attributes,
+          created_at,
+          updated_at,
+          price,
+          is_listed,
+          currency,
+          collections (
             name,
-            symbol,
-            description,
-            image_url,
-            mint_address,
-            collection_id,
-            owner_address,
-            creator_address,
-            attributes,
-            created_at,
-            updated_at,
-            price,
-            is_listed,
-            currency,
-            collections (
-              name,
-              royalty_percentage
-            )
-          `)
-          .eq('id', id)
-          .single();
+            royalty_percentage
+          )
+        `)
+        .eq('id', id)
+        .single();
 
-        if (error) throw error;
+      if (error) throw error;
 
-        // Fetch user profiles for owner and creator display names
-        const addresses = [data.owner_address, data.creator_address].filter(Boolean);
-        const { data: profiles } = await supabase
-          .from('user_profiles')
-          .select('wallet_address, display_name')
-          .in('wallet_address', addresses);
+      // Fetch user profiles for owner and creator display names
+      const addresses = [data.owner_address, data.creator_address].filter(Boolean);
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('wallet_address, display_name')
+        .in('wallet_address', addresses);
 
-        const ownerProfile = profiles?.find(p => p.wallet_address === data.owner_address);
-        const creatorProfile = profiles?.find(p => p.wallet_address === data.creator_address);
+      const ownerProfile = profiles?.find(p => p.wallet_address === data.owner_address);
+      const creatorProfile = profiles?.find(p => p.wallet_address === data.creator_address);
 
-        const transformedNFT: ExtendedNFT = {
-          id: data.id,
-          name: data.name,
-          symbol: data.symbol,
-          description: data.description,
-          image_url: data.image_url,
-          mint_address: data.mint_address,
-          collection_id: data.collection_id,
-          owner_address: data.owner_address,
-          creator_address: data.creator_address,
-          metadata: data.attributes,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          price: data.price,
-          is_listed: data.is_listed,
-          currency: data.currency || 'SOL',
-          royalty_percentage: (data as any).collections?.royalty_percentage,
-          collection_name: (data as any).collections?.name,
-          owner_display_name: ownerProfile?.display_name,
-          creator_display_name: creatorProfile?.display_name
-        };
+      const transformedNFT: ExtendedNFT = {
+        id: data.id,
+        name: data.name,
+        symbol: data.symbol,
+        description: data.description,
+        image_url: data.image_url,
+        mint_address: data.mint_address,
+        collection_id: data.collection_id,
+        owner_address: data.owner_address,
+        creator_address: data.creator_address,
+        metadata: data.attributes,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        price: data.price,
+        is_listed: data.is_listed,
+        currency: data.currency || 'SOL',
+        royalty_percentage: (data as any).collections?.royalty_percentage,
+        collection_name: (data as any).collections?.name,
+        owner_display_name: ownerProfile?.display_name,
+        creator_display_name: creatorProfile?.display_name
+      };
 
-        setNft(transformedNFT);
-      } catch (error) {
-        console.error('Error fetching NFT:', error);
-        toast.error('Failed to load NFT details');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNFT();
+      setNft(transformedNFT);
+    } catch (error) {
+      console.error('Error fetching NFT:', error);
+      toast.error('Failed to load NFT details');
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchNFT();
+  }, [fetchNFT]);
 
   const handleFullscreenToggle = () => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -447,10 +449,7 @@ export default function NFTDetail() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      // Add edit functionality here - for now navigate back to collection for editing
-                      toast.info('NFT editing coming soon! Edit via collection page for now.');
-                    }}
+                    onClick={() => setIsEditDialogOpen(true)}
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit NFT
@@ -687,6 +686,16 @@ export default function NFTDetail() {
           onBidPlaced={(amount) => {
             toast.success(`Successfully placed bid of ${amount} ${nft.currency} for ${nft.name}!`);
           }}
+        />
+      )}
+
+      {/* Edit NFT Dialog */}
+      {nft && (
+        <EditNFTDialog
+          nft={nft}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onUpdate={fetchNFT}
         />
       )}
     </div>
