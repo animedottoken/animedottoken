@@ -51,7 +51,7 @@ export const useLikedNFTs = () => {
         ?.map(item => ({
           id: item.nfts.id,
           name: item.nfts.name,
-          image_url: item.nfts.image_url,
+          image_url: item.nfts.image_url || '',
           mint_address: item.nfts.mint_address,
           creator_address: item.nfts.creator_address,
           owner_address: item.nfts.owner_address,
@@ -68,6 +68,29 @@ export const useLikedNFTs = () => {
 
   useEffect(() => {
     fetchLikedNFTs();
+
+    if (!publicKey) return;
+
+    // Set up real-time subscription for liked NFTs
+    const channel = supabase
+      .channel('liked-nfts-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'nft_likes',
+          filter: `user_wallet=eq.${publicKey}`
+        },
+        () => {
+          fetchLikedNFTs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [publicKey]);
 
   return {

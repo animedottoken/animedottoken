@@ -759,33 +759,29 @@ export default function Profile() {
             <p>Loading liked NFTs...</p>
           ) : likedNFTs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {likedNFTs.map((nft) => (
-                <Card 
-                  key={nft.id} 
-                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
-                  onClick={() => navigate(`/nft/${nft.id}`)}
-                >
-                  <div className="aspect-square relative overflow-hidden">
-                    <ImageLazyLoad
-                      src={nft.image_url}
-                      alt={nft.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      fallbackSrc="/placeholder.svg"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors truncate">
-                      {nft.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground truncate">
-                      Creator: {nft.creator_address.slice(0, 8)}...{nft.creator_address.slice(-8)}
-                    </p>
-                    <p className="text-xs text-muted-foreground/70">
-                      Liked on {new Date(nft.liked_at).toLocaleDateString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              {likedNFTs.map((nft) => {
+                const likedNFTIds = likedNFTs.map(n => n.id);
+                const queryString = `from=profile&liked_nfts=${likedNFTIds.join(',')}`;
+                
+                return (
+                  <NFTCard
+                    key={nft.id}
+                    nft={{
+                      id: nft.id,
+                      name: nft.name,
+                      image_url: nft.image_url || '',
+                      price: undefined,
+                      owner_address: nft.owner_address,
+                      creator_address: nft.creator_address,
+                      mint_address: nft.mint_address,
+                      is_listed: false,
+                      collection_id: undefined,
+                      description: undefined,
+                    }}
+                    navigationQuery={queryString}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12">
