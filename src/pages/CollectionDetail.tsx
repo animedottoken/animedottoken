@@ -83,23 +83,37 @@ export default function CollectionDetail() {
     onConfirm: () => {},
     loading: false
   });
-  const [mintFee, setMintFee] = useState<number | null>(null);
+  interface FeeEstimate {
+    totalSol: number;
+    totalLamports: number;
+    approxUsd?: number;
+    currency: string;
+    degraded?: boolean;
+    breakdown: Array<{
+      key: string;
+      description: string;
+      lamports: number;
+      sol: number;
+    }>;
+  }
+
+  const [mintFee, setMintFee] = useState<FeeEstimate | null>(null);
   const [loadingFee, setLoadingFee] = useState(false);
+  const [feeError, setFeeError] = useState<string | null>(null);
 
   const fetchMintFee = async () => {
-    if (mintFee !== null) return; // Already fetched
-    
     setLoadingFee(true);
+    setFeeError(null);
     try {
       const { data: feeData, error } = await supabase.functions.invoke('get-mint-fee');
       if (error) throw error;
       
       if (feeData?.success && feeData?.feeEstimate) {
-        setMintFee(feeData.feeEstimate.totalFee);
+        setMintFee(feeData.feeEstimate);
       }
     } catch (error) {
       console.error('Error fetching mint fee:', error);
-      setMintFee(0.006); // Fallback fee
+      setFeeError('Unable to fetch current network fees. Please try again.');
     } finally {
       setLoadingFee(false);
     }
@@ -433,15 +447,18 @@ export default function CollectionDetail() {
                          <Button 
                            variant="outline" 
                            size="sm"
-                           onClick={() => {
-                             fetchMintFee();
-                              setConfirmDialog({
+            onClick={() => {
+              setFeeError(null);
+              fetchMintFee();
+               setConfirmDialog({
                                 open: true,
                                 title: 'Confirm Minting Payment',
                                 description: loadingFee 
                                   ? "Calculating minting fee..." 
+                                  : feeError
+                                  ? `There was an error calculating the fee. ${feeError}`
                                   : mintFee !== null 
-                                    ? `Minting this collection on-chain will cost approximately ${mintFee} SOL (~$${(mintFee * 200).toFixed(2)}). This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
+                                    ? `Minting this collection on-chain will cost approximately ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
                                     : "Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?",
                                 loading: false,
                                 onConfirm: async () => {
@@ -691,20 +708,22 @@ export default function CollectionDetail() {
            onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
            title={confirmDialog.title}
            description={confirmDialog.description}
-           confirmText={
-             confirmDialog.title === 'Confirm Minting Payment' 
-               ? (loadingFee 
-                   ? "Loading..." 
-                   : mintFee !== null 
-                     ? `Yes, Pay ${mintFee} SOL` 
-                     : "Yes, Mint & Pay"
-                 )
-               : 'Confirm'
-           }
+            confirmText={
+              confirmDialog.title === 'Confirm Minting Payment' 
+                ? (loadingFee 
+                    ? "Loading..." 
+                    : feeError
+                    ? "Confirm"
+                    : mintFee !== null 
+                      ? `Yes, Pay ${mintFee.totalSol.toFixed(4)} SOL` 
+                      : "Yes, Mint & Pay"
+                  )
+                : 'Confirm'
+            }
            cancelText="Cancel"
            variant={confirmDialog.title === 'Confirm Minting Payment' ? 'default' : 'destructive'}
            onConfirm={confirmDialog.onConfirm}
-           loading={confirmDialog.loading || loadingFee}
+           loading={confirmDialog.loading || (confirmDialog.title === 'Confirm Minting Payment' && (loadingFee || feeError !== null))}
          />
 
         {/* Avatar Edit Dialog */}
