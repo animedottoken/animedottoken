@@ -25,7 +25,7 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { BioEditDialog } from '@/components/BioEditDialog';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import profileBanner from '@/assets/profile-banner.jpg';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -49,8 +49,10 @@ export default function Profile() {
   const { burning, burnNFT } = useBurnNFT();
   const { deleting, deleteCollection } = useDeleteCollection();
   
-  // Save and restore scroll position
-  useEffect(() => {
+  const scrollPositionRef = useRef<number>(0);
+  
+  // Save and restore scroll position instantly with useLayoutEffect
+  useLayoutEffect(() => {
     const savedScrollPosition = sessionStorage.getItem('profile-scroll-position');
     if (savedScrollPosition) {
       window.scrollTo(0, parseInt(savedScrollPosition));
@@ -231,14 +233,12 @@ export default function Profile() {
                         description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
                         onConfirm: async () => {
                           setConfirmDialog(prev => ({ ...prev, loading: true }));
-                          const currentScrollPosition = window.scrollY;
+                          scrollPositionRef.current = window.scrollY;
                           const res = await deleteCollection(collection.id, collection.name);
                           if (res.success) {
                             await refreshCollections();
-                            // Restore scroll position after refresh
-                            setTimeout(() => {
-                              window.scrollTo(0, currentScrollPosition);
-                            }, 100);
+                            // Restore scroll position immediately without timeout
+                            window.scrollTo(0, scrollPositionRef.current);
                           }
                           setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                         }

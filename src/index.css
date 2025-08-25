@@ -7,8 +7,9 @@
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL. */
 
-@layer base {
-  :root {
+html {
+  scrollbar-gutter: stable;
+}
     /* Typography */
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
