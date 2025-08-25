@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame, ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { ConfirmDialog } from './ConfirmDialog';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -41,6 +42,12 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const isOwner = publicKey === initialCollection.creator_address;
   const itemsRedeemed = currentCollection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
+  const isCollectionMinted = Boolean(currentCollection.collection_mint_address);
+  const hasNFTsInUnmintedCollection = !isCollectionMinted && itemsRedeemed > 0;
+
+  // State for cleanup operations
+  const [cleanupLoading, setCleanupLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 
   const handleUpdate = async (updates: any) => {
@@ -95,12 +102,109 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
     }
   };
 
+  const handleCleanupNFTs = async (action: 'detach' | 'delete') => {
+    if (cleanupLoading) return;
+    
+    setCleanupLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cleanup-unminted-collection-nfts', {
+        body: {
+          collection_id: currentCollection.id,
+          action
+        }
+      });
+
+      if (error) {
+        toast.error(`Failed to ${action} NFTs: ${error.message}`);
+        return;
+      }
+
+      if (data?.success) {
+        toast.success(data.message);
+        onRefreshCollection(); // Refresh to show updated counts
+        
+        if (data.errors && data.errors.length > 0) {
+          console.warn('Some operations had errors:', data.errors);
+          toast.warning(`${action === 'detach' ? 'Detached' : 'Deleted'} ${data.processed} NFTs, but ${data.errors.length} had errors. Check console for details.`);
+        }
+      } else {
+        toast.error(data?.error || `Failed to ${action} NFTs`);
+      }
+    } catch (error) {
+      console.error(`Cleanup ${action} error:`, error);
+      toast.error(`Failed to ${action} NFTs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setCleanupLoading(false);
+    }
+  };
+
   if (!isOwner) {
     return null;
   }
 
   return (
     <div className="space-y-6">
+      {/* Unminted Collection with NFTs Warning */}
+      {hasNFTsInUnmintedCollection && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <Info className="h-5 w-5" />
+              Collection Data Needs Cleanup
+            </CardTitle>
+            <p className="text-sm text-orange-700">
+              This collection has {itemsRedeemed} NFTs but hasn't been minted on-chain yet. 
+              In Solana, NFTs should only exist in collections that are minted on-chain.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <p className="text-sm text-orange-700 font-medium">
+                Choose how to handle existing NFTs:
+              </p>
+               <div className="flex gap-3 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCleanupNFTs('detach')}
+                  disabled={cleanupLoading}
+                  className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                >
+                  {cleanupLoading ? 'Processing...' : 'Detach NFTs to Standalone'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={cleanupLoading}
+                  className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                >
+                  Delete NFTs (Dangerous)
+                </Button>
+              </div>
+              <p className="text-xs text-orange-600">
+                <strong>Recommended:</strong> Detach NFTs to make them standalone. This preserves user assets and trading history.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title="Delete All NFTs?"
+        description={`This will permanently delete all ${itemsRedeemed} NFTs in this collection. This action cannot be undone.`}
+        confirmText="Delete NFTs"
+        variant="destructive"
+        onConfirm={() => {
+          handleCleanupNFTs('delete');
+          setShowDeleteConfirm(false);
+        }}
+        loading={cleanupLoading}
+      />
+      
       {/* Collection Details Editor */}
       <Card>
         <CardHeader>
@@ -145,7 +249,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="chainlocked">Chain Locked</Badge>
-                  <span>Cannot change after first mint</span>
+                  <span>Collection is minted on-chain</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="locked">Creator Locked</Badge>

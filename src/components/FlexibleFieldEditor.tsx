@@ -45,7 +45,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
   const lockedFields = localLockedFields.length > 0 ? localLockedFields : (Array.isArray(collection.locked_fields) ? collection.locked_fields as string[] : []);
   const itemsRedeemed = collection.items_redeemed || 0;
   const hasMintedNFTs = itemsRedeemed > 0;
-  const isOnChain = Boolean(collection.collection_mint_address);
+  const isCollectionMinted = Boolean(collection.collection_mint_address);
 
   // Define field rules
   const fieldRules: Record<string, FieldRule> = {
@@ -54,8 +54,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       label: 'Collection Name', 
       type: 'text', 
       maxLength: 100, 
-      canEdit: () => !isOnChain && !lockedFields.includes('name'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('name'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       required: true,
       help: 'Name of your collection (visible on marketplaces)'
     },
@@ -63,8 +63,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       label: 'Symbol', 
       type: 'text', 
       maxLength: 10, 
-      canEdit: () => !isOnChain && !lockedFields.includes('symbol'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('symbol'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       transform: (value: string) => value.toUpperCase(),
       help: 'Short symbol for your collection (e.g., AWESOME)'
     },
@@ -80,8 +80,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       label: 'Short Description', 
       type: 'textarea', 
       maxLength: 200, 
-      canEdit: () => !isOnChain && !lockedFields.includes('onchain_description'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('onchain_description'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Stored on-chain and shown in wallets/marketplaces. Keep it brief.'
     },
     
@@ -89,15 +89,15 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     enable_primary_sales: { 
       label: 'Enable Primary Sales', 
       type: 'switch', 
-      canEdit: () => !isOnChain && !lockedFields.includes('enable_primary_sales'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('enable_primary_sales'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Allow primary market sales with mint price'
     },
     mint_price: { 
       label: 'Price (SOL)', 
       type: 'number', 
-      canEdit: () => !isOnChain && !lockedFields.includes('mint_price'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('mint_price'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       min: 0,
       step: 0.001,
       help: collection.enable_primary_sales 
@@ -113,8 +113,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         { value: 'fixed', label: 'Fixed Supply' },
         { value: 'open', label: 'Open Edition' }
       ],
-      canEdit: () => !isOnChain && !hasMintedNFTs && !lockedFields.includes('supply_mode'),
-      badge: isOnChain ? 'On-Chain' : (hasMintedNFTs ? 'Chain-Locked' : 'Off-Chain'),
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('supply_mode'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Whether the collection has a limited or unlimited supply'
     },
     max_supply: { 
@@ -122,8 +122,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       type: 'number', 
       min: 1, 
       max: 100000, 
-      canEdit: () => !isOnChain && !hasMintedNFTs && !lockedFields.includes('max_supply'),
-      badge: isOnChain ? 'On-Chain' : (hasMintedNFTs ? 'Chain-Locked' : 'Off-Chain'),
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('max_supply'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       visible: () => collection.supply_mode === 'fixed',
       help: 'Maximum number of NFTs that can be minted'
     },
@@ -133,8 +133,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       min: 0, 
       max: 50, 
       step: 0.1, 
-      canEdit: () => !isOnChain && !hasMintedNFTs && !lockedFields.includes('royalty_percentage'),
-      badge: isOnChain ? 'On-Chain' : (hasMintedNFTs ? 'Chain-Locked' : 'Off-Chain'),
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('royalty_percentage'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Percentage of secondary sales paid as royalties'
     },
     
@@ -142,8 +142,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     treasury_wallet: { 
       label: 'Treasury Wallet', 
       type: 'text', 
-      canEdit: () => !isOnChain && !lockedFields.includes('treasury_wallet'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('treasury_wallet'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Wallet address that receives mint payments and royalties'
     },
     whitelist_enabled: { 
@@ -190,8 +190,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     attributes: { 
       label: 'Properties', 
       type: 'properties', 
-      canEdit: () => !isOnChain && !lockedFields.includes('attributes'),
-      badge: isOnChain ? 'On-Chain' : 'Off-Chain',
+      canEdit: () => !isCollectionMinted && !lockedFields.includes('attributes'),
+      badge: isCollectionMinted ? 'Chain Locked' : 'Off-Chain',
       help: 'Default properties that will be applied to all NFTs in this collection'
     }
   };
@@ -214,9 +214,8 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     const chainLocked = !rule.canEdit();
     
     if (creatorLocked) return { text: 'Creator Locked', variant: 'locked' as const, reason: 'Locked by creator settings' };
-    if (chainLocked && rule.badge.includes('Chain')) return { text: 'Chain Locked', variant: 'chainlocked' as const, reason: 'Cannot be changed after first mint' };
-    if (chainLocked && rule.badge === 'On-Chain') return { text: 'On-Chain', variant: 'onchain' as const, reason: 'Stored permanently on blockchain - cannot edit' };
-    if (rule.badge === 'On-Chain') return { text: 'On-Chain', variant: 'onchain' as const, reason: 'Stored permanently on blockchain' };
+    if (chainLocked && rule.badge === 'Chain Locked') return { text: 'Chain Locked', variant: 'chainlocked' as const, reason: 'Collection is minted on-chain - cannot edit' };
+    if (rule.badge === 'Chain Locked') return { text: 'Chain Locked', variant: 'chainlocked' as const, reason: 'Collection is minted on-chain' };
     if (rule.badge === 'Off-Chain') return { text: 'Off-Chain', variant: 'offchain' as const, reason: 'Stored in app database, can be changed' };
     return { text: rule.badge, variant: 'outline' as const, reason: '' };
   };
@@ -296,7 +295,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
     const isLocked = isFieldLocked(fieldName);
     const isEditing = editingField === fieldName;
     const badgeInfo = getFieldBadge(fieldName);
-    const creatorCanToggleLock = isOwner && !hasMintedNFTs && badgeInfo?.variant !== 'chainlocked';
+    const creatorCanToggleLock = isOwner && !isCollectionMinted && badgeInfo?.variant !== 'chainlocked';
 
     if (isEditing) {
       return (
