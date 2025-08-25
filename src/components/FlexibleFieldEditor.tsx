@@ -461,6 +461,18 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              {(lockedFields.includes(fieldName) || badgeInfo?.variant === 'chainlocked') && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Lock className="h-3 w-3 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{lockedFields.includes(fieldName) ? 'Creator locked' : 'Chain locked'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
