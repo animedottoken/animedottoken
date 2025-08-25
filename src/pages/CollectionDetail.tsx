@@ -407,34 +407,44 @@ export default function CollectionDetail() {
                          )}
                        </Button>
                       
-                      {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={async () => {
-                            if (!publicKey) return;
-                            try {
-                              const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
-                                body: {
-                                  collectionId: displayCollection?.id,
-                                  creatorAddress: publicKey
-                                }
-                              });
-                              if (mintError || !mintResult?.success) {
-                                toast.error('Failed to mint collection on-chain');
-                              } else {
-                                toast.success('Collection minted successfully on-chain! 🎉');
-                                refreshCollection(true);
-                              }
-                            } catch (error) {
-                              toast.error('Failed to mint collection on-chain');
-                            }
-                          }}
-                        >
-                          <Zap className="w-3 h-3 mr-1" />
-                          Mint On-Chain
-                        </Button>
-                      )}
+                       {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={() => {
+                             setConfirmDialog({
+                               open: true,
+                               title: 'Confirm Minting Payment',
+                               description: 'Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?',
+                               onConfirm: async () => {
+                                 if (!publicKey) return;
+                                 setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                 try {
+                                   const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+                                     body: {
+                                       collectionId: displayCollection?.id,
+                                       creatorAddress: publicKey
+                                     }
+                                   });
+                                   if (mintError || !mintResult?.success) {
+                                     toast.error('Failed to mint collection on-chain');
+                                   } else {
+                                     toast.success('Collection minted successfully on-chain! 🎉');
+                                     refreshCollection(true);
+                                   }
+                                 } catch (error) {
+                                   toast.error('Failed to mint collection on-chain');
+                                 } finally {
+                                   setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                                 }
+                               }
+                             });
+                           }}
+                         >
+                           <Zap className="w-3 h-3 mr-1" />
+                           Mint On-Chain
+                         </Button>
+                       )}
                       
                       <Button
                         variant="destructive"
@@ -646,17 +656,17 @@ export default function CollectionDetail() {
         </div>
         
         {/* Confirm Dialog */}
-        <ConfirmDialog
-          open={confirmDialog.open}
-          onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
-          title={confirmDialog.title}
-          description={confirmDialog.description}
-          confirmText="Confirm"
-          cancelText="Cancel"
-          variant="destructive"
-          onConfirm={confirmDialog.onConfirm}
-          loading={confirmDialog.loading}
-        />
+         <ConfirmDialog
+           open={confirmDialog.open}
+           onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+           title={confirmDialog.title}
+           description={confirmDialog.description}
+           confirmText={confirmDialog.title === 'Confirm Minting Payment' ? 'Yes, Mint & Pay' : 'Confirm'}
+           cancelText="Cancel"
+           variant={confirmDialog.title === 'Confirm Minting Payment' ? 'default' : 'destructive'}
+           onConfirm={confirmDialog.onConfirm}
+           loading={confirmDialog.loading}
+         />
 
         {/* Avatar Edit Dialog */}
         <CollectionAvatarDialog

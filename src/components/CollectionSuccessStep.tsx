@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +29,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   const navigate = useNavigate();
   const { publicKey } = useSolanaWallet();
   const [isMintingOnChain, setIsMintingOnChain] = useState(false);
+  const [showMintConfirm, setShowMintConfirm] = useState(false);
 
   const handleCopyAddress = async (address: string) => {
     try {
@@ -45,6 +47,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   const handleMintOnChain = async () => {
     if (!publicKey || !collection) return;
     
+    setShowMintConfirm(false);
     setIsMintingOnChain(true);
     try {
       const { supabase } = await import('@/integrations/supabase/client');
@@ -140,7 +143,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
             <div className="space-y-4">
               {isOffChain && (
                 <Button 
-                  onClick={handleMintOnChain}
+                  onClick={() => setShowMintConfirm(true)}
                   disabled={isMintingOnChain}
                   className="w-full"
                   variant="default"
@@ -165,6 +168,17 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={showMintConfirm}
+        onOpenChange={setShowMintConfirm}
+        title="Confirm Minting Payment"
+        description="Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?"
+        confirmText="Yes, Mint & Pay"
+        cancelText="Cancel"
+        onConfirm={handleMintOnChain}
+        loading={isMintingOnChain}
+      />
     </div>
   );
 };
