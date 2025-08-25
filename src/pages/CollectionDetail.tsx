@@ -286,43 +286,52 @@ export default function CollectionDetail() {
                     </div>
                   </div>
                   
-                  {/* Owner Action Buttons */}
-                  {isOwner && (
-                    <div className="flex gap-1">
-                      <Button
-                        variant={displayCollection?.is_live ? "outline" : "default"}
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            const { data, error } = await supabase.functions.invoke('update-collection', {
-                              body: {
-                                collection_id: displayCollection?.id,
-                                updates: { is_live: !displayCollection?.is_live }
-                              }
-                            });
-                            
-                            if (data?.success) {
-                              refreshCollection();
-                              toast.success(
-                                displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
-                                {
-                                  description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
-                                }
-                              );
-                            } else {
-                              toast.error('Failed to update collection status');
-                            }
-                          } catch (error) {
-                            toast.error('Failed to update collection status');
-                          }
-                        }}
-                      >
-                        {displayCollection?.is_live ? (
-                          <><Pause className="w-3 h-3 mr-1" />Pause</>
-                        ) : (
-                          <><Play className="w-3 h-3 mr-1" />Start</>
-                        )}
-                      </Button>
+                   {/* Owner Action Buttons */}
+                   {isOwner && (
+                     <div className="flex gap-1">
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={() => setShowEditor(!showEditor)}
+                       >
+                         <Settings className="w-3 h-3 mr-1" />
+                         {showEditor ? 'Hide Editor' : 'Edit Collection'}
+                       </Button>
+                       
+                       <Button
+                         variant={displayCollection?.is_live ? "outline" : "default"}
+                         size="sm"
+                         onClick={async () => {
+                           try {
+                             const { data, error } = await supabase.functions.invoke('update-collection', {
+                               body: {
+                                 collection_id: displayCollection?.id,
+                                 updates: { is_live: !displayCollection?.is_live }
+                               }
+                             });
+                             
+                             if (data?.success) {
+                               refreshCollection();
+                               toast.success(
+                                 displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                                 {
+                                   description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                 }
+                               );
+                             } else {
+                               toast.error('Failed to update collection status');
+                             }
+                           } catch (error) {
+                             toast.error('Failed to update collection status');
+                           }
+                         }}
+                       >
+                         {displayCollection?.is_live ? (
+                           <><Pause className="w-3 h-3 mr-1" />Pause</>
+                         ) : (
+                           <><Play className="w-3 h-3 mr-1" />Start</>
+                         )}
+                       </Button>
                       
                       {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
                         <Button 

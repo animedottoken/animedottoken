@@ -61,9 +61,15 @@ export default function Profile() {
   }, []);
 
   // Save scroll position before navigating to collection
-  const handleCollectionClick = (collectionId: string) => {
+  const handleCollectionClick = (collectionId: string, source: string = 'collections', navIds?: string[]) => {
     sessionStorage.setItem('profile-scroll-position', window.scrollY.toString());
-    navigate(`/collection/${collectionId}`);
+    
+    let queryString = `from=${source}`;
+    if (navIds && navIds.length > 0) {
+      queryString += `&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+    }
+    
+    navigate(`/collection/${collectionId}?${queryString}`);
   };
   
   const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
@@ -147,6 +153,8 @@ export default function Profile() {
       );
     }
 
+    const collectionIds = collections.map(c => c.id);
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {collections.map((collection) => (
@@ -154,7 +162,7 @@ export default function Profile() {
             key={collection.id}
             data-testid="collection-card"
             className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-            onClick={() => handleCollectionClick(collection.id)}
+            onClick={() => handleCollectionClick(collection.id, 'collections', collectionIds)}
           >
             <div className="aspect-square relative overflow-hidden group/image">
               <ImageLazyLoad
@@ -195,82 +203,21 @@ export default function Profile() {
                 )}
               </div>
 
-              {/* Overlay Actions - Fixed hover behavior */}
+              {/* Overlay Actions - Simplified to View only */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                <div className="flex flex-wrap items-center justify-center gap-1 px-2 pointer-events-auto">
+                <div className="flex items-center justify-center gap-1 px-2 pointer-events-auto">
                   <Button
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleCollectionClick(collection.id);
+                      handleCollectionClick(collection.id, 'collections', collectionIds);
                     }}
-                    className="bg-white/90 text-black hover:bg-white"
+                    className="bg-white/90 text-black hover:bg-white hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
+                    title="View Collection"
+                    aria-label="View Collection Details"
                   >
                     <Eye className="w-4 h-4" />
                     <span className="ml-1 hidden sm:inline">View</span>
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Scroll to collection editor in detail page
-                      navigate(`/collection/${collection.id}?edit=1#collection-editor`);
-                    }}
-                    className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
-                    title="Edit Collection"
-                    aria-label="Edit Collection"
-                  >
-                    <Edit className="w-4 h-4" />
-                    <span className="ml-1 hidden sm:inline">Edit</span>
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/mint/nft?collection=${collection.id}`);
-                    }}
-                    className="bg-primary/90 text-white hover:bg-primary hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
-                    title="Mint NFT"
-                    aria-label="Mint new NFT in this collection"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="ml-1 hidden sm:inline">Mint</span>
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    disabled={deleting}
-                    data-testid="delete-collection"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setConfirmDialog({
-                        open: true,
-                        title: 'Delete Collection',
-                        description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
-                        onConfirm: async () => {
-                          // CRITICAL: This deletion flow must NEVER cause UI flickering or scroll jumps
-                          // Collections grid must remain mounted throughout the entire process
-                          setConfirmDialog(prev => ({ ...prev, loading: true }));
-                          
-                          const res = await deleteCollection(collection.id, collection.name);
-                          if (res.success) {
-                            // Silent refresh - keeps grid mounted, no loading state
-                            await refreshCollections({ silent: true });
-                          }
-                          setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                        }
-                      });
-                    }}
-                    className="bg-red-500/90 text-white hover:bg-red-500 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 transition-all duration-200"
-                    title="Burn Collection"
-                    aria-label="Burn/Delete this collection permanently"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="ml-1 hidden sm:inline">Burn</span>
                   </Button>
                 </div>
               </div>
@@ -612,7 +559,7 @@ export default function Profile() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {nfts.map((nft) => {
                 const allNFTIds = nfts.map(n => n.id);
-                const queryString = `from=profile&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
+                const queryString = `from=nfts&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
                 
                 return (
                   <NFTCard
@@ -630,36 +577,7 @@ export default function Profile() {
                       description: nft.description,
                     }}
                     navigationQuery={queryString}
-                    overlayActions={[
-                      {
-                        label: 'Edit',
-                        icon: <Edit className="h-4 w-4" />,
-                        onClick: () => setEditDialogNFTId(nft.id)
-                      },
-                      {
-                        label: 'Burn',
-                        icon: <Trash2 className="h-4 w-4" />,
-                        variant: 'destructive' as const,
-                        disabled: burning,
-                        onClick: async () => {
-                          if (!nft.mint_address) {
-                            toast.error('Mint address missing for this NFT');
-                            return;
-                          }
-                          setConfirmDialog({
-                            open: true,
-                            title: 'Burn NFT',
-                            description: `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`,
-                            onConfirm: async () => {
-                              setConfirmDialog(prev => ({ ...prev, loading: true }));
-                              const res = await burnNFT(nft.id, nft.mint_address);
-                              if (res.success) refreshNFTs();
-                              setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                            }
-                          });
-                        }
-                      }
-                    ]}
+                    // Removed overlayActions - Edit/Burn moved to NFT detail page
                   />
                 );
               })}
@@ -697,7 +615,10 @@ export default function Profile() {
                 <Card 
                   key={collection.id}
                   className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-                  onClick={() => handleCollectionClick(collection.id)}
+                  onClick={() => {
+                    const likedCollectionIds = likedCollectionsData.map(c => c.id);
+                    handleCollectionClick(collection.id, 'favorites', likedCollectionIds);
+                  }}
                 >
                   <div className="aspect-square relative overflow-hidden">
                     <ImageLazyLoad
