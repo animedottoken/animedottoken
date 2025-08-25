@@ -89,32 +89,9 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">
-                {currentCollection.supply_mode === 'open' ? '∞' : currentCollection.max_supply?.toLocaleString()}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {currentCollection.supply_mode === 'open' ? 'Open Edition' : 'Max Supply'}
-              </div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{currentCollection.mint_price} SOL</div>
-              <div className="text-sm text-muted-foreground">Price (SOL)</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Image className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{itemsRedeemed}</div>
-              <div className="text-sm text-muted-foreground">Minted</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Settings className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <div className="font-bold">{currentCollection.royalty_percentage}%</div>
-              <div className="text-sm text-muted-foreground">Royalties</div>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Configure your collection settings below. Some fields may be locked after minting begins.
+          </p>
         </CardContent>
       </Card>
 
