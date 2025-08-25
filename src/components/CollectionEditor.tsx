@@ -133,20 +133,20 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
             {/* Legend Section */}
             <div className="mb-6 p-4 bg-muted/50 rounded-lg">
               <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
-              <div className="grid grid-cols-4 gap-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-6 overflow-x-auto">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="onchain">On-Chain</Badge>
                   <span>Stored permanently on blockchain</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="offchain">Off-Chain</Badge>
                   <span>Stored in app database, editable</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="chainlocked">Chain Locked</Badge>
                   <span>Cannot change after first mint</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
                   <Badge variant="locked">Creator Locked</Badge>
                   <span>Locked by you for safety</span>
                 </div>
