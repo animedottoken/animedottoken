@@ -37,11 +37,11 @@ export const StandaloneMintWizard = () => {
     image_file: undefined,
     quantity: 1,
     royalty_percentage: 0,
-    category: '',
+    category: 'Other', // Default to "Other"
     external_links: [],
     attributes: [],
     collection_id: collectionId || undefined,
-    explicit_content: false,
+    explicit_content: false, // Default to "Not explicit"
     list_after_mint: false,
     initial_price: undefined
   });
@@ -60,7 +60,7 @@ export const StandaloneMintWizard = () => {
       setFormData(prev => ({
         ...prev,
         collection_id: selectedCollectionId || undefined,
-        category: prev.category || selectedCollection.category || '',
+        category: prev.category || selectedCollection.category || 'Other',
         royalty_percentage: prev.royalty_percentage || selectedCollection.royalty_percentage || 0,
         initial_price: prev.initial_price || selectedCollection.mint_price || undefined
       }));
@@ -144,7 +144,7 @@ export const StandaloneMintWizard = () => {
       image_file: undefined,
       quantity: 1,
       royalty_percentage: selectedCollection?.royalty_percentage || 0,
-      category: selectedCollection?.category || '',
+      category: selectedCollection?.category || 'Other',
       external_links: [],
       attributes: [],
       collection_id: selectedCollectionId || undefined,
@@ -339,158 +339,186 @@ export const StandaloneMintWizard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="name" className="text-base font-medium">
-                  NFT Name *
-                </Label>
-                <Input
-                  id="name"
-                  placeholder={selectedCollection ? `${selectedCollection.name} #1` : "My Awesome NFT"}
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-                {selectedCollection && (
-                  <p className="text-xs text-muted-foreground">
-                    💡 Leave empty to auto-generate names from collection: {selectedCollection.name} #1, #2, etc.
-                  </p>
-                )}
+            {/* Essential Information */}
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="name" className="text-base font-medium">
+                    NFT Name *
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder={selectedCollection ? `${selectedCollection.name} #1` : "My Awesome NFT"}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                  {selectedCollection && (
+                    <p className="text-xs text-muted-foreground">
+                      💡 Leave empty to auto-generate names from collection: {selectedCollection.name} #1, #2, etc.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="symbol" className="text-base font-medium">
+                    Symbol
+                  </Label>
+                  <Input
+                    id="symbol"
+                    placeholder="NFT"
+                    value={formData.symbol || ''}
+                    onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="symbol" className="text-base font-medium">
-                  Symbol
+                <Label htmlFor="description" className="text-base font-medium">
+                  Description
                 </Label>
-                <Input
-                  id="symbol"
-                  placeholder="NFT"
-                  value={formData.symbol || ''}
-                  onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
+                <Textarea
+                  id="description"
+                  placeholder="Describe your NFT..."
+                  value={formData.description || ''}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
                 />
               </div>
-            </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="description" className="text-base font-medium">
-                Description
-              </Label>
-              <Textarea
-                id="description"
-                placeholder="Describe your NFT..."
-                value={formData.description || ''}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="category" className="text-base font-medium">
-                  Category
-                </Label>
-                <Select
-                  value={formData.category || ''}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={selectedCollection?.category ? `From collection: ${selectedCollection.category}` : "Select category"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Art">Art</SelectItem>
-                    <SelectItem value="Gaming">Gaming</SelectItem>
-                    <SelectItem value="Music">Music</SelectItem>
-                    <SelectItem value="Photography">Photography</SelectItem>
-                    <SelectItem value="Collectibles">Collectibles</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                {selectedCollection?.category && !formData.category && (
-                  <p className="text-xs text-muted-foreground">
-                    💡 Will use collection category: {selectedCollection.category}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="quantity" className="text-base font-medium">
-                  Quantity
-                </Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  value={quantityInput}
-                  onChange={(e) => setQuantityInput(e.target.value)}
-                  onBlur={(e) => {
-                    const val = e.target.value.trim();
-                    if (val === '') {
-                      setFormData({ ...formData, quantity: undefined });
-                      return;
-                    }
-                    const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
-                    setQuantityInput(String(n));
-                    setFormData({ ...formData, quantity: n });
-                  }}
-                />
+              {/* Explicit Content - Prominent and Required */}
+              <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="explicit-content" className="text-base font-medium">
+                        Content Declaration
+                      </Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Declare if your NFT contains explicit or sensitive content
+                    </p>
+                  </div>
+                  <Switch
+                    id="explicit-content"
+                    checked={formData.explicit_content || false}
+                    onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  {(formData.quantity || 1) > 100 
-                    ? selectedCollectionId 
-                      ? "Large quantities will be processed in the background"
-                      : "Large quantities will be processed in batches"
-                    : "Up to 1000 NFTs with automatic numbering (#1, #2, etc.)"
-                  }
+                  {formData.explicit_content ? "⚠️ Marked as explicit/sensitive" : "✅ Safe for all audiences"}
                 </p>
               </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="royalty" className="text-base font-medium">
-                  Royalties (%)
-                </Label>
-                <Input
-                  id="royalty"
-                  type="number"
-                  min="0"
-                  max="50"
-                  step="0.5"
-                  placeholder={selectedCollection?.royalty_percentage ? `Collection default: ${selectedCollection.royalty_percentage}%` : "0"}
-                  value={royaltyInput}
-                  onChange={(e) => setRoyaltyInput(e.target.value)}
-                  onBlur={(e) => {
-                    const raw = e.target.value.trim().replace(',', '.');
-                    if (raw === '') {
-                      const defaultRoyalty = selectedCollection?.royalty_percentage || 0;
-                      setFormData({ ...formData, royalty_percentage: defaultRoyalty });
-                      setRoyaltyInput(String(defaultRoyalty));
-                      return;
-                    }
-                    const r = Math.max(0, Math.min(50, parseFloat(raw)));
-                    const fixed = Number.isNaN(r) ? 0 : r;
-                    setRoyaltyInput(String(fixed));
-                    setFormData({ ...formData, royalty_percentage: fixed });
-                  }}
-                />
-                {selectedCollection?.royalty_percentage && royaltyInput === String(selectedCollection.royalty_percentage) && (
-                  <p className="text-xs text-muted-foreground">
-                    💡 Using collection royalty: {selectedCollection.royalty_percentage}%
-                  </p>
-                )}
-              </div>
             </div>
 
-            {/* Content & Listing Options */}
-            <div className="space-y-6 pt-4 border-t">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="explicit-content"
-                  checked={formData.explicit_content || false}
-                  onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
-                />
-                <Label htmlFor="explicit-content" className="text-base font-medium">
-                  Contains explicit or sensitive content
-                </Label>
-              </div>
+            {/* Advanced Settings - Collapsible */}
+            <div className="space-y-4 pt-6 border-t">
+              <details className="space-y-4">
+                <summary className="cursor-pointer text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  ⚙️ Advanced Settings (Optional)
+                </summary>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pl-4 pt-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="category" className="text-base font-medium">
+                        Category
+                      </Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <Select
+                      value={formData.category || ''}
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Other (default)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Art">Art</SelectItem>
+                        <SelectItem value="Gaming">Gaming</SelectItem>
+                        <SelectItem value="Music">Music</SelectItem>
+                        <SelectItem value="Photography">Photography</SelectItem>
+                        <SelectItem value="Collectibles">Collectibles</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {formData.category ? `Selected: ${formData.category}` : "Defaults to 'Other'"}
+                    </p>
+                  </div>
 
+                  <div className="space-y-3">
+                    <Label htmlFor="quantity" className="text-base font-medium">
+                      Quantity
+                    </Label>
+                    <Input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      max="1000"
+                      value={quantityInput}
+                      onChange={(e) => setQuantityInput(e.target.value)}
+                      onBlur={(e) => {
+                        const val = e.target.value.trim();
+                        if (val === '') {
+                          setFormData({ ...formData, quantity: undefined });
+                          return;
+                        }
+                        const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
+                        setQuantityInput(String(n));
+                        setFormData({ ...formData, quantity: n });
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {(formData.quantity || 1) > 100 
+                        ? selectedCollectionId 
+                          ? "Large quantities will be processed in the background"
+                          : "Large quantities will be processed in batches"
+                        : "Up to 1000 NFTs with automatic numbering (#1, #2, etc.)"
+                      }
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="royalty" className="text-base font-medium">
+                        Royalties (%)
+                      </Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <Input
+                      id="royalty"
+                      type="number"
+                      min="0"
+                      max="50"
+                      step="0.5"
+                      placeholder="0 (default)"
+                      value={royaltyInput}
+                      onChange={(e) => setRoyaltyInput(e.target.value)}
+                      onBlur={(e) => {
+                        const raw = e.target.value.trim().replace(',', '.');
+                        if (raw === '') {
+                          const defaultRoyalty = selectedCollection?.royalty_percentage || 0;
+                          setFormData({ ...formData, royalty_percentage: defaultRoyalty });
+                          setRoyaltyInput(String(defaultRoyalty));
+                          return;
+                        }
+                        const r = Math.max(0, Math.min(50, parseFloat(raw)));
+                        const fixed = Number.isNaN(r) ? 0 : r;
+                        setRoyaltyInput(String(fixed));
+                        setFormData({ ...formData, royalty_percentage: fixed });
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {formData.royalty_percentage ? `${formData.royalty_percentage}% earnings on resales` : "Defaults to 0%"}
+                    </p>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            {/* Listing Options */}
+            <div className="space-y-6 pt-6 border-t">
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -617,7 +645,7 @@ export const StandaloneMintWizard = () => {
                       {(formData.description || selectedCollection?.description) && (
                         <div><strong>Description:</strong> {formData.description || selectedCollection?.description}</div>
                       )}
-                      <div><strong>Category:</strong> {formData.category || selectedCollection?.category || 'Not specified'}</div>
+                      <div><strong>Category:</strong> {formData.category || 'Other'}</div>
                     </div>
                   </div>
 
@@ -626,7 +654,7 @@ export const StandaloneMintWizard = () => {
                     <h4 className="font-medium text-sm text-primary">Minting Details</h4>
                     <div className="space-y-1 text-sm">
                       <div><strong>Quantity:</strong> {formData.quantity || 1} {(formData.quantity || 1) > 1 ? 'NFTs' : 'NFT'}</div>
-                      <div><strong>Creator Royalties:</strong> {formData.royalty_percentage || selectedCollection?.royalty_percentage || 0}%</div>
+                      <div><strong>Creator Royalties:</strong> {formData.royalty_percentage ?? 0}%</div>
                       {selectedCollection && (
                         <div><strong>Collection:</strong> {selectedCollection.name}</div>
                       )}

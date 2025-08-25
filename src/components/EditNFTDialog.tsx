@@ -375,80 +375,94 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             </CardContent>
           </Card>
 
-          {/* Listing Requirements */}
+          {/* Marketplace Requirements */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                Listing Requirements
-                <Badge variant="offchain" className="text-xs">Required for Sale</Badge>
+                Marketplace Requirements
+                <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                These fields are mandatory to list your NFT for sale on the marketplace.
+                These fields have sensible defaults but can be customized if needed.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Label htmlFor="category">Category *</Label>
-                    <Badge variant="destructive" className="text-xs">Required for Listing</Badge>
+              <details className="space-y-4">
+                <summary className="cursor-pointer text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  ⚙️ Advanced Settings (Category & Royalties)
+                </summary>
+                
+                <div className="grid gap-4 pl-4 pt-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Label htmlFor="category">Category</Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <Select
+                      value={formData.category || ''}
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Other (default)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Art">Art</SelectItem>
+                        <SelectItem value="Gaming">Gaming</SelectItem>
+                        <SelectItem value="Music">Music</SelectItem>
+                        <SelectItem value="Photography">Photography</SelectItem>
+                        <SelectItem value="Collectibles">Collectibles</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formData.category ? `Selected: ${formData.category}` : "Will default to 'Other' if not set"}
+                    </p>
                   </div>
-                  <Select
-                    value={formData.category || ''}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Art">Art</SelectItem>
-                      <SelectItem value="Gaming">Gaming</SelectItem>
-                      <SelectItem value="Music">Music</SelectItem>
-                      <SelectItem value="Photography">Photography</SelectItem>
-                      <SelectItem value="Collectibles">Collectibles</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Category helps buyers discover your NFT
-                  </p>
-                </div>
 
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Label htmlFor="royalty">Creator Royalties (%) *</Label>
-                    <Badge variant="destructive" className="text-xs">Required for Listing</Badge>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Label htmlFor="royalty">Creator Royalties (%)</Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <Input
+                      id="royalty"
+                      type="number"
+                      min="0"
+                      max="50"
+                      step="0.5"
+                      value={formData.royalty_percentage}
+                      onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
+                      placeholder="0 (default)"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formData.royalty_percentage ? `${formData.royalty_percentage}% earnings on secondary sales` : "Will default to 0% if not set"}
+                    </p>
                   </div>
-                  <Input
-                    id="royalty"
-                    type="number"
-                    min="0"
-                    max="50"
-                    step="0.5"
-                    value={formData.royalty_percentage}
-                    onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
-                    placeholder="0"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Percentage you earn on secondary sales (0-50%)
-                  </p>
                 </div>
+              </details>
 
-                <div className="flex items-center space-x-2">
+              {/* Explicit Content - Always Visible */}
+              <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="explicit-content" className="text-base font-medium">
+                        Content Declaration
+                      </Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Declare if your NFT contains explicit or sensitive content
+                    </p>
+                  </div>
                   <Switch
                     id="explicit-content"
                     checked={formData.explicit_content || false}
                     onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
                   />
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="explicit-content" className="text-base font-medium">
-                      Contains explicit or sensitive content
-                    </Label>
-                    <Badge variant="destructive" className="text-xs">Required Declaration</Badge>
-                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground ml-6">
-                  Check this box if your NFT contains mature, sensitive, or explicit content
+                <p className="text-xs text-muted-foreground">
+                  {formData.explicit_content ? "⚠️ Marked as explicit/sensitive content" : "✅ Safe for all audiences (default)"}
                 </p>
               </div>
             </CardContent>
