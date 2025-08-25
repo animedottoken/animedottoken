@@ -505,7 +505,7 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                       e.stopPropagation();
                       toggleFieldLock(fieldName);
                     }}
-                    className={lockedFields.includes(fieldName) ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}
+                    className={lockedFields.includes(fieldName) ? "bg-orange-500 hover:bg-orange-600" : "bg-green-500 hover:bg-green-600"}
                     disabled={isUpdating}
                   >
                     {lockedFields.includes(fieldName) ? (
