@@ -135,6 +135,7 @@ export default function Profile() {
         {collections.map((collection) => (
           <Card 
             key={collection.id}
+            data-testid="collection-card"
             className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
             onClick={() => handleCollectionClick(collection.id)}
           >
@@ -225,6 +226,7 @@ export default function Profile() {
                     size="sm"
                     variant="destructive"
                     disabled={deleting}
+                    data-testid="delete-collection"
                     onClick={(e) => {
                       e.stopPropagation();
                       setConfirmDialog({
@@ -238,17 +240,8 @@ export default function Profile() {
                           
                           const res = await deleteCollection(collection.id, collection.name);
                           if (res.success) {
-                            await refreshCollections();
-                            
-                            // Restore scroll position after a brief delay to ensure DOM is ready
-                            const savedPosition = sessionStorage.getItem('deletion-scroll-position');
-                            if (savedPosition) {
-                              requestAnimationFrame(() => {
-                                console.log('🔄 Restoring scroll position after deletion:', savedPosition);
-                                window.scrollTo(0, parseInt(savedPosition));
-                                sessionStorage.removeItem('deletion-scroll-position');
-                              });
-                            }
+                            // Silent refresh - keeps grid mounted, no loading state
+                            await refreshCollections({ silent: true });
                           }
                           setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                         }
@@ -582,10 +575,13 @@ export default function Profile() {
         </div>
 
         <TabsContent value="collections" className="mt-6">
-          {loading ? (
+          {/* CRITICAL: Only show loading when no collections exist - prevents grid from unmounting */}
+          {loading && collections.length === 0 ? (
             <p>Loading collections...</p>
           ) : (
-            renderCollectionsGrid()
+            <div data-testid="collection-grid">
+              {renderCollectionsGrid()}
+            </div>
           )}
         </TabsContent>
 
@@ -899,6 +895,7 @@ export default function Profile() {
         
         {/* Confirm Dialog */}
         <ConfirmDialog
+          data-testid="confirm-dialog"
           open={confirmDialog.open}
           onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
           title={confirmDialog.title}

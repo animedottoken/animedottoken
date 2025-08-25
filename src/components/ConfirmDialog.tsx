@@ -31,10 +31,11 @@ export function ConfirmDialog({
   variant = "default",
   onConfirm,
   loading = false,
-}: ConfirmDialogProps) {
+  "data-testid": dataTestId,
+}: ConfirmDialogProps & { "data-testid"?: string }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent data-testid={dataTestId}>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

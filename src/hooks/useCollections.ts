@@ -15,10 +15,10 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
   const { publicKey } = useSolanaWallet();
 
   // Load user's collections
-  const loadCollections = useCallback(async () => {
+  const loadCollections = useCallback(async (silent: boolean = false) => {
     if (!publicKey) return;
 
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const { data, error } = await supabase
         .from('collections')
@@ -41,7 +41,7 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
         toast.error('Failed to load collections');
       }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [publicKey]);
 
@@ -239,6 +239,6 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
     createCollection,
     updateCollectionStatus,
     updateCollection,
-    refreshCollections: loadCollections
+    refreshCollections: (options?: { silent?: boolean }) => loadCollections(options?.silent)
   };
 };

@@ -25,7 +25,7 @@ describe('Profile Collection Deletion Stability', () => {
       cy.get('[data-testid="confirm-dialog"] button').contains('Delete').click();
       
       // CRITICAL: Verify UI never disappears and scroll doesn't jump
-      cy.get('[data-testid="collection-grid"]').should('remain.visible');
+      cy.get('[data-testid="collection-grid"]').should('be.visible');
       cy.window().then((newWin) => {
         expect(Math.abs(newWin.scrollY - initialScrollY)).to.be.lessThan(10);
       });
