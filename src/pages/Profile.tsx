@@ -277,13 +277,11 @@ export default function Profile() {
                 </div>
               </div>
               
-              {/* Price positioned bottom right */}
+              {/* Price positioned bottom right - Debug version */}
               <div className="mt-auto self-end">
-                {collection.mint_price > 0 && (
-                  <span className="font-medium text-sm">
-                    <span className="text-primary">Price</span> {collection.mint_price} SOL
-                  </span>
-                )}
+                <span className="font-medium text-sm">
+                  <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -733,13 +731,11 @@ export default function Profile() {
                       </div>
                     </div>
                     
-                    {/* Price positioned bottom right */}
+                    {/* Price positioned bottom right - Debug version */}
                     <div className="mt-auto self-end mb-2">
-                      {collection.mint_price > 0 && (
-                        <span className="font-medium text-sm">
-                          <span className="text-primary">Price</span> {collection.mint_price} SOL
-                        </span>
-                      )}
+                      <span className="font-medium text-sm">
+                        <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
+                      </span>
                     </div>
                     
                     <p className="text-xs text-muted-foreground/70">
