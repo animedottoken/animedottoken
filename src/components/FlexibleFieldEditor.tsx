@@ -448,20 +448,6 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              
-              {/* Orange Unlock text for creator-locked fields */}
-              {isOwner && lockedFields.includes(fieldName) && badgeInfo?.variant !== 'chainlocked' && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFieldLock(fieldName);
-                  }}
-                  className="text-orange-500 hover:text-orange-600 font-medium cursor-pointer"
-                  disabled={isUpdating}
-                >
-                  Unlock
-                </button>
-              )}
             </div>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
