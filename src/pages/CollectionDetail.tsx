@@ -278,16 +278,11 @@ export default function CollectionDetail() {
                   )}
                   
                   {/* Avatar Edit Button - Profile Style */}
-                  {isOwner && (
+                  {isOwner && ((displayCollection?.items_redeemed || 0) === 0) && (
                     <div className="absolute -bottom-1 -right-1">
-                       <ProfileStyleEditButton
+                      <ProfileStyleEditButton
                         onClick={() => setShowAvatarDialog(true)}
-                        disabled={(displayCollection?.items_redeemed || 0) > 0}
-                        tooltipContent={
-                          (displayCollection?.items_redeemed || 0) > 0 
-                            ? "Avatar locked after minting" 
-                            : "Change avatar (free until minted)"
-                        }
+                        tooltipContent="Change avatar (free until minted)"
                         size="sm"
                       />
                     </div>
