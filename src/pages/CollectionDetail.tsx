@@ -635,16 +635,25 @@ export default function CollectionDetail() {
                       }}
                     >
                       <CardContent className="p-0">
-                        <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
-                          {nft.image_url ? (
-                            <img 
-                              src={nft.image_url} 
-                              alt={nft.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <ImageIcon className="w-16 h-16 text-muted-foreground" />
-                          )}
+                        <div className="relative">
+                          <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+                            {nft.image_url ? (
+                              <img 
+                                src={nft.image_url} 
+                                alt={nft.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="w-16 h-16 text-muted-foreground" />
+                            )}
+                          </div>
+                          {/* Hover overlay with View CTA */}
+                          <div className="pointer-events-none absolute inset-0 rounded-t-lg bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="flex items-center gap-2 text-white text-sm font-medium">
+                              <Eye className="w-4 h-4" />
+                              View
+                            </div>
+                          </div>
                         </div>
                         <div className="p-4">
                           <div className="mb-2">
@@ -653,6 +662,34 @@ export default function CollectionDetail() {
                               Owner: {truncateAddress(nft.owner_address)}
                             </p>
                           </div>
+
+                          {/* Stats row: price, supply, minted, royalties */}
+                          <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Coins className="w-3 h-3" />
+                              <span>Price</span>
+                              <span className="font-medium text-foreground">
+                                {displayCollection?.enable_primary_sales ? (displayCollection?.mint_price ?? '—') : '—'}{displayCollection?.enable_primary_sales && displayCollection?.mint_price !== null && displayCollection?.mint_price !== undefined ? ' SOL' : ''}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span>Supply</span>
+                              <span className="font-medium text-foreground">
+                                {displayCollection?.supply_mode === 'open' ? '∞' : (displayCollection?.max_supply ?? '—')}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Users className="w-3 h-3" />
+                              <span>Minted</span>
+                              <span className="font-medium text-foreground">{mints.length}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Zap className="w-3 h-3" />
+                              <span>Royalties</span>
+                              <span className="font-medium text-foreground">{displayCollection?.royalty_percentage ?? '—'}{displayCollection?.royalty_percentage != null ? '%' : ''}</span>
+                            </div>
+                          </div>
+
                           <div className="flex items-center justify-between">
                             <div className="text-xs text-muted-foreground">
                               Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
@@ -669,7 +706,6 @@ export default function CollectionDetail() {
                                     description: `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`,
                                     onConfirm: async () => {
                                       setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                      
                                       try {
                                         const { data, error } = await supabase.functions.invoke('burn-nft', {
                                           body: {
@@ -677,10 +713,8 @@ export default function CollectionDetail() {
                                             wallet_address: publicKey
                                           }
                                         });
-                                        
                                         if (data?.success) {
                                           toast.success('NFT burned successfully');
-                                          // Refresh the page to update the mints list
                                           window.location.reload();
                                         } else {
                                           toast.error(data?.error || 'Failed to burn NFT');
@@ -694,7 +728,7 @@ export default function CollectionDetail() {
                                     }
                                   });
                                 }}
-                                className="text-destructive hover:text-destructive"
+                                className="text-destructive hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                               >
                                 <Flame className="w-3 h-3" />
                               </Button>
