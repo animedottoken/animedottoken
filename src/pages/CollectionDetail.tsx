@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -32,7 +33,6 @@ import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeleteCollection } from "@/hooks/useDeleteCollection";
-import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -63,6 +63,21 @@ export default function CollectionDetail() {
   
   // Navigation context for moving between collections
   const navigation = useNavigationContext(collectionId!, 'collection');
+
+  // Auto-scroll to editor when ?edit=1 is present
+  useEffect(() => {
+    const wantsEdit = searchParams.get('edit');
+    if (!wantsEdit || !collection) return;
+
+    if (connected && publicKey === collection.creator_address) {
+      const el = document.getElementById('collection-editor');
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    } else {
+      toast.error('You must be the collection owner to edit');
+    }
+  }, [collection, connected, publicKey, searchParams]);
 
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version

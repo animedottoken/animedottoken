@@ -199,7 +199,7 @@ export default function Profile() {
                     onClick={(e) => {
                       e.stopPropagation();
                       // Scroll to collection editor in detail page
-                      navigate(`/collection/${collection.id}#collection-editor`);
+                      navigate(`/collection/${collection.id}?edit=1#collection-editor`);
                     }}
                     className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
                     title="Edit Collection"
