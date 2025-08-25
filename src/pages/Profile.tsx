@@ -135,11 +135,13 @@ export default function Profile() {
                   e.stopPropagation();
                   toggleLike(collection.id);
                 }}
-                className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
+                className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                   isLiked(collection.id)
-                    ? 'bg-red-500 text-white'
-                    : 'bg-black/50 text-white hover:bg-black/70'
+                    ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
+                    : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
                 }`}
+                title={isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
+                aria-label={isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
               >
                 <Heart className={`w-4 h-4 ${isLiked(collection.id) ? 'fill-current' : ''}`} />
               </button>
@@ -660,7 +662,9 @@ export default function Profile() {
                         e.stopPropagation();
                         toggleLike(collection.id);
                       }}
-                      className="absolute top-2 right-2 p-2 rounded-full transition-all duration-200 bg-red-500 text-white hover:bg-red-600"
+                      className="absolute top-2 right-2 p-2 rounded-full transition-all duration-200 bg-red-500 text-white hover:bg-red-600 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2"
+                      title="Unlike Collection"
+                      aria-label="Unlike this collection"
                     >
                       <Heart className="w-4 h-4 fill-current" />
                     </button>
