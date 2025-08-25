@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 
 interface FormData {
@@ -43,6 +44,8 @@ interface CollectionReviewStepProps {
     mint_end_at_error?: string;
   };
   isMinting: boolean;
+  mintNow: boolean;
+  setMintNow: (value: boolean) => void;
   onBack: () => void;
   onSubmit: () => void;
 }
@@ -50,6 +53,8 @@ interface CollectionReviewStepProps {
 export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
   formData,
   isMinting,
+  mintNow,
+  setMintNow,
   onBack,
   onSubmit
 }) => {
@@ -119,6 +124,22 @@ export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
           </div>
         )}
 
+        {/* Mint Toggle */}
+        <div className="bg-muted/20 p-4 rounded-lg border">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Mint on-chain now</div>
+              <div className="text-sm text-muted-foreground">
+                {mintNow ? 'Collection will be minted on-chain immediately' : 'Collection will be created off-chain only'}
+              </div>
+            </div>
+            <Switch
+              checked={mintNow}
+              onCheckedChange={setMintNow}
+            />
+          </div>
+        </div>
+
         {/* Action Buttons - Mobile Optimized */}
         <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
           <Button variant="outline" onClick={onBack} className="w-full sm:w-auto">
@@ -130,7 +151,7 @@ export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
             disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
             className="w-full sm:w-auto"
           >
-            {isMinting ? 'Creating & Minting...' : 'Create Collection'}
+            {isMinting ? (mintNow ? 'Creating & Minting...' : 'Creating...') : (mintNow ? 'Create + Mint' : 'Create Off-Chain')}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

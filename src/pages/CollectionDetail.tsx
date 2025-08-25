@@ -25,7 +25,8 @@ import {
   Trash2,
   Flame,
   Play,
-  Pause
+  Pause,
+  Zap
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
@@ -247,10 +248,14 @@ export default function CollectionDetail() {
                     
                     {/* Status Badges */}
                     <div className="flex items-center gap-2">
-                      {/* On-chain status - show only if collection is minted */}
-                      {(displayCollection?.collection_mint_address || displayCollection?.verified) && (
-                        <Badge variant="secondary" className="bg-green-500 text-white text-xs">
-                          On-Chain
+                      {/* On-chain vs Off-chain status */}
+                      {(displayCollection?.collection_mint_address || displayCollection?.verified) ? (
+                        <Badge variant="default" className="bg-green-500 text-white text-xs">
+                          On-chain
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Off-chain
                         </Badge>
                       )}
                       
@@ -318,6 +323,35 @@ export default function CollectionDetail() {
                           <><Play className="w-3 h-3 mr-1" />Start</>
                         )}
                       </Button>
+                      
+                      {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            if (!publicKey) return;
+                            try {
+                              const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+                                body: {
+                                  collectionId: displayCollection?.id,
+                                  creatorAddress: publicKey
+                                }
+                              });
+                              if (mintError || !mintResult?.success) {
+                                toast.error('Failed to mint collection on-chain');
+                              } else {
+                                toast.success('Collection minted successfully on-chain! 🎉');
+                                refreshCollection();
+                              }
+                            } catch (error) {
+                              toast.error('Failed to mint collection on-chain');
+                            }
+                          }}
+                        >
+                          <Zap className="w-3 h-3 mr-1" />
+                          Mint On-Chain
+                        </Button>
+                      )}
                       
                       <Button
                         variant="destructive"

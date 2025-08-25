@@ -42,6 +42,7 @@ export const UnifiedMintInterface = () => {
   const [step3Collection, setStep3Collection] = useState(null);
   const [isMinting, setIsMinting] = useState(false);
   const [mintingError, setMintingError] = useState(null);
+  const [mintNow, setMintNow] = useState(true);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey } = useSolanaWallet();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -200,25 +201,29 @@ export const UnifiedMintInterface = () => {
       });
 
       if (result.success && result.collection) {
-        // Now mint the Collection NFT on-chain
-        toast.success('Collection created! Now minting on-chain...');
-        
-        const { supabase } = await import('@/integrations/supabase/client');
-        const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
-          body: {
-            collectionId: result.collection.id,
-            creatorAddress: publicKey
-          }
-        });
+        if (mintNow) {
+          // Mint the Collection NFT on-chain
+          toast.success('Collection created! Now minting on-chain...');
+          
+          const { supabase } = await import('@/integrations/supabase/client');
+          const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+            body: {
+              collectionId: result.collection.id,
+              creatorAddress: publicKey
+            }
+          });
 
-        if (mintError || !mintResult?.success) {
-          console.error('Minting error:', mintError || mintResult);
-          setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
-          toast.error('Collection created but failed to mint on-chain');
+          if (mintError || !mintResult?.success) {
+            console.error('Minting error:', mintError || mintResult);
+            setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
+            toast.error('Collection created but failed to mint on-chain');
+          } else {
+            toast.success('Collection minted successfully on-chain! 🎉');
+            result.collection.collection_mint_address = mintResult.collectionMintAddress;
+            result.collection.verified = true;
+          }
         } else {
-          toast.success('Collection minted successfully on-chain! 🎉');
-          result.collection.collection_mint_address = mintResult.collectionMintAddress;
-          result.collection.verified = true;
+          toast.success('Collection created off-chain! You can mint it later.');
         }
 
         setStep3Collection(result.collection);
@@ -308,6 +313,8 @@ export const UnifiedMintInterface = () => {
         <CollectionReviewStep
           formData={formData}
           isMinting={isMinting}
+          mintNow={mintNow}
+          setMintNow={setMintNow}
           onBack={() => setActiveStep(2)}
           onSubmit={handleSubmit}
         />
