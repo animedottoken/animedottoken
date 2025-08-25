@@ -194,19 +194,6 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Data Storage Info Banner */}
-          <div className="p-4 bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-950/30 dark:to-emerald-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                <span className="text-blue-700 dark:text-blue-300">Permanent blockchain data (name, properties)</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
-                <span className="text-emerald-700 dark:text-emerald-300">App database data (price, listing)</span>
-              </div>
-            </div>
-          </div>
 
           {/* NFT Image Preview */}
           <div className="flex justify-center">
@@ -475,27 +462,6 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             </CardContent>
           </Card>
 
-          {/* Legend */}
-          <Card className="bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-950/30 dark:to-emerald-950/30 border-blue-200 dark:border-blue-800">
-            <CardContent className="pt-6">
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Fields marked with * are required</span>
-                  <div className="flex items-center gap-1">
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                    <span className="text-blue-700 dark:text-blue-300">Permanent</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">💡 On-chain changes are permanent and visible everywhere</span>
-                  <div className="flex items-center gap-1">
-                    <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
-                    <span className="text-emerald-700 dark:text-emerald-300">Flexible</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Action Buttons */}
           <div className="flex gap-2 justify-end pt-4 border-t">
