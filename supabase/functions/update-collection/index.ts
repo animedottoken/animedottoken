@@ -28,6 +28,8 @@ interface UpdateCollectionRequest {
     external_links?: any[];
     enable_primary_sales?: boolean;
     attributes?: any[];
+    is_live?: boolean; // allow toggling live state
+    is_active?: boolean; // optional
   };
 }
 
@@ -146,6 +148,14 @@ serve(async (req) => {
       updateData.attributes = updates.attributes
     }
 
+    // Live/Active status toggles (not lockable)
+    if (updates.is_live !== undefined) {
+      updateData.is_live = updates.is_live
+    }
+    if (updates.is_active !== undefined) {
+      updateData.is_active = updates.is_active
+    }
+
     // Supply mode can be changed if not locked and no NFTs minted
     if (updates.supply_mode !== undefined && !lockedFields.includes('supply_mode') && itemsRedeemed === 0) {
       updateData.supply_mode = updates.supply_mode
@@ -185,6 +195,14 @@ serve(async (req) => {
       const currentLocked = new Set(lockedFields);
       autoLockFields.forEach(field => currentLocked.add(field));
       updateData.locked_fields = Array.from(currentLocked);
+    }
+
+    // If no valid fields to update, return a clear error
+    if (Object.keys(updateData).length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'No valid fields to update', details: 'Check locks and allowed fields' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Update collection
