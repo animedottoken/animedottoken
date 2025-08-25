@@ -286,7 +286,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                    <p>Permanent blockchain data</p>
                   </TooltipContent>
                 </Tooltip>
               </CardTitle>
@@ -307,7 +307,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                         <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                        <p>Permanent blockchain data</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -334,7 +334,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                         <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                        <p>Permanent blockchain data</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -355,7 +355,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                         <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                        <p>Permanent blockchain data</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -388,7 +388,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Stored in our app database - can be changed anytime</p>
+                    <p>App database - can change anytime</p>
                   </TooltipContent>
                 </Tooltip>
               </CardTitle>
@@ -486,7 +486,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Stored permanently on the blockchain - visible in all wallets and marketplaces</p>
+                    <p>Permanent blockchain data</p>
                   </TooltipContent>
                 </Tooltip>
               </CardTitle>
