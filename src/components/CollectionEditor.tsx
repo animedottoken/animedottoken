@@ -133,22 +133,22 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
             {/* Legend Section */}
             <div className="mb-6 p-4 bg-muted/50 rounded-lg">
               <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-                <div className="flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="onchain">On-Chain</Badge>
-                  <span className="font-normal">Stored permanently on blockchain</span>
+                  <span>Stored permanently on blockchain</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="offchain">Off-Chain</Badge>
-                  <span className="font-normal">Stored in app database, editable</span>
+                  <span>Stored in app database, editable</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="chainlocked">Chain Locked</Badge>
-                  <span className="font-normal">Cannot change after first mint</span>
+                  <span>Cannot change after first mint</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="locked">Creator Locked</Badge>
-                  <span className="font-normal">Locked by you for safety</span>
+                  <span>Locked by you for safety</span>
                 </div>
               </div>
             </div>
