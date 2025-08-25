@@ -29,12 +29,19 @@ interface NFTCardProps {
     collection_id?: string;
     description?: string;
     attributes?: any;
+    collections?: {
+      name: string;
+      symbol?: string;
+    };
   };
   navigationQuery?: string;
   overlayActions?: OverlayAction[];
+  showOwnerInfo?: boolean;
+  verified?: boolean;
+  mintedProgress?: string;
 }
 
-export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) => {
+export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress }: NFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const navigate = useNavigate();
   const [ownerNickname, setOwnerNickname] = useState<string>('');
@@ -149,21 +156,35 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
       
       <CardContent className="p-4">
         <div className="flex-1">
-          <h3 className="font-semibold truncate mb-1">{nft.name}</h3>
-          
-          {/* Owner info */}
-          <Link 
-            to={`/creator/${nft.owner_address}`}
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
-          >
-            <span>
-              {ownerNickname || truncateAddress(nft.owner_address)}
-            </span>
-            {ownerVerified && (
-              <CheckCircle className="h-3 w-3 text-primary" />
+          <div className="flex items-center gap-1 mb-1">
+            <h3 className="font-semibold truncate">{nft.name}</h3>
+            {verified && (
+              <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
             )}
-          </Link>
+          </div>
+          
+          {showOwnerInfo ? (
+            /* Owner info */
+            <Link 
+              to={`/creator/${nft.owner_address}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
+            >
+              <span>
+                {ownerNickname || truncateAddress(nft.owner_address)}
+              </span>
+              {ownerVerified && (
+                <CheckCircle className="h-3 w-3 text-primary" />
+              )}
+            </Link>
+          ) : (
+            /* Minted progress info */
+            mintedProgress && (
+              <div className="text-sm text-muted-foreground mb-2">
+                {mintedProgress}
+              </div>
+            )
+          )}
         </div>
         
         {/* Price positioned bottom right */}

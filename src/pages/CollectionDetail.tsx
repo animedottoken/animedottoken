@@ -588,9 +588,14 @@ export default function CollectionDetail() {
           {/* Minted NFTs Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="w-5 h-5" />
-                Minted NFTs ({mints.length})
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5" />
+                  Minted NFTs ({mints.length})
+                </div>
+                <div className="text-sm font-normal text-muted-foreground">
+                  {mints.length}/{displayCollection?.max_supply || '∞'} minted
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -628,7 +633,10 @@ export default function CollectionDetail() {
                      <NFTCard
                        key={nft.id}
                        nft={nft}
-                       navigationQuery={searchParams.toString()}
+                       navigationQuery={`from=collection&collectionId=${collectionId}&${searchParams.toString()}`}
+                       showOwnerInfo={false}
+                       verified={displayCollection?.verified}
+                       mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
                      />
                   ))}
                 </div>
