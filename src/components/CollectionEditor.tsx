@@ -30,8 +30,6 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
-  // State to control editing mode
-  const [isEditing, setIsEditing] = useState(startInEditMode);
   
   // Always use the passed collection data for consistency
   // The parent component handles data refreshing
@@ -109,35 +107,20 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
               Collection Details
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? (
-                  <><ChevronUp className="w-3 h-3 mr-1" />Settings</>
-                ) : (
-                  <><ChevronDown className="w-3 h-3 mr-1" />Settings</>
-                )}
-              </Button>
+              <Settings className="w-4 h-4" />
             </div>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {isEditing 
-              ? 'Edit your collection settings. Some fields may be locked based on minting status.'
-              : 'Collection information and settings. Click Edit to modify.'
-            }
+            Collection information and settings. Click "Settings" to modify.
           </p>
         </CardHeader>
-        {isEditing && (
-          <CardContent>
-            <FlexibleFieldEditor
-              collection={currentCollection}
-              onUpdate={handleUpdate}
-              isOwner={isOwner}
-            />
-          </CardContent>
-        )}
+        <CardContent>
+          <FlexibleFieldEditor
+            collection={currentCollection}
+            onUpdate={handleUpdate}
+            isOwner={isOwner}
+          />
+        </CardContent>
       </Card>
 
     </div>

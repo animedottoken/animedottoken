@@ -64,8 +64,6 @@ export default function CollectionDetail() {
   // Create merged data for editor with unmasked creator_address
   const editorCollection = ownedCollection && collection ? { ...collection, creator_address: ownedCollection.creator_address, treasury_wallet: ownedCollection.treasury_wallet } : collection;
   
-  // Editor visibility state
-  const [showEditor, setShowEditor] = useState(false);
   
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -87,7 +85,6 @@ export default function CollectionDetail() {
   useEffect(() => {
     const wantsEdit = searchParams.get('edit');
     if (wantsEdit && displayCollection && isOwner) {
-      setShowEditor(true);
       setTimeout(() => {
         const el = document.getElementById('collection-editor');
         if (el) {
@@ -286,17 +283,9 @@ export default function CollectionDetail() {
                     </div>
                   </div>
                   
-                   {/* Owner Action Buttons */}
+                    {/* Owner Action Buttons */}
                    {isOwner && (
                      <div className="flex gap-1">
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => setShowEditor(!showEditor)}
-                       >
-                         <Settings className="w-3 h-3 mr-1" />
-                         {showEditor ? 'Hide Editor' : 'Edit Collection'}
-                       </Button>
                        
                        <Button
                          variant={displayCollection?.is_live ? "outline" : "default"}
@@ -489,8 +478,8 @@ export default function CollectionDetail() {
             </CardContent>
           </Card>
 
-          {/* Collection Editor - Only show for collection owner and when showEditor is true */}
-          {isOwner && editorCollection && showEditor && (
+          {/* Collection Editor - Always show for collection owner */}
+          {isOwner && editorCollection && (
             <div id="collection-editor" className="mb-8">
             <CollectionEditor 
               collection={editorCollection} 
@@ -498,7 +487,6 @@ export default function CollectionDetail() {
               onRefreshCollection={refreshCollection}
               startInEditMode={searchParams.get('edit') === '1'}
               onClose={() => {
-                setShowEditor(false);
                 // Remove edit parameter from URL
                 const newSearchParams = new URLSearchParams(searchParams);
                 newSearchParams.delete('edit');
