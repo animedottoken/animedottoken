@@ -84,10 +84,9 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
           ),
         }
       }));
-      // Also trigger a debounced refresh to sync with database
-      debouncedRefresh();
+      // Let realtime subscriptions handle authoritative updates - no immediate refresh
     }
-  }, [addressesKey, debouncedRefresh]);
+  }, [addressesKey]);
 
   useEffect(() => {
     loadCreatorStats();
@@ -95,6 +94,14 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     // Listen for cross-page creator stats updates
     const handleStatsUpdate = (event: CustomEvent) => handleCreatorStatsUpdate(event);
     window.addEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+
+    // Refresh on tab visibility change to sync with database
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        debouncedRefresh();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Set up filtered real-time subscription for creator stats changes
     const channel = supabase
@@ -148,6 +155,7 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
 
     return () => {
       window.removeEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       supabase.removeChannel(channel);
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
