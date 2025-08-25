@@ -17,11 +17,14 @@ export const useLikedNFTs = () => {
   const [loading, setLoading] = useState(false);
   const { publicKey } = useSolanaWallet();
 
-  const fetchLikedNFTs = async () => {
+  const fetchLikedNFTs = async (preserveScrollPosition = false) => {
     if (!publicKey) {
       setLikedNFTs([]);
       return;
     }
+
+    // Save scroll position if requested
+    const scrollY = preserveScrollPosition ? window.scrollY : 0;
 
     setLoading(true);
     try {
@@ -59,6 +62,11 @@ export const useLikedNFTs = () => {
         })) || [];
 
       setLikedNFTs(formattedData);
+
+      // Restore scroll position if it was saved
+      if (preserveScrollPosition && scrollY > 0) {
+        setTimeout(() => window.scrollTo(0, scrollY), 0);
+      }
     } catch (error) {
       console.error('Error fetching liked NFTs:', error);
     } finally {
@@ -83,7 +91,7 @@ export const useLikedNFTs = () => {
           filter: `user_wallet=eq.${publicKey}`
         },
         () => {
-          fetchLikedNFTs();
+          fetchLikedNFTs(true); // Preserve scroll position on real-time updates
         }
       )
       .subscribe();
