@@ -1,14 +1,17 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { Info, Coins } from 'lucide-react';
 
 interface CollectionBannerDialogProps {
   open: boolean;
@@ -28,14 +31,33 @@ export const CollectionBannerDialog = ({
   isMinted = false
 }: CollectionBannerDialogProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const [txSignature, setTxSignature] = useState('');
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   
   const requiredUSDT = 2;
   const { animeAmount: requiredANIME, animePrice, loading: priceLoading } = useAnimePricing(requiredUSDT);
   const { publicKey } = useSolanaWallet();
 
-  const handleSave = async () => {
+  // Set current banner as preview when dialog opens
+  useEffect(() => {
+    if (open && currentUrl && !selectedFile) {
+      setPreviewUrl(currentUrl);
+    }
+  }, [open, currentUrl, selectedFile]);
+
+  const handleFileSelect = (file: File | null) => {
+    setSelectedFile(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(currentUrl || '');
+    }
+  };
+
+  const handleConfirm = async () => {
     if (!selectedFile) {
       toast.error('Please select an image');
       return;
@@ -99,6 +121,10 @@ export const CollectionBannerDialog = ({
       toast.success('Banner updated successfully');
       onSaved();
       onOpenChange(false);
+      setSelectedFile(null);
+      setPreviewUrl('');
+      setTxSignature('');
+      setPaymentConfirmed(false);
     } catch (error) {
       console.error('Error updating banner:', error);
       toast.error('Failed to update banner');
@@ -107,77 +133,145 @@ export const CollectionBannerDialog = ({
     }
   };
 
-  const handleClose = () => {
-    setSelectedFile(null);
-    setTxSignature('');
-    onOpenChange(false);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+    <Dialog open={open} onOpenChange={(o) => { 
+      if (!uploading) {
+        onOpenChange(o);
+        if (!o) {
+          setSelectedFile(null);
+          setPreviewUrl('');
+          setTxSignature('');
+          setPaymentConfirmed(false);
+        }
+      }
+    }}>
+      <DialogContent className="sm:max-w-[720px] p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-3">
           <DialogTitle>Change Collection Banner</DialogTitle>
-          <DialogDescription>
-            Upload a new banner image for your collection. This will be displayed at the top of your collection page.
-            {isMinted && (
-              <span className="block mt-2 text-amber-600 dark:text-amber-400">
-                ⚠️ Collection has minted NFTs. Banner changes now require a payment of 2 USDT in ANIME tokens.
-              </span>
-            )}
-          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
-          <div>
-            <FileUpload
-              onFileSelect={setSelectedFile}
-              previewUrl={currentUrl}
-              currentFile={selectedFile}
-              placeholder="Click to upload banner"
-              aspectRatio={21/9}
-              maxSizeText="Maximum file size: 10MB"
-            />
-          </div>
-
-          {isMinted && (
-            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Payment Required:</span>
-                <div className="flex gap-2">
-                  <Badge variant="outline">2 USDT</Badge>
-                  <Badge variant="outline">
-                    {priceLoading ? 'Loading...' : `${requiredANIME.toFixed(0)} ANIME`}
-                  </Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="txSignature">Payment Transaction Signature</Label>
-                <Input
-                  id="txSignature"
-                  value={txSignature}
-                  onChange={(e) => setTxSignature(e.target.value)}
-                  placeholder="Enter Solana transaction signature..."
-                  className="font-mono text-xs"
+        <div className="px-6 pb-4">
+          <div className="space-y-4">
+            {/* Single Banner Preview/Upload Area */}
+            <div>
+              <h3 className="text-sm font-medium mb-2">Banner Preview</h3>
+              <AspectRatio ratio={21/9} className="bg-muted rounded-lg overflow-hidden border relative group">
+                <img 
+                  src={previewUrl || currentUrl || '/placeholder.svg'} 
+                  alt="Banner preview" 
+                  className="w-full h-full object-cover"
                 />
-              </div>
+                
+                {/* Upload overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <FileUpload
+                    onFileSelect={handleFileSelect}
+                    accept="image/*"
+                    currentFile={selectedFile}
+                    previewUrl={previewUrl}
+                    placeholder=""
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  />
+                  <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                      Click to change banner
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current file indicator */}
+                {selectedFile && (
+                  <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                    New image selected
+                  </div>
+                )}
+              </AspectRatio>
               
-              <p className="text-xs text-muted-foreground">
-                Send {requiredANIME.toFixed(0)} ANIME tokens (worth ~2 USDT) to the platform wallet and enter the transaction signature above.
-              </p>
+              {/* File info */}
+              {selectedFile && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Guidelines */}
+            <Alert className="bg-blue-50 border-blue-200 text-blue-700">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Recommended:</strong> 1200x300px (4:1 ratio) for best quality. This banner will be visible on your collection page.
+              </AlertDescription>
+            </Alert>
+
+            {/* Minted collection warning */}
+            {isMinted && (
+              <Alert className="bg-amber-50 border-amber-200 text-amber-700">
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Collection has minted NFTs.</strong> Banner changes now require a payment of 2 USDT in ANIME tokens.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Pricing Alert */}
+            {isMinted && (
+              <Alert className="bg-primary/10 border-primary/30 text-primary">
+                <Coins className="h-4 w-4" />
+                <AlertDescription>
+                  Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Payment input for minted collections */}
+            {isMinted && (
+              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                <div className="space-y-2">
+                  <Label htmlFor="txSignature">Payment Transaction Signature</Label>
+                  <Input
+                    id="txSignature"
+                    value={txSignature}
+                    onChange={(e) => setTxSignature(e.target.value)}
+                    placeholder="Enter Solana transaction signature..."
+                    className="font-mono text-xs"
+                  />
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  Send {requiredANIME.toFixed(0)} ANIME tokens (worth ~2 USDT) to the platform wallet and enter the transaction signature above.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={uploading}>
-            Cancel
+        <div className="p-6 pt-0 space-y-4">
+          {isMinted && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="banner-payment-confirmation"
+                checked={paymentConfirmed}
+                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
+              />
+              <label 
+                htmlFor="banner-payment-confirmation" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I understand I will be charged the amount shown for this banner change
+              </label>
+            </div>
+          )}
+          
+          <Button
+            className="w-full"
+            disabled={!selectedFile || uploading || (isMinted && (!txSignature.trim() || !paymentConfirmed)) || priceLoading}
+            onClick={handleConfirm}
+          >
+            {uploading ? 'Updating...' : 
+             priceLoading ? 'Calculating Price...' :
+             isMinted ? `Confirm & Pay ${requiredANIME.toLocaleString()} ANIME` : 'Save Banner'}
           </Button>
-          <Button onClick={handleSave} disabled={!selectedFile || uploading || (isMinted && !txSignature.trim())}>
-            {uploading ? 'Saving...' : 'Save Banner'}
-          </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
