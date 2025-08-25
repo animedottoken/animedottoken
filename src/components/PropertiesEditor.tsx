@@ -22,6 +22,7 @@ interface PropertiesEditorProps {
   properties: Property[];
   onChange: (properties: Property[]) => void;
   className?: string;
+  readOnly?: boolean;
 }
 
 const DISPLAY_TYPES = [
@@ -35,7 +36,8 @@ const DISPLAY_TYPES = [
 export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
   properties,
   onChange,
-  className = ''
+  className = '',
+  readOnly = false
 }) => {
   const [newProperty, setNewProperty] = useState<Property>({
     trait_type: '',
@@ -200,19 +202,32 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                 <p>Properties help describe unique traits and enable filtering in marketplaces</p>
               </TooltipContent>
             </Tooltip>
-            <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-1 rounded">On-Chain</span>
+            <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
+              {readOnly ? "On-Chain (Read-Only)" : "On-Chain"}
+            </span>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Add traits and attributes that make your NFT unique
+            {readOnly 
+              ? "Properties are permanently stored on blockchain and cannot be modified."
+              : "Add traits and attributes that make your NFT unique"
+            }
           </p>
         </CardHeader>
       <CardContent className="space-y-4">
         {/* No properties message - show ABOVE the form when there are no properties */}
-        {properties.length === 0 && (
+        {properties.length === 0 && !readOnly && (
           <div className="text-center py-8 text-muted-foreground">
             <Palette className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p className="text-sm">No properties added yet</p>
             <p className="text-xs">Properties help describe unique traits of your NFT</p>
+          </div>
+        )}
+
+        {properties.length === 0 && readOnly && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Palette className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <p className="text-sm">No properties defined</p>
+            <p className="text-xs">This NFT has no custom properties</p>
           </div>
         )}
 
@@ -229,17 +244,19 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                        value={property.trait_type}
                        onChange={(e) => updateProperty(index, 'trait_type', e.target.value)}
                        className="text-sm"
+                       disabled={readOnly}
                      />
                       {(property.display_type || 'text') === 'date' ? (
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal text-sm",
-                                !property.value && "text-muted-foreground"
-                              )}
-                            >
+                             <Button
+                               variant="outline"
+                               disabled={readOnly}
+                               className={cn(
+                                 "w-full justify-start text-left font-normal text-sm",
+                                 !property.value && "text-muted-foreground"
+                               )}
+                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {property.value ? format(parse(property.value, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : "Pick a date"}
                             </Button>
@@ -255,20 +272,22 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                           </PopoverContent>
                         </Popover>
                       ) : (
-                        <Input
-                          type={getInputType(property.display_type || 'text')}
-                          placeholder={getPlaceholder(property.display_type || 'text', true)}
-                          value={property.value}
-                          onChange={(e) => updateProperty(index, 'value', e.target.value)}
-                          className="text-sm"
-                          {...getInputAttributes(property.display_type || 'text')}
-                        />
+                         <Input
+                           type={getInputType(property.display_type || 'text')}
+                           placeholder={getPlaceholder(property.display_type || 'text', true)}
+                           value={property.value}
+                           onChange={(e) => updateProperty(index, 'value', e.target.value)}
+                           className="text-sm"
+                           disabled={readOnly}
+                           {...getInputAttributes(property.display_type || 'text')}
+                         />
                       )}
                   </div>
-                  <Select
-                    value={property.display_type || ''}
-                    onValueChange={(value) => updateProperty(index, 'display_type', value)}
-                  >
+                   <Select
+                     value={property.display_type || ''}
+                     onValueChange={(value) => updateProperty(index, 'display_type', value)}
+                     disabled={readOnly}
+                   >
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
@@ -284,20 +303,23 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeProperty(index)}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                 {!readOnly && (
+                   <Button
+                     variant="ghost"
+                     size="sm"
+                     onClick={() => removeProperty(index)}
+                     className="text-destructive hover:text-destructive"
+                   >
+                     <X className="h-4 w-4" />
+                   </Button>
+                 )}
               </div>
             ))}
           </div>
         )}
 
         {/* Add New Property */}
+        {!readOnly && (
         <div className="space-y-3 p-4 border-2 border-dashed border-muted-foreground/25 rounded-lg">
           <Label className="text-sm font-medium">Add New Property</Label>
           <div className="grid grid-cols-2 gap-3">
@@ -396,6 +418,7 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
             Add Property
           </Button>
         </div>
+        )}
       </CardContent>
     </Card>
     </TooltipProvider>

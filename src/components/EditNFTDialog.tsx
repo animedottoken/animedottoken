@@ -12,6 +12,7 @@ import { Edit, Calendar, ExternalLink, Coins } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PropertiesEditor, type Property } from "@/components/PropertiesEditor";
+import { systemFields } from "@/lib/attributes";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 
 interface EditNFTDialogProps {
@@ -25,41 +26,48 @@ interface EditNFTDialogProps {
 const attributesToProperties = (attributes: any): Property[] => {
   if (!attributes) return [];
   
-  // If attributes has __list, use it for rich editing
+  // If attributes has __list, use it for rich editing and filter out system fields
   if (attributes.__list && Array.isArray(attributes.__list)) {
-    return attributes.__list;
+    return attributes.__list.filter(attr => 
+      !systemFields.has(attr.trait_type?.toLowerCase())
+    );
   }
   
-  // Handle array format
+  // Handle array format and filter out system fields
   if (Array.isArray(attributes)) {
-    return attributes.map(attr => ({
-      trait_type: attr.trait_type || '',
-      value: attr.value || '',
-      display_type: attr.display_type || undefined
-    }));
+    return attributes
+      .filter(attr => !systemFields.has(attr.trait_type?.toLowerCase()))
+      .map(attr => ({
+        trait_type: attr.trait_type || '',
+        value: attr.value || '',
+        display_type: attr.display_type || undefined
+      }));
   }
   
-  // Handle object format - convert to array
+  // Handle object format - convert to array and filter out system fields
   if (typeof attributes === 'object') {
-    return Object.entries(attributes).map(([key, value]) => ({
-      trait_type: key,
-      value: String(value || ''),
-      display_type: undefined
-    }));
+    return Object.entries(attributes)
+      .filter(([key]) => !systemFields.has(key.toLowerCase()))
+      .map(([key, value]) => ({
+        trait_type: key,
+        value: String(value || ''),
+        display_type: undefined
+      }));
   }
   
   return [];
 };
 
 const propertiesToAttributes = (properties: Property[], originalAttributes: any) => {
-  if (properties.length === 0) return null;
+  if (properties.length === 0 && !originalAttributes) return null;
+  
+  // Start with original attributes to preserve system fields
+  const result: any = originalAttributes ? { ...originalAttributes } : {};
   
   // Keep both formats for compatibility
-  const result: any = {
-    __list: properties // Rich format for round-trip editing
-  };
+  result.__list = properties; // Rich format for round-trip editing
   
-  // Also maintain object format for compatibility
+  // Also maintain object format for compatibility (only user properties)
   properties.forEach(prop => {
     if (prop.trait_type && prop.value) {
       result[prop.trait_type] = prop.value;
@@ -284,11 +292,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Basic Information
-                {nft.mint_address ? (
-                  <Badge variant="secondary" className="text-xs">Read-Only (Minted)</Badge>
-                ) : (
-                  <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
-                )}
+                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 {nft.mint_address 
@@ -302,11 +306,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="name">Name *</Label>
-                    {nft.mint_address ? (
-                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
-                    ) : (
-                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                    )}
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                   </div>
                   <Input
                     id="name"
@@ -317,7 +317,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     {nft.mint_address 
-                      ? "Cannot be changed after minting - permanently stored on blockchain"
+                      ? "Cannot be changed after minting - stored on blockchain"
                       : "Permanently stored on blockchain, visible in all wallets"
                     }
                   </p>
@@ -326,11 +326,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="symbol">Symbol</Label>
-                    {nft.mint_address ? (
-                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
-                    ) : (
-                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                    )}
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                   </div>
                   <Input
                     id="symbol"
@@ -344,11 +340,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="description">Description</Label>
-                    {nft.mint_address ? (
-                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
-                    ) : (
-                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                    )}
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
                   </div>
                   <Textarea
                     id="description"
@@ -360,7 +352,7 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     {nft.mint_address 
-                      ? "Cannot be changed after minting - permanently stored on blockchain"
+                      ? "Cannot be changed after minting - stored on blockchain"
                       : "Stored on blockchain metadata"
                     }
                   </p>
@@ -465,16 +457,20 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Properties & Traits
-                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+                <Badge variant="onchain" className="text-xs">On-Chain</Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Properties are stored permanently on the blockchain and affect rarity and marketplace filters.
+                {nft.mint_address 
+                  ? "Properties are permanently stored on blockchain and cannot be modified after minting."
+                  : "Properties are stored permanently on the blockchain and affect rarity and marketplace filters."
+                }
               </p>
             </CardHeader>
             <CardContent>
               <PropertiesEditor
                 properties={properties}
                 onChange={setProperties}
+                readOnly={!!nft.mint_address}
               />
             </CardContent>
           </Card>
