@@ -451,7 +451,7 @@ export const StandaloneMintWizard = () => {
                   id="royalty"
                   type="number"
                   min="0"
-                  max="10"
+                  max="50"
                   step="0.5"
                   placeholder={selectedCollection?.royalty_percentage ? `Collection default: ${selectedCollection.royalty_percentage}%` : "0"}
                   value={royaltyInput}
@@ -464,7 +464,7 @@ export const StandaloneMintWizard = () => {
                       setRoyaltyInput(String(defaultRoyalty));
                       return;
                     }
-                    const r = Math.max(0, Math.min(10, parseFloat(raw)));
+                    const r = Math.max(0, Math.min(50, parseFloat(raw)));
                     const fixed = Number.isNaN(r) ? 0 : r;
                     setRoyaltyInput(String(fixed));
                     setFormData({ ...formData, royalty_percentage: fixed });

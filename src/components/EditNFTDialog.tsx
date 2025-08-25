@@ -423,14 +423,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     id="royalty"
                     type="number"
                     min="0"
-                    max="10"
+                    max="50"
                     step="0.5"
                     value={formData.royalty_percentage}
                     onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
                     placeholder="0"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Percentage you earn on secondary sales (0-10%)
+                    Percentage you earn on secondary sales (0-50%)
                   </p>
                 </div>
 
