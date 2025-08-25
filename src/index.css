@@ -107,17 +107,18 @@ All colors MUST be HSL. */
 
 @layer base {
   html {
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
   }
   
   * {
     @apply border-border;
   }
 
-body {
+  body {
     @apply bg-background text-foreground font-sans;
     background-image: var(--gradient-accent);
     background-attachment: fixed;
+    overflow-x: hidden; /* Prevent horizontal scrollbars/layout shift */
   }
 
   /* Hide number input spinners globally */
