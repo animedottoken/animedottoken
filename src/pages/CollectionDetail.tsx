@@ -43,6 +43,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { truncateAddress } from "@/utils/addressUtils";
 import { UserProfileDisplay } from "@/components/UserProfileDisplay";
 import { CollectionAvatarDialog } from "@/components/CollectionAvatarDialog";
+import { CollectionBannerDialog } from "@/components/CollectionBannerDialog";
 import { ProfileStyleEditButton } from "@/components/ProfileStyleEditButton";
 
 export default function CollectionDetail() {
@@ -247,17 +248,18 @@ export default function CollectionDetail() {
                 )}
               </AspectRatio>
 
-              {/* Owner-only banner edit button */}
+              {/* Banner Edit Button - Profile Style */}
               {isOwner && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
-                  onClick={() => setShowBannerDialog(true)}
-                >
-                  <ImageIcon className="w-4 h-4 mr-1" />
-                  Change Banner
-                </Button>
+                <div className="absolute top-4 right-4">
+                  <ProfileStyleEditButton
+                    onClick={() => setShowBannerDialog(true)}
+                    tooltipContent={
+                      (mints.length > 0) 
+                        ? "Change banner (2 USDT in ANIME)" 
+                        : "Change banner (free until minted)"
+                    }
+                  />
+                </div>
               )}
               
               {/* Square NFT Avatar Overlay */}
@@ -275,16 +277,20 @@ export default function CollectionDetail() {
                     </div>
                   )}
                   
-                  {/* Owner-only avatar edit button */}
+                  {/* Avatar Edit Button - Profile Style */}
                   {isOwner && (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="absolute inset-0 bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-                      onClick={() => setShowAvatarDialog(true)}
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
+                    <div className="absolute -bottom-1 -right-1">
+                      <ProfileStyleEditButton
+                        onClick={() => setShowAvatarDialog(true)}
+                        disabled={mints.length > 0}
+                        tooltipContent={
+                          mints.length > 0 
+                            ? "Avatar locked after minting" 
+                            : "Change avatar (free until minted)"
+                        }
+                        size="sm"
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -727,6 +733,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.image_url}
           onSaved={() => refreshCollection(true)}
+          isMinted={mints.length > 0}
         />
 
         {/* Banner Edit Dialog */}
@@ -736,6 +743,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.banner_image_url}
           onSaved={() => refreshCollection(true)}
+          isMinted={mints.length > 0}
         />
       </main>
     </>
