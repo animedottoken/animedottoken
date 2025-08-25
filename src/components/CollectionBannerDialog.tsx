@@ -5,8 +5,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
@@ -33,7 +31,7 @@ export const CollectionBannerDialog = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
-  const [txSignature, setTxSignature] = useState('');
+  
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   
   const requiredUSDT = 2;
@@ -63,10 +61,6 @@ export const CollectionBannerDialog = ({
       return;
     }
 
-    if (isMinted && !txSignature.trim()) {
-      toast.error('Payment transaction signature is required for banner changes after minting');
-      return;
-    }
 
     try {
       setUploading(true);
@@ -99,7 +93,7 @@ export const CollectionBannerDialog = ({
       // Add payment data if required
       if (isMinted) {
         updatePayload.payment = {
-          tx_signature: txSignature.trim(),
+          tx_signature: 'simulated_banner_transaction',
           amount_usdt: requiredUSDT,
           amount_anime: requiredANIME,
           anime_price: animePrice
@@ -123,7 +117,6 @@ export const CollectionBannerDialog = ({
       onOpenChange(false);
       setSelectedFile(null);
       setPreviewUrl('');
-      setTxSignature('');
       setPaymentConfirmed(false);
     } catch (error) {
       console.error('Error updating banner:', error);
@@ -140,7 +133,7 @@ export const CollectionBannerDialog = ({
         if (!o) {
           setSelectedFile(null);
           setPreviewUrl('');
-          setTxSignature('');
+          
           setPaymentConfirmed(false);
         }
       }
@@ -203,15 +196,6 @@ export const CollectionBannerDialog = ({
               </AlertDescription>
             </Alert>
 
-            {/* Minted collection warning */}
-            {isMinted && (
-              <Alert className="bg-amber-50 border-amber-200 text-amber-700">
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Collection has minted NFTs.</strong> Banner changes now require a payment of 2 USDT in ANIME tokens.
-                </AlertDescription>
-              </Alert>
-            )}
 
             {/* Pricing Alert */}
             {isMinted && (
@@ -223,25 +207,6 @@ export const CollectionBannerDialog = ({
               </Alert>
             )}
 
-            {/* Payment input for minted collections */}
-            {isMinted && (
-              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                <div className="space-y-2">
-                  <Label htmlFor="txSignature">Payment Transaction Signature</Label>
-                  <Input
-                    id="txSignature"
-                    value={txSignature}
-                    onChange={(e) => setTxSignature(e.target.value)}
-                    placeholder="Enter Solana transaction signature..."
-                    className="font-mono text-xs"
-                  />
-                </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  Send {requiredANIME.toFixed(0)} ANIME tokens (worth ~2 USDT) to the platform wallet and enter the transaction signature above.
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
@@ -264,7 +229,7 @@ export const CollectionBannerDialog = ({
           
           <Button
             className="w-full"
-            disabled={!selectedFile || uploading || (isMinted && (!txSignature.trim() || !paymentConfirmed)) || priceLoading}
+            disabled={!selectedFile || uploading || (isMinted && !paymentConfirmed) || priceLoading}
             onClick={handleConfirm}
           >
             {uploading ? 'Updating...' : 
