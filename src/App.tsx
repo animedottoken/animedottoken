@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
+import { BottomNav } from "@/components/BottomNav";
+import { BackToTop } from "@/components/BackToTop";
 import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
@@ -63,6 +65,8 @@ const AppLayout = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+        <BottomNav />
+        <BackToTop />
       </div>
     );
   }
@@ -92,6 +96,7 @@ const AppLayout = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+        <BackToTop />
       </div>
     </div>
   );

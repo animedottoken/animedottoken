@@ -41,6 +41,12 @@ export const BottomNav = () => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={(e) => {
+                if (isActive) {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
               className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors ${
                 isActive 
                   ? "text-primary bg-primary/10" 
