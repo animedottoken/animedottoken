@@ -271,19 +271,17 @@ export default function Profile() {
                   </p>
                 )}
 
-                <div className="text-sm mb-2">
+                <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
                     {collection.items_redeemed}/{collection.max_supply || '∞'} minted
                   </span>
+                  {collection.mint_price > 0 && (
+                    <span className="font-medium">
+                      <span className="text-primary">Price</span> {collection.mint_price} SOL
+                    </span>
+                  )}
                 </div>
-              </div>
-              
-              {/* Price positioned bottom right - Fixed positioning */}
-              <div className="flex justify-end">
-                <span className="font-medium text-sm">
-                  <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
-                </span>
-              </div>
+            </div>
             </CardContent>
           </Card>
         ))}
@@ -725,18 +723,16 @@ export default function Profile() {
                         </p>
                       )}
 
-                      <div className="text-sm mb-2">
+                      <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
                           {collection.items_redeemed}/{collection.max_supply || '∞'} minted
                         </span>
+                        {collection.mint_price > 0 && (
+                          <span className="font-medium">
+                            <span className="text-primary">Price</span> {collection.mint_price} SOL
+                          </span>
+                        )}
                       </div>
-                    </div>
-                    
-                    {/* Price positioned bottom right - Fixed positioning */}
-                    <div className="flex justify-end">
-                      <span className="font-medium text-sm">
-                        <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
-                      </span>
                     </div>
                     
                     <p className="text-xs text-muted-foreground/70">
