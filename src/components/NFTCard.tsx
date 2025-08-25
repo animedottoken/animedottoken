@@ -92,11 +92,13 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
           size="sm" 
           onClick={handleLike}
           disabled={likeLoading}
-          className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
+          className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
             isLiked(nft.id)
-              ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-black/50 text-white hover:bg-black/70'
+              ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
+              : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
           }`}
+          title={isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
+          aria-label={isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
         >
           <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
         </Button>
