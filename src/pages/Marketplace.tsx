@@ -74,7 +74,7 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterBy, setFilterBy] = useState("listed");
+  const [filterBy, setFilterBy] = useState("all");
   const [creatorFilter, setCreatorFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showPropertyFilter, setShowPropertyFilter] = useState(false);
@@ -242,6 +242,9 @@ export default function Marketplace() {
   };
 
   const filteredNfts = nfts.filter(nft => {
+    // Only show listed NFTs in marketplace
+    if (!nft.is_listed) return false;
+    
     const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
     const isNftLiked = isLiked(nft.id);
     const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
@@ -253,9 +256,7 @@ export default function Marketplace() {
 
     // Base filter selections
     let matchesFilter = true;
-    if (filterBy === "listed") matchesFilter = nft.is_listed;
-    else if (filterBy === "unlisted") matchesFilter = !nft.is_listed;
-    else if (filterBy === "liked") matchesFilter = isNftLiked;
+    if (filterBy === "liked") matchesFilter = isNftLiked;
     else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
 
     // Enforce mandatory listing rules using the robust helper
@@ -397,8 +398,6 @@ export default function Marketplace() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All NFTs</SelectItem>
-                <SelectItem value="listed">Listed</SelectItem>
-                <SelectItem value="unlisted">Unlisted</SelectItem>
                 <SelectItem value="liked">❤️ Liked</SelectItem>
                 <SelectItem value="followed_creators">👥 From Liked</SelectItem>
               </SelectContent>
