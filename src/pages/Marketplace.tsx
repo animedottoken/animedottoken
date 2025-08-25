@@ -88,8 +88,8 @@ export default function Marketplace() {
   const [royaltyMin, setRoyaltyMin] = useState<string>("");
   const [royaltyMax, setRoyaltyMax] = useState<string>("");
   
-  // Initialize activeTab with "nfts" as default
-  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("nfts");
+  // Initialize activeTab with "collections" as default
+  const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("collections");
 
   
   const { boostedListings, loading: boostedLoading } = useBoostedListings();
@@ -359,16 +359,16 @@ export default function Marketplace() {
       {/* Tabs */}
       <div className="flex gap-4 mb-6">
         <Button
-          variant={activeTab === "nfts" ? "default" : "outline"}
-          onClick={() => setActiveTab("nfts")}
-        >
-          NFTs
-        </Button>
-        <Button
           variant={activeTab === "collections" ? "default" : "outline"}
           onClick={() => setActiveTab("collections")}
         >
           Collections
+        </Button>
+        <Button
+          variant={activeTab === "nfts" ? "default" : "outline"}
+          onClick={() => setActiveTab("nfts")}
+        >
+          NFTs
         </Button>
         <Button 
           variant={activeTab === "creators" ? "default" : "outline"}
