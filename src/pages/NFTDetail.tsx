@@ -423,16 +423,7 @@ export default function NFTDetail() {
                 )}
                 {nft.is_listed && (
                   <Badge variant="default" className="text-xs bg-green-600">
-                    Listed for Sale
-                  </Badge>
-                )}
-                {/* Data Origin Indicators */}
-                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
-                <Badge variant="offchain" className="text-xs">App Data</Badge>
-                {/* Compact Edition Info */}
-                {getEditionInfo() && (
-                  <Badge variant="outline" className="text-xs">
-                    Edition {getEditionInfo()}
+                    Listed
                   </Badge>
                 )}
               </div>
@@ -490,6 +481,12 @@ export default function NFTDetail() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <PriceTag amount={nft.price} currency={nft.currency} size="lg" />
+                      {getEditionInfo() && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <Hash className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">Edition {getEditionInfo()}</span>
+                        </div>
+                      )}
                     </div>
                     {nft.royalty_percentage && nft.royalty_percentage > 0 && (
                       <div className="text-right">
