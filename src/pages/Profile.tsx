@@ -198,7 +198,8 @@ export default function Profile() {
                     variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleCollectionClick(collection.id);
+                      // Scroll to collection editor in detail page
+                      navigate(`/collection/${collection.id}#collection-editor`);
                     }}
                     className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
                     title="Edit Collection"
@@ -277,8 +278,8 @@ export default function Profile() {
                 </div>
               </div>
               
-              {/* Price positioned bottom right - Debug version */}
-              <div className="mt-auto self-end">
+              {/* Price positioned bottom right - Fixed positioning */}
+              <div className="flex justify-end">
                 <span className="font-medium text-sm">
                   <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
                 </span>
@@ -731,8 +732,8 @@ export default function Profile() {
                       </div>
                     </div>
                     
-                    {/* Price positioned bottom right - Debug version */}
-                    <div className="mt-auto self-end mb-2">
+                    {/* Price positioned bottom right - Fixed positioning */}
+                    <div className="flex justify-end">
                       <span className="font-medium text-sm">
                         <span className="text-primary">Price</span> {collection.mint_price || 0} SOL
                       </span>
