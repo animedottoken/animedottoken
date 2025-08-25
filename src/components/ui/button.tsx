@@ -21,6 +21,8 @@ const buttonVariants = cva(
         hero: "bg-primary/90 text-primary-foreground shadow-glow hover:bg-primary",
         glass:
           "bg-white/5 text-foreground backdrop-blur-md border border-white/10 hover:bg-white/10",
+        warning: "bg-yellow-500 text-white hover:bg-yellow-600",
+        info: "bg-blue-500 text-white hover:bg-blue-600",
       },
       size: {
         default: "h-10 px-4 py-2",

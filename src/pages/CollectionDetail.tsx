@@ -56,9 +56,10 @@ export default function CollectionDetail() {
   const ownedCollection = collections.find(c => c.id === collectionId);
   const isOwner = connected && ownedCollection !== undefined;
   
-  // Always use the refreshed collection data from RPC for consistency
-  // Only use ownedCollection for ownership verification (has unmasked creator_address)
+  // Use refreshed collection data but preserve unmasked creator_address for editing
   const displayCollection = collection;
+  // Create merged data for editor with unmasked creator_address
+  const editorCollection = ownedCollection && collection ? { ...collection, creator_address: ownedCollection.creator_address, treasury_wallet: ownedCollection.treasury_wallet } : collection;
   
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -326,7 +327,7 @@ export default function CollectionDetail() {
                   {/* Collection Owner Controls - Only show for owned collections */}
                   {isOwner && (
                     <Button
-                      variant={displayCollection?.is_live ? "destructive" : "default"}
+                      variant={displayCollection?.is_live ? "warning" : "default"}
                       size="lg"
                       onClick={async () => {
                         try {
@@ -361,7 +362,7 @@ export default function CollectionDetail() {
                   {isOwner && (
                     <>
                       <Button 
-                        variant="outline" 
+                        variant="info" 
                         size="lg"
                         onClick={() => {
                           document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
@@ -469,10 +470,10 @@ export default function CollectionDetail() {
           </Card>
 
           {/* Collection Editor - Only show for collection owner */}
-          {isOwner && displayCollection && (
+          {isOwner && editorCollection && (
             <div id="collection-editor" className="mb-8">
             <CollectionEditor 
-              collection={displayCollection} 
+              collection={editorCollection} 
               onClose={() => {
                 // Refresh the page data after closing editor
                 refreshCollection();
