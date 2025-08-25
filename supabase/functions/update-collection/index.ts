@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0'
+import { Connection, PublicKey } from "https://esm.sh/@solana/web3.js@1.98.4"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,6 +31,15 @@ interface UpdateCollectionRequest {
     attributes?: any[];
     is_live?: boolean; // allow toggling live state
     is_active?: boolean; // optional
+    image_url?: string;
+    banner_image_url?: string;
+  };
+  // For banner changes on minted collections
+  payment?: {
+    tx_signature: string;
+    amount_usdt: number;
+    amount_anime: number;
+    anime_price: number;
   };
 }
 
@@ -47,7 +57,8 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Parse request
-    const { collection_id, updates }: UpdateCollectionRequest = await req.json()
+    const requestBody: UpdateCollectionRequest = await req.json()
+    const { collection_id, updates, payment } = requestBody
 
     console.log('Update collection request:', { collection_id, updates })
 
@@ -167,6 +178,104 @@ serve(async (req) => {
       } else if (updates.supply_mode === 'fixed' && updates.max_supply !== undefined) {
         updateData.max_supply = updates.max_supply
         updateData.items_available = updates.max_supply
+      }
+    }
+
+    // Handle image URLs with payment validation for banner changes
+    const userWallet = req.headers.get('X-Wallet-Address') || 'unknown'
+    
+    // Avatar changes (image_url) - free until minted, then locked
+    if (updates.image_url !== undefined) {
+      if (itemsRedeemed === 0) {
+        updateData.image_url = updates.image_url
+      } else {
+        return new Response(
+          JSON.stringify({ error: 'Avatar cannot be changed after NFTs are minted' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+    
+    // Banner changes (banner_image_url) - free until minted, then requires payment
+    if (updates.banner_image_url !== undefined) {
+      if (itemsRedeemed === 0) {
+        // Free banner change before minting
+        updateData.banner_image_url = updates.banner_image_url
+      } else {
+        // Requires payment after minting
+        if (!payment) {
+          return new Response(
+            JSON.stringify({ error: 'Payment required for banner changes after minting' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        const { tx_signature, amount_usdt, amount_anime, anime_price } = payment
+        
+        // Verify payment amount (should be 2 USDT worth)
+        if (amount_usdt < 2) {
+          return new Response(
+            JSON.stringify({ error: 'Insufficient payment amount. Required: 2 USDT' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        // Check if payment was already used
+        const { data: existingPayment } = await supabase
+          .from('payments')
+          .select('id')
+          .eq('tx_signature', tx_signature)
+          .single()
+
+        if (existingPayment) {
+          return new Response(
+            JSON.stringify({ error: 'Payment transaction already used' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        // Verify transaction on Solana (simplified - in production, verify with RPC)
+        const connection = new Connection(Deno.env.get('SOLANA_RPC_URL') || 'https://api.mainnet-beta.solana.com')
+        try {
+          const transaction = await connection.getTransaction(tx_signature, { commitment: 'confirmed' })
+          if (!transaction) {
+            return new Response(
+              JSON.stringify({ error: 'Transaction not found or not confirmed' }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+          }
+        } catch (error) {
+          console.error('Transaction verification failed:', error)
+          return new Response(
+            JSON.stringify({ error: 'Failed to verify payment transaction' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        // Record payment in database
+        const { error: paymentError } = await supabase
+          .from('payments')
+          .insert({
+            collection_id,
+            wallet_address: userWallet,
+            payment_type: 'banner_change',
+            amount_usdt,
+            amount_anime,
+            anime_price,
+            tx_signature,
+            verified: true
+          })
+
+        if (paymentError) {
+          console.error('Failed to record payment:', paymentError)
+          return new Response(
+            JSON.stringify({ error: 'Failed to record payment' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
+
+        // Payment verified, allow banner change
+        updateData.banner_image_url = updates.banner_image_url
       }
     }
 

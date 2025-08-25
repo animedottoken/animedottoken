@@ -43,7 +43,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { truncateAddress } from "@/utils/addressUtils";
 import { UserProfileDisplay } from "@/components/UserProfileDisplay";
 import { CollectionAvatarDialog } from "@/components/CollectionAvatarDialog";
-import { CollectionBannerDialog } from "@/components/CollectionBannerDialog";
+import { ProfileStyleEditButton } from "@/components/ProfileStyleEditButton";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();

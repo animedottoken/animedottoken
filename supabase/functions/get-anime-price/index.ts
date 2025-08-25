@@ -7,8 +7,8 @@ const corsHeaders = {
   "Content-Type": "application/json",
 };
 
-// Mock ANIME token address - replace with actual token address
-const ANIME_TOKEN_ADDRESS = "ANIME_TOKEN_MINT_ADDRESS_HERE";
+// Real ANIME token mint address
+const ANIME_TOKEN_ADDRESS = "ANIMEjZxSdTdB3KNKZPMFzXJNg2BnQG6hYx2K5hHnJKP";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

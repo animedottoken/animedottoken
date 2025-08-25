@@ -11,6 +11,7 @@ interface CollectionAvatarDialogProps {
   collectionId: string;
   currentUrl?: string;
   onSaved: () => void;
+  isMinted?: boolean; // Whether any NFTs have been minted
 }
 
 export const CollectionAvatarDialog = ({
@@ -18,7 +19,8 @@ export const CollectionAvatarDialog = ({
   onOpenChange,
   collectionId,
   currentUrl,
-  onSaved
+  onSaved,
+  isMinted = false
 }: CollectionAvatarDialogProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -26,6 +28,11 @@ export const CollectionAvatarDialog = ({
   const handleSave = async () => {
     if (!selectedFile) {
       toast.error('Please select an image');
+      return;
+    }
+
+    if (isMinted) {
+      toast.error('Avatar cannot be changed after NFTs are minted');
       return;
     }
 
@@ -86,6 +93,11 @@ export const CollectionAvatarDialog = ({
           <DialogTitle>Change Collection Avatar</DialogTitle>
           <DialogDescription>
             Upload a new avatar image for your collection. This will be displayed as the collection's profile picture.
+            {isMinted && (
+              <span className="block mt-2 text-destructive">
+                ⚠️ Avatar cannot be changed after NFTs are minted.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         
@@ -104,7 +116,7 @@ export const CollectionAvatarDialog = ({
           <Button variant="outline" onClick={handleClose} disabled={uploading}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!selectedFile || uploading}>
+          <Button onClick={handleSave} disabled={!selectedFile || uploading || isMinted}>
             {uploading ? 'Saving...' : 'Save Avatar'}
           </Button>
         </DialogFooter>
