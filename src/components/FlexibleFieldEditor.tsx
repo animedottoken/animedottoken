@@ -97,8 +97,9 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       badge: 'On-Chain',
       min: 0,
       step: 0.001,
-      visible: () => (collection as any).enable_primary_sales !== false,
-      help: 'Price for minting new NFTs from this collection'
+      help: collection.enable_primary_sales 
+        ? 'Price for minting new NFTs from this collection' 
+        : 'Price setting (currently disabled - enable Primary Sales to activate)'
     },
     
     // Supply Settings
