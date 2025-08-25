@@ -231,9 +231,21 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
 
   const saveField = async (fieldName: string) => {
     try {
+      // Store current scroll position and field element
+      const scrollPosition = window.scrollY;
+      const fieldElement = document.getElementById(`field-${fieldName}`);
+      
       await onUpdate({ [fieldName]: fieldValues[fieldName] });
       setEditingField(null);
       setFieldValues({});
+      
+      // Restore scroll position after a brief delay
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+        if (fieldElement) {
+          fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     } catch (error) {
       console.error('Failed to save field:', error);
     }
