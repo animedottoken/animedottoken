@@ -25,6 +25,8 @@ export const useMinting = () => {
     setMintResult(null);
 
     try {
+      // Preflight check for collection mint address
+      // This provides early feedback before calling the service
       const result = await solanaService.mintNFT({
         walletAddress: publicKey,
         collectionId,

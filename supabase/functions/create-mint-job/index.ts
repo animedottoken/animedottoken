@@ -106,6 +106,17 @@ serve(async (req) => {
       );
     }
 
+    // Check if collection has been minted on-chain first
+    if (!collection.collection_mint_address) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Collection must be minted on-chain before NFTs can be minted. Please mint the collection first.' 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Check availability
     if (collection.items_available < quantity) {
       return new Response(

@@ -89,9 +89,20 @@ export class SolanaService {
         };
       }
 
-      // Check if collection is live and has supply
-      if (!collection.is_live) {
-        return { success: false, error: 'Collection is not live yet' };
+      // Check collection status and supply
+      if (!collection.is_active || !collection.is_live) {
+        return {
+          success: false,
+          error: 'Collection is not active or live'
+        };
+      }
+
+      // Check if collection has been minted on-chain first
+      if (!collection.collection_mint_address) {
+        return {
+          success: false,
+          error: 'Collection must be minted on-chain before NFTs can be minted. Please mint the collection first.'
+        };
       }
 
       if (collection.items_redeemed >= (collection.items_available || collection.max_supply)) {

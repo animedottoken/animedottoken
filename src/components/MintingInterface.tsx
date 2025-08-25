@@ -31,6 +31,7 @@ interface Collection {
   creator_address?: string;
   treasury_wallet?: string;
   royalty_percentage?: number;
+  collection_mint_address?: string | null;
 }
 
 interface NFTDetails {
@@ -195,6 +196,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const remainingSupply = collection ? collection.max_supply - collection.items_redeemed : 0;
   const totalCost = collection ? collection.mint_price * quantity : 0;
   const maxPerJob = Math.min(1000, remainingSupply);
+  const needsCollectionMint = collection && !collection.collection_mint_address;
 
   if (collectionLoading) {
     return (
@@ -335,10 +337,26 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 </div>
               </div>
 
+              {/* Collection Mint Warning */}
+              {needsCollectionMint && (
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-orange-800 mb-2">
+                    <Info className="h-4 w-4" />
+                    <span className="font-semibold">Collection Not Minted</span>
+                  </div>
+                  <p className="text-sm text-orange-700 mb-3">
+                    This collection must be minted on-chain before NFTs can be created. Please mint the collection first.
+                  </p>
+                  <Link to={`/collection/${collection.id}`} className="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                    Go to Collection Details →
+                  </Link>
+                </div>
+              )}
+
               {/* Mint Button */}
               <Button 
                 onClick={handleMint}
-                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview)}
+                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) || needsCollectionMint}
                 className="w-full py-6 text-lg font-semibold"
                 size="lg"
               >
@@ -347,6 +365,8 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                     Creating Job...
                   </>
+                ) : needsCollectionMint ? (
+                  'Collection Must Be Minted First'
                 ) : isSoldOut ? (
                   'SOLD OUT'
                 ) : !connected ? (
