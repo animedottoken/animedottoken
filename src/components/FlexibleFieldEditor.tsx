@@ -461,18 +461,31 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              {(lockedFields.includes(fieldName) || badgeInfo?.variant === 'chainlocked') && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Lock className="h-3 w-3 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{lockedFields.includes(fieldName) ? 'Creator locked' : 'Chain locked'}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+              
+              {/* Left side padlock - always visible with proper color coding */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {badgeInfo?.variant === 'chainlocked' ? (
+                      <Lock className="h-3 w-3 text-red-500" />
+                    ) : lockedFields.includes(fieldName) ? (
+                      <Lock className="h-3 w-3 text-orange-500" />
+                    ) : (
+                      <Unlock className="h-3 w-3 text-green-500" />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {badgeInfo?.variant === 'chainlocked' 
+                        ? 'Chain locked - cannot be edited after minting'
+                        : lockedFields.includes(fieldName) 
+                        ? 'Creator locked - locked by collection owner'
+                        : 'Unlocked - can be edited'
+                      }
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             {fieldName === 'max_supply' && collection.supply_mode === 'open' ? (
               <div className="flex items-center gap-1">
@@ -497,37 +510,53 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         </div>
         
         <div className="flex items-center gap-2">
-          {/* Show Edit button only when field is unlocked and user is owner */}
-          {!lockedFields.includes(fieldName) && isOwner && !isLocked && (
-            <Button size="sm" onClick={() => startEditing(fieldName)} disabled={isUpdating}>
+          {/* Edit button - only show when field is actually editable */}
+          {rule.canEdit() && !lockedFields.includes(fieldName) && isOwner && (
+            <Button size="sm" variant="outline" onClick={() => startEditing(fieldName)}>
               Edit
             </Button>
           )}
           
-          {/* Show padlock button when creator can toggle lock */}
+          {/* Right side padlock toggle - only for creator lockable fields */}
           {creatorCanToggleLock && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     size="sm"
-                    variant={lockedFields.includes(fieldName) ? "destructive" : "default"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFieldLock(fieldName);
-                    }}
-                    className={lockedFields.includes(fieldName) ? "bg-orange-500 hover:bg-orange-600" : "bg-green-500 hover:bg-green-600"}
+                    variant="ghost"
+                    onClick={() => toggleFieldLock(fieldName)}
                     disabled={isUpdating}
+                    className="p-1"
                   >
                     {lockedFields.includes(fieldName) ? (
-                      <Lock className="h-4 w-4" />
+                      <Lock className="h-4 w-4 text-orange-500" />
                     ) : (
-                      <Unlock className="h-4 w-4" />
+                      <Unlock className="h-4 w-4 text-green-500" />
                     )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}</p>
+                  <p>
+                    {lockedFields.includes(fieldName) 
+                      ? 'Click to unlock this field' 
+                      : 'Click to lock this field'
+                    }
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
+          {/* Right side padlock display - for chain locked fields */}
+          {badgeInfo?.variant === 'chainlocked' && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Lock className="h-4 w-4 text-red-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Chain locked - cannot be edited after minting</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
