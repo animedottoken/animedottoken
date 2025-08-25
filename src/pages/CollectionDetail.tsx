@@ -468,6 +468,8 @@ export default function CollectionDetail() {
             <div id="collection-editor" className="mb-8">
             <CollectionEditor 
               collection={editorCollection} 
+              mints={mints}
+              onRefreshCollection={refreshCollection}
               onClose={() => {
                 setShowEditor(false);
                 // Remove edit parameter from URL
@@ -476,7 +478,7 @@ export default function CollectionDetail() {
                 const queryString = newSearchParams.toString();
                 navigate(queryString ? `?${queryString}` : window.location.pathname, { replace: true });
                 // Refresh the page data after closing editor
-                refreshCollection();
+                handleCollectionUpdate(editorCollection);
               }}
             />
             </div>

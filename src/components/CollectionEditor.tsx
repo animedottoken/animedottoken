@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Image, DollarSign, Users, Info, Trash2 } from 'lucide-react';
+import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame } from 'lucide-react';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -13,18 +13,24 @@ import { useBurnAllNFTs } from '@/hooks/useBurnAllNFTs';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CollectionEditorProps {
   collection: Collection;
   onClose: () => void;
+  mints: any[];
+  onRefreshCollection: () => void;
 }
 
-export const CollectionEditor = ({ collection: initialCollection, onClose }: CollectionEditorProps) => {
+export const CollectionEditor = ({ collection: initialCollection, onClose, mints, onRefreshCollection }: CollectionEditorProps) => {
   const { updateCollection } = useCollections({ autoLoad: false });
   const { publicKey } = useSolanaWallet();
   const { collection, refreshCollection } = useCollection(initialCollection.id);
   const { deleting, deleteCollection } = useDeleteCollection();
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
+  
+  // State to control editing mode
+  const [isEditing, setIsEditing] = useState(false);
   
   // Always use the passed collection data for consistency
   // The parent component handles data refreshing
@@ -57,8 +63,33 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
   const handleBurnAllNFTs = async () => {
     const result = await burnAllNFTs(currentCollection.id);
     if (result.success && result.burned > 0) {
-      refreshCollection(); // Refresh to show updated NFT count
+      onRefreshCollection(); // Refresh to show updated NFT count
       toast.success(`All NFTs burned! Collection is now ready to burn.`);
+    }
+  };
+
+  const handlePauseStart = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('update-collection', {
+        body: {
+          collection_id: currentCollection.id,
+          updates: { is_live: !currentCollection.is_live }
+        }
+      });
+      
+      if (data?.success) {
+        onRefreshCollection();
+        toast.success(
+          currentCollection.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+          {
+            description: currentCollection.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+          }
+        );
+      } else {
+        toast.error('Failed to update collection status');
+      }
+    } catch (error) {
+      toast.error('Failed to update collection status');
     }
   };
 
@@ -68,140 +99,108 @@ export const CollectionEditor = ({ collection: initialCollection, onClose }: Col
 
   return (
     <div className="space-y-6">
-      {/* Collection Status */}
+      {/* Collection Details Editor */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Collection Settings
+              Collection Details
             </div>
-            <div className="flex gap-2">
-              <Badge variant={currentCollection.is_live ? 'default' : 'secondary'}>
-                {currentCollection.is_live ? 'Live' : 'Draft'}
-              </Badge>
-              {hasMintedNFTs && (
-                <Badge variant="outline">
-                  {itemsRedeemed} NFTs Minted
+            <div className="flex items-center gap-2">
+              {/* Status Badges */}
+              <div className="flex gap-2">
+                <Badge variant={currentCollection.is_live ? 'default' : 'secondary'}>
+                  {currentCollection.is_live ? 'Live' : 'Paused'}
                 </Badge>
-              )}
+                {currentCollection.max_supply && (
+                  <Badge variant="outline">
+                    {mints.length}/{currentCollection.max_supply}
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-1">
+                <Button
+                  variant={currentCollection.is_live ? "warning" : "default"}
+                  size="sm"
+                  onClick={handlePauseStart}
+                >
+                  {currentCollection.is_live ? (
+                    <><Pause className="w-3 h-3 mr-1" />Pause</>
+                  ) : (
+                    <><Play className="w-3 h-3 mr-1" />Start</>
+                  )}
+                </Button>
+                
+                <Button 
+                  variant={isEditing ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  <Settings className="w-3 h-3 mr-1" />
+                  {isEditing ? 'Done' : 'Edit'}
+                </Button>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                    >
+                      <Flame className="w-3 h-3 mr-1" />
+                      Burn
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {hasMintedNFTs ? 'Burn All NFTs' : 'Burn Collection'}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {hasMintedNFTs 
+                          ? `This will permanently burn all ${mints.length} NFTs in "${currentCollection.name}". This action cannot be undone.`
+                          : `Are you sure you want to permanently burn "${currentCollection.name}"? This action cannot be undone and will remove the collection from the blockchain.`
+                        }
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={hasMintedNFTs ? handleBurnAllNFTs : handleDeleteCollection}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        disabled={hasMintedNFTs ? burningAll : deleting}
+                      >
+                        {hasMintedNFTs 
+                          ? (burningAll ? 'Burning...' : `Burn ${mints.length} NFTs`)
+                          : (deleting ? 'Burning...' : 'Burn Collection')
+                        }
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           <p className="text-sm text-muted-foreground">
-            Configure your collection settings below. Some fields may be locked after minting begins.
+            {isEditing 
+              ? 'Edit your collection settings. Some fields may be locked based on minting status.'
+              : 'Collection information and settings. Click Edit to modify.'
+            }
           </p>
-        </CardContent>
+        </CardHeader>
+        {isEditing && (
+          <CardContent>
+            <FlexibleFieldEditor
+              collection={currentCollection}
+              onUpdate={handleUpdate}
+              isOwner={isOwner}
+            />
+          </CardContent>
+        )}
       </Card>
 
-      {/* Collection Details Editor */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Collection Details</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Edit your collection settings. Some fields may be locked based on minting status or your preferences.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <FlexibleFieldEditor
-            collection={currentCollection}
-            onUpdate={handleUpdate}
-            isOwner={isOwner}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Burn Collection Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-red-600">Burn Collection</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Permanently destroy this collection. This action cannot be undone.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {hasMintedNFTs ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                <p className="text-sm text-orange-800 dark:text-orange-200">
-                  This collection has {itemsRedeemed} minted NFTs. You must burn all NFTs before you can burn the collection.
-                </p>
-              </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="destructive" 
-                    disabled={burningAll}
-                    className="w-full"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    {burningAll ? 'Burning NFTs...' : `Burn All ${itemsRedeemed} NFTs`}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Burn All NFTs</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently burn all {itemsRedeemed} NFTs in "{currentCollection.name}". 
-                      After this, you'll be able to burn the collection itself. This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleBurnAllNFTs}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      disabled={burningAll}
-                    >
-                      {burningAll ? 'Burning...' : `Burn ${itemsRedeemed} NFTs`}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <p className="text-sm text-green-800 dark:text-green-200">
-                  ✅ This collection is ready to burn. No NFTs are minted in this collection.
-                </p>
-              </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="destructive" 
-                    disabled={deleting}
-                    className="w-full"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    {deleting ? 'Burning Collection...' : 'Burn Collection'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Burn Collection</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to permanently burn "{currentCollection.name}"? 
-                      This action cannot be undone and will remove the collection from the blockchain.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDeleteCollection}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      disabled={deleting}
-                    >
-                      {deleting ? 'Burning...' : 'Burn Collection'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
