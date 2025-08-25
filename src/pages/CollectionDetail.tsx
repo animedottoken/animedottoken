@@ -23,7 +23,9 @@ import {
   Image as ImageIcon,
   Heart,
   Trash2,
-  Flame
+  Flame,
+  Play,
+  Pause
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
@@ -61,6 +63,9 @@ export default function CollectionDetail() {
   // Create merged data for editor with unmasked creator_address
   const editorCollection = ownedCollection && collection ? { ...collection, creator_address: ownedCollection.creator_address, treasury_wallet: ownedCollection.treasury_wallet } : collection;
   
+  // Editor visibility state
+  const [showEditor, setShowEditor] = useState(false);
+  
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     title: string;
@@ -80,14 +85,16 @@ export default function CollectionDetail() {
   // Auto-scroll to editor when ?edit=1 is present (no blocking/error messaging)
   useEffect(() => {
     const wantsEdit = searchParams.get('edit');
-    if (!wantsEdit || !displayCollection) return;
-
-    const el = document.getElementById('collection-editor');
-    if (el) {
-      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    if (wantsEdit && displayCollection && isOwner) {
+      setShowEditor(true);
+      setTimeout(() => {
+        const el = document.getElementById('collection-editor');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
-    // Note: The editor itself is shown only to the owner; we don't block or show errors here.
-  }, [displayCollection, connected, publicKey, searchParams]);
+  }, [displayCollection, connected, publicKey, searchParams, isOwner]);
 
   const handleCollectionUpdate = (updatedCollection: any) => {
     // Refresh collection data to get latest version
@@ -226,109 +233,41 @@ export default function CollectionDetail() {
                 </div>
               </div>
 
-              {/* Status Badges */}
-              <div className="absolute top-4 right-4 flex gap-2">
-                {displayCollection?.verified && (
-                  <Badge variant="secondary" className="bg-blue-500 text-white">
-                    <Verified className="w-3 h-3 mr-1" />
-                    Verified
-                  </Badge>
-                )}
-                
-                {/* Collection Status */}
-                {displayCollection?.is_live ? (
-                  <Badge variant="secondary" className="bg-green-500 text-white">
-                    ● Live Minting
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="bg-orange-500 text-white">
-                    ⏸ Paused
-                  </Badge>
-                )}
-                
-                {/* Minting Progress */}
-                {displayCollection?.max_supply && (
-                  <Badge variant="outline" className="bg-background/80">
-                    {mints.length}/{displayCollection.max_supply}
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            <CardContent className="pt-16">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
-                    {displayCollection?.symbol && (
-                      <Badge variant="outline" className="text-sm">
-                        {displayCollection.symbol}
-                      </Badge>
-                    )}
-                    {/* Data Origin Indicators */}
-                    <div className="flex items-center gap-1">
-                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                      <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
-                    </div>
-                  </div>
-                  
-                  {displayCollection?.description && (
-                    <p className="text-muted-foreground mb-4 max-w-2xl">
-                      {displayCollection.description}
-                    </p>
+              {/* Status Badges and Owner Actions */}
+              <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                <div className="flex gap-2">
+                  {displayCollection?.verified && (
+                    <Badge variant="secondary" className="bg-blue-500 text-white">
+                      <Verified className="w-3 h-3 mr-1" />
+                      Verified
+                    </Badge>
                   )}
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{mints.length}</div>
-                      <div className="text-sm text-muted-foreground">Minted</div>
-                    </div>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{displayCollection?.max_supply || '∞'}</div>
-                      <div className="text-sm text-muted-foreground">Max Supply</div>
-                    </div>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{displayCollection?.mint_price || 0}</div>
-                      <div className="text-sm text-muted-foreground">Price (SOL)</div>
-                    </div>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{displayCollection?.royalty_percentage || 0}%</div>
-                      <div className="text-sm text-muted-foreground">Royalties</div>
-                    </div>
-                  </div>
-
-                  {/* External Links */}
-                  {displayCollection?.external_links && Array.isArray(displayCollection.external_links) && displayCollection.external_links.length > 0 && (
-                    <div className="flex gap-2 mb-4">
-                      {(displayCollection.external_links as any[]).map((link: any, index: number) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          asChild
-                        >
-                          <a
-                            href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            {link.type}
-                          </a>
-                        </Button>
-                      ))}
-                    </div>
+                  
+                  {/* Collection Status */}
+                  {displayCollection?.is_live ? (
+                    <Badge variant="secondary" className="bg-green-500 text-white">
+                      ● Live Minting
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="bg-orange-500 text-white">
+                      ⏸ Paused
+                    </Badge>
+                  )}
+                  
+                  {/* Minting Progress */}
+                  {displayCollection?.max_supply && (
+                    <Badge variant="outline" className="bg-background/80">
+                      {mints.length}/{displayCollection.max_supply}
+                    </Badge>
                   )}
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-2 min-w-[200px]">
-                  {/* Collection Owner Controls - Only show for owned collections */}
-                  {isOwner && (
+                
+                {/* Owner Action Buttons */}
+                {isOwner && (
+                  <div className="flex gap-1">
                     <Button
                       variant={displayCollection?.is_live ? "warning" : "default"}
-                      size="lg"
+                      size="sm"
                       onClick={async () => {
                         try {
                           const { data, error } = await supabase.functions.invoke('update-collection', {
@@ -339,7 +278,6 @@ export default function CollectionDetail() {
                           });
                           
                           if (data?.success) {
-                            // Refresh collection to show updated status
                             refreshCollection();
                             toast.success(
                               displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
@@ -355,126 +293,188 @@ export default function CollectionDetail() {
                         }
                       }}
                     >
-                      {displayCollection?.is_live ? 'Pause Minting' : 'Start Minting'}
+                      {displayCollection?.is_live ? (
+                        <><Pause className="w-3 h-3 mr-1" />Pause</>
+                      ) : (
+                        <><Play className="w-3 h-3 mr-1" />Start</>
+                      )}
                     </Button>
-                  )}
-                  
-                  {isOwner && (
-                    <>
-                      <Button 
-                        variant="info" 
-                        size="lg"
-                        onClick={() => {
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setShowEditor(true);
+                        // Update URL to include edit parameter
+                        const newSearchParams = new URLSearchParams(searchParams);
+                        newSearchParams.set('edit', '1');
+                        navigate(`?${newSearchParams}`, { replace: true });
+                        
+                        setTimeout(() => {
                           document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Edit Collection
-                      </Button>
-                      
-                      {/* Delete Collection - only when no NFTs minted */}
-                      {mints.length === 0 && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="destructive" 
-                              size="lg"
-                              disabled={deleting}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete Collection
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Collection</AlertDialogTitle>
-                               <AlertDialogDescription>
-                                 Are you sure you want to delete "{displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.
-                               </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                 onClick={async () => {
-                                   const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
-                                   if (result.success) {
-                                   const backUrl = navigation.source === 'favorites' 
+                        }, 100);
+                      }}
+                    >
+                      <Settings className="w-3 h-3 mr-1" />
+                      Edit
+                    </Button>
+                    
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        if (mints.length > 0) {
+                          // Burn all NFTs
+                          setConfirmDialog({
+                            open: true,
+                            title: 'Burn All NFTs',
+                            description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
+                            onConfirm: async () => {
+                              setConfirmDialog(prev => ({ ...prev, loading: true }));
+                              
+                              try {
+                                const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                  body: {
+                                    collection_id: displayCollection?.id,
+                                    wallet_address: publicKey,
+                                    burn_all: true
+                                  }
+                                });
+                                
+                                if (data?.success) {
+                                  toast.success('All NFTs burned successfully');
+                                  window.location.reload();
+                                } else {
+                                  toast.error(data?.error || 'Failed to burn NFTs');
+                                }
+                              } catch (error) {
+                                console.error('Error burning all NFTs:', error);
+                                toast.error('Failed to burn NFTs');
+                              } finally {
+                                setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                              }
+                            }
+                          });
+                        } else {
+                          // Delete collection
+                          setConfirmDialog({
+                            open: true,
+                            title: 'Delete Collection',
+                            description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
+                            onConfirm: async () => {
+                              setConfirmDialog(prev => ({ ...prev, loading: true }));
+                              
+                              try {
+                                const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
+                                if (result.success) {
+                                  const backUrl = navigation.source === 'favorites' 
                                     ? '/profile?tab=favorites' 
                                     : navigation.source === 'collections' 
                                     ? '/profile?tab=collections' 
                                     : navigation.source === 'marketplace'
                                     ? '/marketplace'
                                     : '/profile';
-                                  // Don't save scroll position since we're going to a different page
                                   navigate(backUrl);
-                                  }
-                                }}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                disabled={deleting}
-                              >
-                                {deleting ? 'Deleting...' : 'Delete Collection'}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                      
-                      {/* Burn All NFTs - only when NFTs exist */}
-                      {mints.length > 0 && (
-                        <Button
-                          variant="destructive"
-                          size="lg"
-                          onClick={() => {
-                            setConfirmDialog({
-                              open: true,
-                              title: 'Burn All NFTs',
-                              description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
-                              onConfirm: async () => {
-                                setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                
-                                try {
-                                  const { data, error } = await supabase.functions.invoke('burn-nft', {
-                                    body: {
-                                      collection_id: displayCollection?.id,
-                                      wallet_address: publicKey,
-                                      burn_all: true
-                                    }
-                                  });
-                                  
-                                  if (data?.success) {
-                                    toast.success('All NFTs burned successfully');
-                                    // Refresh the page to update the data
-                                    window.location.reload();
-                                  } else {
-                                    toast.error(data?.error || 'Failed to burn NFTs');
-                                  }
-                                } catch (error) {
-                                  console.error('Error burning all NFTs:', error);
-                                  toast.error('Failed to burn NFTs');
-                                } finally {
-                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                 }
+                              } catch (error) {
+                                console.error('Error deleting collection:', error);
+                                toast.error('Failed to delete collection');
+                              } finally {
+                                setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                               }
-                            });
-                          }}
-                        >
-                          <Flame className="w-4 h-4 mr-2" />
-                          Burn All NFTs
-                        </Button>
-                      )}
-                    </>
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      <Flame className="w-3 h-3 mr-1" />
+                      Burn
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <CardContent className="pt-16">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
+                  {displayCollection?.symbol && (
+                    <Badge variant="outline" className="text-sm">
+                      {displayCollection.symbol}
+                    </Badge>
                   )}
+                  {/* Data Origin Indicators */}
+                  <div className="flex items-center gap-1">
+                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                  </div>
                 </div>
+                
+                {displayCollection?.description && (
+                  <p className="text-muted-foreground mb-4 max-w-2xl">
+                    {displayCollection.description}
+                  </p>
+                )}
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{mints.length}</div>
+                    <div className="text-sm text-muted-foreground">Minted</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{displayCollection?.max_supply || '∞'}</div>
+                    <div className="text-sm text-muted-foreground">Max Supply</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{displayCollection?.mint_price || 0}</div>
+                    <div className="text-sm text-muted-foreground">Price (SOL)</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{displayCollection?.royalty_percentage || 0}%</div>
+                    <div className="text-sm text-muted-foreground">Royalties</div>
+                  </div>
+                </div>
+
+                {/* External Links */}
+                {displayCollection?.external_links && Array.isArray(displayCollection.external_links) && displayCollection.external_links.length > 0 && (
+                  <div className="flex gap-2 mb-4">
+                    {(displayCollection.external_links as any[]).map((link: any, index: number) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        asChild
+                      >
+                        <a
+                          href={link.url.startsWith('http') ? link.url : `https://${link.url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          {link.type}
+                        </a>
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Collection Editor - Only show for collection owner */}
-          {isOwner && editorCollection && (
+          {/* Collection Editor - Only show for collection owner and when showEditor is true */}
+          {isOwner && editorCollection && showEditor && (
             <div id="collection-editor" className="mb-8">
             <CollectionEditor 
               collection={editorCollection} 
               onClose={() => {
+                setShowEditor(false);
+                // Remove edit parameter from URL
+                const newSearchParams = new URLSearchParams(searchParams);
+                newSearchParams.delete('edit');
+                const queryString = newSearchParams.toString();
+                navigate(queryString ? `?${queryString}` : window.location.pathname, { replace: true });
                 // Refresh the page data after closing editor
                 refreshCollection();
               }}
