@@ -444,41 +444,29 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         </div>
         
         <div className="flex items-center gap-2">
-          {creatorCanToggleLock && (
-            <div className="flex items-center gap-2">
-              <Badge
-                variant={lockedFields.includes(fieldName) ? 'locked' : 'outline'}
-                className="cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFieldLock(fieldName);
-                }}
-              >
-                {lockedFields.includes(fieldName) ? 'Unlock' : 'Lock'}
-              </Badge>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFieldLock(fieldName);
-                }}
-                className="h-8 w-8 p-0"
-                aria-label={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
-                title={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
-              >
-                {lockedFields.includes(fieldName) ? (
-                  <Lock className="h-4 w-4" />
-                ) : (
-                  <Unlock className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          )}
-          
           {!isLocked && isOwner && (
             <Button size="sm" onClick={() => startEditing(fieldName)}>
               Edit
+            </Button>
+          )}
+          
+          {creatorCanToggleLock && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFieldLock(fieldName);
+              }}
+              className="h-8 w-8 p-0"
+              aria-label={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
+              title={lockedFields.includes(fieldName) ? 'Unlock field' : 'Lock field'}
+            >
+              {lockedFields.includes(fieldName) ? (
+                <Lock className="h-4 w-4" />
+              ) : (
+                <Unlock className="h-4 w-4" />
+              )}
             </Button>
           )}
         </div>
