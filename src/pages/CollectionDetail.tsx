@@ -626,7 +626,7 @@ export default function CollectionDetail() {
                   {mints.map((nft) => (
                      <Card 
                       key={nft.id} 
-                      className="group hover:shadow-lg transition-shadow cursor-pointer"
+                      className="group hover:shadow-lg transition-all cursor-pointer relative"
                       onClick={() => {
                         const navIds = mints.map(mint => mint.id);
                         const source = navigation.source || 'collection';
@@ -634,72 +634,44 @@ export default function CollectionDetail() {
                         navigate(`/nft/${nft.id}?${queryString}`);
                       }}
                     >
-                      <CardContent className="p-0">
-                        <div className="relative">
-                          <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
-                            {nft.image_url ? (
-                              <img 
-                                src={nft.image_url} 
-                                alt={nft.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <ImageIcon className="w-16 h-16 text-muted-foreground" />
-                            )}
-                          </div>
-                          {/* Hover overlay with View CTA */}
-                          <div className="pointer-events-none absolute inset-0 rounded-t-lg bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <div className="flex items-center gap-2 text-white text-sm font-medium">
-                              <Eye className="w-4 h-4" />
-                              View
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <div className="mb-2">
-                            <h3 className="font-semibold line-clamp-1">{nft.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              Owner: {truncateAddress(nft.owner_address)}
-                            </p>
-                          </div>
-
-                          {/* Stats row: price, supply, minted, royalties */}
-                          <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Coins className="w-3 h-3" />
-                              <span>Price</span>
-                              <span className="font-medium text-foreground">
-                                {displayCollection?.enable_primary_sales ? (displayCollection?.mint_price ?? '—') : '—'}{displayCollection?.enable_primary_sales && displayCollection?.mint_price !== null && displayCollection?.mint_price !== undefined ? ' SOL' : ''}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>Supply</span>
-                              <span className="font-medium text-foreground">
-                                {displayCollection?.supply_mode === 'open' ? '∞' : (displayCollection?.max_supply ?? '—')}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              <span>Minted</span>
-                              <span className="font-medium text-foreground">{mints.length}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Zap className="w-3 h-3" />
-                              <span>Royalties</span>
-                              <span className="font-medium text-foreground">{displayCollection?.royalty_percentage ?? '—'}{displayCollection?.royalty_percentage != null ? '%' : ''}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <div className="text-xs text-muted-foreground">
-                              Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
-                            </div>
+                      <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
+                        <img
+                          src={nft.image_url || "/placeholder.svg"}
+                          alt={nft.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            e.currentTarget.src = '/images/og-anime.jpg';
+                          }}
+                        />
+                        
+                        {/* Hover overlay with View CTA */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10 flex flex-wrap items-center justify-center gap-1 px-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const navIds = mints.map(mint => mint.id); 
+                                const source = navigation.source || 'collection';
+                                const queryString = `from=${source}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+                                navigate(`/nft/${nft.id}?${queryString}`);
+                              }}
+                              className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
+                              title="View Details"
+                              aria-label="View NFT Details"
+                            >
+                              <Eye className="h-4 w-4" />
+                              <span className="ml-1 hidden sm:inline">View</span>
+                            </Button>
+                            
+                            {/* Burn button - only for owner */}
                             {connected && publicKey === nft.owner_address && (
-                               <Button
-                                variant="ghost"
+                              <Button
                                 size="sm"
+                                variant="destructive"
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Prevent card click when burning
+                                  e.stopPropagation();
                                   setConfirmDialog({
                                     open: true,
                                     title: 'Burn NFT',
@@ -728,10 +700,42 @@ export default function CollectionDetail() {
                                     }
                                   });
                                 }}
-                                className="text-destructive hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="bg-red-500/90 text-white hover:bg-red-500 border-red-500/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 transition-all duration-200"
+                                title="Burn NFT"
+                                aria-label="Burn NFT"
                               >
-                                <Flame className="w-3 h-3" />
+                                <Flame className="h-4 w-4" />
+                                <span className="ml-1 hidden sm:inline">Burn</span>
                               </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <CardContent className="p-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold truncate mb-1">{nft.name}</h3>
+                          
+                          {/* Owner info */}
+                          <div className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                            <span>
+                              Owner: {truncateAddress(nft.owner_address)}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Bottom section with minted time and price */}
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs text-muted-foreground">
+                            Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
+                          </div>
+                          
+                          {/* Price display */}
+                          <div className="text-sm font-medium">
+                            {displayCollection?.enable_primary_sales && displayCollection?.mint_price !== null && displayCollection?.mint_price !== undefined ? (
+                              <span className="text-primary">Price {displayCollection.mint_price} SOL</span>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
                             )}
                           </div>
                         </div>
