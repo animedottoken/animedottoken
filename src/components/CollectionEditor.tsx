@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame } from 'lucide-react';
+import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame, ChevronDown, ChevronUp } from 'lucide-react';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -110,12 +110,15 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
             </div>
             <div className="flex items-center gap-2">
               <Button 
-                variant={isEditing ? "secondary" : "outline"}
+                variant="outline"
                 size="sm"
                 onClick={() => setIsEditing(!isEditing)}
               >
-                <Settings className="w-3 h-3 mr-1" />
-                {isEditing ? 'Done' : 'Edit'}
+                {isEditing ? (
+                  <><ChevronUp className="w-3 h-3 mr-1" />Settings</>
+                ) : (
+                  <><ChevronDown className="w-3 h-3 mr-1" />Settings</>
+                )}
               </Button>
             </div>
           </CardTitle>

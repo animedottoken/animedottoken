@@ -319,25 +319,6 @@ export default function CollectionDetail() {
                         )}
                       </Button>
                       
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setShowEditor(true);
-                          // Update URL to include edit parameter
-                          const newSearchParams = new URLSearchParams(searchParams);
-                          newSearchParams.set('edit', '1');
-                          navigate(`?${newSearchParams}`, { replace: true });
-                          
-                          setTimeout(() => {
-                            document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
-                          }, 100);
-                        }}
-                      >
-                        <Settings className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                      
                       <Button
                         variant="destructive"
                         size="sm"
