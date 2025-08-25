@@ -20,9 +20,10 @@ interface CollectionEditorProps {
   onClose: () => void;
   mints: any[];
   onRefreshCollection: () => void;
+  startInEditMode?: boolean;
 }
 
-export const CollectionEditor = ({ collection: initialCollection, onClose, mints, onRefreshCollection }: CollectionEditorProps) => {
+export const CollectionEditor = ({ collection: initialCollection, onClose, mints, onRefreshCollection, startInEditMode = false }: CollectionEditorProps) => {
   const { updateCollection } = useCollections({ autoLoad: false });
   const { publicKey } = useSolanaWallet();
   const { collection, refreshCollection } = useCollection(initialCollection.id);
@@ -30,7 +31,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
   const { burning: burningAll, burnAllNFTs } = useBurnAllNFTs();
   
   // State to control editing mode
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(startInEditMode);
   
   // Always use the passed collection data for consistency
   // The parent component handles data refreshing
@@ -108,79 +109,14 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
               Collection Details
             </div>
             <div className="flex items-center gap-2">
-              {/* Status Badges */}
-              <div className="flex gap-2">
-                <Badge variant={currentCollection.is_live ? 'default' : 'secondary'}>
-                  {currentCollection.is_live ? 'Live' : 'Paused'}
-                </Badge>
-                {currentCollection.max_supply && (
-                  <Badge variant="outline">
-                    {mints.length}/{currentCollection.max_supply}
-                  </Badge>
-                )}
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex gap-1">
-                <Button
-                  variant={currentCollection.is_live ? "warning" : "default"}
-                  size="sm"
-                  onClick={handlePauseStart}
-                >
-                  {currentCollection.is_live ? (
-                    <><Pause className="w-3 h-3 mr-1" />Pause</>
-                  ) : (
-                    <><Play className="w-3 h-3 mr-1" />Start</>
-                  )}
-                </Button>
-                
-                <Button 
-                  variant={isEditing ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  <Settings className="w-3 h-3 mr-1" />
-                  {isEditing ? 'Done' : 'Edit'}
-                </Button>
-                
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                    >
-                      <Flame className="w-3 h-3 mr-1" />
-                      Burn
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        {hasMintedNFTs ? 'Burn All NFTs' : 'Burn Collection'}
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {hasMintedNFTs 
-                          ? `This will permanently burn all ${mints.length} NFTs in "${currentCollection.name}". This action cannot be undone.`
-                          : `Are you sure you want to permanently burn "${currentCollection.name}"? This action cannot be undone and will remove the collection from the blockchain.`
-                        }
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={hasMintedNFTs ? handleBurnAllNFTs : handleDeleteCollection}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        disabled={hasMintedNFTs ? burningAll : deleting}
-                      >
-                        {hasMintedNFTs 
-                          ? (burningAll ? 'Burning...' : `Burn ${mints.length} NFTs`)
-                          : (deleting ? 'Burning...' : 'Burn Collection')
-                        }
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+              <Button 
+                variant={isEditing ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                <Settings className="w-3 h-3 mr-1" />
+                {isEditing ? 'Done' : 'Edit'}
+              </Button>
             </div>
           </CardTitle>
           <p className="text-sm text-muted-foreground">

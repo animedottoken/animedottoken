@@ -202,7 +202,7 @@ export default function CollectionDetail() {
           {/* Collection Banner */}
           <Card className="mb-8 overflow-hidden">
             <div className="relative">
-              <AspectRatio ratio={3/1}>
+              <AspectRatio ratio={4/1}>
                 {displayCollection?.banner_image_url ? (
                   <img
                     src={displayCollection.banner_image_url}
@@ -232,183 +232,185 @@ export default function CollectionDetail() {
                   )}
                 </div>
               </div>
-
-              {/* Status Badges and Owner Actions */}
-              <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                <div className="flex gap-2">
-                  {displayCollection?.verified && (
-                    <Badge variant="secondary" className="bg-blue-500 text-white">
-                      <Verified className="w-3 h-3 mr-1" />
-                      Verified
-                    </Badge>
-                  )}
-                  
-                  {/* Collection Status */}
-                  {displayCollection?.is_live ? (
-                    <Badge variant="secondary" className="bg-green-500 text-white">
-                      ● Live Minting
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="bg-orange-500 text-white">
-                      ⏸ Paused
-                    </Badge>
-                  )}
-                  
-                  {/* Minting Progress */}
-                  {displayCollection?.max_supply && (
-                    <Badge variant="outline" className="bg-background/80">
-                      {mints.length}/{displayCollection.max_supply}
-                    </Badge>
-                  )}
-                </div>
-                
-                {/* Owner Action Buttons */}
-                {isOwner && (
-                  <div className="flex gap-1">
-                    <Button
-                      variant={displayCollection?.is_live ? "warning" : "default"}
-                      size="sm"
-                      onClick={async () => {
-                        try {
-                          const { data, error } = await supabase.functions.invoke('update-collection', {
-                            body: {
-                              collection_id: displayCollection?.id,
-                              updates: { is_live: !displayCollection?.is_live }
-                            }
-                          });
-                          
-                          if (data?.success) {
-                            refreshCollection();
-                            toast.success(
-                              displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
-                              {
-                                description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
-                              }
-                            );
-                          } else {
-                            toast.error('Failed to update collection status');
-                          }
-                        } catch (error) {
-                          toast.error('Failed to update collection status');
-                        }
-                      }}
-                    >
-                      {displayCollection?.is_live ? (
-                        <><Pause className="w-3 h-3 mr-1" />Pause</>
-                      ) : (
-                        <><Play className="w-3 h-3 mr-1" />Start</>
-                      )}
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        setShowEditor(true);
-                        // Update URL to include edit parameter
-                        const newSearchParams = new URLSearchParams(searchParams);
-                        newSearchParams.set('edit', '1');
-                        navigate(`?${newSearchParams}`, { replace: true });
-                        
-                        setTimeout(() => {
-                          document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
-                        }, 100);
-                      }}
-                    >
-                      <Settings className="w-3 h-3 mr-1" />
-                      Edit
-                    </Button>
-                    
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        if (mints.length > 0) {
-                          // Burn all NFTs
-                          setConfirmDialog({
-                            open: true,
-                            title: 'Burn All NFTs',
-                            description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
-                            onConfirm: async () => {
-                              setConfirmDialog(prev => ({ ...prev, loading: true }));
-                              
-                              try {
-                                const { data, error } = await supabase.functions.invoke('burn-nft', {
-                                  body: {
-                                    collection_id: displayCollection?.id,
-                                    wallet_address: publicKey,
-                                    burn_all: true
-                                  }
-                                });
-                                
-                                if (data?.success) {
-                                  toast.success('All NFTs burned successfully');
-                                  window.location.reload();
-                                } else {
-                                  toast.error(data?.error || 'Failed to burn NFTs');
-                                }
-                              } catch (error) {
-                                console.error('Error burning all NFTs:', error);
-                                toast.error('Failed to burn NFTs');
-                              } finally {
-                                setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                              }
-                            }
-                          });
-                        } else {
-                          // Delete collection
-                          setConfirmDialog({
-                            open: true,
-                            title: 'Delete Collection',
-                            description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
-                            onConfirm: async () => {
-                              setConfirmDialog(prev => ({ ...prev, loading: true }));
-                              
-                              try {
-                                const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
-                                if (result.success) {
-                                  const backUrl = navigation.source === 'favorites' 
-                                    ? '/profile?tab=favorites' 
-                                    : navigation.source === 'collections' 
-                                    ? '/profile?tab=collections' 
-                                    : navigation.source === 'marketplace'
-                                    ? '/marketplace'
-                                    : '/profile';
-                                  navigate(backUrl);
-                                }
-                              } catch (error) {
-                                console.error('Error deleting collection:', error);
-                                toast.error('Failed to delete collection');
-                              } finally {
-                                setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                              }
-                            }
-                          });
-                        }
-                      }}
-                    >
-                      <Flame className="w-3 h-3 mr-1" />
-                      Burn
-                    </Button>
-                  </div>
-                )}
-              </div>
             </div>
 
             <CardContent className="pt-16">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
-                  {displayCollection?.symbol && (
-                    <Badge variant="outline" className="text-sm">
-                      {displayCollection.symbol}
-                    </Badge>
-                  )}
-                  {/* Data Origin Indicators */}
-                  <div className="flex items-center gap-1">
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
-                    <Badge variant="offchain" className="text-xs">Off-Chain</Badge>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
+                    {displayCollection?.symbol && (
+                      <Badge variant="outline" className="text-sm">
+                        {displayCollection.symbol}
+                      </Badge>
+                    )}
+                    
+                    {/* Status Badges */}
+                    <div className="flex items-center gap-2">
+                      {/* On-chain status - show only if collection is minted */}
+                      {(displayCollection?.collection_mint_address || displayCollection?.verified) && (
+                        <Badge variant="secondary" className="bg-green-500 text-white text-xs">
+                          On-Chain
+                        </Badge>
+                      )}
+                      
+                      {displayCollection?.verified && (
+                        <Badge variant="secondary" className="bg-blue-500 text-white text-xs">
+                          <Verified className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
+                      
+                      {/* Collection Status */}
+                      {displayCollection?.is_live ? (
+                        <Badge variant="secondary" className="bg-green-500 text-white text-xs">
+                          ● Live
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-orange-500 text-white text-xs">
+                          ⏸ Paused
+                        </Badge>
+                      )}
+                      
+                      {/* Minting Progress */}
+                      {displayCollection?.max_supply && (
+                        <Badge variant="outline" className="text-xs">
+                          {mints.length}/{displayCollection.max_supply}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+                  
+                  {/* Owner Action Buttons */}
+                  {isOwner && (
+                    <div className="flex gap-1">
+                      <Button
+                        variant={displayCollection?.is_live ? "outline" : "default"}
+                        size="sm"
+                        onClick={async () => {
+                          try {
+                            const { data, error } = await supabase.functions.invoke('update-collection', {
+                              body: {
+                                collection_id: displayCollection?.id,
+                                updates: { is_live: !displayCollection?.is_live }
+                              }
+                            });
+                            
+                            if (data?.success) {
+                              refreshCollection();
+                              toast.success(
+                                displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                                {
+                                  description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                }
+                              );
+                            } else {
+                              toast.error('Failed to update collection status');
+                            }
+                          } catch (error) {
+                            toast.error('Failed to update collection status');
+                          }
+                        }}
+                      >
+                        {displayCollection?.is_live ? (
+                          <><Pause className="w-3 h-3 mr-1" />Pause</>
+                        ) : (
+                          <><Play className="w-3 h-3 mr-1" />Start</>
+                        )}
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setShowEditor(true);
+                          // Update URL to include edit parameter
+                          const newSearchParams = new URLSearchParams(searchParams);
+                          newSearchParams.set('edit', '1');
+                          navigate(`?${newSearchParams}`, { replace: true });
+                          
+                          setTimeout(() => {
+                            document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 100);
+                        }}
+                      >
+                        <Settings className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                      
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          if (mints.length > 0) {
+                            // Burn all NFTs
+                            setConfirmDialog({
+                              open: true,
+                              title: 'Burn All NFTs',
+                              description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
+                              onConfirm: async () => {
+                                setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                
+                                try {
+                                  const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                    body: {
+                                      collection_id: displayCollection?.id,
+                                      wallet_address: publicKey,
+                                      burn_all: true
+                                    }
+                                  });
+                                  
+                                  if (data?.success) {
+                                    toast.success('All NFTs burned successfully');
+                                    window.location.reload();
+                                  } else {
+                                    toast.error(data?.error || 'Failed to burn NFTs');
+                                  }
+                                } catch (error) {
+                                  console.error('Error burning all NFTs:', error);
+                                  toast.error('Failed to burn NFTs');
+                                } finally {
+                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                                }
+                              }
+                            });
+                          } else {
+                            // Delete collection
+                            setConfirmDialog({
+                              open: true,
+                              title: 'Delete Collection',
+                              description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
+                              onConfirm: async () => {
+                                setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                
+                                try {
+                                  const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
+                                  if (result.success) {
+                                    const backUrl = navigation.source === 'favorites' 
+                                      ? '/profile?tab=favorites' 
+                                      : navigation.source === 'collections' 
+                                      ? '/profile?tab=collections' 
+                                      : navigation.source === 'marketplace'
+                                      ? '/marketplace'
+                                      : '/profile';
+                                    navigate(backUrl);
+                                  }
+                                } catch (error) {
+                                  console.error('Error deleting collection:', error);
+                                  toast.error('Failed to delete collection');
+                                } finally {
+                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                                }
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <Flame className="w-3 h-3 mr-1" />
+                        Burn
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 
                 {displayCollection?.description && (
@@ -470,6 +472,7 @@ export default function CollectionDetail() {
               collection={editorCollection} 
               mints={mints}
               onRefreshCollection={refreshCollection}
+              startInEditMode={searchParams.get('edit') === '1'}
               onClose={() => {
                 setShowEditor(false);
                 // Remove edit parameter from URL
