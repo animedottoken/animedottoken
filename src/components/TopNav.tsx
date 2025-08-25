@@ -121,7 +121,7 @@ export const TopNav = () => {
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-56">
+              <DropdownMenuContent align="end" className="w-56">
                 <div className="px-2 py-1.5 text-sm">
                   <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full" />
@@ -199,7 +199,7 @@ export const TopNav = () => {
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-48">
+              <DropdownMenuContent align="end" className="w-48">
                 <div className="px-2 py-1.5 text-sm">
                   <div className="flex items-center gap-2 text-red-600 font-medium">
                     <div className="w-2 h-2 bg-red-500 rounded-full" />
@@ -298,7 +298,7 @@ export const TopNav = () => {
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-56">
+            <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5 text-sm">
                 <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
@@ -376,7 +376,7 @@ export const TopNav = () => {
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="bottom" sideOffset={8} collisionPadding={16} className="w-48">
+            <DropdownMenuContent align="end" className="w-48">
               <div className="px-2 py-1.5 text-sm">
                 <div className="flex items-center gap-2 text-red-600 font-medium">
                   <div className="w-2 h-2 bg-red-500 rounded-full" />
