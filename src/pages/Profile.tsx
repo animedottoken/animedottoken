@@ -92,7 +92,7 @@ export default function Profile() {
     onConfirm: () => {},
   });
 
-  // Fetch profile details for followed creators
+  // Optimized: Fetch profile details for followed creators with stats in single query
   useEffect(() => {
     const fetchFollowedProfiles = async () => {
       if (followedCreators.length === 0) {
@@ -104,11 +104,28 @@ export default function Profile() {
       try {
         const { data, error } = await supabase
           .from('user_profiles')
-          .select('wallet_address, nickname, bio, profile_image_url')
+          .select(`
+            wallet_address, 
+            nickname, 
+            bio, 
+            profile_image_url,
+            creators_public_stats!wallet_address (
+              follower_count,
+              total_likes_count
+            )
+          `)
           .in('wallet_address', followedCreators);
 
         if (error) throw error;
-        setFollowedProfiles(data || []);
+        
+        // Include stats in profile data
+        const profilesWithStats = (data || []).map(profile => ({
+          ...profile,
+          follower_count: (profile as any).creators_public_stats?.[0]?.follower_count || 0,
+          total_likes_count: (profile as any).creators_public_stats?.[0]?.total_likes_count || 0,
+        }));
+        
+        setFollowedProfiles(profilesWithStats);
       } catch (error) {
         console.error('Error fetching followed profiles:', error);
         setFollowedProfiles([]);

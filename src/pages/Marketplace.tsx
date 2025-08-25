@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -133,9 +133,7 @@ export default function Marketplace() {
 
   useEffect(() => {
     loadMarketplaceData();
-    // Note: Real-time updates for follows and likes are handled by their respective hooks
-    // (useCreatorFollows, useNFTLikes) so we don't need to reload all marketplace data here
-  }, []);
+  }, [activeTab]); // Load data when tab changes
 
   // Sync tab with URL parameter
   useEffect(() => {
@@ -159,82 +157,13 @@ export default function Marketplace() {
     try {
       setLoading(true);
       
-      // Load NFTs
-      const { data: nftData, error: nftError } = await supabase
-        .from('nfts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (nftError) {
-        console.error('Error loading NFTs:', nftError);
-      } else {
-        setNfts(nftData || []);
-      }
-
-      // Load Collections
-      const { data: collectionData, error: collectionError } = await supabase
-        .from('collections_public')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (collectionError) {
-        console.error('Error loading collections:', collectionError);
-      } else {
-        setCollections(collectionData || []);
-      }
-
-      // Load Creators with stats
-      const { data: creatorData, error: creatorError } = await supabase
-        .from('user_profiles')
-        .select(`
-          id,
-          wallet_address,
-          nickname,
-          bio,
-          profile_image_url,
-          trade_count,
-          profile_rank,
-          verified
-        `)
-        .not('nickname', 'is', null)
-        .order('trade_count', { ascending: false })
-        .limit(50);
-
-      if (creatorError) {
-        console.error('Error loading creators:', creatorError);
-      } else {
-        // Get creator stats and NFT count for each creator
-        const creatorsWithStats = await Promise.all(
-          (creatorData || []).map(async (creator) => {
-            // Get NFT count
-            const { count: nftCount } = await supabase
-              .from('nfts')
-              .select('*', { count: 'exact', head: true })
-              .eq('creator_address', creator.wallet_address);
-            
-            // Get collection count
-            const { count: collectionCount } = await supabase
-              .from('collections')
-              .select('*', { count: 'exact', head: true })
-              .eq('creator_address', creator.wallet_address);
-            
-            // Get creator stats (followers and NFT likes)
-            const { data: statsData } = await supabase
-              .from('creators_public_stats')
-              .select('follower_count, nft_likes_count')
-              .eq('wallet_address', creator.wallet_address)
-              .single();
-            
-            return {
-              ...creator,
-              created_nfts: nftCount || 0,
-              created_collections: collectionCount || 0,
-              follower_count: statsData?.follower_count || 0,
-              nft_likes_count: statsData?.nft_likes_count || 0,
-            };
-          })
-        );
-        setCreators(creatorsWithStats);
+      // Load data based on active tab for better performance
+      if (activeTab === "nfts") {
+        await loadNFTs();
+      } else if (activeTab === "collections") {
+        await loadCollections();
+      } else if (activeTab === "creators") {
+        await loadCreators();
       }
     } catch (error) {
       console.error('Error loading marketplace data:', error);
@@ -243,101 +172,212 @@ export default function Marketplace() {
     }
   };
 
-  const filteredNfts = nfts.filter(nft => {
-    // Only show listed NFTs in marketplace
-    if (!nft.is_listed) return false;
-    
-    const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const isNftLiked = isLiked(nft.id);
-    const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
+  const loadNFTs = async () => {
+    const { data: nftData, error: nftError } = await supabase
+      .from('nfts')
+      .select('*')
+      .eq('is_listed', true)
+      .order('created_at', { ascending: false })
+      .limit(100); // Add pagination
 
-    // Use robust attribute helpers to extract values regardless of format
-    const category = getNFTCategory(nft.attributes);
-    const royalty = getNFTRoyalty(nft.attributes);
-    const explicit = getNFTExplicitContent(nft.attributes);
-
-    // Base filter selections
-    let matchesFilter = true;
-    if (filterBy === "liked") matchesFilter = isNftLiked;
-    else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
-
-    // Enforce mandatory listing rules using the robust helper
-    const mandatoryValid = hasRequiredListingFields(nft);
-
-    // Property filters (existing sidebar)
-    let matchesPropertyFilters = true;
-    if (Object.keys(propertyFilters).length > 0) {
-      matchesPropertyFilters = Object.entries(propertyFilters).every(([traitType, selectedValues]) => {
-        if (selectedValues.length === 0) return true;
-        if (!nft.attributes) return false;
-        const nftProperties = normalizeAttributes(nft.attributes);
-        const matchingProperty = nftProperties.find(prop => 
-          prop.trait_type === traitType && selectedValues.includes(prop.value)
-        );
-        return !!matchingProperty;
-      });
+    if (nftError) {
+      console.error('Error loading NFTs:', nftError);
+    } else {
+      setNfts(nftData || []);
     }
+  };
 
-    // New filters: explicit toggle, category, price range, royalties range
-    let matchesExplicit = true;
-    if (!includeExplicit) matchesExplicit = !explicit;
+  const loadCollections = async () => {
+    const { data: collectionData, error: collectionError } = await supabase
+      .from('collections_public')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50); // Add pagination
 
-    const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
-
-    const p = nft.price ?? 0;
-    let matchesPrice = true;
-    if (priceMin) matchesPrice = matchesPrice && p >= parseFloat(priceMin);
-    if (priceMax) matchesPrice = matchesPrice && p <= parseFloat(priceMax);
-
-    let matchesRoyalty = true;
-    if (royaltyMin) matchesRoyalty = matchesRoyalty && (royalty ?? -1) >= parseFloat(royaltyMin);
-    if (royaltyMax) matchesRoyalty = matchesRoyalty && (royalty ?? 999) <= parseFloat(royaltyMax);
-
-    return matchesSearch && matchesFilter && matchesPropertyFilters && matchesExplicit && matchesCategory && matchesPrice && matchesRoyalty && mandatoryValid;
-  });
-
-  const sortedNfts = [...filteredNfts].sort((a, b) => {
-    switch (sortBy) {
-      case "price_low":
-        return (a.price || 0) - (b.price || 0);
-      case "price_high":
-        return (b.price || 0) - (a.price || 0);
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "oldest":
-        return new Date(a.id).getTime() - new Date(b.id).getTime();
-      default: // newest
-        return new Date(b.id).getTime() - new Date(a.id).getTime();
+    if (collectionError) {
+      console.error('Error loading collections:', collectionError);
+    } else {
+      setCollections(collectionData || []);
     }
-  });
+  };
 
-  const filteredCollections = collections.filter(collection =>
-    collection.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const loadCreators = async () => {
+    // Optimized: Use single query with join to get creator stats
+    const { data: creatorData, error: creatorError } = await supabase
+      .from('user_profiles')
+      .select(`
+        id,
+        wallet_address,
+        nickname,
+        bio,
+        profile_image_url,
+        trade_count,
+        profile_rank,
+        verified,
+        creators_public_stats!wallet_address (
+          follower_count,
+          nft_likes_count,
+          collection_likes_count
+        )
+      `)
+      .not('nickname', 'is', null)
+      .order('trade_count', { ascending: false })
+      .limit(30); // Reduced limit for faster loading
 
-  const filteredCreators = creators.filter(creator => {
-    const matchesSearch = creator.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-     creator.wallet_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     creator.bio?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    let matchesFilter = true;
-    if (creatorFilter === "followed") {
-      matchesFilter = followedCreators.includes(creator.wallet_address);
+    if (creatorError) {
+      console.error('Error loading creators:', creatorError);
+    } else {
+      // Get creator counts in batch for better performance
+      const walletAddresses = (creatorData || []).map(c => c.wallet_address);
+      
+      const [nftCounts, collectionCounts] = await Promise.all([
+        supabase
+          .from('nfts')
+          .select('creator_address')
+          .in('creator_address', walletAddresses),
+        supabase
+          .from('collections')
+          .select('creator_address')
+          .in('creator_address', walletAddresses)
+      ]);
+
+      // Count creations per creator
+      const nftCountMap = nftCounts.data?.reduce((acc, nft) => {
+        acc[nft.creator_address] = (acc[nft.creator_address] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      const collectionCountMap = collectionCounts.data?.reduce((acc, collection) => {
+        acc[collection.creator_address] = (acc[collection.creator_address] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      const creatorsWithStats = (creatorData || []).map(creator => ({
+        ...creator,
+        created_nfts: nftCountMap[creator.wallet_address] || 0,
+        created_collections: collectionCountMap[creator.wallet_address] || 0,
+        follower_count: (creator as any).creators_public_stats?.[0]?.follower_count || 0,
+        nft_likes_count: (creator as any).creators_public_stats?.[0]?.nft_likes_count || 0,
+      }));
+      
+      setCreators(creatorsWithStats);
     }
-    
-    return matchesSearch && matchesFilter;
-  });
+  };
+
+  // Memoized filtered data for better performance
+  const filteredNfts = useMemo(() => {
+    return nfts.filter(nft => {
+      // Only show listed NFTs in marketplace
+      if (!nft.is_listed) return false;
+      
+      const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const isNftLiked = isLiked(nft.id);
+      const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
+
+      // Use robust attribute helpers to extract values regardless of format
+      const category = getNFTCategory(nft.attributes);
+      const royalty = getNFTRoyalty(nft.attributes);
+      const explicit = getNFTExplicitContent(nft.attributes);
+
+      // Base filter selections
+      let matchesFilter = true;
+      if (filterBy === "liked") matchesFilter = isNftLiked;
+      else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
+
+      // Enforce mandatory listing rules using the robust helper
+      const mandatoryValid = hasRequiredListingFields(nft);
+
+      // Property filters (existing sidebar)
+      let matchesPropertyFilters = true;
+      if (Object.keys(propertyFilters).length > 0) {
+        matchesPropertyFilters = Object.entries(propertyFilters).every(([traitType, selectedValues]) => {
+          if (selectedValues.length === 0) return true;
+          if (!nft.attributes) return false;
+          const nftProperties = normalizeAttributes(nft.attributes);
+          const matchingProperty = nftProperties.find(prop => 
+            prop.trait_type === traitType && selectedValues.includes(prop.value)
+          );
+          return !!matchingProperty;
+        });
+      }
+
+      // New filters: explicit toggle, category, price range, royalties range
+      let matchesExplicit = true;
+      if (!includeExplicit) matchesExplicit = !explicit;
+
+      const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
+
+      const p = nft.price ?? 0;
+      let matchesPrice = true;
+      if (priceMin) matchesPrice = matchesPrice && p >= parseFloat(priceMin);
+      if (priceMax) matchesPrice = matchesPrice && p <= parseFloat(priceMax);
+
+      let matchesRoyalty = true;
+      if (royaltyMin) matchesRoyalty = matchesRoyalty && (royalty ?? -1) >= parseFloat(royaltyMin);
+      if (royaltyMax) matchesRoyalty = matchesRoyalty && (royalty ?? 999) <= parseFloat(royaltyMax);
+
+      return matchesSearch && matchesFilter && matchesPropertyFilters && matchesExplicit && matchesCategory && matchesPrice && matchesRoyalty && mandatoryValid;
+    });
+  }, [nfts, searchTerm, isLiked, followedCreators, filterBy, propertyFilters, includeExplicit, categoryFilter, priceMin, priceMax, royaltyMin, royaltyMax]);
+
+  const sortedNfts = useMemo(() => {
+    return [...filteredNfts].sort((a, b) => {
+      switch (sortBy) {
+        case "price_low":
+          return (a.price || 0) - (b.price || 0);
+        case "price_high":
+          return (b.price || 0) - (a.price || 0);
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "oldest":
+          return new Date(a.id).getTime() - new Date(b.id).getTime();
+        default: // newest
+          return new Date(b.id).getTime() - new Date(a.id).getTime();
+      }
+    });
+  }, [filteredNfts, sortBy]);
+
+  const filteredCollections = useMemo(() => {
+    return collections.filter(collection =>
+      collection.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [collections, searchTerm]);
+
+  const filteredCreators = useMemo(() => {
+    return creators.filter(creator => {
+      const matchesSearch = creator.nickname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       creator.wallet_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       creator.bio?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let matchesFilter = true;
+      if (creatorFilter === "followed") {
+        matchesFilter = followedCreators.includes(creator.wallet_address);
+      }
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [creators, searchTerm, creatorFilter, followedCreators]);
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(activeTab === "creators" ? 8 : 12)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <div className="aspect-square bg-muted rounded-t-lg"></div>
+              <div className={`${activeTab === "creators" ? "aspect-square" : "aspect-square"} bg-muted rounded-t-lg`}></div>
               <CardContent className="p-4">
                 <div className="h-4 bg-muted rounded mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
+                <div className="h-3 bg-muted rounded w-2/3 mb-2"></div>
+                {activeTab === "creators" && (
+                  <>
+                    <div className="h-3 bg-muted rounded w-1/2 mb-3"></div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className="h-12 bg-muted rounded"></div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           ))}
