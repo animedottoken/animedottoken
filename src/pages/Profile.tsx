@@ -274,11 +274,11 @@ export default function Profile() {
                 <span className="text-muted-foreground">
                   {collection.items_redeemed}/{collection.max_supply || '∞'} minted
                 </span>
-                {collection.mint_price > 0 && (
-                  <span className="font-medium">
-                    {collection.mint_price} SOL
-                  </span>
-                )}
+                        {collection.mint_price > 0 && (
+                          <span className="font-medium">
+                            <span className="text-primary">Price</span> {collection.mint_price} SOL
+                          </span>
+                        )}
               </div>
             </div>
             </CardContent>
@@ -728,7 +728,7 @@ export default function Profile() {
                         </span>
                         {collection.mint_price > 0 && (
                           <span className="font-medium">
-                            {collection.mint_price} SOL
+                            <span className="text-primary">Price</span> {collection.mint_price} SOL
                           </span>
                         )}
                       </div>

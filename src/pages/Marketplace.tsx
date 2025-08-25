@@ -43,6 +43,8 @@ interface Collection {
   verified: boolean;
   items_redeemed: number;
   creator_address: string;
+  mint_price?: number;
+  max_supply?: number;
 }
 
 interface Creator {
@@ -536,8 +538,15 @@ export default function Marketplace() {
                     <Badge variant="secondary" className="text-xs">✓</Badge>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{collection.items_redeemed} items</span>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {collection.items_redeemed}/{collection.max_supply || '∞'} minted
+                  </span>
+                  {collection.mint_price && collection.mint_price > 0 && (
+                    <span className="font-medium">
+                      <span className="text-primary">Price</span> {collection.mint_price} SOL
+                    </span>
+                  )}
                 </div>
               </CardContent>
              </Card>
