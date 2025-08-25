@@ -232,9 +232,22 @@ export default function CollectionDetail() {
                     Verified
                   </Badge>
                 )}
-                {displayCollection?.is_live && (
+                
+                {/* Collection Status */}
+                {displayCollection?.is_live ? (
                   <Badge variant="secondary" className="bg-green-500 text-white">
-                    Live
+                    ● Live Minting
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="bg-orange-500 text-white">
+                    ⏸ Paused
+                  </Badge>
+                )}
+                
+                {/* Minting Progress */}
+                {displayCollection?.max_supply && (
+                  <Badge variant="outline" className="bg-background/80">
+                    {mints.length}/{displayCollection.max_supply}
                   </Badge>
                 )}
               </div>
@@ -340,7 +353,7 @@ export default function CollectionDetail() {
                         }
                       }}
                     >
-                      {displayCollection?.is_live ? 'Pause Minting' : 'Go Live'}
+                      {displayCollection?.is_live ? 'Pause Minting' : 'Start Minting'}
                     </Button>
                   )}
                   
@@ -357,6 +370,7 @@ export default function CollectionDetail() {
                         Edit Collection
                       </Button>
                       
+                      {/* Delete Collection - only when no NFTs minted */}
                       {mints.length === 0 && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -401,6 +415,50 @@ export default function CollectionDetail() {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                      )}
+                      
+                      {/* Burn All NFTs - only when NFTs exist */}
+                      {mints.length > 0 && (
+                        <Button
+                          variant="destructive"
+                          size="lg"
+                          onClick={() => {
+                            setConfirmDialog({
+                              open: true,
+                              title: 'Burn All NFTs',
+                              description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
+                              onConfirm: async () => {
+                                setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                
+                                try {
+                                  const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                    body: {
+                                      collection_id: displayCollection?.id,
+                                      wallet_address: publicKey,
+                                      burn_all: true
+                                    }
+                                  });
+                                  
+                                  if (data?.success) {
+                                    toast.success('All NFTs burned successfully');
+                                    // Refresh the page to update the data
+                                    window.location.reload();
+                                  } else {
+                                    toast.error(data?.error || 'Failed to burn NFTs');
+                                  }
+                                } catch (error) {
+                                  console.error('Error burning all NFTs:', error);
+                                  toast.error('Failed to burn NFTs');
+                                } finally {
+                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                                }
+                              }
+                            });
+                          }}
+                        >
+                          <Flame className="w-4 h-4 mr-2" />
+                          Burn All NFTs
+                        </Button>
                       )}
                     </>
                   )}
