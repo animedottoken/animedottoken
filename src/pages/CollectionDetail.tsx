@@ -253,11 +253,11 @@ export default function CollectionDetail() {
                 <div className="absolute top-4 right-4">
                   <ProfileStyleEditButton
                     onClick={() => setShowBannerDialog(true)}
-                    tooltipContent={
-                      (mints.length > 0) 
-                        ? "Change banner (2 USDT in ANIME)" 
-                        : "Change banner (free until minted)"
-                    }
+                     tooltipContent={
+                       ((displayCollection?.items_redeemed || 0) > 0) 
+                         ? "Change banner (2 USDT in ANIME)" 
+                         : "Change banner (free until minted)"
+                     }
                   />
                 </div>
               )}
@@ -280,11 +280,11 @@ export default function CollectionDetail() {
                   {/* Avatar Edit Button - Profile Style */}
                   {isOwner && (
                     <div className="absolute -bottom-1 -right-1">
-                      <ProfileStyleEditButton
+                       <ProfileStyleEditButton
                         onClick={() => setShowAvatarDialog(true)}
-                        disabled={mints.length > 0}
+                        disabled={(displayCollection?.items_redeemed || 0) > 0}
                         tooltipContent={
-                          mints.length > 0 
+                          (displayCollection?.items_redeemed || 0) > 0 
                             ? "Avatar locked after minting" 
                             : "Change avatar (free until minted)"
                         }
@@ -733,7 +733,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.image_url}
           onSaved={() => refreshCollection(true)}
-          isMinted={mints.length > 0}
+          isMinted={(displayCollection?.items_redeemed || 0) > 0}
         />
 
         {/* Banner Edit Dialog */}
@@ -743,7 +743,7 @@ export default function CollectionDetail() {
           collectionId={collectionId!}
           currentUrl={displayCollection?.banner_image_url}
           onSaved={() => refreshCollection(true)}
-          isMinted={mints.length > 0}
+          isMinted={(displayCollection?.items_redeemed || 0) > 0}
         />
       </main>
     </>
