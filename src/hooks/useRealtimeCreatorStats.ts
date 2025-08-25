@@ -12,17 +12,8 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
   const [creatorStats, setCreatorStats] = useState<CreatorStats>({});
   const [loading, setLoading] = useState(true);
   const debounceRef = useRef<NodeJS.Timeout>();
-
-  // Debounced refresh to prevent rapid successive updates
-  const debouncedRefresh = useCallback(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    debounceRef.current = setTimeout(() => {
-      loadCreatorStats();
-    }, 100);
-  }, []);
-
+  const addressesKey = walletAddresses.sort().join(',');
+  
   const loadCreatorStats = useCallback(async () => {
     if (walletAddresses.length === 0) {
       setCreatorStats({});
@@ -55,7 +46,17 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     } finally {
       setLoading(false);
     }
-  }, [walletAddresses.join(',')]);
+  }, [addressesKey]);
+
+  // Debounced refresh to prevent rapid successive updates
+  const debouncedRefresh = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      loadCreatorStats();
+    }, 100);
+  }, [loadCreatorStats]);
 
   // Optimistically update creator stats from cross-page signals
   const handleCreatorStatsUpdate = useCallback((event: CustomEvent) => {
@@ -75,7 +76,7 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
       // Also trigger a debounced refresh to sync with database
       debouncedRefresh();
     }
-  }, [walletAddresses, debouncedRefresh]);
+  }, [addressesKey, debouncedRefresh]);
 
   useEffect(() => {
     loadCreatorStats();
@@ -113,25 +114,10 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
           schema: 'public',
           table: 'nft_likes'
         },
-        async (payload) => {
+        (payload) => {
           console.log('NFT likes change detected in creator stats:', payload);
-          // For NFT likes, we need to check if the NFT belongs to one of our tracked creators
-          try {
-            const nftId = (payload.new as any)?.nft_id || (payload.old as any)?.nft_id;
-            if (nftId) {
-              const { data: nftData } = await supabase
-                .from('nfts')
-                .select('creator_address')
-                .eq('id', nftId)
-                .single();
-              
-              if (nftData && walletAddresses.includes(nftData.creator_address)) {
-                debouncedRefresh();
-              }
-            }
-          } catch (error) {
-            console.error('Error checking NFT creator for stats update:', error);
-          }
+          // For performance, just refresh without checking - the stats view will handle filtering
+          debouncedRefresh();
         }
       )
       .subscribe();
@@ -143,7 +129,7 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [walletAddresses.join(','), loadCreatorStats, handleCreatorStatsUpdate, debouncedRefresh]);
+  }, [addressesKey, loadCreatorStats, handleCreatorStatsUpdate, debouncedRefresh]);
 
   const getCreatorFollowerCount = (walletAddress: string): number => {
     return creatorStats[walletAddress]?.follower_count || 0;

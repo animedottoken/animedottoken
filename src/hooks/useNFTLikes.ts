@@ -116,7 +116,11 @@ export const useNFTLikes = () => {
   useEffect(() => {
     loadLikedNFTs();
 
-    // Set up real-time subscription for NFT likes
+    if (!connected || !publicKey) {
+      return;
+    }
+
+    // Set up real-time subscription for NFT likes only when connected
     const channel = supabase
       .channel('nft-likes-realtime')
       .on(
@@ -124,14 +128,16 @@ export const useNFTLikes = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'nft_likes'
+          table: 'nft_likes',
+          filter: `user_wallet=eq.${publicKey}`
         },
         (payload) => {
           console.log('🔥 Real-time NFT likes change detected:', payload);
-          console.log('Event type:', payload.eventType);
-          console.log('Table:', payload.table);
-          // Refresh liked NFTs when any change occurs
-          loadLikedNFTs();
+          // Only refresh if this change affects the current user
+          const userWallet = (payload.new as any)?.user_wallet || (payload.old as any)?.user_wallet;
+          if (userWallet === publicKey) {
+            loadLikedNFTs();
+          }
         }
       )
       .subscribe((status) => {
@@ -142,7 +148,7 @@ export const useNFTLikes = () => {
       console.log('🔌 Cleaning up NFT likes subscription');
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey]);
+  }, [connected, publicKey, loadLikedNFTs]);
 
   return {
     likedNFTs,

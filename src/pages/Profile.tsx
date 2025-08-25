@@ -578,7 +578,11 @@ export default function Profile() {
         <TabsContent value="collections" className="mt-6">
           {/* CRITICAL: Only show loading when no collections exist - prevents grid from unmounting */}
           {loading && collections.length === 0 ? (
-            <p>Loading collections...</p>
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading your collections...</p>
+              <p className="text-sm text-muted-foreground mt-2">This may take a moment</p>
+            </div>
           ) : (
             <div data-testid="collection-grid">
               {renderCollectionsGrid()}
@@ -665,8 +669,11 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="liked-collections" className="mt-6">
-          {likedCollectionsLoading ? (
-            <p>Loading liked collections...</p>
+          {likedCollectionsLoading && likedCollectionsData.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading liked collections...</p>
+            </div>
           ) : likedCollectionsData.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {likedCollectionsData.map((collection) => (
@@ -755,8 +762,11 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="liked-nfts" className="mt-6">
-          {likedNFTsLoading ? (
-            <p>Loading liked NFTs...</p>
+          {likedNFTsLoading && likedNFTs.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading liked NFTs...</p>
+            </div>
           ) : likedNFTs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {likedNFTs.map((nft) => {
@@ -797,8 +807,11 @@ export default function Profile() {
         </TabsContent>
 
         <TabsContent value="following" className="mt-6">
-          {loadingProfiles ? (
-            <p>Loading followed profiles...</p>
+          {loadingProfiles && followedProfiles.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading followed profiles...</p>
+            </div>
           ) : followedProfiles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {followedProfiles.map((followedProfile) => {
