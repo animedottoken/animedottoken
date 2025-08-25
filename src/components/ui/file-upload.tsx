@@ -40,10 +40,14 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         const objectUrl = URL.createObjectURL(currentFile)
         setPreview(objectUrl)
         return () => URL.revokeObjectURL(objectUrl)
+      } else if (previewUrl) {
+        // If no new file but we have a previewUrl, use that
+        setPreview(previewUrl)
       } else {
+        // Only clear preview if we have no file AND no previewUrl
         setPreview(null)
       }
-    }, [currentFile])
+    }, [currentFile, previewUrl])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
@@ -61,7 +65,8 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     if (preview && preview.startsWith('blob:') && preview !== previewUrl) {
       URL.revokeObjectURL(preview)
     }
-    setPreview(null)
+    // Reset to previewUrl if available, otherwise null
+    setPreview(previewUrl || null)
     onFileSelect(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
