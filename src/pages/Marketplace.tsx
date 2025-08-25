@@ -73,11 +73,17 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterBy, setFilterBy] = useState("all");
+  const [filterBy, setFilterBy] = useState("listed");
   const [creatorFilter, setCreatorFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showPropertyFilter, setShowPropertyFilter] = useState(false);
   const [propertyFilters, setPropertyFilters] = useState<Record<string, string[]>>({});
+  const [explicitFilter, setExplicitFilter] = useState<"all" | "safe" | "explicit">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [priceMin, setPriceMin] = useState<string>("");
+  const [priceMax, setPriceMax] = useState<string>("");
+  const [royaltyMin, setRoyaltyMin] = useState<string>("");
+  const [royaltyMax, setRoyaltyMax] = useState<string>("");
   
   // Initialize activeTab with "nfts" as default
   const [activeTab, setActiveTab] = useState<"nfts" | "collections" | "creators">("nfts");
@@ -238,33 +244,63 @@ export default function Marketplace() {
     const matchesSearch = nft.name.toLowerCase().includes(searchTerm.toLowerCase());
     const isNftLiked = isLiked(nft.id);
     const isFromFollowedCreator = followedCreators.includes(nft.creator_address);
-    
+
+    // Normalize attributes for consistent access (category, royalties, explicit)
+    const nftProps = normalizeAttributes(nft.attributes || {});
+    const getProp = (key: string) => nftProps.find(p => p.trait_type === key)?.value as any;
+    const category = (getProp('category') as string) || '';
+    const royaltyRaw = getProp('royalty_percentage');
+    const royalty = royaltyRaw !== undefined && royaltyRaw !== null ? parseFloat(String(royaltyRaw)) : undefined;
+    const explicitRaw = getProp('explicit_content');
+    const explicit = explicitRaw === true || String(explicitRaw).toLowerCase() === 'true' || String(explicitRaw).toLowerCase() === 'yes' || String(explicitRaw) === '1';
+
+    // Base filter selections
     let matchesFilter = true;
     if (filterBy === "listed") matchesFilter = nft.is_listed;
     else if (filterBy === "unlisted") matchesFilter = !nft.is_listed;
     else if (filterBy === "liked") matchesFilter = isNftLiked;
     else if (filterBy === "followed_creators") matchesFilter = isFromFollowedCreator;
-    
-    // Apply property filters
+
+    // Enforce mandatory listing rules: listed NFTs must have required fields
+    const mandatoryValid = !nft.is_listed || (
+      Boolean(nft.name?.trim()) &&
+      (nft.price ?? 0) > 0 &&
+      Boolean(category) &&
+      typeof royalty === 'number' && !Number.isNaN(royalty) && royalty >= 0 && royalty <= 50 &&
+      explicitRaw !== undefined
+    );
+
+    // Property filters (existing sidebar)
     let matchesPropertyFilters = true;
     if (Object.keys(propertyFilters).length > 0) {
       matchesPropertyFilters = Object.entries(propertyFilters).every(([traitType, selectedValues]) => {
         if (selectedValues.length === 0) return true;
-        
         if (!nft.attributes) return false;
-        
-        // Use shared normalization function
         const nftProperties = normalizeAttributes(nft.attributes);
-        
         const matchingProperty = nftProperties.find(prop => 
           prop.trait_type === traitType && selectedValues.includes(prop.value)
         );
-        
         return !!matchingProperty;
       });
     }
-    
-    return matchesSearch && matchesFilter && matchesPropertyFilters;
+
+    // New filters: explicit, category, price range, royalties range
+    let matchesExplicit = true;
+    if (explicitFilter === 'safe') matchesExplicit = !explicit;
+    else if (explicitFilter === 'explicit') matchesExplicit = explicit;
+
+    const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
+
+    const p = nft.price ?? 0;
+    let matchesPrice = true;
+    if (priceMin) matchesPrice = matchesPrice && p >= parseFloat(priceMin);
+    if (priceMax) matchesPrice = matchesPrice && p <= parseFloat(priceMax);
+
+    let matchesRoyalty = true;
+    if (royaltyMin) matchesRoyalty = matchesRoyalty && (royalty ?? -1) >= parseFloat(royaltyMin);
+    if (royaltyMax) matchesRoyalty = matchesRoyalty && (royalty ?? 999) <= parseFloat(royaltyMax);
+
+    return matchesSearch && matchesFilter && matchesPropertyFilters && matchesExplicit && matchesCategory && matchesPrice && matchesRoyalty && mandatoryValid;
   });
 
   const sortedNfts = [...filteredNfts].sort((a, b) => {
@@ -390,6 +426,44 @@ export default function Marketplace() {
                 <SelectItem value="name">Name: A to Z</SelectItem>
               </SelectContent>
             </Select>
+
+            <Select value={explicitFilter} onValueChange={(v) => setExplicitFilter(v as 'all' | 'safe' | 'explicit')}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Content" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Content: All</SelectItem>
+                <SelectItem value="safe">Content: Safe</SelectItem>
+                <SelectItem value="explicit">Content: Explicit</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="Art">Art</SelectItem>
+                <SelectItem value="Gaming">Gaming</SelectItem>
+                <SelectItem value="Music">Music</SelectItem>
+                <SelectItem value="Photography">Photography</SelectItem>
+                <SelectItem value="Collectibles">Collectibles</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="hidden md:flex items-center gap-2">
+              <Input type="number" inputMode="decimal" placeholder="Min Price" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className="w-28" />
+              <span className="text-sm text-muted-foreground">-</span>
+              <Input type="number" inputMode="decimal" placeholder="Max Price" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className="w-28" />
+            </div>
+
+            <div className="hidden lg:flex items-center gap-2">
+              <Input type="number" inputMode="decimal" placeholder="Min Roy%" value={royaltyMin} onChange={(e) => setRoyaltyMin(e.target.value)} className="w-24" />
+              <span className="text-sm text-muted-foreground">-</span>
+              <Input type="number" inputMode="decimal" placeholder="Max Roy%" value={royaltyMax} onChange={(e) => setRoyaltyMax(e.target.value)} className="w-24" />
+            </div>
 
             <div className="flex gap-2">
               <Button
