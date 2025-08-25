@@ -233,12 +233,24 @@ export default function Profile() {
                         description: `Are you sure you want to delete "${collection.name}"? This action cannot be undone and will permanently remove the collection.`,
                         onConfirm: async () => {
                           setConfirmDialog(prev => ({ ...prev, loading: true }));
-                          scrollPositionRef.current = window.scrollY;
+                          // Save scroll position to sessionStorage for persistence across re-renders
+                          const currentScrollPosition = window.scrollY;
+                          sessionStorage.setItem('deletion-scroll-position', currentScrollPosition.toString());
+                          console.log('🔄 Saving scroll position before deletion:', currentScrollPosition);
+                          
                           const res = await deleteCollection(collection.id, collection.name);
                           if (res.success) {
                             await refreshCollections();
-                            // Restore scroll position immediately without timeout
-                            window.scrollTo(0, scrollPositionRef.current);
+                            
+                            // Restore scroll position after a brief delay to ensure DOM is ready
+                            const savedPosition = sessionStorage.getItem('deletion-scroll-position');
+                            if (savedPosition) {
+                              requestAnimationFrame(() => {
+                                console.log('🔄 Restoring scroll position after deletion:', savedPosition);
+                                window.scrollTo(0, parseInt(savedPosition));
+                                sessionStorage.removeItem('deletion-scroll-position');
+                              });
+                            }
                           }
                           setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                         }
