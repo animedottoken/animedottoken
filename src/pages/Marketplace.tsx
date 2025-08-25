@@ -13,7 +13,9 @@ import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
 import { NFTCard } from "@/components/NFTCard";
 import { PropertyFilter } from "@/components/PropertyFilter";
-// removed favorites import
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCreatorFollows } from "@/hooks/useCreatorFollows";
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
@@ -77,9 +79,9 @@ export default function Marketplace() {
   const [filterBy, setFilterBy] = useState("all");
   const [creatorFilter, setCreatorFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [includeExplicit, setIncludeExplicit] = useState(false);
   const [showPropertyFilter, setShowPropertyFilter] = useState(false);
   const [propertyFilters, setPropertyFilters] = useState<Record<string, string[]>>({});
-  const [explicitFilter, setExplicitFilter] = useState<"all" | "safe" | "explicit">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [priceMin, setPriceMin] = useState<string>("");
   const [priceMax, setPriceMax] = useState<string>("");
@@ -276,10 +278,9 @@ export default function Marketplace() {
       });
     }
 
-    // New filters: explicit, category, price range, royalties range
+    // New filters: explicit toggle, category, price range, royalties range
     let matchesExplicit = true;
-    if (explicitFilter === 'safe') matchesExplicit = !explicit;
-    else if (explicitFilter === 'explicit') matchesExplicit = explicit;
+    if (!includeExplicit) matchesExplicit = !explicit;
 
     const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
 
@@ -417,16 +418,16 @@ export default function Marketplace() {
               </SelectContent>
             </Select>
 
-            <Select value={explicitFilter} onValueChange={(v) => setExplicitFilter(v as 'all' | 'safe' | 'explicit')}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Content" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Content: All</SelectItem>
-                <SelectItem value="safe">Content: Safe</SelectItem>
-                <SelectItem value="explicit">Content: Explicit</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="explicit-content"
+                checked={includeExplicit}
+                onCheckedChange={setIncludeExplicit}
+              />
+              <Label htmlFor="explicit-content" className="text-sm">
+                Incl. sensitive/explicit
+              </Label>
+            </div>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[140px]">
