@@ -1,8 +1,27 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { UnifiedMintInterface } from "@/components/UnifiedMintInterface";
 import { NetworkSafetyBanner } from "@/components/NetworkSafetyBanner";
 
 export default function MintCollection() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const editId = searchParams.get('edit');
+
+  // Redirect edit URLs to collection detail page
+  useEffect(() => {
+    if (editId) {
+      navigate(`/collection/${editId}`, { replace: true });
+      return;
+    }
+  }, [editId, navigate]);
+
+  // Don't render anything if we're redirecting
+  if (editId) {
+    return null;
+  }
+
   return (
     <>
       <Helmet>

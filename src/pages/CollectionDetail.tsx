@@ -318,11 +318,15 @@ export default function CollectionDetail() {
                   
                   {connected && publicKey === collection.creator_address && (
                     <>
-                      <Button variant="outline" size="lg" asChild>
-                        <Link to={`/mint?edit=${collection.id}`}>
-                          <Settings className="w-4 h-4 mr-2" />
-                          Edit Collection
-                        </Link>
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        onClick={() => {
+                          document.getElementById('collection-editor')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        Edit Collection
                       </Button>
                       
                       {mints.length === 0 && (
@@ -378,7 +382,7 @@ export default function CollectionDetail() {
 
           {/* Collection Editor - Only show for collection owner */}
           {connected && publicKey === collection.creator_address && (
-            <div className="mb-8">
+            <div id="collection-editor" className="mb-8">
               <CollectionEditor 
                 collection={collection as any}
                 onClose={() => {}}

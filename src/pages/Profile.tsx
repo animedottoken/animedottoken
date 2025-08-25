@@ -158,9 +158,9 @@ export default function Profile() {
                 )}
               </div>
 
-              {/* Overlay Actions */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                <div className="flex flex-wrap items-center justify-center gap-1 px-2">
+              {/* Overlay Actions - Fixed hover behavior */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+                <div className="flex flex-wrap items-center justify-center gap-1 px-2 pointer-events-auto">
                   <Button
                     size="sm"
                     onClick={(e) => {
@@ -178,7 +178,7 @@ export default function Profile() {
                     variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/mint?edit=${collection.id}`);
+                      navigate(`/collection/${collection.id}`);
                     }}
                     className="bg-white/90 text-black hover:bg-white border-white/20"
                   >
