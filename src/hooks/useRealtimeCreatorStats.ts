@@ -5,6 +5,8 @@ interface CreatorStats {
   [walletAddress: string]: {
     follower_count: number;
     nft_likes_count: number;
+    collection_likes_count: number;
+    total_likes_count: number;
   };
 }
 
@@ -27,7 +29,7 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
       // Load stats from the creators_public_stats view
       const { data: statsData, error } = await supabase
         .from('creators_public_stats')
-        .select('wallet_address, follower_count, nft_likes_count')
+        .select('wallet_address, follower_count, nft_likes_count, collection_likes_count, total_likes_count')
         .in('wallet_address', walletAddresses);
 
       if (error) throw error;
@@ -36,7 +38,9 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
         ...acc,
         [stat.wallet_address]: {
           follower_count: stat.follower_count || 0,
-          nft_likes_count: stat.nft_likes_count || 0
+          nft_likes_count: stat.nft_likes_count || 0,
+          collection_likes_count: stat.collection_likes_count || 0,
+          total_likes_count: stat.total_likes_count || 0
         }
       }), {});
 
@@ -71,6 +75,13 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
           nft_likes_count: type === 'nft_like' 
             ? Math.max(0, (prev[wallet]?.nft_likes_count || 0) + delta)
             : (prev[wallet]?.nft_likes_count || 0),
+          collection_likes_count: type === 'collection_like' 
+            ? Math.max(0, (prev[wallet]?.collection_likes_count || 0) + delta)
+            : (prev[wallet]?.collection_likes_count || 0),
+          total_likes_count: Math.max(0, 
+            (type === 'nft_like' ? (prev[wallet]?.nft_likes_count || 0) + delta : (prev[wallet]?.nft_likes_count || 0)) +
+            (type === 'collection_like' ? (prev[wallet]?.collection_likes_count || 0) + delta : (prev[wallet]?.collection_likes_count || 0))
+          ),
         }
       }));
       // Also trigger a debounced refresh to sync with database
@@ -120,6 +131,19 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
           debouncedRefresh();
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'collection_likes'
+        },
+        (payload) => {
+          console.log('Collection likes change detected in creator stats:', payload);
+          // For performance, just refresh without checking - the stats view will handle filtering
+          debouncedRefresh();
+        }
+      )
       .subscribe();
 
     return () => {
@@ -139,11 +163,16 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     return creatorStats[walletAddress]?.nft_likes_count || 0;
   };
 
+  const getCreatorTotalLikeCount = (walletAddress: string): number => {
+    return creatorStats[walletAddress]?.total_likes_count || 0;
+  };
+
   return {
     creatorStats,
     loading,
     getCreatorFollowerCount,
     getCreatorNFTLikeCount,
+    getCreatorTotalLikeCount,
     refreshStats: loadCreatorStats
   };
 };

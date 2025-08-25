@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit, Crown, Lock, Image, DollarSign, Info, Heart } from 'lucide-react';
+import { Edit, Crown, Lock, Image, DollarSign, Info, Heart, UserPlus, UserCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,7 +16,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 export const GamifiedProfileCard = () => {
+  const { publicKey } = useSolanaWallet();
   const {
     profile,
     userNFTs,
@@ -35,7 +37,7 @@ export const GamifiedProfileCard = () => {
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
 
   // Use real-time creator stats
-  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
+  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
     profile?.wallet_address ? [profile.wallet_address] : []
   );
   
@@ -308,15 +310,21 @@ export const GamifiedProfileCard = () => {
           {/* Profile Stats: Trades + Level */}
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="text-sm text-muted-foreground">{profile.trade_count} trades</span>
-            <button
-              onClick={() => toggleFollow(profile.wallet_address)}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
-              aria-label={isFollowing(profile.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
-              disabled={followLoading}
-            >
-              <Heart className={`w-4 h-4 ${isFollowing(profile.wallet_address) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
-              <span className="text-xs">{isFollowing(profile.wallet_address) ? 'Following' : 'Follow'}</span>
-            </button>
+            {profile.wallet_address !== publicKey?.toString() && (
+              <button
+                onClick={() => toggleFollow(profile.wallet_address)}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
+                aria-label={isFollowing(profile.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
+                disabled={followLoading}
+              >
+                {isFollowing(profile.wallet_address) ? (
+                  <UserCheck className="w-4 h-4 text-green-500" />
+                ) : (
+                  <UserPlus className="w-4 h-4 text-muted-foreground" />
+                )}
+                <span className="text-xs">{isFollowing(profile.wallet_address) ? 'Following' : 'Follow'}</span>
+              </button>
+            )}
           </div>
         </div>
         
@@ -337,20 +345,32 @@ export const GamifiedProfileCard = () => {
           </div>
         )}
 
-        {/* Profile Like/Follow */}
-        <div className="mb-4">
-          <button
-            aria-label={isFollowing(profile.wallet_address) ? 'Unlike profile' : 'Like profile'}
-            disabled={followLoading}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFollow(profile.wallet_address);
-            }}
-            className="inline-flex items-center justify-center p-2 rounded-md border hover:bg-muted transition-colors"
-          >
-            <Heart className={`${isFollowing(profile.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-5 h-5`} />
-          </button>
-        </div>
+        {/* Profile Like/Follow - Remove self-follow */}
+        {profile.wallet_address !== publicKey?.toString() && (
+          <div className="mb-4">
+            <button
+              aria-label={isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
+              disabled={followLoading}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFollow(profile.wallet_address);
+              }}
+              className="inline-flex items-center gap-2 justify-center px-4 py-2 rounded-md border hover:bg-muted transition-colors"
+            >
+              {isFollowing(profile.wallet_address) ? (
+                <>
+                  <UserCheck className="w-5 h-5 text-green-500" />
+                  <span className="text-sm">Following</span>
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm">Follow</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
         
         {/* Content Stats */}
         <div className="flex items-center justify-center gap-4 text-sm mb-3">
@@ -366,9 +386,9 @@ export const GamifiedProfileCard = () => {
          
         {/* Activity Stats */}
         <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-          <span>{getCreatorFollowerCount(profile.wallet_address)} likes</span>
+          <span>{getCreatorFollowerCount(profile.wallet_address)} followers</span>
           <span>•</span>
-          <span>{getCreatorNFTLikeCount(profile.wallet_address)} NFT likes</span>
+          <span>{getCreatorTotalLikeCount(profile.wallet_address)} likes received</span>
         </div>
 
         <div className="space-y-2">

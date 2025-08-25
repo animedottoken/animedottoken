@@ -66,11 +66,11 @@ export default function Profile() {
     navigate(`/collection/${collectionId}`);
   };
   
-  const { getCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
+  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
     profile?.wallet_address ? [profile.wallet_address, ...followedCreators] : followedCreators
   );
   const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
-  const nftLikes = profile?.wallet_address ? getCreatorNFTLikeCount(profile.wallet_address) : 0;
+  const nftLikes = profile?.wallet_address ? getCreatorTotalLikeCount(profile.wallet_address) : 0;
   
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
@@ -531,7 +531,7 @@ export default function Profile() {
                    {profileLikes} / {nftLikes}
                  </span>
                </div>
-               <p className="text-sm text-muted-foreground">Profile Likes / NFT Likes</p>
+               <p className="text-sm text-muted-foreground">Followers / Likes Received</p>
             </CardContent>
           </Card>
         </div>

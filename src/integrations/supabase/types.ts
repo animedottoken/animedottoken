@@ -834,8 +834,10 @@ export type Database = {
       }
       creators_public_stats: {
         Row: {
+          collection_likes_count: number | null
           follower_count: number | null
           nft_likes_count: number | null
+          total_likes_count: number | null
           wallet_address: string | null
         }
         Relationships: []
