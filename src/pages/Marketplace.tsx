@@ -379,7 +379,7 @@ export default function Marketplace() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-6 overflow-hidden">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
