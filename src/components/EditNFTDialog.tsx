@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Edit, Calendar, ExternalLink, Coins } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,6 +81,9 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
     description: nft.description || '',
     symbol: nft.symbol || '',
     price: nft.price?.toString() || '',
+    category: nft.metadata?.category || '',
+    royalty_percentage: nft.metadata?.royalty_percentage?.toString() || '0',
+    explicit_content: nft.metadata?.explicit_content || false,
   });
   const [properties, setProperties] = useState<Property[]>([]);
 
@@ -89,6 +94,9 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
         description: nft.description || '',
         symbol: nft.symbol || '',
         price: nft.price?.toString() || '',
+        category: nft.metadata?.category || '',
+        royalty_percentage: nft.metadata?.royalty_percentage?.toString() || '0',
+        explicit_content: nft.metadata?.explicit_content || false,
       });
       setProperties(attributesToProperties(nft.metadata));
     }
@@ -100,10 +108,35 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
       return;
     }
 
+    const price = formData.price ? parseFloat(formData.price) : null;
+    const isListing = price !== null && price > 0;
+
+    // Validate mandatory fields for listing
+    if (isListing) {
+      const missingFields = [];
+      if (!formData.category?.trim()) missingFields.push('Category');
+      if (!formData.royalty_percentage || parseFloat(formData.royalty_percentage) < 0) missingFields.push('Royalties');
+      
+      if (missingFields.length > 0) {
+        toast.error(`To list your NFT, please fill in: ${missingFields.join(', ')}`);
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
-      const price = formData.price ? parseFloat(formData.price) : null;
+      // Prepare updated attributes with mandatory listing fields
+      const updatedAttributes = propertiesToAttributes(properties, nft.metadata) || {};
+      
+      // Store mandatory listing fields in attributes for consistency
+      if (formData.category?.trim()) {
+        updatedAttributes.category = formData.category.trim();
+      }
+      if (formData.royalty_percentage) {
+        updatedAttributes.royalty_percentage = parseFloat(formData.royalty_percentage);
+      }
+      updatedAttributes.explicit_content = formData.explicit_content;
       
       // Update NFT in database
       const { error } = await supabase
@@ -113,8 +146,8 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
           description: formData.description.trim() || null,
           symbol: formData.symbol.trim() || null,
           price: price,
-          is_listed: price !== null && price > 0,
-          attributes: propertiesToAttributes(properties, nft.metadata),
+          is_listed: isListing,
+          attributes: updatedAttributes,
           updated_at: new Date().toISOString()
         })
         .eq('id', nft.id);
@@ -337,6 +370,85 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Setting a price will automatically list your NFT for sale. Leave empty to unlist.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Listing Requirements */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Listing Requirements
+                <Badge variant="offchain" className="text-xs">Required for Sale</Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                These fields are mandatory to list your NFT for sale on the marketplace.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor="category">Category *</Label>
+                    <Badge variant="destructive" className="text-xs">Required for Listing</Badge>
+                  </div>
+                  <Select
+                    value={formData.category || ''}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Art">Art</SelectItem>
+                      <SelectItem value="Gaming">Gaming</SelectItem>
+                      <SelectItem value="Music">Music</SelectItem>
+                      <SelectItem value="Photography">Photography</SelectItem>
+                      <SelectItem value="Collectibles">Collectibles</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Category helps buyers discover your NFT
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor="royalty">Creator Royalties (%) *</Label>
+                    <Badge variant="destructive" className="text-xs">Required for Listing</Badge>
+                  </div>
+                  <Input
+                    id="royalty"
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    value={formData.royalty_percentage}
+                    onChange={(e) => setFormData({ ...formData, royalty_percentage: e.target.value })}
+                    placeholder="0"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Percentage you earn on secondary sales (0-10%)
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="explicit-content"
+                    checked={formData.explicit_content || false}
+                    onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="explicit-content" className="text-base font-medium">
+                      Contains explicit or sensitive content
+                    </Label>
+                    <Badge variant="destructive" className="text-xs">Required Declaration</Badge>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground ml-6">
+                  Check this box if your NFT contains mature, sensitive, or explicit content
                 </p>
               </div>
             </CardContent>

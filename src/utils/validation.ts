@@ -132,9 +132,38 @@ export const validateStandaloneNFTData = (data: any, imageFile?: File | null): V
     }
   }
 
-  // Royalty validation
-  if (data.royalty_percentage && (data.royalty_percentage < 0 || data.royalty_percentage > 50)) {
-    errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 50%' });
+  // Royalty validation (corrected range to 0-10%)
+  if (data.royalty_percentage !== undefined && (data.royalty_percentage < 0 || data.royalty_percentage > 10)) {
+    errors.push({ field: 'royalty_percentage', message: 'Royalty must be between 0% and 10%' });
+  }
+
+  return errors;
+};
+
+// NFT listing validation - validates mandatory fields for marketplace listing
+export const validateNFTListing = (data: any): ValidationError[] => {
+  const errors: ValidationError[] = [];
+
+  // Mandatory fields for listing
+  if (!data.name?.trim()) {
+    errors.push({ field: 'name', message: 'NFT name is required for listing' });
+  }
+
+  if (!data.price || data.price <= 0) {
+    errors.push({ field: 'price', message: 'Price is required for listing' });
+  }
+
+  if (!data.category?.trim()) {
+    errors.push({ field: 'category', message: 'Category is required for listing' });
+  }
+
+  if (data.royalty_percentage === undefined || data.royalty_percentage < 0 || data.royalty_percentage > 10) {
+    errors.push({ field: 'royalty_percentage', message: 'Royalty percentage (0-10%) is required for listing' });
+  }
+
+  // Explicit content declaration is mandatory (boolean, can be true or false)
+  if (data.explicit_content === undefined || data.explicit_content === null) {
+    errors.push({ field: 'explicit_content', message: 'Explicit content declaration is required for listing' });
   }
 
   return errors;
