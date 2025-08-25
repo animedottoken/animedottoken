@@ -81,7 +81,8 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         collectionMintAddress,
-        message: "Collection NFT minted successfully"
+        message: "Collection NFT minted successfully",
+        feeCharged: 0.006 // SOL - total fee charged for minting
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

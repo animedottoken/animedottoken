@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Copy, Zap } from 'lucide-react';
-import { toast } from 'sonner';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Copy, Zap, Loader2 } from "lucide-react";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Collection {
   id: string;
@@ -30,6 +31,8 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   const { publicKey } = useSolanaWallet();
   const [isMintingOnChain, setIsMintingOnChain] = useState(false);
   const [showMintConfirm, setShowMintConfirm] = useState(false);
+  const [mintFee, setMintFee] = useState<number | null>(null);
+  const [loadingFee, setLoadingFee] = useState(false);
 
   const handleCopyAddress = async (address: string) => {
     try {
@@ -42,6 +45,25 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
 
   const handleGoToProfile = () => {
     navigate('/profile');
+  };
+
+  const fetchMintFee = async () => {
+    if (mintFee !== null) return; // Already fetched
+    
+    setLoadingFee(true);
+    try {
+      const { data: feeData, error } = await supabase.functions.invoke('get-mint-fee');
+      if (error) throw error;
+      
+      if (feeData?.success && feeData?.feeEstimate) {
+        setMintFee(feeData.feeEstimate.totalFee);
+      }
+    } catch (error) {
+      console.error('Error fetching mint fee:', error);
+      setMintFee(0.006); // Fallback fee
+    } finally {
+      setLoadingFee(false);
+    }
   };
 
   const handleMintOnChain = async () => {
@@ -143,7 +165,10 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
             <div className="space-y-4">
               {isOffChain && (
                 <Button 
-                  onClick={() => setShowMintConfirm(true)}
+                  onClick={() => {
+                    fetchMintFee();
+                    setShowMintConfirm(true);
+                  }}
                   disabled={isMintingOnChain}
                   className="w-full"
                   variant="default"
@@ -173,11 +198,23 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
         open={showMintConfirm}
         onOpenChange={setShowMintConfirm}
         title="Confirm Minting Payment"
-        description="Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?"
-        confirmText="Yes, Mint & Pay"
+        description={
+          loadingFee 
+            ? "Calculating minting fee..." 
+            : mintFee !== null 
+              ? `Minting this collection on-chain will cost approximately ${mintFee} SOL (~$${(mintFee * 200).toFixed(2)}). This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
+              : "Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?"
+        }
+        confirmText={
+          loadingFee 
+            ? "Loading..." 
+            : mintFee !== null 
+              ? `Yes, Pay ${mintFee} SOL` 
+              : "Yes, Mint & Pay"
+        }
         cancelText="Cancel"
         onConfirm={handleMintOnChain}
-        loading={isMintingOnChain}
+        loading={isMintingOnChain || loadingFee}
       />
     </div>
   );

@@ -75,13 +75,35 @@ export default function CollectionDetail() {
     title: string;
     description: string;
     onConfirm: () => void;
-    loading?: boolean;
+    loading: boolean;
   }>({
     open: false,
     title: '',
     description: '',
     onConfirm: () => {},
+    loading: false
   });
+  const [mintFee, setMintFee] = useState<number | null>(null);
+  const [loadingFee, setLoadingFee] = useState(false);
+
+  const fetchMintFee = async () => {
+    if (mintFee !== null) return; // Already fetched
+    
+    setLoadingFee(true);
+    try {
+      const { data: feeData, error } = await supabase.functions.invoke('get-mint-fee');
+      if (error) throw error;
+      
+      if (feeData?.success && feeData?.feeEstimate) {
+        setMintFee(feeData.feeEstimate.totalFee);
+      }
+    } catch (error) {
+      console.error('Error fetching mint fee:', error);
+      setMintFee(0.006); // Fallback fee
+    } finally {
+      setLoadingFee(false);
+    }
+  };
 
   // Dialog states for editing avatar and banner
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
@@ -412,11 +434,17 @@ export default function CollectionDetail() {
                            variant="outline" 
                            size="sm"
                            onClick={() => {
-                             setConfirmDialog({
-                               open: true,
-                               title: 'Confirm Minting Payment',
-                               description: 'Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?',
-                               onConfirm: async () => {
+                             fetchMintFee();
+                              setConfirmDialog({
+                                open: true,
+                                title: 'Confirm Minting Payment',
+                                description: loadingFee 
+                                  ? "Calculating minting fee..." 
+                                  : mintFee !== null 
+                                    ? `Minting this collection on-chain will cost approximately ${mintFee} SOL (~$${(mintFee * 200).toFixed(2)}). This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
+                                    : "Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?",
+                                loading: false,
+                                onConfirm: async () => {
                                  if (!publicKey) return;
                                  setConfirmDialog(prev => ({ ...prev, loading: true }));
                                  try {
@@ -445,18 +473,19 @@ export default function CollectionDetail() {
                            Mint On-Chain
                          </Button>
                        )}
-                      
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => {
+                       
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
                           if (mints.length > 0) {
                             // Burn all NFTs
-                            setConfirmDialog({
-                              open: true,
-                              title: 'Burn All NFTs',
-                              description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
-                              onConfirm: async () => {
+                             setConfirmDialog({
+                               open: true,
+                               title: 'Burn All NFTs',
+                               description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
+                               loading: false,
+                               onConfirm: async () => {
                                 setConfirmDialog(prev => ({ ...prev, loading: true }));
                                 
                                 try {
@@ -484,11 +513,12 @@ export default function CollectionDetail() {
                             });
                           } else {
                             // Delete collection
-                            setConfirmDialog({
-                              open: true,
-                              title: 'Delete Collection',
-                              description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
-                              onConfirm: async () => {
+                             setConfirmDialog({
+                               open: true,
+                               title: 'Delete Collection',
+                               description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
+                               loading: false,
+                               onConfirm: async () => {
                                 setConfirmDialog(prev => ({ ...prev, loading: true }));
                                 
                                 try {
@@ -512,11 +542,11 @@ export default function CollectionDetail() {
                               }
                             });
                           }
-                        }}
-                      >
-                        <Flame className="w-3 h-3 mr-1" />
-                        Burn
-                      </Button>
+                         }}
+                       >
+                         <Flame className="w-3 h-3 mr-1" />
+                         Burn
+                       </Button>
                     </div>
                   )}
                 </div>
@@ -661,11 +691,20 @@ export default function CollectionDetail() {
            onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
            title={confirmDialog.title}
            description={confirmDialog.description}
-           confirmText={confirmDialog.title === 'Confirm Minting Payment' ? 'Yes, Mint & Pay' : 'Confirm'}
+           confirmText={
+             confirmDialog.title === 'Confirm Minting Payment' 
+               ? (loadingFee 
+                   ? "Loading..." 
+                   : mintFee !== null 
+                     ? `Yes, Pay ${mintFee} SOL` 
+                     : "Yes, Mint & Pay"
+                 )
+               : 'Confirm'
+           }
            cancelText="Cancel"
            variant={confirmDialog.title === 'Confirm Minting Payment' ? 'default' : 'destructive'}
            onConfirm={confirmDialog.onConfirm}
-           loading={confirmDialog.loading}
+           loading={confirmDialog.loading || loadingFee}
          />
 
         {/* Avatar Edit Dialog */}
