@@ -288,10 +288,17 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 Basic Information
-                <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+                {nft.mint_address ? (
+                  <Badge variant="secondary" className="text-xs">Read-Only (Minted)</Badge>
+                ) : (
+                  <Badge variant="onchain" className="text-xs">On-Chain Data</Badge>
+                )}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                These changes will be stored permanently on the blockchain and visible in all wallets and marketplaces.
+                {nft.mint_address 
+                  ? "This NFT has been minted - on-chain data cannot be modified." 
+                  : "These changes will be stored permanently on the blockchain and visible in all wallets and marketplaces."
+                }
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -299,36 +306,53 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="name">Name *</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    {nft.mint_address ? (
+                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
+                    ) : (
+                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    )}
                   </div>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter NFT name"
+                    disabled={!!nft.mint_address}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Permanently stored on blockchain, visible in all wallets
+                    {nft.mint_address 
+                      ? "Cannot be changed after minting - permanently stored on blockchain"
+                      : "Permanently stored on blockchain, visible in all wallets"
+                    }
                   </p>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="symbol">Symbol</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    {nft.mint_address ? (
+                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
+                    ) : (
+                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    )}
                   </div>
                   <Input
                     id="symbol"
                     value={formData.symbol}
                     onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
                     placeholder="Enter NFT symbol (optional)"
+                    disabled={!!nft.mint_address}
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Label htmlFor="description">Description</Label>
-                    <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    {nft.mint_address ? (
+                      <Badge variant="secondary" className="text-xs">Immutable</Badge>
+                    ) : (
+                      <Badge variant="onchain" className="text-xs">On-Chain</Badge>
+                    )}
                   </div>
                   <Textarea
                     id="description"
@@ -336,7 +360,14 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Enter NFT description (optional)"
                     rows={3}
+                    disabled={!!nft.mint_address}
                   />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {nft.mint_address 
+                      ? "Cannot be changed after minting - permanently stored on blockchain"
+                      : "Stored on blockchain metadata"
+                    }
+                  </p>
                 </div>
               </div>
             </CardContent>
