@@ -477,29 +477,24 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
       
       {isOwner && (
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-3">Data Storage & Editability Legend</h4>
+          <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             <div className="flex items-center gap-2">
               <Badge variant="onchain">On-Chain</Badge>
-              <span>Stored permanently on blockchain</span>
+              <span className="font-normal">Stored permanently on blockchain</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="offchain">Off-Chain</Badge>
-              <span>Stored in app database, editable</span>
+              <span className="font-normal">Stored in app database, editable</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="chainlocked">Chain Locked</Badge>
-              <span>Cannot change after first mint</span>
+              <span className="font-normal">Cannot change after first mint</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="locked">Creator Locked</Badge>
-              <span>Locked by you for safety</span>
+              <span className="font-normal">Locked by you for safety</span>
             </div>
-          </div>
-          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-xs text-blue-700 dark:text-blue-300">
-              💡 <strong>Tip:</strong> On-chain data is permanent and visible in wallets/marketplaces. Off-chain data is flexible but only visible in this app.
-            </p>
           </div>
         </div>
       )}
