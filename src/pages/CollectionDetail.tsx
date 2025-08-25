@@ -41,6 +41,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { truncateAddress } from "@/utils/addressUtils";
+import { UserProfileDisplay } from "@/components/UserProfileDisplay";
+import { CollectionAvatarDialog } from "@/components/CollectionAvatarDialog";
+import { CollectionBannerDialog } from "@/components/CollectionBannerDialog";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -77,9 +80,39 @@ export default function CollectionDetail() {
     description: '',
     onConfirm: () => {},
   });
+
+  // Dialog states for editing avatar and banner
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+  const [showBannerDialog, setShowBannerDialog] = useState(false);
+
+  // Real creator wallet address (unmasked)
+  const [creatorWallet, setCreatorWallet] = useState<string>('');
   
   // Navigation context for moving between collections
   const navigation = useNavigationContext(collectionId!, 'collection');
+
+  // Fetch real creator wallet address for profile linking
+  useEffect(() => {
+    const fetchCreatorWallet = async () => {
+      if (!collectionId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('collections')
+          .select('creator_address')
+          .eq('id', collectionId)
+          .single();
+
+        if (!error && data) {
+          setCreatorWallet(data.creator_address);
+        }
+      } catch (err) {
+        console.error('Error fetching creator wallet:', err);
+      }
+    };
+
+    fetchCreatorWallet();
+  }, [collectionId]);
 
   // Auto-scroll to editor when ?edit=1 is present (no blocking/error messaging)
   useEffect(() => {
@@ -213,10 +246,23 @@ export default function CollectionDetail() {
                   </div>
                 )}
               </AspectRatio>
+
+              {/* Owner-only banner edit button */}
+              {isOwner && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
+                  onClick={() => setShowBannerDialog(true)}
+                >
+                  <ImageIcon className="w-4 h-4 mr-1" />
+                  Change Banner
+                </Button>
+              )}
               
               {/* Square NFT Avatar Overlay */}
-              <div className="absolute -bottom-12 left-8">
-                <div className="w-24 h-24 border-4 border-background rounded-lg overflow-hidden">
+              <div className="absolute -bottom-12 left-8 group">
+                <div className="w-24 h-24 border-4 border-background rounded-lg overflow-hidden relative">
                   {displayCollection?.image_url ? (
                     <img
                       src={displayCollection.image_url}
@@ -228,6 +274,18 @@ export default function CollectionDetail() {
                       {displayCollection?.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
+                  
+                  {/* Owner-only avatar edit button */}
+                  {isOwner && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute inset-0 bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                      onClick={() => setShowAvatarDialog(true)}
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -235,52 +293,76 @@ export default function CollectionDetail() {
             <CardContent className="pt-16">
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
-                    {displayCollection?.symbol && (
-                      <Badge variant="outline" className="text-sm">
-                        {displayCollection.symbol}
-                      </Badge>
-                    )}
-                    
-                    {/* Status Badges */}
-                    <div className="flex items-center gap-2">
-                      {/* On-chain vs Off-chain status */}
-                      {(displayCollection?.collection_mint_address || displayCollection?.verified) ? (
-                        <Badge variant="default" className="bg-green-500 text-white text-xs">
-                          On-chain
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary" className="text-xs">
-                          Off-chain
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
+                      {displayCollection?.symbol && (
+                        <Badge variant="outline" className="text-sm">
+                          {displayCollection.symbol}
                         </Badge>
                       )}
                       
-                      {displayCollection?.verified && (
-                        <Badge variant="secondary" className="bg-blue-500 text-white text-xs">
-                          <Verified className="w-3 h-3 mr-1" />
-                          Verified
-                        </Badge>
-                      )}
-                      
-                      {/* Collection Status */}
-                      {displayCollection?.is_live ? (
-                        <Badge variant="secondary" className="bg-green-500 text-white text-xs">
-                          ● Live
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary" className="bg-orange-500 text-white text-xs">
-                          ⏸ Paused
-                        </Badge>
-                      )}
-                      
-                      {/* Minting Progress */}
-                      {displayCollection?.max_supply && (
-                        <Badge variant="outline" className="text-xs">
-                          {mints.length}/{displayCollection.max_supply}
-                        </Badge>
-                      )}
+                      {/* Status Badges */}
+                      <div className="flex items-center gap-2">
+                        {/* On-chain vs Off-chain status */}
+                        {(displayCollection?.collection_mint_address || displayCollection?.verified) ? (
+                          <Badge variant="default" className="bg-green-500 text-white text-xs">
+                            On-chain
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">
+                            Off-chain
+                          </Badge>
+                        )}
+                        
+                        {displayCollection?.verified && (
+                          <Badge variant="secondary" className="bg-blue-500 text-white text-xs">
+                            <Verified className="w-3 h-3 mr-1" />
+                            Verified
+                          </Badge>
+                        )}
+                        
+                        {/* Collection Status */}
+                        {displayCollection?.is_live ? (
+                          <Badge variant="secondary" className="bg-green-500 text-white text-xs">
+                            ● Live
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-orange-500 text-white text-xs">
+                            ⏸ Paused
+                          </Badge>
+                        )}
+                        
+                        {/* Minting Progress */}
+                        {displayCollection?.max_supply && (
+                          <Badge variant="outline" className="text-xs">
+                            {mints.length}/{displayCollection.max_supply}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Creator Info */}
+                    {creatorWallet && (
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Creator</div>
+                        <Link 
+                          to={`/profile/${creatorWallet}`}
+                          className="block hover:opacity-80 transition-opacity w-fit"
+                        >
+                          <div className="flex items-center gap-3">
+                            <UserProfileDisplay 
+                              walletAddress={creatorWallet} 
+                              size="sm" 
+                              showRankBadge={false}
+                            />
+                            <span className="text-sm text-muted-foreground">
+                              {truncateAddress(creatorWallet)}
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                   
                     {/* Owner Action Buttons */}
@@ -636,6 +718,24 @@ export default function CollectionDetail() {
           variant="destructive"
           onConfirm={confirmDialog.onConfirm}
           loading={confirmDialog.loading}
+        />
+
+        {/* Avatar Edit Dialog */}
+        <CollectionAvatarDialog
+          open={showAvatarDialog}
+          onOpenChange={setShowAvatarDialog}
+          collectionId={collectionId!}
+          currentUrl={displayCollection?.image_url}
+          onSaved={() => refreshCollection(true)}
+        />
+
+        {/* Banner Edit Dialog */}
+        <CollectionBannerDialog
+          open={showBannerDialog}
+          onOpenChange={setShowBannerDialog}
+          collectionId={collectionId!}
+          currentUrl={displayCollection?.banner_image_url}
+          onSaved={() => refreshCollection(true)}
         />
       </main>
     </>
