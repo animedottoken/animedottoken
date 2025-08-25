@@ -1,15 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 
 interface MintedNFT {
   id: string;
   mint_address: string;
   name: string;
-  image_url?: string;
+  image_url: string;
   owner_address: string;
+  creator_address: string;
   collection_id: string;
   created_at: string;
+  price?: number;
+  is_listed: boolean;
+  description?: string;
+  attributes?: any;
   collections?: {
     name: string;
     symbol?: string;
@@ -20,14 +24,8 @@ export const useCollectionMints = (collectionId?: string) => {
   const [mints, setMints] = useState<MintedNFT[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { publicKey } = useSolanaWallet();
 
   const loadMints = useCallback(async () => {
-    if (!publicKey) {
-      setMints([]);
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);
@@ -40,14 +38,18 @@ export const useCollectionMints = (collectionId?: string) => {
           name,
           image_url,
           owner_address,
+          creator_address,
           collection_id,
           created_at,
+          price,
+          is_listed,
+          description,
+          attributes,
           collections (
             name,
             symbol
           )
         `)
-        .eq('creator_address', publicKey)
         .order('created_at', { ascending: false });
 
       if (collectionId) {
@@ -66,7 +68,7 @@ export const useCollectionMints = (collectionId?: string) => {
     } finally {
       setLoading(false);
     }
-  }, [publicKey, collectionId]);
+  }, [collectionId]);
 
   useEffect(() => {
     loadMints();

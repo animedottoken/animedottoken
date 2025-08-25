@@ -32,6 +32,7 @@ import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useCollections } from "@/hooks/useCollections";
+import { NFTCard } from "@/components/NFTCard";
 
 import { CollectionEditor } from "@/components/CollectionEditor";
 import { formatDistanceToNow } from "date-fns";
@@ -624,123 +625,11 @@ export default function CollectionDetail() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {mints.map((nft) => (
-                     <Card 
-                      key={nft.id} 
-                      className="group hover:shadow-lg transition-all cursor-pointer relative"
-                      onClick={() => {
-                        const navIds = mints.map(mint => mint.id);
-                        const source = navigation.source || 'collection';
-                        const queryString = `from=${source}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-                        navigate(`/nft/${nft.id}?${queryString}`);
-                      }}
-                    >
-                      <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
-                        <img
-                          src={nft.image_url || "/placeholder.svg"}
-                          alt={nft.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            e.currentTarget.src = '/images/og-anime.jpg';
-                          }}
-                        />
-                        
-                        {/* Hover overlay with View CTA */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto z-10 flex flex-wrap items-center justify-center gap-1 px-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const navIds = mints.map(mint => mint.id); 
-                                const source = navigation.source || 'collection';
-                                const queryString = `from=${source}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-                                navigate(`/nft/${nft.id}?${queryString}`);
-                              }}
-                              className="bg-white/90 text-black hover:bg-white hover:!text-black border-white/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
-                              title="View Details"
-                              aria-label="View NFT Details"
-                            >
-                              <Eye className="h-4 w-4" />
-                              <span className="ml-1 hidden sm:inline">View</span>
-                            </Button>
-                            
-                            {/* Burn button - only for owner */}
-                            {connected && publicKey === nft.owner_address && (
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setConfirmDialog({
-                                    open: true,
-                                    title: 'Burn NFT',
-                                    description: `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`,
-                                    onConfirm: async () => {
-                                      setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                      try {
-                                        const { data, error } = await supabase.functions.invoke('burn-nft', {
-                                          body: {
-                                            nft_id: nft.id,
-                                            wallet_address: publicKey
-                                          }
-                                        });
-                                        if (data?.success) {
-                                          toast.success('NFT burned successfully');
-                                          window.location.reload();
-                                        } else {
-                                          toast.error(data?.error || 'Failed to burn NFT');
-                                        }
-                                      } catch (error) {
-                                        console.error('Error burning NFT:', error);
-                                        toast.error('Failed to burn NFT');
-                                      } finally {
-                                        setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                                      }
-                                    }
-                                  });
-                                }}
-                                className="bg-red-500/90 text-white hover:bg-red-500 border-red-500/20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 transition-all duration-200"
-                                title="Burn NFT"
-                                aria-label="Burn NFT"
-                              >
-                                <Flame className="h-4 w-4" />
-                                <span className="ml-1 hidden sm:inline">Burn</span>
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <CardContent className="p-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold truncate mb-1">{nft.name}</h3>
-                          
-                          {/* Owner info */}
-                          <div className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                            <span>
-                              Owner: {truncateAddress(nft.owner_address)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {/* Bottom section with minted time and price */}
-                        <div className="flex items-center justify-between">
-                          <div className="text-xs text-muted-foreground">
-                            Minted {formatDistanceToNow(new Date(nft.created_at), { addSuffix: true })}
-                          </div>
-                          
-                          {/* Price display */}
-                          <div className="text-sm font-medium">
-                            {displayCollection?.enable_primary_sales && displayCollection?.mint_price !== null && displayCollection?.mint_price !== undefined ? (
-                              <span className="text-primary">Price {displayCollection.mint_price} SOL</span>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                     <NFTCard
+                       key={nft.id}
+                       nft={nft}
+                       navigationQuery={searchParams.toString()}
+                     />
                   ))}
                 </div>
               )}
