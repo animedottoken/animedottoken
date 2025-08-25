@@ -64,19 +64,16 @@ export default function CollectionDetail() {
   // Navigation context for moving between collections
   const navigation = useNavigationContext(collectionId!, 'collection');
 
-  // Auto-scroll to editor when ?edit=1 is present
+  // Auto-scroll to editor when ?edit=1 is present (no blocking/error messaging)
   useEffect(() => {
     const wantsEdit = searchParams.get('edit');
     if (!wantsEdit || !collection) return;
 
-    if (connected && publicKey === collection.creator_address) {
-      const el = document.getElementById('collection-editor');
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-      }
-    } else {
-      toast.error('You must be the collection owner to edit');
+    const el = document.getElementById('collection-editor');
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
+    // Note: The editor itself is shown only to the owner; we don't block or show errors here.
   }, [collection, connected, publicKey, searchParams]);
 
   const handleCollectionUpdate = (updatedCollection: any) => {
