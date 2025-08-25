@@ -6,6 +6,7 @@ import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
+import { PriceTag } from '@/components/ui/price-tag';
 
 interface OverlayAction {
   label: string;
@@ -169,9 +170,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions }: NFTCardProps) 
         
         <div className="flex items-center justify-between">
           {nft.is_listed && nft.price ? (
-            <div className="text-lg font-bold text-primary">
-              {nft.price} SOL
-            </div>
+            <PriceTag amount={nft.price} currency="SOL" size="sm" />
           ) : (
             <div className="text-sm text-muted-foreground">
               Not Listed

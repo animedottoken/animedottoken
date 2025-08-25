@@ -15,6 +15,7 @@ import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 import { normalizeAttributes } from '@/lib/attributes';
 import { truncateAddress } from "@/utils/addressUtils";
+import { PriceTag } from '@/components/ui/price-tag';
 
 interface ExtendedNFT extends UserNFT {
   price?: number;
@@ -398,12 +399,7 @@ export default function NFTDetail() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-sm text-muted-foreground">Current Price</p>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-primary" />
-                        <span className="text-2xl font-bold">{nft.price}</span>
-                        <span className="text-lg text-muted-foreground">{nft.currency}</span>
-                      </div>
+                      <PriceTag amount={nft.price} currency={nft.currency} size="lg" />
                     </div>
                     {nft.royalty_percentage && nft.royalty_percentage > 0 && (
                       <div className="text-right">

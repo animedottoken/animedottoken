@@ -7,6 +7,7 @@ import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
+import { PriceTag } from '@/components/ui/price-tag';
 interface BoostedListing {
   id: string;
   nft_id: string;
@@ -216,7 +217,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
           {/* Price display */}
           <div>
             {listed && nftPrice !== null ? (
-              <div className="text-lg font-bold text-primary">{nftPrice} SOL</div>
+              <PriceTag amount={nftPrice} currency="SOL" size="sm" />
             ) : (
               <div className="text-sm text-muted-foreground">Not Listed</div>
             )}
