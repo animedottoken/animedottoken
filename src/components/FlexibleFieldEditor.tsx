@@ -486,24 +486,26 @@ export const FlexibleFieldEditor = ({ collection, onUpdate, isOwner }: FlexibleF
         </div>
         
         <div className="flex items-center gap-2">
-          {!isLocked && isOwner && (
+          {/* Show Edit button only when field is unlocked and user is owner */}
+          {!lockedFields.includes(fieldName) && isOwner && !isLocked && (
             <Button size="sm" onClick={() => startEditing(fieldName)} disabled={isUpdating}>
               Edit
             </Button>
           )}
           
+          {/* Show padlock button when creator can toggle lock */}
           {creatorCanToggleLock && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     size="sm"
-                    variant="ghost"
+                    variant={lockedFields.includes(fieldName) ? "destructive" : "default"}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFieldLock(fieldName);
                     }}
-                    className="h-8 w-8 p-0"
+                    className={lockedFields.includes(fieldName) ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}
                     disabled={isUpdating}
                   >
                     {lockedFields.includes(fieldName) ? (
