@@ -13,6 +13,7 @@ interface FileUploadProps {
   aspectRatio?: number
   maxSizeText?: string
   allowRemove?: boolean
+  showPreview?: boolean
 }
 
 export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
@@ -25,7 +26,8 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     placeholder = "Click to upload image",
     aspectRatio = 1,
     maxSizeText = "Maximum file size: 10MB",
-    allowRemove = true
+    allowRemove = true,
+    showPreview = true
   }, ref) => {
     const [preview, setPreview] = React.useState<string | null>(previewUrl || null)
     const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -95,38 +97,74 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           className="border-2 border-dashed border-border rounded-lg p-4 hover:border-primary transition-colors cursor-pointer group"
           style={{ aspectRatio }}
         >
-          {preview ? (
+          {currentFile || preview ? (
             <div className="relative w-full h-full">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-full object-cover rounded-md"
-              />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center">
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleClick();
-                    }}
-                    className="bg-white/90 text-black hover:bg-white"
-                  >
-                    Change
-                  </Button>
-                  {allowRemove && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={handleRemove}
-                      className="bg-red-500/90 hover:bg-red-600"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+              {showPreview && preview ? (
+                <>
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center">
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClick();
+                        }}
+                        className="bg-white/90 text-black hover:bg-white"
+                      >
+                        Change
+                      </Button>
+                      {allowRemove && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={handleRemove}
+                          className="bg-red-500/90 hover:bg-red-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-center bg-muted/30 rounded-md">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {currentFile?.name || 'File selected'}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClick();
+                        }}
+                      >
+                        Change
+                      </Button>
+                      {allowRemove && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={handleRemove}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="flex h-full w-full items-center justify-center text-center">

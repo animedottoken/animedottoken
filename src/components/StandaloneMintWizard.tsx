@@ -18,6 +18,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { toast } from 'sonner';
 import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 import { MediaPreview } from '@/components/ui/media-preview';
+import { CollectionInfoBanner } from '@/components/CollectionInfoBanner';
 
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
@@ -235,33 +236,17 @@ export const StandaloneMintWizard = () => {
                 </SelectContent>
               </Select>
             )}
-            {selectedCollection && currentStep === 1 && !isCollectionLocked && (
-              <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                {selectedCollection.image_url && (
-                  <img 
-                    src={selectedCollection.image_url} 
-                    alt={selectedCollection.name}
-                    className="w-8 h-8 rounded object-cover"
-                  />
-                )}
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Selected collection:</p>
-                  <p className="font-medium">{selectedCollection.name}</p>
-                  {selectedCollection.description && (
-                    <p className="text-sm text-muted-foreground mt-1">{selectedCollection.description}</p>
-                  )}
-                  <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                    {selectedCollection.mint_price > 0 && (
-                      <span>Collection mint price: {selectedCollection.mint_price} SOL</span>
-                    )}
-                    <span>Available: {selectedCollection.items_available}/{selectedCollection.max_supply}</span>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Collection Info Banner */}
+      {selectedCollection && currentStep === 1 && (
+        <CollectionInfoBanner 
+          collection={selectedCollection} 
+          className="mb-6"
+        />
+      )}
 
       {/* Progress Steps */}
       <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
@@ -312,9 +297,9 @@ export const StandaloneMintWizard = () => {
                   Primary Media *
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF)
+                  Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF). Preview will appear in Review step.
                 </p>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ 
@@ -330,50 +315,32 @@ export const StandaloneMintWizard = () => {
                     className="w-full"
                     aspectRatio={1}
                     currentFile={formData.media_file}
-                    previewUrl={formData.media_file ? URL.createObjectURL(formData.media_file) : undefined}
+                    showPreview={false}
                   />
-                  
-                  {/* Media preview when file is selected */}
-                  {formData.media_file && (
-                    <div className="space-y-2">
-                      <Label className="text-sm text-muted-foreground">Media Preview:</Label>
-                      <MediaPreview
-                        file={formData.media_file}
-                        previewUrl={URL.createObjectURL(formData.media_file)}
-                        className="w-full border rounded-lg"
-                        aspectRatio={1}
-                      />
-                    </div>
-                  )}
                   
                   {/* Option to use collection avatar */}
                   {selectedCollection?.image_url && !formData.media_file && (
-                    <div className="space-y-2">
-                      <Label className="text-sm text-muted-foreground">Or use collection avatar:</Label>
-                      <div 
-                        className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group"
-                        onClick={() => {
-                          fetch(selectedCollection.image_url!)
-                            .then(response => response.blob())
-                            .then(blob => {
-                              const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
-                              setFormData({ ...formData, media_file: file, image_file: file });
-                              toast.success('Collection avatar loaded!');
-                            })
-                            .catch(() => toast.error('Failed to load collection avatar'));
-                        }}
-                      >
-                        <div className="flex flex-col items-center text-center space-y-2">
-                          <img
-                            src={selectedCollection.image_url}
-                            alt={selectedCollection.name}
-                            className="w-16 h-16 rounded-lg object-cover"
-                          />
-                          <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
-                            Use Collection Avatar
-                          </p>
-                        </div>
-                      </div>
+                    <div 
+                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group aspect-square flex flex-col items-center justify-center text-center space-y-2"
+                      onClick={() => {
+                        fetch(selectedCollection.image_url!)
+                          .then(response => response.blob())
+                          .then(blob => {
+                            const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
+                            setFormData({ ...formData, media_file: file, image_file: file });
+                            toast.success('Collection avatar loaded!');
+                          })
+                          .catch(() => toast.error('Failed to load collection avatar'));
+                      }}
+                    >
+                      <img
+                        src={selectedCollection.image_url}
+                        alt={selectedCollection.name}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                      <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+                        Use Collection Avatar
+                      </p>
                     </div>
                   )}
                 </div>
@@ -390,7 +357,7 @@ export const StandaloneMintWizard = () => {
                     Cover Image (Required for video/audio/3D)
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Add a cover image to improve how your NFT appears in galleries and marketplaces.
+                    Add a cover image to improve how your NFT appears in galleries and marketplaces. Preview will appear in Review step.
                   </p>
                   <FileUpload
                     onFileSelect={(file) => {
@@ -402,7 +369,7 @@ export const StandaloneMintWizard = () => {
                     className="w-full max-w-md"
                     aspectRatio={1}
                     currentFile={formData.cover_image_file}
-                    previewUrl={formData.cover_image_file ? URL.createObjectURL(formData.cover_image_file) : undefined}
+                    showPreview={false}
                   />
                 </div>
               )}
@@ -725,13 +692,30 @@ export const StandaloneMintWizard = () => {
               {/* NFT Preview */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">NFT Preview</h3>
-                {formData.image_file && (
+                
+                {/* Media Preview */}
+                {(formData.media_file || formData.image_file) && (
                   <div className="w-full max-w-sm rounded-xl overflow-hidden bg-muted border-2 border-border">
-                    <img
-                      src={URL.createObjectURL(formData.image_file)}
-                      alt="NFT Preview"
-                      className="w-full aspect-square object-cover"
+                    <MediaPreview
+                      file={formData.media_file || formData.image_file!}
+                      previewUrl={URL.createObjectURL(formData.media_file || formData.image_file!)}
+                      className="w-full"
+                      aspectRatio={1}
                     />
+                  </div>
+                )}
+                
+                {/* Cover Image Preview for non-image media */}
+                {formData.cover_image_file && formData.media_file && !formData.media_file.type.startsWith('image/') && (
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Cover Image:</Label>
+                    <div className="w-full max-w-sm rounded-xl overflow-hidden bg-muted border-2 border-border">
+                      <img
+                        src={URL.createObjectURL(formData.cover_image_file)}
+                        alt="Cover Preview"
+                        className="w-full aspect-square object-cover"
+                      />
+                    </div>
                   </div>
                 )}
                 
