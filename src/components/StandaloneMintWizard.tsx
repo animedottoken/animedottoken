@@ -601,7 +601,9 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                   id="quantity"
                   type="number"
                   min="1"
-                  max="1000"
+                  max={selectedCollection && selectedCollection.max_supply 
+                    ? String(Math.max(1, (selectedCollection.max_supply - selectedCollection.items_redeemed))) 
+                    : "1000"}
                   value={quantityInput}
                   onChange={(e) => setQuantityInput(e.target.value)}
                   onBlur={(e) => {
@@ -610,14 +612,26 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                       setFormData({ ...formData, quantity: undefined });
                       return;
                     }
-                    const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
+                    
+                    const maxAllowed = selectedCollection && selectedCollection.max_supply 
+                      ? Math.max(1, selectedCollection.max_supply - selectedCollection.items_redeemed)
+                      : 1000;
+                    
+                    const n = Math.max(1, Math.min(maxAllowed, parseInt(val, 10) || 1));
                     setQuantityInput(String(n));
                     setFormData({ ...formData, quantity: n });
                   }}
                   className="max-w-xs"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Up to 1000 NFTs with automatic numbering (#1, #2, etc.)
+                  {selectedCollection && selectedCollection.max_supply ? (
+                    <>
+                      Up to {Math.max(0, selectedCollection.max_supply - selectedCollection.items_redeemed)} available 
+                      ({selectedCollection.items_redeemed}/{selectedCollection.max_supply} minted) with automatic numbering (#1, #2, etc.)
+                    </>
+                  ) : (
+                    'Up to 1000 NFTs with automatic numbering (#1, #2, etc.)'
+                  )}
                 </p>
               </div>
             </div>
