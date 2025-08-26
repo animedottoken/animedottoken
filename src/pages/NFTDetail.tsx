@@ -117,66 +117,43 @@ export default function NFTDetail() {
     if (!id) return;
 
     try {
-      // Fetch NFT with extended data including price, listings, and royalties
-      const { data, error } = await supabase
-        .from('nfts')
-        .select(`
-          id,
-          name,
-          symbol,
-          description,
-          image_url,
-          mint_address,
-          collection_id,
-          owner_address,
-          creator_address,
-          attributes,
-          created_at,
-          updated_at,
-          price,
-          is_listed,
-          currency,
-          collections (
-            name,
-            royalty_percentage
-          )
-        `)
-        .eq('id', id)
-        .single();
+      // Fetch NFT via secure public RPC
+      const { data: allNfts, error: nftError } = await supabase.rpc('get_nfts_public');
+      if (nftError) throw nftError;
+      const pub = (allNfts || []).find((n: any) => n.id === id);
+      if (!pub) throw new Error('NFT not found');
 
-      if (error) throw error;
+      // Fetch collection details via masked public RPC
+      const { data: allCollections } = await supabase.rpc('get_collections_public_masked');
+      const collection = (allCollections || []).find((c: any) => c.id === pub.collection_id);
 
-      // Fetch user profiles for owner and creator display names
-      const addresses = [data.owner_address, data.creator_address].filter(Boolean);
-      const { data: profiles } = await supabase
-        .from('user_profiles')
-        .select('wallet_address, display_name')
-        .in('wallet_address', addresses);
-
-      const ownerProfile = profiles?.find(p => p.wallet_address === data.owner_address);
-      const creatorProfile = profiles?.find(p => p.wallet_address === data.creator_address);
+      // Fetch display names via public profiles RPC (match by masked address)
+      const { data: profiles } = await supabase.rpc('get_profiles_public');
+      const mask = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
+      const ownerProfile = (profiles || []).find((p: any) => mask(p.wallet_address) === pub.owner_address_masked);
+      const creatorProfile = (profiles || []).find((p: any) => mask(p.wallet_address) === pub.creator_address_masked);
 
       const transformedNFT: ExtendedNFT = {
-        id: data.id,
-        name: data.name,
-        symbol: data.symbol,
-        description: data.description,
-        image_url: data.image_url,
-        mint_address: data.mint_address,
-        collection_id: data.collection_id,
-        owner_address: data.owner_address,
-        creator_address: data.creator_address,
-        metadata: data.attributes,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        price: data.price,
-        is_listed: data.is_listed,
-        currency: data.currency || 'SOL',
-        royalty_percentage: (data as any).collections?.royalty_percentage,
-        collection_name: (data as any).collections?.name,
+        id: pub.id,
+        name: pub.name,
+        symbol: pub.symbol,
+        description: pub.description,
+        image_url: pub.image_url,
+        mint_address: pub.mint_address,
+        collection_id: pub.collection_id,
+        owner_address: pub.owner_address_masked,
+        creator_address: pub.creator_address_masked,
+        metadata: pub.attributes,
+        created_at: pub.created_at,
+        updated_at: pub.updated_at,
+        price: pub.price,
+        is_listed: pub.is_listed,
+        currency: pub.currency || 'SOL',
+        royalty_percentage: collection?.royalty_percentage,
+        collection_name: collection?.name,
         owner_display_name: ownerProfile?.display_name,
         creator_display_name: creatorProfile?.display_name
-      };
+      } as any;
 
       setNft(transformedNFT);
     } catch (error) {
