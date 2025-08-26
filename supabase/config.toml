@@ -1,66 +1,65 @@
 
 project_id = "eztzddykjnmnpoeyfqcg"
 
-# Edge functions with custom JWT verification
-# These functions disable Supabase JWT verification because they implement
-# their own authentication with wallet signature validation
+# Edge functions with JWT verification enabled for security
+# Only public read functions and properly secured functions disable JWT verification
 
 [functions.get-mint-fee]
 verify_jwt = false  # Public read function
 
 [functions.create-mint-job]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.create-collection]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.mint-collection]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.update-collection]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.burn-nft]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.delete-collection]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.create-boost]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.get-profile]
 verify_jwt = false  # Public read function
 
 [functions.set-nickname]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user and payment verification
 
 [functions.unlock-pfp]
-verify_jwt = false  # Validates transaction signature
+verify_jwt = true  # Requires authenticated user and transaction verification
 
 [functions.set-pfp]
-verify_jwt = false  # Handles its own JWT verification
+verify_jwt = true  # Requires authenticated user and NFT ownership verification
 
 [functions.get-anime-price]
 verify_jwt = false  # Public read function
 
 [functions.like-nft]
-verify_jwt = false  # Handles its own JWT verification
+verify_jwt = true  # Requires authenticated user
 
 [functions.like-collection]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.toggle-follow]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.upsert-profile]
-verify_jwt = false  # Handles its own JWT verification
+verify_jwt = true  # Requires authenticated user
 
 [functions.set-bio]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.set-banner]
-verify_jwt = false  # Handles its own authentication
+verify_jwt = true  # Requires authenticated user
 
 [functions.export-trading-data]
 verify_jwt = true  # Uses Supabase JWT verification

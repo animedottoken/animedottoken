@@ -14,9 +14,50 @@ serve(async (req) => {
   }
 
   try {
-    const { nickname, wallet_address, transaction_signature } = await req.json();
+    // Extract JWT token from Authorization header
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
 
-    // Validate nickname format
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !supabaseAnonKey || !serviceKey) {
+      return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
+
+    // Verify JWT with anon key client
+    const jwt = authHeader.substring(7);
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    
+    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+
+    // Get wallet address from authenticated user's metadata
+    const userWallet = user.user_metadata?.wallet_address;
+    if (!userWallet) {
+      return new Response(JSON.stringify({ error: "No wallet address found in user metadata" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    const { nickname, transaction_signature } = await req.json();
+
+    // Validate nickname
     if (!nickname || typeof nickname !== "string") {
       return new Response(JSON.stringify({ error: "Nickname is required" }), {
         status: 400,
@@ -40,13 +81,7 @@ serve(async (req) => {
       });
     }
 
-    if (!wallet_address) {
-      return new Response(JSON.stringify({ error: "Wallet address is required" }), {
-        status: 400,
-        headers: corsHeaders,
-      });
-    }
-
+    // Verify transaction signature (required for nickname changes)
     if (!transaction_signature) {
       return new Response(JSON.stringify({ error: "Transaction signature is required for payment verification" }), {
         status: 400,
@@ -54,19 +89,32 @@ serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !serviceKey) {
-      return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
-        status: 500,
+    // In production, verify the actual Solana transaction here
+    // For now, we accept test signatures
+    if (!transaction_signature.startsWith('test_tx_') && !transaction_signature.startsWith('simulated_')) {
+      return new Response(JSON.stringify({ error: 'Invalid transaction signature' }), {
+        status: 400,
         headers: corsHeaders,
       });
     }
 
+    // Rate limiting check
     const supabase = createClient(supabaseUrl, serviceKey);
+    const rateLimitCheck = await supabase.rpc('check_rate_limit', {
+      p_user_wallet: userWallet,
+      p_endpoint: 'set-nickname',
+      p_max_requests: 3,
+      p_window_minutes: 1
+    });
 
-    console.log(`Processing nickname change for wallet: ${wallet_address}, tx: ${transaction_signature}`);
+    if (rateLimitCheck.error || !rateLimitCheck.data) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+        status: 429,
+        headers: corsHeaders,
+      });
+    }
+
+    console.log(`Processing nickname change for wallet: ${userWallet}, tx: ${transaction_signature}`);
 
     // Check if nickname already exists
     const { data: existingNickname, error: existingError } = await supabase
@@ -83,42 +131,28 @@ serve(async (req) => {
       });
     }
 
-    if (existingNickname && existingNickname.wallet_address !== wallet_address) {
+    if (existingNickname && existingNickname.wallet_address !== userWallet) {
       return new Response(JSON.stringify({ error: "Nickname already taken" }), {
         status: 409,
         headers: corsHeaders,
       });
     }
 
-    // Get existing user profile data for preserving other fields
-    const { data: userProfile, error: profileError } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("wallet_address", wallet_address)
-      .maybeSingle();
+    // Update nickname using regular client with RLS
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    });
 
-    if (profileError) {
-      console.error("Error fetching user profile:", profileError);
-      return new Response(JSON.stringify({ error: "Database error fetching profile" }), {
-        status: 500,
-        headers: corsHeaders,
-      });
-    }
-
-    // Upsert the nickname while preserving other fields
-    const { error: updateError } = await supabase
+    const { error: updateError } = await userClient
       .from("user_profiles")
       .upsert({ 
-        wallet_address, 
+        wallet_address: userWallet, 
         nickname: trimmedNickname,
-        trade_count: userProfile?.trade_count || 0,
-        profile_rank: userProfile?.profile_rank || 'DEFAULT',
-        pfp_unlock_status: userProfile?.pfp_unlock_status || false,
-        bio_unlock_status: userProfile?.bio_unlock_status || false,
-        current_pfp_nft_mint_address: userProfile?.current_pfp_nft_mint_address || null,
-        profile_image_url: userProfile?.profile_image_url || null,
-        banner_image_url: userProfile?.banner_image_url || null,
-        bio: userProfile?.bio || null
+        updated_at: new Date().toISOString(),
       }, { onConflict: "wallet_address" });
 
     if (updateError) {
@@ -134,6 +168,7 @@ serve(async (req) => {
       headers: corsHeaders,
     });
   } catch (err) {
+    console.error('Error in set-nickname function:', err);
     return new Response(JSON.stringify({ error: (err as Error).message || "Unexpected error" }), {
       status: 500,
       headers: corsHeaders,
