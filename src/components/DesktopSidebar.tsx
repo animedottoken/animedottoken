@@ -4,6 +4,7 @@ import { Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users,
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { scrollToHash } from "@/lib/scroll";
 
 type RouteItem = {
   type: "route";
@@ -69,33 +70,16 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     if (item.type === "route") {
       navigate(item.path);
       setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-    } else {
-      // Section navigation: navigate to home with hash if not on home
-      if (location.pathname !== "/") {
-        navigate(`/#${item.hash}`);
-        setTimeout(() => {
-          const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
-          if (element) {
-            const headerOffset = 80;
-            const y = element.getBoundingClientRect().top + window.scrollY - headerOffset;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }, 150);
-        return;
-      }
-      // Try both ID and class selector
-      const element = document.getElementById(item.hash) || document.querySelector(`.${item.hash}`);
-      if (element) {
-        const headerOffset = 80; // account for fixed header
-        const y = element.getBoundingClientRect().top + window.scrollY - headerOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-        history.replaceState(null, '', `#${item.hash}`);
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      return;
     }
+
+    if (location.pathname !== "/") {
+      navigate(`/#${item.hash}`);
+      setTimeout(() => scrollToHash(item.hash), 100);
+      return;
+    }
+
+    scrollToHash(item.hash);
   };
 
   const isActive = (item: NavigationItem) => {

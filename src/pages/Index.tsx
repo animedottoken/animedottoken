@@ -28,6 +28,7 @@ import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFaceboo
 import { ChevronDown, Copy, Share } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
+import { scrollToHash } from "@/lib/scroll";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
@@ -161,16 +162,23 @@ const Index = () => {
         'home-top': 'create-nfts'
       };
       const targetHash = hashMap[hash] || hash;
-      
-      setTimeout(() => {
-        const el = document.getElementById(targetHash) || document.querySelector(`.${targetHash}`);
-        if (el) {
-          const headerOffset = 80;
-          const y = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      }, 120);
+      setTimeout(() => scrollToHash(targetHash), 50);
     }
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const raw = window.location.hash.slice(1);
+      if (!raw) return;
+      const hashMap: Record<string, string> = {
+        'nft-preview-section': 'create-nfts',
+        'home-top': 'create-nfts'
+      };
+      const targetHash = hashMap[raw] || raw;
+      scrollToHash(targetHash);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
   const [buyOpen, setBuyOpen] = useState(false);
@@ -214,7 +222,7 @@ const Index = () => {
       <div className="mb-6 mx-auto max-w-5xl">
         <div
           className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
-          onClick={() => document.getElementById('nft-supporter-section')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={() => scrollToHash('nft-supporter-section')}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -276,7 +284,7 @@ const Index = () => {
         <Button 
           size="lg"
           className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold text-lg px-8 py-6 h-auto shadow-elevated hover:shadow-glow transition-all duration-300 transform hover:scale-105"
-          onClick={() => document.getElementById('how-to-buy')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={() => scrollToHash('how-to-buy')}
         >
           How to Buy $ANIME
         </Button>

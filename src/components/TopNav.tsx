@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { toast } from "sonner";
+import { scrollToHash } from "@/lib/scroll";
 
 type RouteItem = {
   type: "route";
@@ -62,18 +63,6 @@ export const TopNav = () => {
   };
 
   const handleNavigation = (item: NavigationItem) => {
-    const scrollToHash = (hash: string) => {
-      const el = (document.getElementById(hash) || document.querySelector(`.${hash}`)) as HTMLElement | null;
-      if (!el) {
-        console.warn('Section not found:', hash);
-        return;
-      }
-      const headerOffset = 80;
-      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.history.replaceState(null, '', `#${hash}`);
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    };
-
     if (item.type === 'route') {
       setOpen(false);
       navigate(item.path);
@@ -83,12 +72,9 @@ export const TopNav = () => {
     setOpen(false);
     if (location.pathname !== '/') {
       navigate(`/#${item.hash}`);
-      setTimeout(() => scrollToHash(item.hash), 150);
+      setTimeout(() => scrollToHash(item.hash), 100);
     } else {
-      // Update hash first for consistency (also helps mobile browser URL)
-      window.location.hash = `#${item.hash}`;
-      // Scroll after hash update
-      setTimeout(() => scrollToHash(item.hash), 10);
+      scrollToHash(item.hash);
     }
   };
   const isActive = (item: NavigationItem) => {
