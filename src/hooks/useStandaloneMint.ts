@@ -59,7 +59,6 @@ export const useStandaloneMint = () => {
       toast.error('Please connect your wallet first');
       return { success: false, error: 'Wallet not connected' };
     }
-
     setMinting(true);
     
     try {
@@ -95,6 +94,11 @@ export const useStandaloneMint = () => {
       if (nftData.image_file && !nftData.media_file) {
         mediaUrl = imageUrl;
         mediaType = nftData.image_file.type;
+      }
+
+      // Ensure cover image is present for all mints
+      if (!imageUrl) {
+        throw new Error('Cover image is required. Please upload a cover image.');
       }
 
       const quantity = nftData.quantity || 1;

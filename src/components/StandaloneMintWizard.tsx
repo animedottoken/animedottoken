@@ -355,7 +355,7 @@ export const StandaloneMintWizard = () => {
                 formData.media_file.name.toLowerCase().endsWith('.gltf')) && (
                 <div className="space-y-3">
                   <Label className="text-base font-medium">
-                    Cover Image (Optional but Recommended)
+                    Cover Image (Required for video/audio/3D)
                   </Label>
                   <p className="text-sm text-muted-foreground">
                     Add a cover image to improve how your NFT appears in galleries and marketplaces.
@@ -380,19 +380,36 @@ export const StandaloneMintWizard = () => {
                 <h4 className="font-medium text-sm mb-2">💡 Tips for best results:</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• <strong>Images & GIFs:</strong> Will display directly and animate where supported</li>
-                  <li>• <strong>Videos:</strong> Will show with play controls - add a cover image for better thumbnails</li>
-                  <li>• <strong>Audio:</strong> Will display with audio player - cover image highly recommended</li>
-                  <li>• <strong>3D Models:</strong> GLB/GLTF format supported - cover image recommended</li>
+                  <li>• <strong>Videos:</strong> Will show with play controls - <strong>cover image required</strong></li>
+                  <li>• <strong>Audio:</strong> Will display with audio player - <strong>cover image required</strong></li>
+                  <li>• <strong>3D Models:</strong> GLB/GLTF format supported - <strong>cover image required</strong></li>
                   <li>• <strong>No real funds:</strong> This is a simulation for demonstration only</li>
                 </ul>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
-              <Button onClick={handleNext} disabled={!formData.media_file && !formData.image_file}>
-                Next: Details
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+            <div className="flex items-center justify-between pt-4">
+              {/* Cover required warning */}
+              {(formData.media_file && !formData.media_file.type.startsWith('image/') && !formData.cover_image_file) && (
+                <p className="text-xs text-destructive">Cover image is required for video, audio, or 3D media.</p>
+              )}
+
+              <div className="ml-auto flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => selectedCollectionId ? navigate(`/collection/${selectedCollectionId}`) : navigate(-1)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={(!formData.media_file && !formData.image_file) ||
+                    (formData.media_file && !formData.media_file.type.startsWith('image/') && !formData.cover_image_file)}
+                >
+                  Next: Details
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
