@@ -431,7 +431,7 @@ export const StandaloneMintWizard = () => {
               </p>
               
               <div className="flex items-start gap-4">
-                <div className="w-32">
+                <div className="w-24">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ ...formData, cover_image_file: file });
@@ -441,19 +441,8 @@ export const StandaloneMintWizard = () => {
                     placeholder="Click to upload"
                     aspectRatio={1}
                     maxSizeText="Max 10MB"
-                    className="w-32 h-32"
+                    className="w-24 h-24"
                   />
-                  
-                  {selectedCollection && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleUseCollectionCover}
-                      className="text-xs mt-1 w-full"
-                    >
-                      Use Collection
-                    </Button>
-                  )}
                 </div>
                 
                 {/* Marketplace Preview Thumbnail */}
@@ -470,6 +459,16 @@ export const StandaloneMintWizard = () => {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground text-center mt-1">Marketplace</p>
+                  {selectedCollection && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleUseCollectionCover}
+                      className="text-xs mt-1 w-full"
+                    >
+                      Use Collection
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
