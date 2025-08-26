@@ -29,15 +29,6 @@ export function NFTPreviewSection() {
             className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             role="button"
             tabIndex={0}
-            onClick={(e) => {
-              // Let the Link handle navigation naturally
-              e.preventDefault();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-              }
-            }}
           >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -91,15 +82,6 @@ export function NFTPreviewSection() {
             className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             role="button"
             tabIndex={0}
-            onClick={(e) => {
-              // Let the Link handle navigation naturally  
-              e.preventDefault();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-              }
-            }}
           >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

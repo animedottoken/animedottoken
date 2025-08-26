@@ -62,17 +62,21 @@ export const TopNav = () => {
     }
   };
 
-  const handleNavigation = (item: NavigationItem) => {
+  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
     if (item.type === 'route') {
       setOpen(false);
       navigate(item.path);
       return;
     }
 
+    // Prevent default browser navigation for section links
+    e?.preventDefault();
     setOpen(false);
+    
     if (location.pathname !== '/') {
-      navigate(`/#${item.hash}`);
-      setTimeout(() => scrollToHash(item.hash), 100);
+      // Navigate to home first, then scroll to section
+      navigate('/');
+      setTimeout(() => scrollToHash(item.hash), 150);
     } else {
       scrollToHash(item.hash);
     }
@@ -258,7 +262,7 @@ export const TopNav = () => {
                     key={item.hash}
                     variant="ghost"
                     className="w-full justify-start gap-3 h-12"
-                    onClick={() => handleNavigation(item)}
+                    onClick={(e) => handleNavigation(item, e)}
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="font-medium">{item.title}</span>

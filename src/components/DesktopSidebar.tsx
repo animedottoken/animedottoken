@@ -160,12 +160,15 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                       )}
                       asChild
                     >
-                      <div onClick={(e) => {
-                        // Only handle smooth scroll for unmodified left clicks
-                        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                          handleNavigation(item, e);
-                        }
-                      }}>
+                      <div 
+                        onClick={(e) => {
+                          // Only handle smooth scroll for unmodified left clicks
+                          if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                            handleNavigation(item, e);
+                          }
+                        }}
+                        data-testid={item.hash === 'create-nfts' ? 'sidebar-create-nfts' : undefined}
+                      >
                         <item.icon className="h-5 w-5 shrink-0" />
                         {!collapsed && <span className="font-medium">{item.title}</span>}
                       </div>

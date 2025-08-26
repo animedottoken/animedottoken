@@ -45,21 +45,43 @@ export function scrollToHash(hash: string, opts: ScrollToHashOptions = {}) {
       updateHash(id);
       el.scrollIntoView({ behavior, block });
       
-      // Stabilization: two follow-up scroll passes to ensure stable position
-      setTimeout(() => {
-        const stabilizationEl = findTarget(id);
-        if (stabilizationEl) {
-          stabilizationEl.scrollIntoView({ behavior: "smooth", block });
-        }
-      }, 300);
+      // Stabilization loop: ensure position stability after layout changes
+      const stabilize = () => {
+        let consecutiveStable = 0;
+        const maxAttempts = 20; // ~2 seconds max
+        let attempts = 0;
+        
+        const checkStability = () => {
+          attempts++;
+          const currentEl = findTarget(id);
+          if (!currentEl) return;
+          
+          const rect = currentEl.getBoundingClientRect();
+          const targetTop = 0; // Should be at top with scroll-margin-top CSS
+          const tolerance = 10; // Allow small variance
+          
+          if (Math.abs(rect.top - targetTop) <= tolerance) {
+            consecutiveStable++;
+            if (consecutiveStable >= 2) {
+              // Stable for 2 frames, we're done
+              return;
+            }
+          } else {
+            consecutiveStable = 0;
+            // Re-scroll if not stable
+            currentEl.scrollIntoView({ behavior: "smooth", block });
+          }
+          
+          if (attempts < maxAttempts) {
+            requestAnimationFrame(checkStability);
+          }
+        };
+        
+        // Start stabilization after initial scroll settles
+        setTimeout(() => requestAnimationFrame(checkStability), 100);
+      };
       
-      setTimeout(() => {
-        const finalEl = findTarget(id);
-        if (finalEl) {
-          finalEl.scrollIntoView({ behavior: "smooth", block });
-        }
-      }, 600);
-      
+      stabilize();
       return;
     }
     if (remaining <= 0) {

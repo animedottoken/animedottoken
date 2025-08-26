@@ -274,7 +274,7 @@ const Index = () => {
       </div>
 
       <div id="featured-community-content" className="featured-community-content scroll-mt-20">
-        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-32"></div>}>
+        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg min-h-[420px]"></div>}>
           <FeaturedCommunityContent />
         </Suspense>
       </div>
