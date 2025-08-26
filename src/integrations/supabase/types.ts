@@ -674,108 +674,7 @@ export type Database = {
       }
     }
     Views: {
-      profiles_authenticated: {
-        Row: {
-          banner_image_url: string | null
-          bio: string | null
-          created_at: string | null
-          discord_handle: string | null
-          display_name: string | null
-          id: string | null
-          nickname: string | null
-          profile_image_url: string | null
-          profile_rank: string | null
-          trade_count: number | null
-          twitter_handle: string | null
-          updated_at: string | null
-          verified: boolean | null
-          wallet_address: string | null
-          website_url: string | null
-        }
-        Insert: {
-          banner_image_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          discord_handle?: never
-          display_name?: string | null
-          id?: string | null
-          nickname?: string | null
-          profile_image_url?: string | null
-          profile_rank?: string | null
-          trade_count?: number | null
-          twitter_handle?: never
-          updated_at?: string | null
-          verified?: boolean | null
-          wallet_address?: string | null
-          website_url?: never
-        }
-        Update: {
-          banner_image_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          discord_handle?: never
-          display_name?: string | null
-          id?: string | null
-          nickname?: string | null
-          profile_image_url?: string | null
-          profile_rank?: string | null
-          trade_count?: number | null
-          twitter_handle?: never
-          updated_at?: string | null
-          verified?: boolean | null
-          wallet_address?: string | null
-          website_url?: never
-        }
-        Relationships: []
-      }
-      profiles_public: {
-        Row: {
-          banner_image_url: string | null
-          bio: string | null
-          created_at: string | null
-          discord_handle: string | null
-          display_name: string | null
-          id: string | null
-          profile_image_url: string | null
-          profile_rank: string | null
-          trade_count: number | null
-          twitter_handle: string | null
-          verified: boolean | null
-          wallet_address: string | null
-          website_url: string | null
-        }
-        Insert: {
-          banner_image_url?: never
-          bio?: never
-          created_at?: string | null
-          discord_handle?: never
-          display_name?: never
-          id?: string | null
-          profile_image_url?: never
-          profile_rank?: string | null
-          trade_count?: number | null
-          twitter_handle?: never
-          verified?: boolean | null
-          wallet_address?: string | null
-          website_url?: never
-        }
-        Update: {
-          banner_image_url?: never
-          bio?: never
-          created_at?: string | null
-          discord_handle?: never
-          display_name?: never
-          id?: string | null
-          profile_image_url?: never
-          profile_rank?: string | null
-          trade_count?: number | null
-          twitter_handle?: never
-          verified?: boolean | null
-          wallet_address?: string | null
-          website_url?: never
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_profile_rank: {
@@ -912,6 +811,44 @@ export type Database = {
           nft_likes_count: number
           total_likes_count: number
           wallet_address: string
+        }[]
+      }
+      get_profiles_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          banner_image_url: string
+          bio: string
+          created_at: string
+          discord_handle: string
+          display_name: string
+          id: string
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          trade_count: number
+          twitter_handle: string
+          updated_at: string
+          verified: boolean
+          wallet_address: string
+          website_url: string
+        }[]
+      }
+      get_profiles_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          banner_image_url: string
+          bio: string
+          created_at: string
+          discord_handle: string
+          display_name: string
+          id: string
+          profile_image_url: string
+          profile_rank: string
+          trade_count: number
+          twitter_handle: string
+          verified: boolean
+          wallet_address: string
+          website_url: string
         }[]
       }
       increment_user_trade_count: {
