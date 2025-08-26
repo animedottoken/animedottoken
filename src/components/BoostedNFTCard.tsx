@@ -17,7 +17,7 @@ interface BoostedListing {
   tier: 'god' | 'top' | 'boosted';
   nft_name: string;
   nft_image_url: string;
-  owner_address: string;
+  owner_address_masked: string;
   end_time: string;
 }
 
@@ -64,7 +64,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
     supabase
       .from('user_profiles')
       .select('display_name,verified')
-      .eq('wallet_address', listing.owner_address)
+      .eq('wallet_address', listing.owner_address_masked)
       .maybeSingle()
       .then(({ data, error }) => {
         if (cancelled) return;
@@ -78,7 +78,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         setOwnerVerified(!!data?.verified);
       });
     return () => { cancelled = true; };
-  }, [listing.owner_address]);
+  }, [listing.owner_address_masked]);
 
   const getTierIcon = () => {
     switch (listing.tier) {
@@ -210,12 +210,12 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             
             {/* Owner info */}
             <Link 
-              to={`/creator/${listing.owner_address}`}
+              to={`/creator/${listing.owner_address_masked}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               <span>
-                {ownerNickname || truncateAddress(listing.owner_address)}
+                {ownerNickname || listing.owner_address_masked}
               </span>
               {ownerVerified && (
                 <CheckCircle className="h-3 w-3 text-primary" />

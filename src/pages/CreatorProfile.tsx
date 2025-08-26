@@ -196,11 +196,11 @@ export default function CreatorProfile() {
           .eq('wallet_address', wallet)
           .single();
 
-        const { data: stats } = await supabase
-          .from('creators_public_stats')
-          .select('*')
-          .eq('wallet_address', wallet)
-          .single();
+        // Use RPC function for creator stats
+        const { data: stats } = await supabase.rpc('get_creators_public_stats');
+
+        // Find stats for this specific wallet
+        const creatorStats = (stats || []).find((s: any) => s.wallet_address === wallet);
 
         // Fetch creator's NFTs
         const { data: nfts } = await supabase
@@ -278,8 +278,8 @@ export default function CreatorProfile() {
             trade_count: profile.trade_count || 0,
             profile_rank: profile.profile_rank || 'DEFAULT',
             verified: profile.verified,
-            follower_count: stats?.follower_count || 0,
-            nft_likes_count: stats?.nft_likes_count || 0,
+            follower_count: creatorStats?.follower_count || 0,
+            nft_likes_count: creatorStats?.nft_likes_count || 0,
             created_nfts: nfts?.length || 0,
           });
         }

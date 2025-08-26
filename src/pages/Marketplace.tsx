@@ -45,7 +45,7 @@ interface Collection {
   description?: string;
   verified: boolean;
   items_redeemed: number;
-  creator_address: string;
+  creator_address_masked: string;
   mint_price?: number;
   max_supply?: number;
 }
@@ -192,16 +192,17 @@ export default function Marketplace() {
   };
 
   const loadCollections = async () => {
-    const { data: collectionData, error: collectionError } = await supabase
-      .from('collections_public')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50); // Add pagination
+    // Use RPC function for public collections
+    const { data: collectionData, error: collectionError } = await supabase.rpc('get_collections_public_masked');
 
     if (collectionError) {
       console.error('Error loading collections:', collectionError);
     } else {
-      setCollections(collectionData || []);
+      // Apply ordering and limit client-side since RPC doesn't support these parameters
+      const sortedData = (collectionData || [])
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 50);
+      setCollections(sortedData);
     }
   };
 
