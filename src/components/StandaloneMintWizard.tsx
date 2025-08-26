@@ -108,11 +108,6 @@ export const StandaloneMintWizard = () => {
     }
   };
 
-  const handleUnlockCollection = () => {
-    setSearchParams({});
-    setSelectedCollectionId(null);
-  };
-
   const handleNext = () => {
     if (currentStep === 1 && !formData.media_file && !formData.image_file) {
       toast.error('Please upload media first');
@@ -189,41 +184,23 @@ export const StandaloneMintWizard = () => {
             <Label className="text-base font-medium">Collection</Label>
             
             {isCollectionLocked && selectedCollection ? (
-              <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
-                <div className="flex items-center gap-3">
-                  {selectedCollection.image_url && (
-                    <img 
-                      src={selectedCollection.image_url} 
-                      alt={selectedCollection.name}
-                      className="w-6 h-6 rounded object-cover"
-                    />
-                  )}
-                  <div>
-                    <p className="text-sm text-muted-foreground">Minting into:</p>
-                    <p className="font-medium">{selectedCollection.name} (Locked)</p>
-                  </div>
+              <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                {selectedCollection.image_url && (
+                  <img 
+                    src={selectedCollection.image_url} 
+                    alt={selectedCollection.name}
+                    className="w-6 h-6 rounded object-cover"
+                  />
+                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Minting into:</p>
+                  <p className="font-medium">{selectedCollection.name} (Locked)</p>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleUnlockCollection}
-                  className="text-primary hover:text-primary/80"
-                >
-                  Change
-                </Button>
               </div>
             ) : isCollectionLocked && !selectedCollection ? (
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 <span className="text-sm text-muted-foreground">Loading collection...</span>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleUnlockCollection}
-                  className="text-primary hover:text-primary/80 ml-auto"
-                >
-                  Change
-                </Button>
               </div>
             ) : (
               <Select
@@ -258,7 +235,7 @@ export const StandaloneMintWizard = () => {
                 </SelectContent>
               </Select>
             )}
-            {selectedCollection && currentStep === 1 && (
+            {selectedCollection && currentStep === 1 && !isCollectionLocked && (
               <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
                 {selectedCollection.image_url && (
                   <img 
