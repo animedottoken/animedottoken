@@ -674,7 +674,108 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_authenticated: {
+        Row: {
+          banner_image_url: string | null
+          bio: string | null
+          created_at: string | null
+          discord_handle: string | null
+          display_name: string | null
+          id: string | null
+          nickname: string | null
+          profile_image_url: string | null
+          profile_rank: string | null
+          trade_count: number | null
+          twitter_handle: string | null
+          updated_at: string | null
+          verified: boolean | null
+          wallet_address: string | null
+          website_url: string | null
+        }
+        Insert: {
+          banner_image_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          discord_handle?: never
+          display_name?: string | null
+          id?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          trade_count?: number | null
+          twitter_handle?: never
+          updated_at?: string | null
+          verified?: boolean | null
+          wallet_address?: string | null
+          website_url?: never
+        }
+        Update: {
+          banner_image_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          discord_handle?: never
+          display_name?: string | null
+          id?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          trade_count?: number | null
+          twitter_handle?: never
+          updated_at?: string | null
+          verified?: boolean | null
+          wallet_address?: string | null
+          website_url?: never
+        }
+        Relationships: []
+      }
+      profiles_public: {
+        Row: {
+          banner_image_url: string | null
+          bio: string | null
+          created_at: string | null
+          discord_handle: string | null
+          display_name: string | null
+          id: string | null
+          profile_image_url: string | null
+          profile_rank: string | null
+          trade_count: number | null
+          twitter_handle: string | null
+          verified: boolean | null
+          wallet_address: string | null
+          website_url: string | null
+        }
+        Insert: {
+          banner_image_url?: never
+          bio?: never
+          created_at?: string | null
+          discord_handle?: never
+          display_name?: never
+          id?: string | null
+          profile_image_url?: never
+          profile_rank?: string | null
+          trade_count?: number | null
+          twitter_handle?: never
+          verified?: boolean | null
+          wallet_address?: string | null
+          website_url?: never
+        }
+        Update: {
+          banner_image_url?: never
+          bio?: never
+          created_at?: string | null
+          discord_handle?: never
+          display_name?: never
+          id?: string | null
+          profile_image_url?: never
+          profile_rank?: string | null
+          trade_count?: number | null
+          twitter_handle?: never
+          verified?: boolean | null
+          wallet_address?: string | null
+          website_url?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_profile_rank: {
