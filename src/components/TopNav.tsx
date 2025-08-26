@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { toast } from "sonner";
-import { scrollToHash } from "@/lib/scroll";
 
 type RouteItem = {
   type: "route";
@@ -69,16 +68,12 @@ export const TopNav = () => {
       return;
     }
 
-    // Prevent default browser navigation for section links
-    e?.preventDefault();
+    // Native anchor behavior for sections
     setOpen(false);
-    
     if (location.pathname !== '/') {
-      // Navigate to home first, then scroll to section
-      navigate('/');
-      setTimeout(() => scrollToHash(item.hash), 150);
+      navigate(`/#${item.hash}`);
     } else {
-      scrollToHash(item.hash);
+      window.location.hash = `#${item.hash}`;
     }
   };
   const isActive = (item: NavigationItem) => {

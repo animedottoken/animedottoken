@@ -152,34 +152,9 @@ const Index = () => {
     }
   }, []);
 
-  // Handle deep-linking on initial load with offset for fixed header
-  useEffect(() => {
-    const hash = window.location.hash.slice(1);
-    if (hash) {
-      // Backward compatibility mapping
-      const hashMap: Record<string, string> = {
-        'nft-preview-section': 'create-nfts',
-        'home-top': 'create-nfts'
-      };
-      const targetHash = hashMap[hash] || hash;
-      setTimeout(() => scrollToHash(targetHash), 50);
-    }
-  }, []);
+  // Native hash navigation will handle deep links to sections
 
-  useEffect(() => {
-    const onHashChange = () => {
-      const raw = window.location.hash.slice(1);
-      if (!raw) return;
-      const hashMap: Record<string, string> = {
-        'nft-preview-section': 'create-nfts',
-        'home-top': 'create-nfts'
-      };
-      const targetHash = hashMap[raw] || raw;
-      scrollToHash(targetHash);
-    };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
+  // Removed custom hashchange handler to rely on native anchor behavior
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);

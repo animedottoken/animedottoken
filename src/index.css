@@ -109,6 +109,7 @@ All colors MUST be HSL. */
   html {
     scrollbar-gutter: stable both-edges;
     scrollbar-width: thin;
+    scroll-behavior: smooth;
   }
   
   * {

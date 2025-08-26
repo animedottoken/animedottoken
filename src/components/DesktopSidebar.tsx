@@ -4,7 +4,6 @@ import { Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users,
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { scrollToHash } from "@/lib/scroll";
 
 type RouteItem = {
   type: "route";
@@ -69,21 +68,16 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
     if (item.type === "route") {
       navigate(item.path);
-      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
       return;
     }
 
-    // Prevent default browser navigation for section links
-    e?.preventDefault();
-    
+    // Native anchor behavior for sections
     if (location.pathname !== "/") {
-      // Navigate to home first, then scroll to section
-      navigate('/');
-      setTimeout(() => scrollToHash(item.hash), 150);
+      navigate(`/#${item.hash}`);
       return;
     }
 
-    scrollToHash(item.hash);
+    window.location.hash = `#${item.hash}`;
   };
 
   const isActive = (item: NavigationItem) => {

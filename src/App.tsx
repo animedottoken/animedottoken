@@ -8,6 +8,7 @@ import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
+import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
 import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
@@ -110,6 +111,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTopOnRoute />
             <AppLayout />
           </BrowserRouter>
         </TooltipProvider>

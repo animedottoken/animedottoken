@@ -25,7 +25,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { scrollToHash } from "@/lib/scroll";
 
 const navigationItems = [
   { 
@@ -124,19 +123,14 @@ export function AppSidebar() {
   const handleNavigation = (item: typeof navigationItems[0], e?: React.MouseEvent) => {
     if (item.type === "route") {
       navigate(item.path!);
-      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
       return;
     }
 
-    // Prevent default browser navigation for section links
-    e?.preventDefault();
-    
+    // Native anchor behavior for sections
     if (location.pathname !== '/') {
-      // Navigate to home first, then scroll to section
-      navigate('/');
-      setTimeout(() => scrollToHash(item.hash!), 150);
+      navigate(`/#${item.hash!}`);
     } else {
-      scrollToHash(item.hash!);
+      window.location.hash = `#${item.hash!}`;
     }
   };
 
