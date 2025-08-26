@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronLeft, ChevronRight } from "lucide-react";
+import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -71,20 +72,14 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
       return;
     }
 
-    // Native anchor behavior for sections
+    // Navigate to home first if on different page
     if (location.pathname !== "/") {
       navigate(`/#${item.hash}`);
       return;
     }
 
-    // Add small delay to ensure reliable hash navigation
-    window.location.hash = `#${item.hash}`;
-    setTimeout(() => {
-      const element = document.getElementById(item.hash);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    // Use robust scroll utility for reliable hash navigation
+    scrollToHash(`#${item.hash}`);
   };
 
   const isActive = (item: NavigationItem) => {

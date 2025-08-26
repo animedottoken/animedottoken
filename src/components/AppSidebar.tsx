@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import React from "react";
+import { scrollToHash } from "@/lib/scroll";
 
 import {
   Sidebar,
@@ -126,19 +127,14 @@ export function AppSidebar() {
       return;
     }
 
-    // Native anchor behavior for sections
+    // Navigate to home first if on different page
     if (location.pathname !== '/') {
       navigate(`/#${item.hash!}`);
-    } else {
-      // Add small delay to ensure reliable hash navigation
-      window.location.hash = `#${item.hash!}`;
-      setTimeout(() => {
-        const element = document.getElementById(item.hash!);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
+      return;
     }
+
+    // Use robust scroll utility for reliable hash navigation
+    scrollToHash(`#${item.hash!}`);
   };
 
   const isActive = (item: typeof navigationItems[0]) => {
