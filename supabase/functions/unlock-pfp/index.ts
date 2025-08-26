@@ -14,21 +14,59 @@ serve(async (req) => {
   }
 
   try {
-    const { wallet_address, transaction_signature } = await req.json();
-
-    if (!wallet_address || !transaction_signature) {
-      return new Response(JSON.stringify({ error: "Wallet address and transaction signature are required" }), {
-        status: 400,
+    // Extract JWT token from Authorization header
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
+        status: 401,
         headers: corsHeaders,
       });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !serviceKey) {
+    if (!supabaseUrl || !supabaseAnonKey || !serviceKey) {
       return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
         status: 500,
+        headers: corsHeaders,
+      });
+    }
+
+    // Verify JWT with anon key client
+    const jwt = authHeader.substring(7);
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    
+    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+
+    const userWallet = user.user_metadata?.wallet_address;
+    if (!userWallet) {
+      return new Response(JSON.stringify({ error: "No wallet address found in user metadata" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    const { wallet_address, transaction_signature } = await req.json();
+
+    // Verify the wallet address matches authenticated user
+    if (wallet_address !== userWallet) {
+      return new Response(JSON.stringify({ error: "Wallet address mismatch" }), {
+        status: 403,
+        headers: corsHeaders,
+      });
+    }
+
+    if (!wallet_address || !transaction_signature) {
+      return new Response(JSON.stringify({ error: "Wallet address and transaction signature are required" }), {
+        status: 400,
         headers: corsHeaders,
       });
     }

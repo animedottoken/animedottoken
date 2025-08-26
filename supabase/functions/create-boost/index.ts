@@ -2,8 +2,12 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": process.env.NODE_ENV === 'production' 
+    ? "https://*.lovable.app" 
+    : "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
 };
 
 interface CreateBoostRequest {
@@ -21,15 +25,59 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    // Extract JWT token from Authorization header
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
 
-    const supabase = createClient(supabaseUrl, anonKey);
-    const supabaseService = createClient(supabaseUrl, serviceKey);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
+        status: 500,
+        headers: corsHeaders,
+      });
+    }
+
+    // Verify JWT with anon key client
+    const jwt = authHeader.substring(7);
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    
+    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+
+    const userWallet = user.user_metadata?.wallet_address;
+    if (!userWallet) {
+      return new Response(JSON.stringify({ error: "No wallet address found in user metadata" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
     const body: CreateBoostRequest = await req.json();
     const { nftId, bidAmount, tokenMint, bidderWallet, txSignature } = body;
+
+    // Verify the bidder wallet matches authenticated user
+    if (bidderWallet !== userWallet) {
+      return new Response(JSON.stringify({ error: "Bidder wallet address mismatch" }), {
+        status: 403,
+        headers: corsHeaders,
+      });
+    }
 
     if (!nftId || !bidAmount || !tokenMint || !bidderWallet || !txSignature) {
       return new Response(
