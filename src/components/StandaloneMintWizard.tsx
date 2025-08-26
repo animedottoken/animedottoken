@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, Image as ImageIcon, X, Circle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
@@ -254,7 +255,8 @@ export const StandaloneMintWizard = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <TooltipProvider>
+      <div className="max-w-4xl mx-auto">
       {/* Collection Selector */}
       <Card className="mb-6">
         <CardContent className="pt-6">
@@ -374,7 +376,7 @@ export const StandaloneMintWizard = () => {
                 This is the main file that will be stored on-chain. Supports images, videos, audio, and 3D models.
               </p>
               
-              <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center gap-4">
                 <div className="flex-1">
                   <div className="flex gap-2 flex-wrap">
                     <Button
@@ -406,20 +408,27 @@ export const StandaloneMintWizard = () => {
                 </div>
                 
                 {/* On-chain Preview Thumbnail */}
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                    {getOnChainPreviewUrl() ? (
-                      <img 
-                        src={getOnChainPreviewUrl()!} 
-                        alt="On-chain preview" 
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    ) : (
-                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
-                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex-shrink-0 cursor-help">
+                      <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                        {getOnChainPreviewUrl() ? (
+                          <img 
+                            src={getOnChainPreviewUrl()!} 
+                            alt="On-chain preview" 
+                            className="w-full h-full object-cover rounded-md"
+                          />
+                        ) : (
+                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-48 text-xs">This preview shows what's stored permanently on the blockchain</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 
@@ -446,30 +455,37 @@ export const StandaloneMintWizard = () => {
                 </div>
                 
                 {/* Marketplace Preview Thumbnail */}
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                    {getMarketplacePreviewUrl() ? (
-                      <img 
-                        src={getMarketplacePreviewUrl()!} 
-                        alt="Marketplace preview" 
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    ) : (
-                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center mt-1">Marketplace</p>
-                  {selectedCollection && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleUseCollectionCover}
-                      className="text-xs mt-1 w-full"
-                    >
-                      Use Collection
-                    </Button>
-                  )}
-                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex-shrink-0 cursor-help">
+                      <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                        {getMarketplacePreviewUrl() ? (
+                          <img 
+                            src={getMarketplacePreviewUrl()!} 
+                            alt="Marketplace preview" 
+                            className="w-full h-full object-cover rounded-md"
+                          />
+                        ) : (
+                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center mt-1">Marketplace</p>
+                      {selectedCollection && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleUseCollectionCover}
+                          className="text-xs mt-1 w-full"
+                        >
+                          Use Collection Avatar
+                        </Button>
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-48 text-xs">This thumbnail appears in galleries and marketplace listings</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 
@@ -1048,5 +1064,6 @@ export const StandaloneMintWizard = () => {
       )}
 
     </div>
+    </TooltipProvider>
   );
 };
