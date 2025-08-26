@@ -883,6 +883,23 @@ export type Database = {
           wallet_address: string
         }[]
       }
+      get_marketplace_info_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          platform_fee_percentage: number
+          updated_at: string
+        }[]
+      }
+      get_marketplace_settings_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          id: string
+          platform_fee_percentage: number
+          platform_wallet_address: string
+          updated_at: string
+        }[]
+      }
       get_nfts_public: {
         Args: Record<PropertyKey, never>
         Returns: {
