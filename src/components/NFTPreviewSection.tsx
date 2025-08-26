@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export function NFTPreviewSection() {
   const navigate = useNavigate();
@@ -21,22 +21,24 @@ export function NFTPreviewSection() {
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Mint NFTs Card */}
-        <Card 
-          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            navigate('/mint');
-            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              navigate('/mint');
-              setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-            }
-          }}
+        <Link 
+          to="/mint" 
+          className="block"
         >
+          <Card 
+            className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              // Let the Link handle navigation naturally
+              e.preventDefault();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+              }
+            }}
+          >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Coins className="h-10 w-10 text-primary" />
@@ -68,32 +70,37 @@ export function NFTPreviewSection() {
               </Badge>
               <Button 
                 className="w-full group-hover:scale-105 transition-transform"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/mint');
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                }}
+                asChild
               >
-                Start Creating
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/mint">
+                  Start Creating
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </Link>
 
         {/* Marketplace Card */}
-        <Card 
-          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate('/marketplace')}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              navigate('/marketplace');
-            }
-          }}
+        <Link 
+          to="/marketplace" 
+          className="block"
         >
+          <Card 
+            className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              // Let the Link handle navigation naturally  
+              e.preventDefault();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+              }
+            }}
+          >
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ShoppingBag className="h-10 w-10 text-primary" />
@@ -126,17 +133,17 @@ export function NFTPreviewSection() {
               <Button 
                 variant="outline" 
                 className="w-full group-hover:scale-105 transition-transform"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/marketplace');
-                }}
+                asChild
               >
-                Explore the Marketplace
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/marketplace">
+                  Explore the Marketplace
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </Link>
       </div>
 
       {/* Quick Stats */}

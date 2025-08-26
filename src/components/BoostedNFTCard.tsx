@@ -129,12 +129,15 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
   };
 
   return (
-    <Card 
-      className={`group cursor-pointer hover:shadow-xl transition-all duration-300 ${getTierBorder()} ${
-        listing.tier === 'god' ? 'transform hover:scale-105' : 'hover:shadow-lg'
-      }`}
-      onClick={handleViewDetails}
+    <Link 
+      to={`/nft/${listing.nft_id}?${navigationQuery || 'from=marketplace'}`}
+      className="block"
     >
+      <Card 
+        className={`group cursor-pointer hover:shadow-xl transition-all duration-300 ${getTierBorder()} ${
+          listing.tier === 'god' ? 'transform hover:scale-105' : 'hover:shadow-lg'
+        }`}
+      >
       <CardContent className="p-0 relative">
         {/* Boost Badge - Top Left */}
         <div className="absolute top-3 left-3 z-20">
@@ -223,5 +226,6 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 };

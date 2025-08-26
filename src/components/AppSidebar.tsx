@@ -209,7 +209,12 @@ export function AppSidebar() {
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
                     tooltip={!showLabel ? item.title : undefined}
                   >
-                    <Link to={`/#${item.hash}`} onClick={() => handleNavigation(item)}>
+                    <Link to={`/#${item.hash}`} onClick={(e) => {
+                      // Only handle smooth scroll for unmodified left clicks
+                      if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                        handleNavigation(item);
+                      }
+                    }}>
                       <item.icon className="h-4 w-4 shrink-0" />
                       {showLabel && <span className="ml-2">{item.title}</span>}
                     </Link>

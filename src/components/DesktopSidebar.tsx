@@ -118,21 +118,33 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           {!collapsed && (
-            <button 
-              onClick={handleHomeNavigation}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+            <Link 
+              to="/"
+              onClick={(e) => {
+                // Only handle smooth scroll for unmodified left clicks
+                if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                  handleHomeNavigation();
+                }
+              }}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
             >
               <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
               <span className="font-bold text-lg">ANIME.TOKEN</span>
-            </button>
+            </Link>
           )}
           {collapsed && (
-            <button 
-              onClick={handleHomeNavigation}
-              className="hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0"
+            <Link 
+              to="/"
+              onClick={(e) => {
+                // Only handle smooth scroll for unmodified left clicks
+                if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                  handleHomeNavigation();
+                }
+              }}
+              className="hover:opacity-80 transition-opacity cursor-pointer"
             >
               <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
-            </button>
+            </Link>
           )}
           <Button
             variant="ghost"
@@ -160,7 +172,12 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                       )}
                       asChild
                     >
-                      <Link to={`/#${item.hash}`} onClick={() => handleNavigation(item)}>
+                      <Link to={`/#${item.hash}`} onClick={(e) => {
+                        // Only handle smooth scroll for unmodified left clicks
+                        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                          handleNavigation(item);
+                        }
+                      }}>
                         <item.icon className="h-5 w-5 shrink-0" />
                         {!collapsed && <span className="font-medium">{item.title}</span>}
                       </Link>

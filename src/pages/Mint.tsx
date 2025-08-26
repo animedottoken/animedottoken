@@ -4,7 +4,7 @@ import { Zap, Coins, Users, Layers, FileImage } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
 export default function Mint() {
   const { connected } = useSolanaWallet();
@@ -65,18 +65,15 @@ export default function Mint() {
 
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Create Collection & Mint NFT */}
-                <Card 
-                  className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate('/mint/collection')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      navigate('/mint/collection');
-                    }
-                  }}
+                <Link 
+                  to="/mint/collection" 
+                  className="block"
                 >
+                  <Card 
+                    className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    role="button"
+                    tabIndex={0}
+                  >
                   <CardContent className="p-8 text-center h-full flex flex-col">
                     <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
                       <Layers className="h-10 w-10 text-primary" />
@@ -91,29 +88,26 @@ export default function Mint() {
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/mint/collection');
-                      }}
+                      asChild
                     >
-                      Start Collection Mint
+                      <Link to="/mint/collection">
+                        Start Collection Mint
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
+                </Link>
 
                 {/* Mint NFT Now */}
-                <Card 
-                  className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate('/mint/nft')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      navigate('/mint/nft');
-                    }
-                  }}
+                <Link 
+                  to="/mint/nft" 
+                  className="block"
                 >
+                  <Card 
+                    className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    role="button"
+                    tabIndex={0}
+                  >
                   <CardContent className="p-8 text-center h-full flex flex-col">
                     <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
                       <FileImage className="h-10 w-10 text-accent" />
@@ -129,15 +123,15 @@ export default function Mint() {
                       size="lg" 
                       variant="outline"
                       className="w-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/mint/nft');
-                      }}
+                      asChild
                     >
-                      Mint Standalone NFT
+                      <Link to="/mint/nft">
+                        Mint Standalone NFT
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
+                </Link>
               </div>
             </div>
           )}

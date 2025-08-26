@@ -102,13 +102,19 @@ export const TopNav = () => {
   if (!isMobile) {
     return (
       <header className="h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm">
-        <button 
-          onClick={handleHomeNavigation}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+        <Link 
+          to="/"
+          onClick={(e) => {
+            // Only handle smooth scroll for unmodified left clicks
+            if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+              handleHomeNavigation();
+            }
+          }}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
         >
           <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
-        </button>
+        </Link>
         <nav className="flex items-center gap-1">
           {/* Always show wallet dropdown with navigation */}
           {connected ? (
@@ -278,12 +284,18 @@ export const TopNav = () => {
           </SheetContent>
         </Sheet>
         
-        <button 
-          onClick={handleHomeNavigation}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
+        <Link 
+          to="/"
+          onClick={(e) => {
+            // Only handle smooth scroll for unmodified left clicks
+            if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+              handleHomeNavigation();
+            }
+          }}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
         >
           <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
-        </button>
+        </Link>
       </div>
       
       <nav className="flex items-center gap-1">

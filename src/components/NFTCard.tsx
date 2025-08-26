@@ -81,10 +81,13 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
   };
 
   return (
-    <Card 
-      className="group hover:shadow-lg transition-all cursor-pointer relative"
-      onClick={handleViewDetails}
+    <Link 
+      to={`/nft/${nft.id}?${navigationQuery || 'from=marketplace'}`}
+      className="block"
     >
+      <Card 
+        className="group hover:shadow-lg transition-all cursor-pointer relative"
+      >
       <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
         <img
           src={nft.image_url || "/placeholder.svg"}
@@ -222,5 +225,6 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 };
