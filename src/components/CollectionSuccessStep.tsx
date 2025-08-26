@@ -215,19 +215,19 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
         title="Confirm Minting Payment"
         description={
           loadingFee 
-            ? "Fetching current network fees..."
+            ? "Fetching current network fees from devnet..."
             : feeError
-            ? `This will create your collection NFT on Solana blockchain. ${feeError}`
+            ? `This will simulate creating your collection NFT on devnet. ${feeError} Note: This is for demonstration only - no real funds will be charged.`
             : mintFee
-            ? `This will create your collection NFT on Solana blockchain. Estimated fee: ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. This action cannot be undone.`
-            : "This will create your collection NFT on Solana blockchain. Network fees will apply. This action cannot be undone."
+            ? `This will simulate creating your collection NFT on devnet. Estimated devnet fee: ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. Note: This is for demonstration only - no real funds will be charged.`
+            : "This will simulate creating your collection NFT on devnet. Network fees will be estimated but no real funds will be charged."
         }
         confirmText={
           loadingFee || feeError
-            ? "Confirm"
+            ? "Simulate Mint"
             : mintFee
-            ? `Yes, Pay ${mintFee.totalSol.toFixed(4)} SOL`
-            : "Yes, Mint On-Chain"
+            ? `Simulate Mint (${mintFee.totalSol.toFixed(4)} SOL estimate)`
+            : "Simulate Mint"
         }
         onConfirm={handleMintOnChain}
         loading={isMintingOnChain || loadingFee}

@@ -1,6 +1,9 @@
 
 project_id = "eztzddykjnmnpoeyfqcg"
 
+[functions.get-mint-fee]
+verify_jwt = false
+
 [functions.create-mint-job]
 verify_jwt = false
 
