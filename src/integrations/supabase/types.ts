@@ -91,13 +91,6 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "collection_likes_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       collection_whitelist: {
@@ -131,13 +124,6 @@ export type Database = {
             columns: ["collection_id"]
             isOneToOne: false
             referencedRelation: "collections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collection_whitelist_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
             referencedColumns: ["id"]
           },
         ]
@@ -320,13 +306,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "marketplace_activities_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "marketplace_activities_nft_id_fkey"
             columns: ["nft_id"]
             isOneToOne: false
@@ -472,13 +451,6 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "mint_jobs_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       nft_likes: {
@@ -588,13 +560,6 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "nfts_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       payments: {
@@ -640,13 +605,6 @@ export type Database = {
             columns: ["collection_id"]
             isOneToOne: false
             referencedRelation: "collections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
             referencedColumns: ["id"]
           },
         ]
@@ -716,186 +674,7 @@ export type Database = {
       }
     }
     Views: {
-      boosted_leaderboard: {
-        Row: {
-          bid_amount: number | null
-          bid_rank: number | null
-          bidder_wallet: string | null
-          end_time: string | null
-          id: string | null
-          is_active: boolean | null
-          nft_id: string | null
-          nft_image_url: string | null
-          nft_name: string | null
-          owner_address: string | null
-          start_time: string | null
-          tier: string | null
-          token_mint: string | null
-          tx_signature: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_boost_nft"
-            columns: ["nft_id"]
-            isOneToOne: false
-            referencedRelation: "nfts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      collection_like_counts: {
-        Row: {
-          collection_id: string | null
-          like_count: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "collection_likes_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collection_likes_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "collections_public"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      collections_public: {
-        Row: {
-          banner_image_url: string | null
-          candy_machine_id: string | null
-          category: string | null
-          collection_mint_address: string | null
-          created_at: string | null
-          creator_address: string | null
-          description: string | null
-          explicit_content: boolean | null
-          external_links: Json | null
-          go_live_date: string | null
-          id: string | null
-          image_url: string | null
-          is_active: boolean | null
-          is_live: boolean | null
-          items_available: number | null
-          items_redeemed: number | null
-          max_supply: number | null
-          mint_price: number | null
-          name: string | null
-          onchain_description: string | null
-          royalty_percentage: number | null
-          site_description: string | null
-          slug: string | null
-          symbol: string | null
-          treasury_wallet: string | null
-          updated_at: string | null
-          verified: boolean | null
-          whitelist_enabled: boolean | null
-        }
-        Insert: {
-          banner_image_url?: string | null
-          candy_machine_id?: string | null
-          category?: string | null
-          collection_mint_address?: string | null
-          created_at?: string | null
-          creator_address?: never
-          description?: string | null
-          explicit_content?: boolean | null
-          external_links?: Json | null
-          go_live_date?: string | null
-          id?: string | null
-          image_url?: string | null
-          is_active?: boolean | null
-          is_live?: boolean | null
-          items_available?: number | null
-          items_redeemed?: number | null
-          max_supply?: number | null
-          mint_price?: number | null
-          name?: string | null
-          onchain_description?: string | null
-          royalty_percentage?: number | null
-          site_description?: string | null
-          slug?: string | null
-          symbol?: string | null
-          treasury_wallet?: never
-          updated_at?: string | null
-          verified?: boolean | null
-          whitelist_enabled?: boolean | null
-        }
-        Update: {
-          banner_image_url?: string | null
-          candy_machine_id?: string | null
-          category?: string | null
-          collection_mint_address?: string | null
-          created_at?: string | null
-          creator_address?: never
-          description?: string | null
-          explicit_content?: boolean | null
-          external_links?: Json | null
-          go_live_date?: string | null
-          id?: string | null
-          image_url?: string | null
-          is_active?: boolean | null
-          is_live?: boolean | null
-          items_available?: number | null
-          items_redeemed?: number | null
-          max_supply?: number | null
-          mint_price?: number | null
-          name?: string | null
-          onchain_description?: string | null
-          royalty_percentage?: number | null
-          site_description?: string | null
-          slug?: string | null
-          symbol?: string | null
-          treasury_wallet?: never
-          updated_at?: string | null
-          verified?: boolean | null
-          whitelist_enabled?: boolean | null
-        }
-        Relationships: []
-      }
-      creator_collection_like_stats: {
-        Row: {
-          collection_likes_count: number | null
-          creator_wallet: string | null
-        }
-        Relationships: []
-      }
-      creator_follow_stats: {
-        Row: {
-          creator_wallet: string | null
-          follower_count: number | null
-        }
-        Relationships: []
-      }
-      creator_nft_like_stats: {
-        Row: {
-          creator_wallet: string | null
-          nft_likes_count: number | null
-        }
-        Relationships: []
-      }
-      creator_nft_likes_stats: {
-        Row: {
-          creator_wallet: string | null
-          nft_likes_count: number | null
-        }
-        Relationships: []
-      }
-      creators_public_stats: {
-        Row: {
-          collection_likes_count: number | null
-          follower_count: number | null
-          nft_likes_count: number | null
-          total_likes_count: number | null
-          wallet_address: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_profile_rank: {
@@ -905,6 +684,25 @@ export type Database = {
       generate_collection_slug: {
         Args: { collection_name: string }
         Returns: string
+      }
+      get_boosted_leaderboard: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          bid_amount: number
+          bid_rank: number
+          bidder_wallet: string
+          end_time: string
+          id: string
+          is_active: boolean
+          nft_id: string
+          nft_image_url: string
+          nft_name: string
+          owner_address: string
+          start_time: string
+          tier: string
+          token_mint: string
+          tx_signature: string
+        }[]
       }
       get_collection_details: {
         Args: { collection_id: string }
@@ -942,6 +740,77 @@ export type Database = {
           updated_at: string
           verified: boolean
           whitelist_enabled: boolean
+        }[]
+      }
+      get_collection_like_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          collection_id: string
+          like_count: number
+        }[]
+      }
+      get_collections_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          banner_image_url: string
+          candy_machine_id: string
+          category: string
+          collection_mint_address: string
+          created_at: string
+          creator_address: string
+          description: string
+          explicit_content: boolean
+          external_links: Json
+          go_live_date: string
+          id: string
+          image_url: string
+          is_active: boolean
+          is_live: boolean
+          items_available: number
+          items_redeemed: number
+          max_supply: number
+          mint_price: number
+          name: string
+          onchain_description: string
+          royalty_percentage: number
+          site_description: string
+          slug: string
+          symbol: string
+          treasury_wallet: string
+          updated_at: string
+          verified: boolean
+          whitelist_enabled: boolean
+        }[]
+      }
+      get_creator_collection_like_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          collection_likes_count: number
+          creator_wallet: string
+        }[]
+      }
+      get_creator_follow_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          creator_wallet: string
+          follower_count: number
+        }[]
+      }
+      get_creator_nft_like_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          creator_wallet: string
+          nft_likes_count: number
+        }[]
+      }
+      get_creators_public_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          collection_likes_count: number
+          follower_count: number
+          nft_likes_count: number
+          total_likes_count: number
+          wallet_address: string
         }[]
       }
       increment_user_trade_count: {
