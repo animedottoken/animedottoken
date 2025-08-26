@@ -14,10 +14,10 @@ export default function Mint() {
 
   // If there's a collection parameter, redirect directly to collection minting
   useEffect(() => {
-    if (collectionParam && connected) {
+    if (collectionParam) {
       navigate(`/mint/nft?collection=${collectionParam}`, { replace: true });
     }
-  }, [collectionParam, connected, navigate]);
+  }, [collectionParam, navigate]);
   return (
     <>
       <Helmet>

@@ -212,6 +212,19 @@ export const StandaloneMintWizard = () => {
                   Change
                 </Button>
               </div>
+            ) : isCollectionLocked && !selectedCollection ? (
+              <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-muted-foreground">Loading collection...</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleUnlockCollection}
+                  className="text-primary hover:text-primary/80 ml-auto"
+                >
+                  Change
+                </Button>
+              </div>
             ) : (
               <Select
                 value={selectedCollectionId || 'none'}

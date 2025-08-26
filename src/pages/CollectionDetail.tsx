@@ -678,7 +678,7 @@ export default function CollectionDetail() {
                     Start minting NFTs from this collection to see them here.
                   </p>
                   <Button asChild>
-                    <Link to={`/mint?collection=${displayCollection?.slug || displayCollection?.id}`}>
+                    <Link to={`/mint/nft?collection=${displayCollection?.id}`}>
                       <Plus className="w-4 h-4 mr-2" />
                       Create First NFT
                     </Link>
