@@ -44,7 +44,7 @@ export const UnifiedMintInterface = () => {
   const [mintingError, setMintingError] = useState(null);
   const [mintNow, setMintNow] = useState(true);
   const { createCollection } = useCollections({ suppressErrors: true });
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect, connecting } = useSolanaWallet();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when step changes
@@ -145,7 +145,7 @@ export const UnifiedMintInterface = () => {
 
   const handleSubmit = async () => {
     if (!publicKey) {
-      toast.error('Please connect your wallet first');
+      await connect();
       return;
     }
 

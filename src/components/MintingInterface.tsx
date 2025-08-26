@@ -53,7 +53,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const [collectionLoading, setCollectionLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { createMintJob, creating, jobs, loading: queueLoading, getJobProgress } = useMintQueue();
-  const { connected } = useSolanaWallet();
+  const { connected, connect, connecting } = useSolanaWallet();
 
   useEffect(() => {
     loadCollection();
@@ -156,7 +156,12 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   };
 
   const handleMint = async () => {
-    if (!collection || !connected) return;
+    if (!collection) return;
+    
+    if (!connected) {
+      await connect();
+      return;
+    }
     
     // Check if artwork is required and missing
     if (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) {
@@ -354,31 +359,47 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
               )}
 
               {/* Mint Button */}
-              <Button 
-                onClick={handleMint}
-                disabled={!isLive || creating || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) || needsCollectionMint}
-                className="w-full py-6 text-lg font-semibold"
-                size="lg"
-              >
-                {creating ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Creating Job...
-                  </>
-                ) : needsCollectionMint ? (
-                  'Collection Must Be Minted First'
-                ) : isSoldOut ? (
-                  'SOLD OUT'
-                ) : !connected ? (
-                  'Connect Wallet to Mint'
-                ) : (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) ? (
-                  'Upload Artwork Required'
-                ) : quantity > remainingSupply ? (
-                  `Only ${remainingSupply} Left`
-                ) : (
-                  `Queue ${quantity} NFT${quantity > 1 ? 's' : ''} for Minting`
+              <div className="flex flex-col items-center gap-2">
+                <Button 
+                  onClick={!connected ? () => connect() : handleMint}
+                  disabled={creating || connecting || (connected && (!isLive || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) || needsCollectionMint))}
+                  className="w-full py-6 text-lg font-semibold"
+                  size="lg"
+                >
+                  {creating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Creating Job...
+                    </>
+                  ) : connecting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Connecting...
+                    </>
+                  ) : !connected ? (
+                    'Connect Wallet'
+                  ) : needsCollectionMint ? (
+                    'Collection Must Be Minted First'
+                  ) : isSoldOut ? (
+                    'SOLD OUT'
+                  ) : (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) ? (
+                    'Upload Artwork Required'
+                  ) : quantity > remainingSupply ? (
+                    `Only ${remainingSupply} Left`
+                  ) : (
+                    `Queue ${quantity} NFT${quantity > 1 ? 's' : ''} for Minting`
+                  )}
+                </Button>
+                {!connected && (
+                  <button 
+                    onClick={() => connect()}
+                    disabled={connecting}
+                    className="text-xs text-primary hover:text-primary/80 underline"
+                  >
+                    {connecting ? 'Connecting...' : 'Connect now'}
+                  </button>
                 )}
-              </Button>
+              </div>
 
               {/* Professional Queue Info - moved below mint button */}
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">

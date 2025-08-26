@@ -8,6 +8,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 interface BoostedListing {
   id: string;
   nft_id: string;
@@ -27,6 +28,7 @@ interface BoostedNFTCardProps {
 
 export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
+  const { connect, connecting, publicKey } = useSolanaWallet();
   const navigate = useNavigate();
   const [nftPrice, setNftPrice] = useState<number | null>(null);
   const [listed, setListed] = useState<boolean>(false);
@@ -117,11 +119,16 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
     }
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!likeLoading) {
-      toggleLike(listing.nft_id);
+    if (likeLoading || connecting) return;
+    
+    if (!publicKey) {
+      await connect();
+      return;
     }
+    
+    toggleLike(listing.nft_id);
   };
 
   const handleViewDetails = () => {
@@ -177,14 +184,15 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             variant="ghost"
             size="sm"
             onClick={handleLike}
-            disabled={likeLoading}
+            disabled={likeLoading || connecting}
             className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
-              isLiked(listing.nft_id)
+              publicKey && isLiked(listing.nft_id)
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-black/50 text-white hover:bg-black/70'
             }`}
+            title={!publicKey ? "Connect to like" : isLiked(listing.nft_id) ? "Unlike" : "Like"}
           >
-            <Heart className={`h-4 w-4 ${isLiked(listing.nft_id) ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 ${publicKey && isLiked(listing.nft_id) ? 'fill-current' : ''}`} />
           </Button>
         </div>
 

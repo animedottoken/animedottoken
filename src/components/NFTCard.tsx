@@ -8,6 +8,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { toast } from 'sonner';
 
 interface OverlayAction {
   label: string;
@@ -44,6 +46,7 @@ interface NFTCardProps {
 
 export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress }: NFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
+  const { connect, connecting, publicKey } = useSolanaWallet();
   const navigate = useNavigate();
   const [ownerNickname, setOwnerNickname] = useState<string>('');
   const [ownerVerified, setOwnerVerified] = useState<boolean>(false);
@@ -73,11 +76,16 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
     navigate(`/nft/${nft.id}?${navigationQuery || 'from=marketplace'}`);
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!likeLoading) {
-      toggleLike(nft.id);
+    if (likeLoading || connecting) return;
+    
+    if (!publicKey) {
+      await connect();
+      return;
     }
+    
+    toggleLike(nft.id);
   };
 
   return (
@@ -125,16 +133,16 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           variant="ghost" 
           size="sm" 
           onClick={handleLike}
-          disabled={likeLoading}
+          disabled={likeLoading || connecting}
           className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-            isLiked(nft.id)
+            publicKey && isLiked(nft.id)
               ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
               : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
           }`}
-          title={isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
-          aria-label={isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
+          title={!publicKey ? "Connect to like" : isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
+          aria-label={!publicKey ? "Connect to like this NFT" : isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
         >
-          <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
+          <Heart className={`h-4 w-4 ${publicKey && isLiked(nft.id) ? "fill-current" : ""}`} />
         </Button>
         
         {/* Hover overlay */}

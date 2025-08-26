@@ -22,15 +22,11 @@ export const ExportTradingDataButton = ({
 }: ExportTradingDataButtonProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
-  const { publicKey, connected } = useSolanaWallet();
+  const { publicKey, connected, connect, connecting } = useSolanaWallet();
 
   const handleExport = async (format: 'json' | 'csv') => {
     if (!connected || !publicKey) {
-      toast({
-        title: "Wallet not connected",
-        description: "Please connect your wallet to export your trading data.",
-        variant: "destructive",
-      });
+      await connect();
       return;
     }
 
@@ -82,15 +78,26 @@ export const ExportTradingDataButton = ({
 
   if (!connected) {
     return (
-      <Button 
-        variant="ghost" 
-        size={size}
-        disabled
-        className="text-muted-foreground"
-      >
-        <Download className="w-4 h-4 mr-2" />
-        Export Data
-      </Button>
+      <div className="flex flex-col items-center gap-2">
+        <Button 
+          variant={variant} 
+          size={size}
+          disabled={connecting}
+          onClick={() => connect()}
+          className="text-foreground"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          {connecting ? 'Connecting...' : 'Connect to Export'}
+        </Button>
+        {!connecting && (
+          <button 
+            onClick={() => connect()}
+            className="text-xs text-primary hover:text-primary/80 underline"
+          >
+            Connect now
+          </button>
+        )}
+      </div>
     );
   }
 

@@ -42,7 +42,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   onCreateAnother
 }) => {
   const navigate = useNavigate();
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect, connecting } = useSolanaWallet();
   const [isMintingOnChain, setIsMintingOnChain] = useState(false);
   const [showMintConfirm, setShowMintConfirm] = useState(false);
   const [mintFee, setMintFee] = useState<FeeEstimate | null>(null);
@@ -81,7 +81,11 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   };
 
   const handleMintOnChain = async () => {
-    if (!publicKey || !collection) return;
+    if (!publicKey) {
+      await connect();
+      return;
+    }
+    if (!collection) return;
     
     setShowMintConfirm(false);
     setIsMintingOnChain(true);
@@ -178,19 +182,30 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
           <CardContent>
             <div className="space-y-4">
               {isOffChain && (
-                <Button 
-                  onClick={() => {
-                    setFeeError(null);
-                    fetchMintFee();
-                    setShowMintConfirm(true);
-                  }}
-                  disabled={isMintingOnChain}
-                  className="w-full"
-                  variant="default"
-                >
-                  <Zap className="mr-2 h-4 w-4" />
-                  {isMintingOnChain ? 'Minting On-Chain...' : 'Mint On-Chain Now'}
-                </Button>
+                <div className="flex flex-col items-center gap-2">
+                  <Button 
+                    onClick={!publicKey ? () => connect() : () => {
+                      setFeeError(null);
+                      fetchMintFee();
+                      setShowMintConfirm(true);
+                    }}
+                    disabled={isMintingOnChain || connecting}
+                    className="w-full"
+                    variant="default"
+                  >
+                    <Zap className="mr-2 h-4 w-4" />
+                    {connecting ? 'Connecting...' : isMintingOnChain ? 'Minting On-Chain...' : !publicKey ? 'Connect Wallet' : 'Mint On-Chain Now'}
+                  </Button>
+                  {!publicKey && (
+                    <button 
+                      onClick={() => connect()}
+                      disabled={connecting}
+                      className="text-xs text-primary hover:text-primary/80 underline"
+                    >
+                      {connecting ? 'Connecting...' : 'Connect now'}
+                    </button>
+                  )}
+                </div>
               )}
               <Button 
                 onClick={() => navigate(`/mint/nft?collection=${collection?.id}`)}

@@ -68,7 +68,7 @@ interface Creator {
 export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect, connecting } = useSolanaWallet();
   
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -123,6 +123,10 @@ export default function Marketplace() {
   
   // Handle creator follow - now using real-time stats, no local state update needed
   const handleCreatorFollow = async (creatorWallet: string) => {
+    if (!publicKey) {
+      await connect();
+      return;
+    }
     try {
       await toggleFollow(creatorWallet);
     } catch (error) {
@@ -703,15 +707,11 @@ export default function Marketplace() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (!publicKey) {
-                          toast.error('Please connect your wallet to like creators');
-                          return;
-                        }
                         handleCreatorFollow(creator.wallet_address);
                       }}
                       className="inline-flex items-center justify-center p-1 rounded-md hover:bg-muted transition-colors"
-                      aria-label={publicKey ? (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator') : 'Connect wallet to like'}
-                      disabled={followLoading}
+                      aria-label={!publicKey ? 'Connect to like creator' : (isFollowing(creator.wallet_address) ? 'Unlike creator' : 'Like creator')}
+                      disabled={followLoading || connecting}
                     >
                       <Heart className={`${publicKey && isFollowing(creator.wallet_address) ? 'fill-current text-destructive' : 'text-muted-foreground'} w-4 h-4`} />
                     </button>

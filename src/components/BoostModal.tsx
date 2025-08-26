@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, TrendingUp, Crown, Rocket } from 'lucide-react';
 import { useBoostedListings } from '@/hooks/useBoostedListings';
 import { useToast } from '@/hooks/use-toast';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 
 interface BoostModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
   const [submitting, setSubmitting] = useState(false);
   const { getTopBids, createBoost } = useBoostedListings();
   const { toast } = useToast();
+  const { publicKey, connect, connecting } = useSolanaWallet();
 
   const topBids = getTopBids(10);
 
@@ -42,6 +44,11 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
     }
   };
   const handleSubmit = async () => {
+    if (!publicKey) {
+      await connect();
+      return;
+    }
+    
     const amount = parseFloat(bidAmount);
     if (!amount || amount <= 0) {
       toast({
@@ -148,11 +155,15 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
               />
               <Button 
                 onClick={handleSubmit} 
-                disabled={submitting || !bidAmount || parseFloat(bidAmount) < 1}
+                disabled={submitting || connecting || (!publicKey && !connecting) || (publicKey && (!bidAmount || parseFloat(bidAmount) < 1))}
                 className="px-8"
               >
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
+                ) : connecting ? (
+                  'Connecting...'
+                ) : !publicKey ? (
+                  'Connect Wallet'
                 ) : (
                   `Pay ${bidAmount || '0'} $ANIME`
                 )}

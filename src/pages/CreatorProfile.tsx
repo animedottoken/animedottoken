@@ -69,7 +69,7 @@ export default function CreatorProfile() {
   const { wallet } = useParams<{ wallet: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect, connecting } = useSolanaWallet();
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
   const { isLiked: isCollectionLiked, toggleLike: toggleCollectionLike } = useCollectionLikes();
@@ -153,7 +153,7 @@ export default function CreatorProfile() {
   // Toggle follow with real-time stats
   const handleToggleFollow = async (creatorWallet: string) => {
     if (!publicKey) {
-      toast.error('Please connect your wallet to follow creators');
+      await connect();
       return;
     }
     try {
@@ -167,7 +167,7 @@ export default function CreatorProfile() {
   // Toggle NFT like with real-time stats
   const handleToggleLike = async (nftId: string) => {
     if (!publicKey) {
-      toast.error('Please connect your wallet to like NFTs');
+      await connect();
       return;
     }
     const nft = creatorNFTs.find(n => n.id === nftId);
@@ -465,19 +465,19 @@ export default function CreatorProfile() {
               <div className="flex items-center gap-2 mb-1">
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-bold">{creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}</h2>
-                  <button
-                    onClick={() => handleToggleFollow(creator.wallet_address)}
-                    className="transition-colors duration-200"
-                    disabled={!publicKey || followLoading}
-                    aria-label={isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
-                    title={isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
-                  >
-                    <Heart className={`w-5 h-5 ${
-                      publicKey && isFollowing(creator.wallet_address)
-                        ? 'fill-red-500 text-red-500' 
-                        : 'text-muted-foreground hover:text-red-500'
-                    }`} />
-                  </button>
+                    <button
+                      onClick={() => handleToggleFollow(creator.wallet_address)}
+                      className="transition-colors duration-200"
+                      disabled={followLoading || connecting}
+                      aria-label={!publicKey ? 'Connect to follow' : isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
+                      title={!publicKey ? 'Connect to follow' : isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
+                    >
+                      <Heart className={`w-5 h-5 ${
+                        publicKey && isFollowing(creator.wallet_address)
+                          ? 'fill-red-500 text-red-500' 
+                          : 'text-muted-foreground hover:text-red-500'
+                      }`} />
+                    </button>
                 </div>
               </div>
               

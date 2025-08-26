@@ -174,19 +174,23 @@ export default function Profile() {
               
               {/* Heart button for liking collections */}
               <button
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
+                  if (!connected) {
+                    await connect();
+                    return;
+                  }
                   toggleLike(collection.id);
                 }}
                 className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  isLiked(collection.id)
+                  connected && isLiked(collection.id)
                     ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
                     : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
                 }`}
-                title={isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
-                aria-label={isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
+                title={!connected ? "Connect to like" : isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
+                aria-label={!connected ? "Connect to like this collection" : isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
               >
-                <Heart className={`w-4 h-4 ${isLiked(collection.id) ? 'fill-current' : ''}`} />
+                <Heart className={`w-4 h-4 ${connected && isLiked(collection.id) ? 'fill-current' : ''}`} />
               </button>
 
               {/* Status badges */}
