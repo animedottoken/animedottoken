@@ -489,15 +489,6 @@ export const StandaloneMintWizard = () => {
                     </div>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentStep(3)}
-                  disabled={!formData.media_file}
-                  className="text-xs"
-                >
-                  View Large Preview →
-                </Button>
               </div>
             </div>
 
