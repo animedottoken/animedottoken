@@ -159,8 +159,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
-                    className={`cursor-pointer transition-colors ${
-                      isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
+                    className={`cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground ${
+                      isActive(item) ? "bg-muted text-primary font-medium" : ""
                     }`}
                     tooltip={!showLabel ? item.title : undefined}
                   >
@@ -186,7 +186,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-all"
                     tooltip={!showLabel ? item.title : undefined}
                   >
                     <div 

@@ -149,7 +149,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                     <Button
                       variant="ghost"
                       className={cn(
-                        "w-full justify-start gap-3 h-10",
+                        "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
                         collapsed && "justify-center px-2"
                       )}
                       asChild
