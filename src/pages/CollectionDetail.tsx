@@ -46,6 +46,7 @@ import { UserProfileDisplay } from "@/components/UserProfileDisplay";
 import { CollectionAvatarDialog } from "@/components/CollectionAvatarDialog";
 import { CollectionBannerDialog } from "@/components/CollectionBannerDialog";
 import { ProfileStyleEditButton } from "@/components/ProfileStyleEditButton";
+import { EmptyNFTTile } from "@/components/EmptyNFTTile";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -685,31 +686,26 @@ export default function CollectionDetail() {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {/* Mint Button - Show if collection hasn't reached max supply */}
-                  {displayCollection?.max_supply && mints.length < displayCollection.max_supply && (
-                    <div className="flex justify-center">
-                      <Button asChild size="lg">
-                        <Link to={`/mint/nft?collection=${displayCollection?.id}`}>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Mint Another NFT ({mints.length}/{displayCollection.max_supply})
-                        </Link>
-                      </Button>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {/* Empty NFT Tile - Show as first item if collection hasn't reached max supply */}
+                  {(!displayCollection?.max_supply || mints.length < displayCollection.max_supply) && (
+                    <EmptyNFTTile
+                      collectionId={displayCollection?.id || ''}
+                      mintedCount={mints.length}
+                      maxSupply={displayCollection?.max_supply}
+                    />
                   )}
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {mints.map((nft) => (
-                       <NFTCard
-                         key={nft.id}
-                         nft={nft}
-                         navigationQuery={`from=collection&collectionId=${collectionId}&${searchParams.toString()}`}
-                         showOwnerInfo={false}
-                         verified={displayCollection?.verified}
-                         mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
-                       />
-                    ))}
-                  </div>
+                  {mints.map((nft) => (
+                     <NFTCard
+                       key={nft.id}
+                       nft={nft}
+                       navigationQuery={`from=collection&collectionId=${collectionId}&${searchParams.toString()}`}
+                       showOwnerInfo={false}
+                       verified={displayCollection?.verified}
+                       mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
+                     />
+                  ))}
                 </div>
               )}
             </CardContent>
