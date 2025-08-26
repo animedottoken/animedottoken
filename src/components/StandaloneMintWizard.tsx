@@ -385,59 +385,56 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 This is the main file that will be stored on-chain. Supports images, videos, audio, and 3D models.
               </p>
               
-              <div className="flex items-center justify-center gap-4">
-                <div className="flex-1">
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      onClick={() => document.getElementById('media-upload')?.click()}
-                      className="gap-2"
-                    >
-                      <Upload className="h-4 w-4" />
-                      {formData.media_file ? 'Change Media' : 'Upload Media'}
-                    </Button>
-                    
-                    {selectedCollection && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleUseCollectionAvatar}
-                        className="text-xs"
-                      >
-                        Use Collection Avatar
-                      </Button>
-                    )}
-                  </div>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <div className="w-full max-w-[240px]">
+                  <Button
+                    variant="outline"
+                    onClick={() => document.getElementById('media-upload')?.click()}
+                    className="gap-2 w-full h-12"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {formData.media_file ? 'Change Media' : 'Upload Media'}
+                  </Button>
                   
                   {formData.media_file && (
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-2 text-center">
                       Selected: {formData.media_file.name}
                     </p>
                   )}
                 </div>
                 
-                {/* On-chain Preview Thumbnail */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex-shrink-0 cursor-help">
-                      <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                        {getOnChainPreviewUrl() ? (
-                          <img 
-                            src={getOnChainPreviewUrl()!} 
-                            alt="On-chain preview" 
-                            className="w-full h-full object-cover rounded-md"
-                          />
-                        ) : (
-                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                        )}
+                {/* Collection Avatar Preview and Actions */}
+                {selectedCollection && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-col items-center cursor-help">
+                        <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                          {selectedCollection.image_url ? (
+                            <img 
+                              src={selectedCollection.image_url} 
+                              alt="Collection avatar" 
+                              className="w-full h-full object-cover rounded-md"
+                            />
+                          ) : (
+                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleUseCollectionAvatar}
+                          className="text-xs mt-1"
+                        >
+                          Use Collection Avatar
+                        </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-48 text-xs">This preview shows what's stored permanently on the blockchain</p>
-                  </TooltipContent>
-                </Tooltip>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-48 text-xs">This preview shows what's stored permanently on the blockchain</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             </div>
 
