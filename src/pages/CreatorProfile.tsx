@@ -189,12 +189,9 @@ export default function CreatorProfile() {
       try {
         setLoading(true);
         
-        // Fetch creator profile and stats
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('wallet_address', wallet)
-          .single();
+        // Fetch creator profile using secure RPC function
+        const { data: profiles } = await supabase.rpc('get_profiles_public');
+        const profile = (profiles || []).find((p: any) => p.wallet_address === wallet);
 
         // Use RPC function for creator stats
         const { data: stats } = await supabase.rpc('get_creators_public_stats');
@@ -202,76 +199,80 @@ export default function CreatorProfile() {
         // Find stats for this specific wallet
         const creatorStats = (stats || []).find((s: any) => s.wallet_address === wallet);
 
-        // Fetch creator's NFTs
-        const { data: nfts } = await supabase
-          .from('nfts')
-          .select('*')
-          .eq('creator_address', wallet)
-          .order('created_at', { ascending: false });
+        // Fetch creator's NFTs using secure RPC function
+        const { data: allNfts } = await supabase.rpc('get_nfts_public');
+        // Since we only have masked creator addresses, we need to check both full and masked
+        const maskedWallet = `${wallet.slice(0, 4)}...${wallet.slice(-4)}`;
+        const nfts = (allNfts || [])
+          .filter((nft: any) => nft.creator_address_masked === maskedWallet)
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-        // Fetch creator's Collections  
-        const { data: collections } = await supabase
-          .from('collections')
-          .select('*')
-          .eq('creator_address', wallet)
-          .order('created_at', { ascending: false });
+        // Fetch creator's Collections using secure RPC function
+        const { data: allCollections } = await supabase.rpc('get_collections_public_masked');
+        const collections = (allCollections || [])
+          .filter((collection: any) => collection.creator_address_masked === maskedWallet)
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-        // Fetch creator's liked NFTs
-        const { data: likedNFTIds } = await supabase
-          .from('nft_likes')
-          .select('nft_id')
-          .eq('user_wallet', wallet);
-
+        // Fetch creator's liked NFTs (only for authenticated users)
         let creatorLikedNFTs: NFT[] = [];
-        if (likedNFTIds && likedNFTIds.length > 0) {
-          const { data: nftDetails } = await supabase
-            .from('nfts')
-            .select('*')
-            .in('id', likedNFTIds.map(l => l.nft_id));
-          
-          if (nftDetails) {
-            creatorLikedNFTs = nftDetails.map(nft => ({
-              id: nft.id,
-              name: nft.name,
-              image_url: nft.image_url,
-              price: nft.price,
-              collection_address: nft.collection_id,
-              collection_name: undefined,
-              likes_count: 0
-            }));
+        if (publicKey && publicKey.toString() === wallet) {
+          const { data: likedNFTIds } = await supabase
+            .from('nft_likes')
+            .select('nft_id')
+            .eq('user_wallet', wallet);
+
+          if (likedNFTIds && likedNFTIds.length > 0) {
+            const { data: allNftDetails } = await supabase.rpc('get_nfts_authenticated');
+            const nftDetails = (allNftDetails || []).filter(nft => 
+              likedNFTIds.some(l => l.nft_id === nft.id)
+            );
+            
+            if (nftDetails) {
+              creatorLikedNFTs = nftDetails.map(nft => ({
+                id: nft.id,
+                name: nft.name,
+                image_url: nft.image_url,
+                price: nft.price,
+                collection_address: nft.collection_id,
+                collection_name: undefined,
+                likes_count: 0
+              }));
+            }
           }
         }
 
-        // Fetch creator's liked Collections
-        const { data: likedCollectionIds } = await supabase
-          .from('collection_likes')
-          .select('collection_id')
-          .eq('user_wallet', wallet);
-
+        // Fetch creator's liked Collections (only for authenticated users)
         let creatorLikedCollections: Collection[] = [];
-        if (likedCollectionIds && likedCollectionIds.length > 0) {
-          const { data: collectionDetails } = await supabase
-            .from('collections')
-            .select('*')
-            .in('id', likedCollectionIds.map(l => l.collection_id));
-          
-          if (collectionDetails) {
-            creatorLikedCollections = collectionDetails.map(collection => ({
-              id: collection.id,
-              name: collection.name,
-              image_url: collection.image_url || collection.banner_image_url,
-              description: collection.description,
-              items_total: collection.max_supply || 0,
-              items_redeemed: collection.items_redeemed || 0,
-              verified: collection.verified || false
-            }));
+        if (publicKey && publicKey.toString() === wallet) {
+          const { data: likedCollectionIds } = await supabase
+            .from('collection_likes')
+            .select('collection_id')
+            .eq('user_wallet', wallet);
+
+          if (likedCollectionIds && likedCollectionIds.length > 0) {
+            const { data: allCollectionDetails } = await supabase.rpc('get_collections_authenticated');
+            const collectionDetails = (allCollectionDetails || []).filter(collection => 
+              likedCollectionIds.some(l => l.collection_id === collection.id)
+            );
+            
+            if (collectionDetails) {
+              creatorLikedCollections = collectionDetails.map(collection => ({
+                id: collection.id,
+                name: collection.name,
+                image_url: collection.image_url || collection.banner_image_url,
+                description: collection.description,
+                items_total: collection.max_supply || 0,
+                items_redeemed: collection.items_redeemed || 0,
+                verified: collection.verified || false
+              }));
+            }
           }
         }
 
         if (profile) {
           setCreator({
             wallet_address: profile.wallet_address,
-            nickname: profile.nickname,
+            nickname: profile.display_name,
             bio: profile.bio,
             profile_image_url: profile.profile_image_url,
             banner_image_url: profile.banner_image_url,
@@ -284,8 +285,8 @@ export default function CreatorProfile() {
           });
         }
 
-        // Process NFTs data with like counts
-        if (nfts) {
+        // Process NFTs data with like counts (only for authenticated users)
+        if (nfts && publicKey) {
           const nftIds = nfts.map(n => n.id);
           const { data: likeRows } = await supabase
             .from('nft_likes')
@@ -306,6 +307,17 @@ export default function CreatorProfile() {
             collection_name: undefined,
             likes_count: counts[nft.id] || 0
           })));
+        } else if (nfts) {
+          // For anonymous users, show NFTs without like counts
+          setCreatorNFTs(nfts.map(nft => ({
+            id: nft.id,
+            name: nft.name,
+            image_url: nft.image_url,
+            price: nft.price,
+            collection_address: nft.collection_id,
+            collection_name: undefined,
+            likes_count: 0
+          })));
         }
 
         // Set collections and liked items
@@ -322,20 +334,27 @@ export default function CreatorProfile() {
         setLikedNFTs(creatorLikedNFTs);
         setLikedCollections(creatorLikedCollections);
 
-        // Fetch creators this creator follows
-        const { data: followedCreatorIds } = await supabase
-          .from('creator_follows')
-          .select('creator_wallet')
-          .eq('follower_wallet', wallet);
-
+        // Fetch creators this creator follows (only for authenticated users viewing their own profile)
         let followedCreatorsData: any[] = [];
-        if (followedCreatorIds && followedCreatorIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from('user_profiles')
-            .select('wallet_address, nickname, bio, profile_image_url')
-            .in('wallet_address', followedCreatorIds.map(f => f.creator_wallet));
-          
-          followedCreatorsData = profiles || [];
+        if (publicKey && publicKey.toString() === wallet) {
+          const { data: followedCreatorIds } = await supabase
+            .from('creator_follows')
+            .select('creator_wallet')
+            .eq('follower_wallet', wallet);
+
+          if (followedCreatorIds && followedCreatorIds.length > 0) {
+            const { data: profiles } = await supabase.rpc('get_profiles_authenticated');
+            const matchingProfiles = (profiles || []).filter(profile => 
+              followedCreatorIds.some(f => f.creator_wallet === profile.wallet_address)
+            );
+            
+            followedCreatorsData = matchingProfiles.map(profile => ({
+              wallet_address: profile.wallet_address,
+              nickname: profile.nickname,
+              bio: profile.bio,
+              profile_image_url: profile.profile_image_url
+            }));
+          }
         }
         setFollowedCreators(followedCreatorsData);
 

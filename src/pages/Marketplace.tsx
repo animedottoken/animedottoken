@@ -177,17 +177,23 @@ export default function Marketplace() {
   };
 
   const loadNFTs = async () => {
-    const { data: nftData, error: nftError } = await supabase
-      .from('nfts')
-      .select('*')
-      .eq('is_listed', true)
-      .order('created_at', { ascending: false })
-      .limit(100); // Add pagination
+    // Use the secure RPC function for public NFTs
+    const { data: nftData, error: nftError } = await supabase.rpc('get_nfts_public');
 
     if (nftError) {
       console.error('Error loading NFTs:', nftError);
     } else {
-      setNfts(nftData || []);
+      // Filter and sort client-side since RPC doesn't support these parameters
+      const filteredData = (nftData || [])
+        .filter((nft: any) => nft.is_listed)
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 100)
+        .map((nft: any) => ({
+          ...nft,
+          owner_address: nft.owner_address_masked,
+          creator_address: nft.creator_address_masked
+        }));
+      setNfts(filteredData);
     }
   };
 
