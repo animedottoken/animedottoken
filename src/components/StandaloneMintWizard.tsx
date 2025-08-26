@@ -391,7 +391,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                   <Button
                     variant="outline"
                     onClick={() => document.getElementById('media-upload')?.click()}
-                    className="gap-2 w-full h-12"
+                    className="gap-2 w-[264px] h-12 mx-auto"
                   >
                     <Upload className="h-4 w-4" />
                     {formData.media_file ? 'Change Media' : 'Upload Media'}
@@ -407,7 +407,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 {/* Right column - Collection Avatar Preview */}
                 {selectedCollection && (
                   <div className="flex flex-col items-center space-y-3">
-                    <div className="w-[240px] h-[240px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                    <div className="w-[176px] h-[176px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
                       {selectedCollection.image_url ? (
                         <img 
                           src={selectedCollection.image_url} 
@@ -415,7 +415,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                           className="w-full h-full object-cover rounded-lg"
                         />
                       ) : (
-                        <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
                       )}
                     </div>
                     
@@ -460,14 +460,14 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                     placeholder="Click to upload"
                     aspectRatio={1}
                     maxSizeText="Max 10MB"
-                    className="w-full"
+                    className="w-[264px] mx-auto"
                   />
                 </div>
                 
                 {/* Right column - Collection Avatar Preview */}
                 {selectedCollection && (
                   <div className="flex flex-col items-center space-y-3">
-                    <div className="w-[240px] h-[240px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                    <div className="w-[176px] h-[176px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
                       {selectedCollection.image_url ? (
                         <img 
                           src={selectedCollection.image_url} 
@@ -475,7 +475,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                           className="w-full h-full object-cover rounded-lg"
                         />
                       ) : (
-                        <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
                       )}
                     </div>
                     
