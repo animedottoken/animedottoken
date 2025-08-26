@@ -787,6 +787,38 @@ export type Database = {
           like_count: number
         }[]
       }
+      get_collections_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          banner_image_url: string
+          category: string
+          collection_mint_address: string
+          created_at: string
+          creator_address: string
+          description: string
+          explicit_content: boolean
+          external_links: Json
+          go_live_date: string
+          id: string
+          image_url: string
+          is_active: boolean
+          is_live: boolean
+          items_available: number
+          items_redeemed: number
+          max_supply: number
+          mint_price: number
+          name: string
+          onchain_description: string
+          royalty_percentage: number
+          site_description: string
+          slug: string
+          symbol: string
+          treasury_wallet: string
+          updated_at: string
+          verified: boolean
+          whitelist_enabled: boolean
+        }[]
+      }
       get_collections_public: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -883,6 +915,38 @@ export type Database = {
           wallet_address: string
         }[]
       }
+      get_marketplace_activities_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          activity_type: string
+          block_time: string
+          collection_id: string
+          created_at: string
+          currency: string
+          from_address: string
+          id: string
+          nft_id: string
+          price: number
+          to_address: string
+          transaction_signature: string
+        }[]
+      }
+      get_marketplace_activities_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          activity_type: string
+          block_time: string
+          collection_id: string
+          created_at: string
+          currency: string
+          from_address_masked: string
+          id: string
+          nft_id: string
+          price: number
+          to_address_masked: string
+          transaction_signature_masked: string
+        }[]
+      }
       get_marketplace_info_public: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -898,6 +962,30 @@ export type Database = {
           platform_fee_percentage: number
           platform_wallet_address: string
           updated_at: string
+        }[]
+      }
+      get_nfts_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          attributes: Json
+          collection_id: string
+          created_at: string
+          creator_address: string
+          currency: string
+          description: string
+          featured_at: string
+          id: string
+          image_url: string
+          is_featured: boolean
+          is_listed: boolean
+          metadata_uri: string
+          mint_address: string
+          name: string
+          owner_address: string
+          price: number
+          symbol: string
+          updated_at: string
+          views: number
         }[]
       }
       get_nfts_public: {
