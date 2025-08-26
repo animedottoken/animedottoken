@@ -439,7 +439,7 @@ export const StandaloneMintWizard = () => {
                 Required thumbnail for marketplace display. This will appear in galleries and collections.
               </p>
               
-              <div className="flex flex-wrap items-start gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-4">
                 <div className="w-full max-w-[240px]">
                   <FileUpload
                     onFileSelect={(file) => {
@@ -457,7 +457,7 @@ export const StandaloneMintWizard = () => {
                 {/* Marketplace Preview Thumbnail */}
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex-shrink-0 cursor-help">
+                    <div className="flex flex-col items-center cursor-help">
                       <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
                         {getMarketplacePreviewUrl() ? (
                           <img 
@@ -475,7 +475,7 @@ export const StandaloneMintWizard = () => {
                           variant="ghost"
                           size="sm"
                           onClick={handleUseCollectionCover}
-                          className="text-xs mt-1 w-full"
+                          className="text-xs mt-1"
                         >
                           Use Collection Avatar
                         </Button>
@@ -536,7 +536,7 @@ export const StandaloneMintWizard = () => {
                     }
                   }}
                 >
-                  Cancel
+                  {isCollectionLocked && collectionId ? 'Back to Collection' : 'Cancel'}
                 </Button>
                 <Button
                   onClick={handleNext}
