@@ -27,7 +27,11 @@ const STEPS = [
   { number: 3, title: 'Review & Mint', icon: CheckCircle }
 ];
 
-export const StandaloneMintWizard = () => {
+interface StandaloneMintWizardProps {
+  onStepChange?: (step: number) => void;
+}
+
+export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps = {}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const collectionId = searchParams.get('collection');
@@ -39,6 +43,11 @@ export const StandaloneMintWizard = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  // Fire step change callback
+  useEffect(() => {
+    onStepChange?.(currentStep);
+  }, [currentStep, onStepChange]);
   const [formData, setFormData] = useState<StandaloneNFTData>({
     name: '',
     symbol: 'NFT',
