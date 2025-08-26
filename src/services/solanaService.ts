@@ -266,13 +266,13 @@ export class SolanaService {
       
       const collection = collectionData && collectionData.length > 0 ? collectionData[0] : null;
 
-      const { data: activities } = await supabase
-        .from('marketplace_activities')
-        .select('price')
-        .eq('collection_id', collectionId)
-        .eq('activity_type', 'sale')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      const { data: publicActivities } = await supabase
+        .rpc('get_marketplace_activities_public');
+
+      const activities = (publicActivities || [])
+        .filter((a: any) => a.collection_id === collectionId && a.activity_type === 'sale')
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 100);
 
       const prices = activities?.map(a => Number(a.price)).filter(p => p > 0) || [];
       const floorPrice = prices.length > 0 ? Math.min(...prices) : 0;

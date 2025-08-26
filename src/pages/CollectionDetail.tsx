@@ -137,13 +137,13 @@ export default function CollectionDetail() {
       
       try {
         const { data, error } = await supabase
-          .from('collections')
-          .select('creator_address')
-          .eq('id', collectionId)
-          .single();
+          .rpc('get_collections_public_masked');
 
         if (!error && data) {
-          setCreatorWallet(data.creator_address);
+          const col = (data || []).find((c: any) => c.id === collectionId);
+          if (col?.creator_address_masked) {
+            setCreatorWallet(col.creator_address_masked);
+          }
         }
       } catch (err) {
         console.error('Error fetching creator wallet:', err);

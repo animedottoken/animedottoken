@@ -62,17 +62,14 @@ export const GamifiedProfileCard = () => {
       if (!profile?.wallet_address) return;
       
       try {
-        // Get NFT count
-        const { count: nftCount } = await supabase
-          .from('nfts')
-          .select('*', { count: 'exact', head: true })
-          .eq('creator_address', profile.wallet_address);
+        // Get NFT count via public RPC (masked creator address)
+        const masked = `${profile.wallet_address.slice(0,4)}...${profile.wallet_address.slice(-4)}`;
+        const { data: publicNfts } = await supabase.rpc('get_nfts_public');
+        const nftCount = (publicNfts || []).filter((n: any) => n.creator_address_masked === masked).length;
         
-        // Get collection count
-        const { count: collectionCount } = await supabase
-          .from('collections')
-          .select('*', { count: 'exact', head: true })
-          .eq('creator_address', profile.wallet_address);
+        // Get collection count via public RPC (masked creator address)
+        const { data: publicCollections } = await supabase.rpc('get_collections_public_masked');
+        const collectionCount = (publicCollections || []).filter((c: any) => c.creator_address_masked === masked).length;
         
         setNftCount(nftCount || 0);
         setCollectionCount(collectionCount || 0);

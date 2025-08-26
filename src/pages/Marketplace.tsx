@@ -213,66 +213,51 @@ export default function Marketplace() {
   };
 
   const loadCreators = async () => {
-    // Optimized: Use single query with join to get creator stats
-    const { data: creatorData, error: creatorError } = await supabase
-      .from('user_profiles')
-      .select(`
-        id,
-        wallet_address,
-        nickname,
-        bio,
-        profile_image_url,
-        trade_count,
-        profile_rank,
-        verified,
-        creators_public_stats!wallet_address (
-          follower_count,
-          nft_likes_count,
-          collection_likes_count
-        )
-      `)
-      .not('nickname', 'is', null)
-      .order('trade_count', { ascending: false })
-      .limit(30); // Reduced limit for faster loading
+    // Load public creator profiles and stats via secure RPCs
+    const [{ data: profiles, error: profilesError }, { data: stats, error: statsError }, { data: publicNfts }, { data: publicCollections }] = await Promise.all([
+      supabase.rpc('get_profiles_public'),
+      supabase.rpc('get_creators_public_stats'),
+      supabase.rpc('get_nfts_public'),
+      supabase.rpc('get_collections_public_masked')
+    ]);
 
-    if (creatorError) {
-      console.error('Error loading creators:', creatorError);
-    } else {
-      // Get creator counts in batch for better performance
-      const walletAddresses = (creatorData || []).map(c => c.wallet_address);
-      
-      const [nftCounts, collectionCounts] = await Promise.all([
-        supabase
-          .from('nfts')
-          .select('creator_address')
-          .in('creator_address', walletAddresses),
-        supabase
-          .from('collections')
-          .select('creator_address')
-          .in('creator_address', walletAddresses)
-      ]);
-
-      // Count creations per creator
-      const nftCountMap = nftCounts.data?.reduce((acc, nft) => {
-        acc[nft.creator_address] = (acc[nft.creator_address] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>) || {};
-
-      const collectionCountMap = collectionCounts.data?.reduce((acc, collection) => {
-        acc[collection.creator_address] = (acc[collection.creator_address] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>) || {};
-
-      const creatorsWithStats = (creatorData || []).map(creator => ({
-        ...creator,
-        created_nfts: nftCountMap[creator.wallet_address] || 0,
-        created_collections: collectionCountMap[creator.wallet_address] || 0,
-        follower_count: (creator as any).creators_public_stats?.[0]?.follower_count || 0,
-        nft_likes_count: (creator as any).creators_public_stats?.[0]?.nft_likes_count || 0,
-      }));
-      
-      setCreators(creatorsWithStats);
+    if (profilesError || statsError) {
+      console.error('Error loading creators:', profilesError || statsError);
+      return;
     }
+
+    const visibleProfiles = (profiles || [])
+      .filter((p: any) => !!p.display_name)
+      .sort((a: any, b: any) => (b.trade_count || 0) - (a.trade_count || 0))
+      .slice(0, 30);
+
+    // Build counts using masked addresses
+    const mask = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
+    const nftCountMap: Record<string, number> = {};
+    const collectionCountMap: Record<string, number> = {};
+
+    (publicNfts || []).forEach((n: any) => {
+      if (!n.creator_address_masked) return;
+      nftCountMap[n.creator_address_masked] = (nftCountMap[n.creator_address_masked] || 0) + 1;
+    });
+    (publicCollections || []).forEach((c: any) => {
+      if (!c.creator_address_masked) return;
+      collectionCountMap[c.creator_address_masked] = (collectionCountMap[c.creator_address_masked] || 0) + 1;
+    });
+
+    const creatorsWithStats = visibleProfiles.map((creator: any) => {
+      const masked = mask(creator.wallet_address);
+      const stat = (stats || []).find((s: any) => s.wallet_address === creator.wallet_address);
+      return {
+        ...creator,
+        created_nfts: nftCountMap[masked] || 0,
+        created_collections: collectionCountMap[masked] || 0,
+        follower_count: stat?.follower_count || 0,
+        nft_likes_count: stat?.nft_likes_count || 0,
+      };
+    });
+
+    setCreators(creatorsWithStats);
   };
 
   // Memoized filtered data for better performance

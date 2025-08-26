@@ -39,10 +39,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
   useEffect(() => {
     let cancelled = false;
     supabase
-      .from('nfts')
-      .select('price,is_listed,description')
-      .eq('id', listing.nft_id)
-      .maybeSingle()
+      .rpc('get_nfts_public')
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
@@ -52,20 +49,19 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
           setDescription('');
           return;
         }
-        setNftPrice(data?.price ?? null);
-        setListed(!!data?.is_listed);
-        setDescription(data?.description || '');
+        const nft = (data || []).find((n: any) => n.id === listing.nft_id);
+        setNftPrice(nft?.price ?? null);
+        setListed(!!nft?.is_listed);
+        setDescription(nft?.description || '');
       });
     return () => { cancelled = true; };
   }, [listing.nft_id]);
 
   useEffect(() => {
     let cancelled = false;
+    const mask = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
     supabase
-      .from('user_profiles')
-      .select('display_name,verified')
-      .eq('wallet_address', listing.owner_address_masked)
-      .maybeSingle()
+      .rpc('get_profiles_public')
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
@@ -74,8 +70,9 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
           setOwnerVerified(false);
           return;
         }
-        setOwnerNickname(data?.display_name || '');
-        setOwnerVerified(!!data?.verified);
+        const profile = (data || []).find((p: any) => mask(p.wallet_address) === listing.owner_address_masked);
+        setOwnerNickname(profile?.display_name || '');
+        setOwnerVerified(!!profile?.verified);
       });
     return () => { cancelled = true; };
   }, [listing.owner_address_masked]);
