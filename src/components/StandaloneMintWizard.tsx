@@ -908,25 +908,6 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                     </div>
                   </div>
                 )}
-                
-                {selectedCollection && (
-                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-                    <h4 className="font-medium text-sm mb-2">Part of Collection:</h4>
-                    <div className="flex items-center gap-3">
-                      {selectedCollection.image_url && (
-                        <img 
-                          src={selectedCollection.image_url} 
-                          alt={selectedCollection.name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium text-sm">{selectedCollection.name}</p>
-                        <p className="text-xs text-muted-foreground">{selectedCollection.symbol}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Complete NFT Details Summary */}
