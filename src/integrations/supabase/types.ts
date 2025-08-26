@@ -704,6 +704,44 @@ export type Database = {
           tx_signature: string
         }[]
       }
+      get_boosted_listings_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          bid_amount: number
+          bid_rank: number
+          bidder_wallet: string
+          end_time: string
+          id: string
+          is_active: boolean
+          nft_id: string
+          nft_image_url: string
+          nft_name: string
+          owner_address: string
+          start_time: string
+          tier: string
+          token_mint: string
+          tx_signature: string
+        }[]
+      }
+      get_boosted_listings_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          bid_amount: number
+          bid_rank: number
+          bidder_wallet_masked: string
+          end_time: string
+          id: string
+          is_active: boolean
+          nft_id: string
+          nft_image_url: string
+          nft_name: string
+          owner_address_masked: string
+          start_time: string
+          tier: string
+          token_mint: string
+          tx_signature: string
+        }[]
+      }
       get_collection_details: {
         Args: { collection_id: string }
         Returns: {
@@ -782,6 +820,38 @@ export type Database = {
           whitelist_enabled: boolean
         }[]
       }
+      get_collections_public_masked: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          banner_image_url: string
+          category: string
+          collection_mint_address: string
+          created_at: string
+          creator_address_masked: string
+          description: string
+          explicit_content: boolean
+          external_links: Json
+          go_live_date: string
+          id: string
+          image_url: string
+          is_active: boolean
+          is_live: boolean
+          items_available: number
+          items_redeemed: number
+          max_supply: number
+          mint_price: number
+          name: string
+          onchain_description: string
+          royalty_percentage: number
+          site_description: string
+          slug: string
+          symbol: string
+          treasury_wallet_masked: string
+          updated_at: string
+          verified: boolean
+          whitelist_enabled: boolean
+        }[]
+      }
       get_creator_collection_like_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -811,6 +881,30 @@ export type Database = {
           nft_likes_count: number
           total_likes_count: number
           wallet_address: string
+        }[]
+      }
+      get_nfts_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          attributes: Json
+          collection_id: string
+          created_at: string
+          creator_address_masked: string
+          currency: string
+          description: string
+          featured_at: string
+          id: string
+          image_url: string
+          is_featured: boolean
+          is_listed: boolean
+          metadata_uri: string
+          mint_address: string
+          name: string
+          owner_address_masked: string
+          price: number
+          symbol: string
+          updated_at: string
+          views: number
         }[]
       }
       get_profiles_authenticated: {
