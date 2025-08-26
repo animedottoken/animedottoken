@@ -66,16 +66,20 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     }
   };
 
-  const handleNavigation = (item: NavigationItem) => {
+  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
     if (item.type === "route") {
       navigate(item.path);
       setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
       return;
     }
 
+    // Prevent default browser navigation for section links
+    e?.preventDefault();
+    
     if (location.pathname !== "/") {
-      navigate(`/#${item.hash}`);
-      setTimeout(() => scrollToHash(item.hash), 100);
+      // Navigate to home first, then scroll to section
+      navigate('/');
+      setTimeout(() => scrollToHash(item.hash), 150);
       return;
     }
 
@@ -156,15 +160,15 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                       )}
                       asChild
                     >
-                      <Link to={`/#${item.hash}`} onClick={(e) => {
+                      <div onClick={(e) => {
                         // Only handle smooth scroll for unmodified left clicks
                         if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                          handleNavigation(item);
+                          handleNavigation(item, e);
                         }
                       }}>
                         <item.icon className="h-5 w-5 shrink-0" />
                         {!collapsed && <span className="font-medium">{item.title}</span>}
-                      </Link>
+                      </div>
                     </Button>
                   </TooltipTrigger>
                 </Tooltip>

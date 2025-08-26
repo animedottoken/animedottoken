@@ -121,16 +121,20 @@ export function AppSidebar() {
     }
   }, [isMobile, isCollapsed, setOpen]);
 
-  const handleNavigation = (item: typeof navigationItems[0]) => {
+  const handleNavigation = (item: typeof navigationItems[0], e?: React.MouseEvent) => {
     if (item.type === "route") {
       navigate(item.path!);
       setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
       return;
     }
 
+    // Prevent default browser navigation for section links
+    e?.preventDefault();
+    
     if (location.pathname !== '/') {
-      navigate(`/#${item.hash}`);
-      setTimeout(() => scrollToHash(item.hash!), 100);
+      // Navigate to home first, then scroll to section
+      navigate('/');
+      setTimeout(() => scrollToHash(item.hash!), 150);
     } else {
       scrollToHash(item.hash!);
     }
@@ -191,15 +195,15 @@ export function AppSidebar() {
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
                     tooltip={!showLabel ? item.title : undefined}
                   >
-                    <Link to={`/#${item.hash}`} onClick={(e) => {
+                    <div onClick={(e) => {
                       // Only handle smooth scroll for unmodified left clicks
                       if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                        handleNavigation(item);
+                        handleNavigation(item, e);
                       }
                     }}>
                       <item.icon className="h-4 w-4 shrink-0" />
                       {showLabel && <span className="ml-2">{item.title}</span>}
-                    </Link>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

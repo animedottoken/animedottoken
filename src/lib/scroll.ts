@@ -44,6 +44,22 @@ export function scrollToHash(hash: string, opts: ScrollToHashOptions = {}) {
     if (el) {
       updateHash(id);
       el.scrollIntoView({ behavior, block });
+      
+      // Stabilization: two follow-up scroll passes to ensure stable position
+      setTimeout(() => {
+        const stabilizationEl = findTarget(id);
+        if (stabilizationEl) {
+          stabilizationEl.scrollIntoView({ behavior: "smooth", block });
+        }
+      }, 300);
+      
+      setTimeout(() => {
+        const finalEl = findTarget(id);
+        if (finalEl) {
+          finalEl.scrollIntoView({ behavior: "smooth", block });
+        }
+      }, 600);
+      
       return;
     }
     if (remaining <= 0) {
