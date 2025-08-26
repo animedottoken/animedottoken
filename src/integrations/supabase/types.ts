@@ -1056,6 +1056,18 @@ export type Database = {
           website_url: string
         }[]
       }
+      get_public_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          display_name: string
+          profile_image_url: string
+          profile_rank: string
+          trade_count: number
+          verified: boolean
+          wallet_address: string
+        }[]
+      }
       increment_user_trade_count: {
         Args: { user_wallet_address: string }
         Returns: undefined
