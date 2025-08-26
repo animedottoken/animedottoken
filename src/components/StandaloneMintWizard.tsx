@@ -10,7 +10,7 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, Image as ImageIcon, X } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
@@ -300,23 +300,47 @@ export const StandaloneMintWizard = () => {
                   Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF). Preview will appear in Review step.
                 </p>
                 <div className="space-y-4">
-                  <FileUpload
-                    onFileSelect={(file) => {
-                      setFormData({ 
-                        ...formData, 
-                        media_file: file || undefined,
-                        // For backwards compatibility, also set image_file if it's an image
-                        image_file: file && file.type.startsWith('image/') ? file : formData.image_file
-                      });
-                    }}
-                    accept="image/*,video/mp4,video/webm,audio/mpeg,audio/wav,audio/m4a,audio/ogg,.glb,.gltf"
-                    placeholder="Upload Primary Media"
-                    maxSizeText="All media formats supported"
-                    className="w-full"
-                    aspectRatio={0.6}
-                    currentFile={formData.media_file}
-                    showPreview={false}
-                  />
+                  {/* Simple Upload Button */}
+                  <div className="text-center">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="h-12 px-8"
+                      onClick={() => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*,video/mp4,video/webm,audio/mpeg,audio/wav,audio/m4a,audio/ogg,.glb,.gltf';
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) {
+                            setFormData({ 
+                              ...formData, 
+                              media_file: file,
+                              image_file: file.type.startsWith('image/') ? file : formData.image_file
+                            });
+                          }
+                        };
+                        input.click();
+                      }}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Primary Media
+                    </Button>
+                    
+                    {formData.media_file && (
+                      <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <ImageIcon className="h-4 w-4" />
+                        <span className="truncate max-w-[200px]">{formData.media_file.name}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setFormData({ ...formData, media_file: undefined, image_file: formData.image_file?.type.startsWith('image/') ? undefined : formData.image_file })}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                   
                   {/* Option to use collection avatar - always show when collection is selected */}
                   {selectedCollection?.image_url && (
@@ -324,7 +348,7 @@ export const StandaloneMintWizard = () => {
                       <img
                         src={selectedCollection.image_url}
                         alt={selectedCollection.name}
-                        className="w-12 h-12 rounded-lg object-cover"
+                        className="w-10 h-10 rounded-lg object-cover"
                       />
                       <div className="flex-1">
                         <p className="text-sm font-medium">Use Collection Avatar</p>
@@ -366,22 +390,47 @@ export const StandaloneMintWizard = () => {
                     Add a cover image to improve how your NFT appears in galleries and marketplaces. Preview will appear in Review step.
                   </p>
                   <div className="space-y-4">
-                    <FileUpload
-                      onFileSelect={(file) => {
-                        setFormData({ ...formData, cover_image_file: file || undefined });
-                      }}
-                      accept="image/*"
-                      placeholder="Upload Cover Image"
-                      maxSizeText="JPEG, PNG recommended"
-                      className="w-full max-w-md"
-                      aspectRatio={1}
-                      currentFile={formData.cover_image_file}
-                      showPreview={false}
-                    />
+                    {/* Simple Upload Button */}
+                    <div className="text-center">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="h-12 px-8"
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/*';
+                          input.onchange = (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) {
+                              setFormData({ ...formData, cover_image_file: file });
+                            }
+                          };
+                          input.click();
+                        }}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Cover Image
+                      </Button>
+                      
+                      {formData.cover_image_file && (
+                        <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <ImageIcon className="h-4 w-4" />
+                          <span className="truncate max-w-[200px]">{formData.cover_image_file.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setFormData({ ...formData, cover_image_file: undefined })}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Option to use collection avatar as cover */}
                     {selectedCollection?.image_url && (
-                      <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20 max-w-md">
+                      <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20">
                         <img
                           src={selectedCollection.image_url}
                           alt={selectedCollection.name}
