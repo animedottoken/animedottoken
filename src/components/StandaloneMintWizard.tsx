@@ -572,13 +572,22 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
               NFT Details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Essential Information */}
-            <div className="space-y-6">
+          <CardContent className="space-y-8">
+            
+            {/* Basic Information Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-semibold">Basic Information</h3>
+                <Badge variant="secondary" className="text-xs">On-Chain</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                This information will be permanently stored on the blockchain and cannot be changed after minting.
+              </p>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label htmlFor="name" className="text-base font-medium">
-                    NFT Name *
+                    NFT Name {!selectedCollection && "*"}
                   </Label>
                   <Input
                     id="name"
@@ -618,41 +627,68 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                   rows={3}
                 />
               </div>
-
-              {/* Explicit Content - Prominent and Required */}
-              <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="explicit-content" className="text-base font-medium">
-                        Content Declaration
-                      </Label>
-                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Declare if your NFT contains explicit or sensitive content
-                    </p>
-                  </div>
-                  <Switch
-                    id="explicit-content"
-                    checked={formData.explicit_content || false}
-                    onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {formData.explicit_content ? "⚠️ Marked as explicit/sensitive" : "✅ Safe for all audiences"}
-                </p>
-              </div>
             </div>
 
-            {/* Advanced Settings - Collapsible */}
+            {/* Listing on Marketplace Section */}
             <div className="space-y-4 pt-6 border-t">
-              <details className="space-y-4">
-                <summary className="cursor-pointer text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  ⚙️ Advanced Settings (Optional)
-                </summary>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pl-4 pt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-semibold">Listing on marketplace</h3>
+                <Badge variant="outline" className="text-xs">Off-Chain</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                These settings control how your NFT appears and behaves on marketplaces. Required for marketplace listing.
+              </p>
+
+              <div className="space-y-6">
+                {/* List for Sale Toggle */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="list-after-mint"
+                      checked={formData.list_after_mint || false}
+                      onCheckedChange={(checked) => setFormData({ ...formData, list_after_mint: checked })}
+                    />
+                    <Label htmlFor="list-after-mint" className="text-base font-medium">
+                      List for sale immediately after minting
+                    </Label>
+                  </div>
+
+                  {formData.list_after_mint && (
+                    <div className="ml-6 space-y-3">
+                      <Label htmlFor="price" className="text-base font-medium">
+                        Price (SOL) *
+                      </Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        min="0"
+                        step="0.001"
+                        placeholder={selectedCollection?.mint_price ? `Collection price: ${selectedCollection.mint_price}` : "0.1"}
+                        value={priceInput}
+                        onChange={(e) => setPriceInput(e.target.value)}
+                        onBlur={(e) => {
+                          const raw = e.target.value.trim();
+                          if (raw === '') {
+                            const defaultPrice = selectedCollection?.mint_price || undefined;
+                            setFormData({ ...formData, initial_price: defaultPrice });
+                            if (defaultPrice) setPriceInput(String(defaultPrice));
+                            return;
+                          }
+                          const price = Math.max(0, parseFloat(raw) || 0);
+                          setPriceInput(String(price));
+                          setFormData({ ...formData, initial_price: price });
+                        }}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Set the initial listing price for your NFT(s)
+                        {selectedCollection?.mint_price && ` (Collection default: ${selectedCollection.mint_price} SOL)`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Marketplace Requirements */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Label htmlFor="category" className="text-base font-medium">
@@ -678,38 +714,6 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                     </Select>
                     <p className="text-xs text-muted-foreground">
                       {formData.category ? `Selected: ${formData.category}` : "Defaults to 'Other'"}
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label htmlFor="quantity" className="text-base font-medium">
-                      Quantity
-                    </Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      min="1"
-                      max="1000"
-                      value={quantityInput}
-                      onChange={(e) => setQuantityInput(e.target.value)}
-                      onBlur={(e) => {
-                        const val = e.target.value.trim();
-                        if (val === '') {
-                          setFormData({ ...formData, quantity: undefined });
-                          return;
-                        }
-                        const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
-                        setQuantityInput(String(n));
-                        setFormData({ ...formData, quantity: n });
-                      }}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {(formData.quantity || 1) > 100 
-                        ? selectedCollectionId 
-                          ? "Large quantities will be processed in the background"
-                          : "Large quantities will be processed in batches"
-                        : "Up to 1000 NFTs with automatic numbering (#1, #2, etc.)"
-                      }
                     </p>
                   </div>
 
@@ -747,72 +751,104 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                       {formData.royalty_percentage ? `${formData.royalty_percentage}% earnings on resales` : "Defaults to 0%"}
                     </p>
                   </div>
-                </div>
-              </details>
-            </div>
 
-            {/* Listing Options */}
-            <div className="space-y-6 pt-6 border-t">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="list-after-mint"
-                    checked={formData.list_after_mint || false}
-                    onCheckedChange={(checked) => setFormData({ ...formData, list_after_mint: checked })}
-                  />
-                  <Label htmlFor="list-after-mint" className="text-base font-medium">
-                    List for sale immediately after minting
-                  </Label>
-                </div>
-
-                {formData.list_after_mint && (
-                  <div className="ml-6 space-y-3">
-                    <Label htmlFor="price" className="text-base font-medium">
-                      Price (SOL) *
-                    </Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      min="0"
-                      step="0.001"
-                      placeholder={selectedCollection?.mint_price ? `Collection price: ${selectedCollection.mint_price}` : "0.1"}
-                      value={priceInput}
-                      onChange={(e) => setPriceInput(e.target.value)}
-                      onBlur={(e) => {
-                        const raw = e.target.value.trim();
-                        if (raw === '') {
-                          const defaultPrice = selectedCollection?.mint_price || undefined;
-                          setFormData({ ...formData, initial_price: defaultPrice });
-                          if (defaultPrice) setPriceInput(String(defaultPrice));
-                          return;
-                        }
-                        const price = Math.max(0, parseFloat(raw) || 0);
-                        setPriceInput(String(price));
-                        setFormData({ ...formData, initial_price: price });
-                      }}
-                    />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="explicit-content" className="text-base font-medium">
+                        Content Declaration
+                      </Label>
+                      <Badge variant="required" className="text-xs">Required for Marketplace</Badge>
+                    </div>
+                    <div className="flex items-center space-x-2 p-3 bg-muted/30 rounded-lg border">
+                      <Switch
+                        id="explicit-content"
+                        checked={formData.explicit_content || false}
+                        onCheckedChange={(checked) => setFormData({ ...formData, explicit_content: checked })}
+                      />
+                      <Label htmlFor="explicit-content" className="text-sm">
+                        Contains explicit content
+                      </Label>
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Set the initial listing price for your NFT(s)
-                      {selectedCollection?.mint_price && ` (Collection default: ${selectedCollection.mint_price} SOL)`}
+                      {formData.explicit_content ? "⚠️ Marked as explicit/sensitive" : "✅ Safe for all audiences"}
                     </p>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
-            {/* Properties Section */}
-            <PropertiesEditor
-              properties={formData.attributes || []}
-              onChange={(properties) => setFormData({ ...formData, attributes: properties })}
-              className="mt-6"
-            />
+            {/* Properties & Traits Section */}
+            <div className="space-y-4 pt-6 border-t">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-semibold">Properties & Traits</h3>
+                <Badge variant="secondary" className="text-xs">On-Chain</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Add custom properties and traits to your NFT. These will be stored on-chain and visible on all marketplaces.
+              </p>
+              
+              <PropertiesEditor
+                properties={formData.attributes || []}
+                onChange={(properties) => setFormData({ ...formData, attributes: properties })}
+              />
+            </div>
+
+            {/* Advanced Settings - Collapsible */}
+            <div className="space-y-4 pt-6 border-t">
+              <details className="space-y-4">
+                <summary className="cursor-pointer text-base font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  ⚙️ Advanced Settings (Optional)
+                </summary>
+                
+                <div className="pl-4 pt-4">
+                  <div className="space-y-3">
+                    <Label htmlFor="quantity" className="text-base font-medium">
+                      Quantity
+                    </Label>
+                    <Input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      max="1000"
+                      value={quantityInput}
+                      onChange={(e) => setQuantityInput(e.target.value)}
+                      onBlur={(e) => {
+                        const val = e.target.value.trim();
+                        if (val === '') {
+                          setFormData({ ...formData, quantity: undefined });
+                          return;
+                        }
+                        const n = Math.max(1, Math.min(1000, parseInt(val, 10) || 1));
+                        setQuantityInput(String(n));
+                        setFormData({ ...formData, quantity: n });
+                      }}
+                      className="max-w-xs"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {(formData.quantity || 1) > 100 
+                        ? selectedCollectionId 
+                          ? "Large quantities will be processed in the background"
+                          : "Large quantities will be processed in batches"
+                        : "Up to 1000 NFTs with automatic numbering (#1, #2, etc.)"
+                      }
+                    </p>
+                  </div>
+                </div>
+              </details>
+            </div>
 
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button onClick={handleNext} disabled={currentStep === 2 && !formData.name.trim() && !selectedCollection}>
+              <Button 
+                onClick={handleNext} 
+                disabled={
+                  (!formData.name.trim() && !selectedCollection) || 
+                  (formData.list_after_mint && (!formData.initial_price || formData.initial_price <= 0))
+                }
+              >
                 Review & Mint
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
