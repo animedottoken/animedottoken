@@ -430,8 +430,8 @@ export const StandaloneMintWizard = () => {
                 Required thumbnail for marketplace display. This will appear in galleries and collections.
               </p>
               
-              <div className="flex items-start gap-4">
-                <div className="w-24">
+              <div className="flex flex-wrap items-start gap-4">
+                <div className="w-full max-w-[240px]">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ ...formData, cover_image_file: file });
@@ -441,7 +441,7 @@ export const StandaloneMintWizard = () => {
                     placeholder="Click to upload"
                     aspectRatio={1}
                     maxSizeText="Max 10MB"
-                    className="w-24 h-24"
+                    className="w-full"
                   />
                 </div>
                 
