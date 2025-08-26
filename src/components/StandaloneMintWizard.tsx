@@ -385,8 +385,9 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 This is the main file that will be stored on-chain. Supports images, videos, audio, and 3D models.
               </p>
               
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <div className="w-full max-w-[240px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left column - Upload button */}
+                <div className="flex flex-col justify-center">
                   <Button
                     variant="outline"
                     onClick={() => document.getElementById('media-upload')?.click()}
@@ -403,37 +404,39 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                   )}
                 </div>
                 
-                {/* Collection Avatar Preview and Actions */}
+                {/* Right column - Collection Avatar Preview */}
                 {selectedCollection && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-col items-center cursor-help">
-                        <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                          {selectedCollection.image_url ? (
-                            <img 
-                              src={selectedCollection.image_url} 
-                              alt="Collection avatar" 
-                              className="w-full h-full object-cover rounded-md"
-                            />
-                          ) : (
-                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleUseCollectionAvatar}
-                          className="text-xs mt-1"
-                        >
-                          Use Collection Avatar
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-48 text-xs">This preview shows what's stored permanently on the blockchain</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-[240px] h-[240px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                      {selectedCollection.image_url ? (
+                        <img 
+                          src={selectedCollection.image_url} 
+                          alt="Collection avatar" 
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                      )}
+                    </div>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-sm text-muted-foreground cursor-help">On-chain</p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-48 text-xs">This preview shows what's stored permanently on the blockchain</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUseCollectionAvatar}
+                      className="text-sm"
+                    >
+                      Use Collection Avatar
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
@@ -445,8 +448,9 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 Required thumbnail for marketplace display. This will appear in galleries and collections.
               </p>
               
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <div className="w-full max-w-[240px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left column - FileUpload */}
+                <div className="flex flex-col justify-center">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ ...formData, cover_image_file: file });
@@ -460,38 +464,40 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                   />
                 </div>
                 
-                {/* Marketplace Preview Thumbnail */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex flex-col items-center cursor-help">
-                      <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
-                        {getMarketplacePreviewUrl() ? (
-                          <img 
-                            src={getMarketplacePreviewUrl()!} 
-                            alt="Marketplace preview" 
-                            className="w-full h-full object-cover rounded-md"
-                          />
-                        ) : (
-                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground text-center mt-1">Marketplace</p>
-                      {selectedCollection && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleUseCollectionCover}
-                          className="text-xs mt-1"
-                        >
-                          Use Collection Avatar
-                        </Button>
+                {/* Right column - Collection Avatar Preview */}
+                {selectedCollection && (
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-[240px] h-[240px] border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                      {selectedCollection.image_url ? (
+                        <img 
+                          src={selectedCollection.image_url} 
+                          alt="Collection avatar" 
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <ImageIcon className="h-12 w-12 text-muted-foreground" />
                       )}
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-48 text-xs">This thumbnail appears in galleries and marketplace listings</p>
-                  </TooltipContent>
-                </Tooltip>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-sm text-muted-foreground cursor-help">Marketplace</p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-48 text-xs">This thumbnail appears in galleries and marketplace listings</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUseCollectionCover}
+                      className="text-sm"
+                    >
+                      Use Collection Avatar
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
