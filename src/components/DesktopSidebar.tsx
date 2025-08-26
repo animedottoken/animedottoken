@@ -77,7 +77,14 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
       return;
     }
 
+    // Add small delay to ensure reliable hash navigation
     window.location.hash = `#${item.hash}`;
+    setTimeout(() => {
+      const element = document.getElementById(item.hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const isActive = (item: NavigationItem) => {

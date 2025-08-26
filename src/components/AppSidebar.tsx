@@ -130,7 +130,14 @@ export function AppSidebar() {
     if (location.pathname !== '/') {
       navigate(`/#${item.hash!}`);
     } else {
+      // Add small delay to ensure reliable hash navigation
       window.location.hash = `#${item.hash!}`;
+      setTimeout(() => {
+        const element = document.getElementById(item.hash!);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
