@@ -347,17 +347,81 @@ export default function NFTDetail() {
                 className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
                 onClick={handleFullscreenToggle}
               >
-                <img
-                  src={nft.image_url || "/placeholder.svg"}
-                  alt={nft.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => {
-                    const img = e.currentTarget as HTMLImageElement;
-                    if (img.src !== "/placeholder.svg") {
-                      img.src = "/placeholder.svg";
-                    }
-                  }}
-                />
+                {/* Render different media types */}
+                {nft.metadata?.animation_url && nft.metadata?.media_type ? (
+                  nft.metadata.media_type.startsWith('video/') ? (
+                    <video
+                      src={nft.metadata.animation_url}
+                      poster={nft.image_url || "/placeholder.svg"}
+                      className="w-full h-full object-cover"
+                      loop
+                      muted
+                      playsInline
+                      onError={(e) => {
+                        console.error('Video load error, falling back to poster/image');
+                        e.currentTarget.style.display = 'none';
+                        const imgFallback = document.createElement('img');
+                        imgFallback.src = nft.image_url || '/placeholder.svg';
+                        imgFallback.className = 'w-full h-full object-cover';
+                        e.currentTarget.parentNode?.appendChild(imgFallback);
+                      }}
+                    />
+                  ) : nft.metadata.media_type.startsWith('audio/') ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10">
+                      {nft.image_url && (
+                        <img
+                          src={nft.image_url}
+                          alt={nft.name}
+                          className="w-full h-full object-cover absolute inset-0"
+                        />
+                      )}
+                      <div className="relative z-10 bg-black/50 rounded-lg p-4 m-4">
+                        <audio controls className="w-full">
+                          <source src={nft.metadata.animation_url} type={nft.metadata.media_type} />
+                        </audio>
+                      </div>
+                    </div>
+                  ) : nft.metadata.media_type.includes('gltf') || nft.metadata.media_type.includes('glb') ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
+                      {nft.image_url && (
+                        <img
+                          src={nft.image_url}
+                          alt={nft.name}
+                          className="w-full h-full object-cover absolute inset-0"
+                        />
+                      )}
+                      <div className="relative z-10 text-center">
+                        <Maximize2 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm font-medium">3D Model</p>
+                        <p className="text-xs text-muted-foreground">Click to view in fullscreen</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={nft.image_url || "/placeholder.svg"}
+                      alt={nft.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (img.src !== "/placeholder.svg") {
+                          img.src = "/placeholder.svg";
+                        }
+                      }}
+                    />
+                  )
+                ) : (
+                  <img
+                    src={nft.image_url || "/placeholder.svg"}
+                    alt={nft.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      if (img.src !== "/placeholder.svg") {
+                        img.src = "/placeholder.svg";
+                      }
+                    }}
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                   <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
@@ -653,24 +717,27 @@ export default function NFTDetail() {
       {nft && (
         <FullscreenNFTViewer
           isOpen={isFullscreen}
-          onClose={() => handleFullscreenToggle()}
-          nftId={nft.id}
+          onClose={handleFullscreenToggle}
+          nftImage={nft.image_url}
           nftName={nft.name}
-          nftImage={nft.image_url || "/placeholder.svg"}
+          nftId={nft.id}
           collectionName={nft.collection_name}
-          onNavigate={handleFullscreenNavigate}
+          price={nft.price}
+          currency={nft.currency || 'SOL'}
+          isListed={nft.is_listed}
+          isOwner={publicKey === nft.owner_address}
           canNavigate={navigation.canNavigate}
+          hasNext={navigation.hasNext}
+          hasPrev={navigation.hasPrev}
           currentIndex={navigation.currentIndex}
           totalItems={navigation.totalItems}
-          price={nft.price}
-          currency={nft.currency}
-          isListed={nft.is_listed}
-          royaltyPercentage={nft.royalty_percentage}
-          editionInfo={getEditionInfo() || undefined}
-          ownerAddress={nft.owner_address}
-          currentUserAddress={publicKey || undefined}
+          onNext={() => handleFullscreenNavigate('next')}
+          onPrev={() => handleFullscreenNavigate('prev')}
           onBuyNow={handleBuyNow}
           onPlaceBid={() => setIsBidModalOpen(true)}
+          mediaUrl={nft.metadata?.animation_url}
+          mediaType={nft.metadata?.media_type}
+          coverImageUrl={nft.image_url}
         />
       )}
 

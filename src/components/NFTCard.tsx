@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, CheckCircle, Eye } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Heart, CheckCircle, Eye, Play, Volume2, Maximize2 } from 'lucide-react';
 import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -93,6 +94,28 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
             e.currentTarget.src = '/images/og-anime.jpg';
           }}
         />
+        
+        {/* Media type indicator */}
+        {nft.attributes?.has_media && (
+          <div className="absolute top-2 left-2">
+            {nft.attributes.media_type?.startsWith('video/') ? (
+              <Badge className="bg-red-500 text-white text-xs">
+                <Play className="w-3 h-3 mr-1" />
+                Video
+              </Badge>
+            ) : nft.attributes.media_type?.startsWith('audio/') ? (
+              <Badge className="bg-green-500 text-white text-xs">
+                <Volume2 className="w-3 h-3 mr-1" />
+                Audio
+              </Badge>
+            ) : (nft.attributes.media_type?.includes('gltf') || nft.attributes.media_type?.includes('glb')) ? (
+              <Badge className="bg-orange-500 text-white text-xs">
+                <Maximize2 className="w-3 h-3 mr-1" />
+                3D
+              </Badge>
+            ) : null}
+          </div>
+        )}
         
         {/* Heart button - moved to top right corner */}
         <Button 

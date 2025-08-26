@@ -7,7 +7,9 @@ export interface StandaloneNFTData {
   name: string;
   symbol?: string;
   description?: string;
-  image_file?: File;
+  image_file?: File; // For backwards compatibility (image only)
+  media_file?: File; // Primary media: image, video, audio, or 3D
+  cover_image_file?: File; // Optional cover/thumbnail for video/audio
   quantity?: number;
   royalty_percentage?: number;
   category?: string;
@@ -23,11 +25,11 @@ export const useStandaloneMint = () => {
   const [minting, setMinting] = useState(false);
   const { publicKey } = useSolanaWallet();
 
-  const uploadImage = async (file: File): Promise<string | null> => {
+  const uploadFile = async (file: File, prefix: string = 'nft-media'): Promise<string | null> => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-      const filePath = `nft-media/${fileName}`;
+      const filePath = `${prefix}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('nft-media')
@@ -44,10 +46,13 @@ export const useStandaloneMint = () => {
 
       return publicUrl;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error uploading file:', error);
       return null;
     }
   };
+
+  // Backwards compatibility
+  const uploadImage = uploadFile;
 
   const mintStandaloneNFT = async (nftData: StandaloneNFTData) => {
     if (!publicKey) {
@@ -59,13 +64,37 @@ export const useStandaloneMint = () => {
     
     try {
       let imageUrl = null;
+      let mediaUrl = null;
+      let mediaType = '';
       
-      // Upload image if provided
-      if (nftData.image_file) {
-        imageUrl = await uploadImage(nftData.image_file);
-        if (!imageUrl) {
-          throw new Error('Failed to upload image');
+      // Handle media uploads
+      const primaryFile = nftData.media_file || nftData.image_file;
+      
+      if (primaryFile) {
+        mediaUrl = await uploadFile(primaryFile, 'nft-media');
+        mediaType = primaryFile.type;
+        if (!mediaUrl) {
+          throw new Error('Failed to upload primary media');
         }
+        
+        // For images and GIFs, use as cover too
+        if (primaryFile.type.startsWith('image/')) {
+          imageUrl = mediaUrl;
+        }
+      }
+      
+      // Handle cover image upload for video/audio
+      if (nftData.cover_image_file) {
+        imageUrl = await uploadFile(nftData.cover_image_file, 'nft-covers');
+        if (!imageUrl) {
+          console.warn('Failed to upload cover image, continuing without cover');
+        }
+      }
+      
+      // Backwards compatibility: if only image_file provided
+      if (nftData.image_file && !nftData.media_file) {
+        mediaUrl = imageUrl;
+        mediaType = nftData.image_file.type;
       }
 
       const quantity = nftData.quantity || 1;
@@ -85,6 +114,8 @@ export const useStandaloneMint = () => {
                 symbol: nftData.symbol || 'NFT',
                 description: nftData.description,
                 image_url: imageUrl,
+                media_url: mediaUrl,
+                media_type: mediaType,
                 category: nftData.category,
                 royalty_percentage: nftData.royalty_percentage
               }
@@ -94,7 +125,7 @@ export const useStandaloneMint = () => {
           if (error) {
             console.error('Mint job creation failed:', error);
             // Fall back to batch processing
-            return await batchMintNFTs(nftData, quantity, imageUrl, publicKey);
+            return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
           }
 
           toast.success(`Mint job created successfully! 🎉`, {
@@ -109,12 +140,12 @@ export const useStandaloneMint = () => {
           };
         } catch (error) {
           console.warn('Mint job failed, falling back to batch processing:', error);
-          return await batchMintNFTs(nftData, quantity, imageUrl, publicKey);
+          return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
         }
       }
 
       // For smaller quantities or standalone NFTs, use batch processing
-      return await batchMintNFTs(nftData, quantity, imageUrl, publicKey);
+      return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -127,7 +158,7 @@ export const useStandaloneMint = () => {
     }
   };
 
-  const batchMintNFTs = async (nftData: StandaloneNFTData, quantity: number, imageUrl: string | null, publicKey: string) => {
+  const batchMintNFTs = async (nftData: StandaloneNFTData, quantity: number, imageUrl: string | null, mediaUrl: string | null, mediaType: string, publicKey: string) => {
     const BATCH_SIZE = 50;
     const results = [];
     
@@ -159,7 +190,12 @@ export const useStandaloneMint = () => {
             total_quantity: quantity,
             explicit_content: nftData.explicit_content ?? false,
             category: nftData.category || "Other",
-            royalty_percentage: nftData.royalty_percentage ?? 0
+            royalty_percentage: nftData.royalty_percentage ?? 0,
+            ...(mediaUrl && mediaUrl !== imageUrl && {
+              animation_url: mediaUrl,
+              media_type: mediaType,
+              has_media: true
+            })
           },
           // Note: traits column removed - using attributes instead
           is_listed: nftData.list_after_mint || false,

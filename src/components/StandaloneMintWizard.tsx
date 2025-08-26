@@ -17,6 +17,7 @@ import { useCollection } from '@/hooks/useCollection';
 import { useCollections } from '@/hooks/useCollections';
 import { toast } from 'sonner';
 import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
+import { MediaPreview } from '@/components/ui/media-preview';
 
 const STEPS = [
   { number: 1, title: 'Upload Artwork', icon: Upload },
@@ -35,6 +36,8 @@ export const StandaloneMintWizard = () => {
     symbol: 'NFT',
     description: '',
     image_file: undefined,
+    media_file: undefined,
+    cover_image_file: undefined,
     quantity: 1,
     royalty_percentage: 0,
     category: 'Other', // Default to "Other"
@@ -97,8 +100,8 @@ export const StandaloneMintWizard = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && !formData.image_file) {
-      toast.error('Please upload an image first');
+    if (currentStep === 1 && !formData.media_file && !formData.image_file) {
+      toast.error('Please upload media first');
       return;
     }
     // Allow empty name for automatic numbering when collection is selected
@@ -142,6 +145,8 @@ export const StandaloneMintWizard = () => {
       symbol: 'NFT', 
       description: '',
       image_file: undefined,
+      media_file: undefined,
+      cover_image_file: undefined,
       quantity: 1,
       royalty_percentage: selectedCollection?.royalty_percentage || 0,
       category: selectedCollection?.category || 'Other',
@@ -258,69 +263,133 @@ export const StandaloneMintWizard = () => {
         </div>
       </div>
 
-      {/* Step 1: Upload Artwork */}
+      {/* Step 1: Upload Media */}
       {currentStep === 1 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Upload Your Artwork
+              Upload Your NFT Media
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="image" className="text-base font-medium">
-                NFT Image
-              </Label>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <FileUpload
-                  onFileSelect={(file) => {
-                    setFormData({ ...formData, image_file: file || undefined });
-                  }}
-                  accept="image/*"
-                  placeholder="Click to upload image"
-                  maxSizeText="JPEG, PNG, GIF supported"
-                  className="w-full"
-                  aspectRatio={1}
-                  currentFile={formData.image_file}
-                  previewUrl={formData.image_file ? URL.createObjectURL(formData.image_file) : undefined}
-                />
-                
-                {/* Option to use collection avatar */}
-                {selectedCollection?.image_url && (
-                  <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">Or use collection avatar:</Label>
-                    <div 
-                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group"
-                      onClick={() => {
-                        fetch(selectedCollection.image_url!)
-                          .then(response => response.blob())
-                          .then(blob => {
-                            const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
-                            setFormData({ ...formData, image_file: file });
-                            toast.success('Collection avatar loaded!');
-                          })
-                          .catch(() => toast.error('Failed to load collection avatar'));
-                      }}
-                    >
-                      <div className="flex flex-col items-center text-center space-y-2">
-                        <img
-                          src={selectedCollection.image_url}
-                          alt={selectedCollection.name}
-                          className="w-16 h-16 rounded-lg object-cover"
-                        />
-                        <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
-                          Use Collection Avatar
-                        </p>
+            <div className="space-y-6">
+              {/* Primary Media Upload */}
+              <div className="space-y-3">
+                <Label className="text-base font-medium">
+                  Primary Media *
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF)
+                </p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <FileUpload
+                    onFileSelect={(file) => {
+                      setFormData({ 
+                        ...formData, 
+                        media_file: file || undefined,
+                        // For backwards compatibility, also set image_file if it's an image
+                        image_file: file && file.type.startsWith('image/') ? file : formData.image_file
+                      });
+                    }}
+                    accept="image/*,video/mp4,video/webm,audio/mpeg,audio/wav,audio/m4a,audio/ogg,.glb,.gltf"
+                    placeholder="Click to upload media"
+                    maxSizeText="Images, Videos, Audio, 3D Models supported"
+                    className="w-full"
+                    aspectRatio={1}
+                    currentFile={formData.media_file}
+                    previewUrl={formData.media_file ? URL.createObjectURL(formData.media_file) : undefined}
+                  />
+                  
+                  {/* Media preview when file is selected */}
+                  {formData.media_file && (
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Media Preview:</Label>
+                      <MediaPreview
+                        file={formData.media_file}
+                        previewUrl={URL.createObjectURL(formData.media_file)}
+                        className="w-full border rounded-lg"
+                        aspectRatio={1}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Option to use collection avatar */}
+                  {selectedCollection?.image_url && !formData.media_file && (
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Or use collection avatar:</Label>
+                      <div 
+                        className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group"
+                        onClick={() => {
+                          fetch(selectedCollection.image_url!)
+                            .then(response => response.blob())
+                            .then(blob => {
+                              const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
+                              setFormData({ ...formData, media_file: file, image_file: file });
+                              toast.success('Collection avatar loaded!');
+                            })
+                            .catch(() => toast.error('Failed to load collection avatar'));
+                        }}
+                      >
+                        <div className="flex flex-col items-center text-center space-y-2">
+                          <img
+                            src={selectedCollection.image_url}
+                            alt={selectedCollection.name}
+                            className="w-16 h-16 rounded-lg object-cover"
+                          />
+                          <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+                            Use Collection Avatar
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+              </div>
+
+              {/* Cover Image Upload for Video/Audio */}
+              {formData.media_file && 
+               (formData.media_file.type.startsWith('video/') || 
+                formData.media_file.type.startsWith('audio/') ||
+                formData.media_file.name.toLowerCase().endsWith('.glb') ||
+                formData.media_file.name.toLowerCase().endsWith('.gltf')) && (
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">
+                    Cover Image (Optional but Recommended)
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Add a cover image to improve how your NFT appears in galleries and marketplaces.
+                  </p>
+                  <FileUpload
+                    onFileSelect={(file) => {
+                      setFormData({ ...formData, cover_image_file: file || undefined });
+                    }}
+                    accept="image/*"
+                    placeholder="Click to upload cover image"
+                    maxSizeText="JPEG, PNG recommended"
+                    className="w-full max-w-md"
+                    aspectRatio={1}
+                    currentFile={formData.cover_image_file}
+                    previewUrl={formData.cover_image_file ? URL.createObjectURL(formData.cover_image_file) : undefined}
+                  />
+                </div>
+              )}
+
+              {/* Helpful tips */}
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                <h4 className="font-medium text-sm mb-2">💡 Tips for best results:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• <strong>Images & GIFs:</strong> Will display directly and animate where supported</li>
+                  <li>• <strong>Videos:</strong> Will show with play controls - add a cover image for better thumbnails</li>
+                  <li>• <strong>Audio:</strong> Will display with audio player - cover image highly recommended</li>
+                  <li>• <strong>3D Models:</strong> GLB/GLTF format supported - cover image recommended</li>
+                  <li>• <strong>No real funds:</strong> This is a simulation for demonstration only</li>
+                </ul>
               </div>
             </div>
 
             <div className="flex justify-end pt-4">
-              <Button onClick={handleNext} disabled={!formData.image_file}>
+              <Button onClick={handleNext} disabled={!formData.media_file && !formData.image_file}>
                 Next: Details
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

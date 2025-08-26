@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Maximize2, Share2, ShoppingCart, Gavel, DollarSign, Award } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Maximize2, Share2, ShoppingCart, Gavel, DollarSign, Award, Volume2, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -8,53 +8,57 @@ import { toast } from 'sonner';
 interface FullscreenNFTViewerProps {
   isOpen: boolean;
   onClose: () => void;
-  nftId: string;
-  nftName: string;
   nftImage: string;
+  nftName: string;
+  nftId: string;
   collectionName?: string;
-  onNavigate?: (direction: 'prev' | 'next') => void;
-  canNavigate?: boolean;
-  currentIndex?: number;
-  totalItems?: number;
   price?: number;
   currency?: string;
   isListed?: boolean;
-  royaltyPercentage?: number;
-  editionInfo?: string;
-  ownerAddress?: string;
-  currentUserAddress?: string;
+  isOwner: boolean;
+  canNavigate?: boolean;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  currentIndex?: number;
+  totalItems?: number;
+  onNext?: () => void;
+  onPrev?: () => void;
   onBuyNow?: () => void;
   onPlaceBid?: () => void;
+  // Media support
+  mediaUrl?: string;
+  mediaType?: string;
+  coverImageUrl?: string;
 }
 
-export const FullscreenNFTViewer = ({
+export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
   isOpen,
   onClose,
-  nftId,
-  nftName,
   nftImage,
+  nftName,
+  nftId,
   collectionName,
-  onNavigate,
-  canNavigate = false,
-  currentIndex = 1,
-  totalItems = 1,
   price,
   currency = 'SOL',
-  isListed = false,
-  royaltyPercentage,
-  editionInfo,
-  ownerAddress,
-  currentUserAddress,
+  isListed,
+  isOwner,
+  canNavigate,
+  hasNext,
+  hasPrev,
+  currentIndex,
+  totalItems,
+  onNext,
+  onPrev,
   onBuyNow,
-  onPlaceBid
-}: FullscreenNFTViewerProps) => {
+  onPlaceBid,
+  mediaUrl,
+  mediaType,
+  coverImageUrl
+}) => {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageRef = useRef<HTMLImageElement | HTMLVideoElement>(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  
-  // Check if current user owns this NFT
-  const isOwner = currentUserAddress && ownerAddress === currentUserAddress;
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -67,15 +71,15 @@ export const FullscreenNFTViewer = ({
           onClose();
           break;
         case 'ArrowLeft':
-          if (canNavigate && onNavigate) {
+          if (canNavigate && onPrev && hasPrev) {
             e.preventDefault();
-            onNavigate('prev');
+            onPrev();
           }
           break;
         case 'ArrowRight':
-          if (canNavigate && onNavigate) {
+          if (canNavigate && onNext && hasNext) {
             e.preventDefault();
-            onNavigate('next');
+            onNext();
           }
           break;
       }
@@ -83,7 +87,7 @@ export const FullscreenNFTViewer = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, canNavigate, onNavigate, onClose]);
+  }, [isOpen, canNavigate, onNext, onPrev, hasNext, hasPrev, onClose]);
 
   // Handle touch gestures for mobile
   useEffect(() => {
@@ -91,7 +95,7 @@ export const FullscreenNFTViewer = ({
 
     let startX = 0;
     let startY = 0;
-    const threshold = 50; // minimum swipe distance
+    const threshold = 50;
 
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX;
@@ -104,14 +108,11 @@ export const FullscreenNFTViewer = ({
       const deltaX = endX - startX;
       const deltaY = endY - startY;
 
-      // Only handle horizontal swipes that are longer than vertical
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
-        if (canNavigate && onNavigate) {
-          if (deltaX > 0) {
-            onNavigate('prev');
-          } else {
-            onNavigate('next');
-          }
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold && canNavigate) {
+        if (deltaX > 0 && onPrev && hasPrev) {
+          onPrev();
+        } else if (deltaX < 0 && onNext && hasNext) {
+          onNext();
         }
       }
     };
@@ -124,7 +125,7 @@ export const FullscreenNFTViewer = ({
       overlay.removeEventListener('touchstart', handleTouchStart);
       overlay.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isOpen, canNavigate, onNavigate]);
+  }, [isOpen, canNavigate, onNext, onPrev, hasNext, hasPrev]);
 
   // Lock body scroll when fullscreen is open
   useEffect(() => {
@@ -163,6 +164,12 @@ export const FullscreenNFTViewer = ({
     }
   };
 
+  // Reset loading state when media changes
+  useEffect(() => {
+    setIsImageLoaded(false);
+    setImageError(false);
+  }, [nftImage, mediaUrl]);
+
   if (!isOpen) return null;
 
   return (
@@ -180,9 +187,17 @@ export const FullscreenNFTViewer = ({
               <Badge variant="secondary" className="text-xs">
                 NFT
               </Badge>
-              {editionInfo && (
+              {mediaType && (
                 <Badge variant="outline" className="text-xs text-white border-white/20">
-                  Edition {editionInfo}
+                  {mediaType.startsWith('video/') ? (
+                    <><Play className="w-3 h-3 mr-1" />Video</>
+                  ) : mediaType.startsWith('audio/') ? (
+                    <><Volume2 className="w-3 h-3 mr-1" />Audio</>
+                  ) : mediaType.includes('gltf') || mediaType.includes('glb') ? (
+                    <><Maximize2 className="w-3 h-3 mr-1" />3D</>
+                  ) : (
+                    'Media'
+                  )}
                 </Badge>
               )}
               <div>
@@ -221,16 +236,6 @@ export const FullscreenNFTViewer = ({
                   <DollarSign className="h-4 w-4 text-green-400" />
                   <div>
                     <p className="text-white font-semibold">{price.toFixed(4)} {currency}</p>
-                  </div>
-                </div>
-              )}
-              
-              {royaltyPercentage && (
-                <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-purple-400" />
-                  <div>
-                    <p className="text-white/70 text-xs">Royalty</p>
-                    <p className="text-white text-sm">{royaltyPercentage}%</p>
                   </div>
                 </div>
               )}
@@ -281,8 +286,9 @@ export const FullscreenNFTViewer = ({
               <Button
                 variant="ghost"
                 size="lg"
-                onClick={() => onNavigate?.('prev')}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12"
+                onClick={onPrev}
+                disabled={!hasPrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12 disabled:opacity-30"
               >
                 <ChevronLeft className="h-6 w-6" />
               </Button>
@@ -297,8 +303,9 @@ export const FullscreenNFTViewer = ({
               <Button
                 variant="ghost"
                 size="lg"
-                onClick={() => onNavigate?.('next')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12"
+                onClick={onNext}
+                disabled={!hasNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:text-violet-400 hover:bg-violet-500/10 active:bg-violet-500/20 active:scale-95 focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-150 h-12 w-12 disabled:opacity-30"
               >
                 <ChevronRight className="h-6 w-6" />
               </Button>
@@ -311,7 +318,7 @@ export const FullscreenNFTViewer = ({
       )}
 
       {/* Bottom Navigation Info */}
-      {canNavigate && (
+      {canNavigate && currentIndex && totalItems && (
         <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-4">
           <div className="text-center">
             <p className="text-white/70 text-sm">
@@ -324,32 +331,109 @@ export const FullscreenNFTViewer = ({
         </div>
       )}
 
-      {/* Main Image Container */}
+      {/* Media Container */}
       <div className="absolute inset-0 flex items-center justify-center p-4 pt-32 pb-20">
         <div className="relative w-full h-full flex items-center justify-center">
-          {!isImageLoaded && (
+          {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="bg-black/50 rounded-lg p-6">
+                <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-white text-sm">Loading media...</p>
+              </div>
             </div>
           )}
-          
-          <img
-            ref={imageRef}
-            src={nftImage}
-            alt={nftName}
-            className={`max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300 ${
-              isImageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            loading="eager"
-            onLoad={() => setIsImageLoaded(true)}
-            onError={() => setImageError(true)}
-          />
-          
+
+          {/* Render different media types */}
+          {mediaUrl && mediaType ? (
+            mediaType.startsWith('video/') ? (
+              <video
+                ref={imageRef as React.RefObject<HTMLVideoElement>}
+                src={mediaUrl}
+                poster={coverImageUrl || nftImage}
+                className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                  isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                controls
+                loop
+                playsInline
+                onLoadedData={() => setIsImageLoaded(true)}
+                onError={() => {
+                  console.error('Video load error');
+                  setImageError(true);
+                }}
+              />
+            ) : mediaType.startsWith('audio/') ? (
+              <div className="text-center">
+                {(coverImageUrl || nftImage) && (
+                  <img
+                    ref={imageRef as React.RefObject<HTMLImageElement>}
+                    src={coverImageUrl || nftImage}
+                    alt={nftName}
+                    className={`max-w-full max-h-[60vh] object-contain rounded-lg shadow-2xl mb-6 transition-opacity duration-300 ${
+                      isImageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => setIsImageLoaded(true)}
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                <audio controls className="w-full max-w-md">
+                  <source src={mediaUrl} type={mediaType} />
+                  Your browser does not support audio playback.
+                </audio>
+              </div>
+            ) : mediaType.includes('gltf') || mediaType.includes('glb') ? (
+              <div className="text-center">
+                {(coverImageUrl || nftImage) && (
+                  <img
+                    ref={imageRef as React.RefObject<HTMLImageElement>}
+                    src={coverImageUrl || nftImage}
+                    alt={nftName}
+                    className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                      isImageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => setIsImageLoaded(true)}
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                <div className="mt-4 text-white/80">
+                  <p className="text-lg font-medium">3D Model</p>
+                  <p className="text-sm">Interactive 3D viewer coming soon</p>
+                </div>
+              </div>
+            ) : (
+              // Fallback to image for unknown media types
+              <img
+                ref={imageRef as React.RefObject<HTMLImageElement>}
+                src={mediaUrl}
+                alt={nftName}
+                className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                  isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onLoad={() => setIsImageLoaded(true)}
+                onError={() => setImageError(true)}
+              />
+            )
+          ) : (
+            // Standard image display
+            <img
+              ref={imageRef as React.RefObject<HTMLImageElement>}
+              src={nftImage}
+              alt={nftName}
+              className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                isImageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setIsImageLoaded(true)}
+              onError={() => setImageError(true)}
+            />
+          )}
+
+          {/* Error State */}
           {imageError && (
             <div className="absolute inset-0 flex items-center justify-center text-white/70">
-              <div className="text-center">
+              <div className="text-center bg-black/50 rounded-lg p-6">
                 <Maximize2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>Image could not be loaded</p>
+                <p className="text-lg mb-2">Media not available</p>
+                <p className="text-sm text-gray-300">The media file could not be displayed</p>
               </div>
             </div>
           )}
