@@ -431,17 +431,17 @@ export const StandaloneMintWizard = () => {
               </p>
               
               <div className="flex items-start gap-4">
-                <div className="flex-1">
+                <div className="w-32">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ ...formData, cover_image_file: file });
                     }}
                     accept="image/*"
                     currentFile={formData.cover_image_file}
-                    placeholder="Click to upload cover image"
+                    placeholder="Click to upload"
                     aspectRatio={1}
-                    maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
-                    className="h-32"
+                    maxSizeText="Max 10MB"
+                    className="w-32 h-32"
                   />
                   
                   {selectedCollection && (
@@ -449,9 +449,9 @@ export const StandaloneMintWizard = () => {
                       variant="ghost"
                       size="sm"
                       onClick={handleUseCollectionCover}
-                      className="text-xs mt-2"
+                      className="text-xs mt-1 w-full"
                     >
-                      Use Collection Cover
+                      Use Collection
                     </Button>
                   )}
                 </div>
