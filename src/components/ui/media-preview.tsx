@@ -8,6 +8,7 @@ interface MediaPreviewProps {
   className?: string;
   aspectRatio?: number;
   showBadge?: boolean;
+  enablePlayback?: boolean;
 }
 
 export const MediaPreview: React.FC<MediaPreviewProps> = ({
@@ -15,7 +16,8 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
   previewUrl,
   className = '',
   aspectRatio = 1,
-  showBadge = true
+  showBadge = true,
+  enablePlayback = false
 }) => {
   const mediaType = file.type;
   const isImage = mediaType.startsWith('image/');
@@ -54,16 +56,19 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
           <video
             src={previewUrl}
             className="w-full h-full object-cover"
-            muted
+            muted={!enablePlayback}
             loop
             playsInline
-            controls={false}
+            controls={enablePlayback}
+            autoPlay={false}
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-            <div className="bg-white/90 rounded-full p-3">
-              <Play className="h-6 w-6 text-black" fill="currentColor" />
+          {!enablePlayback && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="bg-white/90 rounded-full p-3">
+                <Play className="h-6 w-6 text-black" fill="currentColor" />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

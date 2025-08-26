@@ -876,6 +876,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                       previewUrl={URL.createObjectURL(formData.media_file || formData.image_file!)}
                       className="w-full"
                       aspectRatio={1}
+                      enablePlayback={true}
                     />
                   </div>
                 )}
