@@ -4,10 +4,20 @@ import { Zap, Coins, Users, Layers, FileImage } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 export default function Mint() {
   const { connected } = useSolanaWallet();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const collectionParam = searchParams.get('collection');
+
+  // If there's a collection parameter, redirect directly to collection minting
+  useEffect(() => {
+    if (collectionParam && connected) {
+      navigate(`/mint/nft?collection=${collectionParam}`, { replace: true });
+    }
+  }, [collectionParam, connected, navigate]);
   return (
     <>
       <Helmet>
