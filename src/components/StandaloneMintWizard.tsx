@@ -299,7 +299,7 @@ export const StandaloneMintWizard = () => {
                 <p className="text-sm text-muted-foreground">
                   Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF). Preview will appear in Review step.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <FileUpload
                     onFileSelect={(file) => {
                       setFormData({ 
@@ -310,37 +310,43 @@ export const StandaloneMintWizard = () => {
                       });
                     }}
                     accept="image/*,video/mp4,video/webm,audio/mpeg,audio/wav,audio/m4a,audio/ogg,.glb,.gltf"
-                    placeholder="Click to upload media"
-                    maxSizeText="Images, Videos, Audio, 3D Models supported"
+                    placeholder="Upload Primary Media"
+                    maxSizeText="All media formats supported"
                     className="w-full"
-                    aspectRatio={1}
+                    aspectRatio={0.6}
                     currentFile={formData.media_file}
                     showPreview={false}
                   />
                   
-                  {/* Option to use collection avatar */}
-                  {selectedCollection?.image_url && !formData.media_file && (
-                    <div 
-                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary transition-colors group aspect-square flex flex-col items-center justify-center text-center space-y-2"
-                      onClick={() => {
-                        fetch(selectedCollection.image_url!)
-                          .then(response => response.blob())
-                          .then(blob => {
-                            const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
-                            setFormData({ ...formData, media_file: file, image_file: file });
-                            toast.success('Collection avatar loaded!');
-                          })
-                          .catch(() => toast.error('Failed to load collection avatar'));
-                      }}
-                    >
+                  {/* Option to use collection avatar - always show when collection is selected */}
+                  {selectedCollection?.image_url && (
+                    <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20">
                       <img
                         src={selectedCollection.image_url}
                         alt={selectedCollection.name}
-                        className="w-16 h-16 rounded-lg object-cover"
+                        className="w-12 h-12 rounded-lg object-cover"
                       />
-                      <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
-                        Use Collection Avatar
-                      </p>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Use Collection Avatar</p>
+                        <p className="text-xs text-muted-foreground">Use the collection's image as your NFT media</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={formData.media_file?.name?.includes(selectedCollection.name)}
+                        onClick={() => {
+                          fetch(selectedCollection.image_url!)
+                            .then(response => response.blob())
+                            .then(blob => {
+                              const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
+                              setFormData({ ...formData, media_file: file, image_file: file });
+                              toast.success('Collection avatar loaded!');
+                            })
+                            .catch(() => toast.error('Failed to load collection avatar'));
+                        }}
+                      >
+                        {formData.media_file?.name?.includes(selectedCollection.name) ? 'Using' : 'Use'}
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -359,18 +365,52 @@ export const StandaloneMintWizard = () => {
                   <p className="text-sm text-muted-foreground">
                     Add a cover image to improve how your NFT appears in galleries and marketplaces. Preview will appear in Review step.
                   </p>
-                  <FileUpload
-                    onFileSelect={(file) => {
-                      setFormData({ ...formData, cover_image_file: file || undefined });
-                    }}
-                    accept="image/*"
-                    placeholder="Click to upload cover image"
-                    maxSizeText="JPEG, PNG recommended"
-                    className="w-full max-w-md"
-                    aspectRatio={1}
-                    currentFile={formData.cover_image_file}
-                    showPreview={false}
-                  />
+                  <div className="space-y-4">
+                    <FileUpload
+                      onFileSelect={(file) => {
+                        setFormData({ ...formData, cover_image_file: file || undefined });
+                      }}
+                      accept="image/*"
+                      placeholder="Upload Cover Image"
+                      maxSizeText="JPEG, PNG recommended"
+                      className="w-full max-w-md"
+                      aspectRatio={1}
+                      currentFile={formData.cover_image_file}
+                      showPreview={false}
+                    />
+                    
+                    {/* Option to use collection avatar as cover */}
+                    {selectedCollection?.image_url && (
+                      <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20 max-w-md">
+                        <img
+                          src={selectedCollection.image_url}
+                          alt={selectedCollection.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Use Collection Cover</p>
+                          <p className="text-xs text-muted-foreground">Use collection image as cover</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={formData.cover_image_file?.name?.includes(selectedCollection.name)}
+                          onClick={() => {
+                            fetch(selectedCollection.image_url!)
+                              .then(response => response.blob())
+                              .then(blob => {
+                                const file = new File([blob], `${selectedCollection.name}-cover.png`, { type: blob.type });
+                                setFormData({ ...formData, cover_image_file: file });
+                                toast.success('Collection cover loaded!');
+                              })
+                              .catch(() => toast.error('Failed to load collection cover'));
+                          }}
+                        >
+                          {formData.cover_image_file?.name?.includes(selectedCollection.name) ? 'Using' : 'Use'}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 

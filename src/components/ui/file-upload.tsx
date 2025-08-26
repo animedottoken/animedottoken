@@ -137,7 +137,7 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                   <div className="space-y-3">
                     <div className="flex items-center justify-center gap-2">
                       <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">
+                      <span className="text-sm font-medium text-muted-foreground truncate max-w-[200px]">
                         {currentFile?.name || 'File selected'}
                       </span>
                     </div>
@@ -169,13 +169,25 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           ) : (
             <div className="flex h-full w-full items-center justify-center text-center">
               <div>
-                <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-2 group-hover:text-primary transition-colors" />
-                <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
-                  {placeholder}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {maxSizeText}
-                </p>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-auto flex-col gap-2 p-6 hover:border-primary transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClick();
+                  }}
+                >
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">
+                      {placeholder}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {maxSizeText}
+                    </p>
+                  </div>
+                </Button>
               </div>
             </div>
           )}
