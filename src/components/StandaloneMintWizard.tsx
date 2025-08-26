@@ -32,6 +32,11 @@ export const StandaloneMintWizard = () => {
   const isCollectionLocked = Boolean(collectionId);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(collectionId);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
   const [formData, setFormData] = useState<StandaloneNFTData>({
     name: '',
     symbol: 'NFT',
@@ -434,7 +439,13 @@ export const StandaloneMintWizard = () => {
               <div className="ml-auto flex items-center gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => isCollectionLocked && selectedCollectionId ? navigate(`/collection/${selectedCollectionId}`) : navigate(-1)}
+                  onClick={() => {
+                    if (isCollectionLocked && collectionId) {
+                      navigate(`/collection/${collectionId}`);
+                    } else {
+                      navigate(-1);
+                    }
+                  }}
                 >
                   Cancel
                 </Button>
