@@ -70,7 +70,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
   const [priceInput, setPriceInput] = useState('');
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, connect, connecting } = useSolanaWallet();
   const { collections, loading: collectionsLoading } = useCollections({ autoLoad: true });
   const { collection: selectedCollection } = useCollection(selectedCollectionId || '');
 
@@ -980,26 +980,42 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
-              <Button 
-                onClick={handleMint} 
-                disabled={minting || !publicKey}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[140px]"
-                size="lg"
-              >
-                {minting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
-                    Minting...
-                  </>
-                ) : !publicKey ? (
-                  'Connect Wallet'
-                ) : (
-                  <>
-                    🎨 Mint {(formData.quantity || 1) > 1 ? `${formData.quantity} NFTs` : 'NFT'}
-                    <CheckCircle className="ml-2 h-4 w-4" />
-                  </>
+              <div className="flex flex-col items-end gap-2">
+                <Button 
+                  onClick={!publicKey ? () => connect() : handleMint} 
+                  disabled={minting || connecting}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[140px]"
+                  size="lg"
+                >
+                  {minting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
+                      Minting...
+                    </>
+                  ) : connecting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent mr-2"></div>
+                      Connecting...
+                    </>
+                  ) : !publicKey ? (
+                    'Connect Wallet'
+                  ) : (
+                    <>
+                      🎨 Mint {(formData.quantity || 1) > 1 ? `${formData.quantity} NFTs` : 'NFT'}
+                      <CheckCircle className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+                {!publicKey && (
+                  <button 
+                    onClick={() => connect()}
+                    disabled={connecting}
+                    className="text-xs text-primary hover:text-primary/80 underline"
+                  >
+                    {connecting ? 'Connecting...' : 'Connect now'}
+                  </button>
                 )}
-              </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
