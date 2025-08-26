@@ -29,6 +29,7 @@ export const StandaloneMintWizard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const collectionId = searchParams.get('collection');
+  const isCollectionLocked = Boolean(collectionId);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(collectionId);
   const [formData, setFormData] = useState<StandaloneNFTData>({
@@ -84,6 +85,9 @@ export const StandaloneMintWizard = () => {
   }, [selectedCollectionId, selectedCollection]);
 
   const handleCollectionChange = (value: string) => {
+    // Don't allow changes if collection is locked
+    if (isCollectionLocked) return;
+    
     if (value === 'create-new') {
       navigate('/mint/collection');
       return;
@@ -97,6 +101,11 @@ export const StandaloneMintWizard = () => {
     } else {
       setSearchParams({ collection: value });
     }
+  };
+
+  const handleUnlockCollection = () => {
+    setSearchParams({});
+    setSelectedCollectionId(null);
   };
 
   const handleNext = () => {
@@ -173,36 +182,64 @@ export const StandaloneMintWizard = () => {
         <CardContent className="pt-6">
           <div className="space-y-3">
             <Label className="text-base font-medium">Collection</Label>
-            <Select
-              value={selectedCollectionId || 'none'}
-              onValueChange={handleCollectionChange}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select collection or create new" />
-              </SelectTrigger>
-              <SelectContent className="z-50 bg-background shadow-md">
-                <SelectItem value="none">No Collection (Standalone NFT)</SelectItem>
-                <SelectItem value="create-new">
-                  <div className="flex items-center gap-2 text-primary font-medium">
-                    <span>+ Create a new collection</span>
+            
+            {isCollectionLocked && selectedCollection ? (
+              <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+                <div className="flex items-center gap-3">
+                  {selectedCollection.image_url && (
+                    <img 
+                      src={selectedCollection.image_url} 
+                      alt={selectedCollection.name}
+                      className="w-6 h-6 rounded object-cover"
+                    />
+                  )}
+                  <div>
+                    <p className="text-sm text-muted-foreground">Minting into:</p>
+                    <p className="font-medium">{selectedCollection.name} (Locked)</p>
                   </div>
-                </SelectItem>
-                {collections?.map((collection) => (
-                  <SelectItem key={collection.id} value={collection.id}>
-                    <div className="flex items-center gap-2">
-                      {collection.image_url && (
-                        <img 
-                          src={collection.image_url} 
-                          alt={collection.name}
-                          className="w-4 h-4 rounded object-cover"
-                        />
-                      )}
-                      <span>{collection.name}</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleUnlockCollection}
+                  className="text-primary hover:text-primary/80"
+                >
+                  Change
+                </Button>
+              </div>
+            ) : (
+              <Select
+                value={selectedCollectionId || 'none'}
+                onValueChange={handleCollectionChange}
+                disabled={isCollectionLocked}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select collection or create new" />
+                </SelectTrigger>
+                <SelectContent className="z-50 bg-background shadow-md">
+                  <SelectItem value="none">No Collection (Standalone NFT)</SelectItem>
+                  <SelectItem value="create-new">
+                    <div className="flex items-center gap-2 text-primary font-medium">
+                      <span>+ Create a new collection</span>
                     </div>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  {collections?.map((collection) => (
+                    <SelectItem key={collection.id} value={collection.id}>
+                      <div className="flex items-center gap-2">
+                        {collection.image_url && (
+                          <img 
+                            src={collection.image_url} 
+                            alt={collection.name}
+                            className="w-4 h-4 rounded object-cover"
+                          />
+                        )}
+                        <span>{collection.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             {selectedCollection && currentStep === 1 && (
               <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
                 {selectedCollection.image_url && (
@@ -397,7 +434,7 @@ export const StandaloneMintWizard = () => {
               <div className="ml-auto flex items-center gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => selectedCollectionId ? navigate(`/collection/${selectedCollectionId}`) : navigate(-1)}
+                  onClick={() => isCollectionLocked && selectedCollectionId ? navigate(`/collection/${selectedCollectionId}`) : navigate(-1)}
                 >
                   Cancel
                 </Button>
