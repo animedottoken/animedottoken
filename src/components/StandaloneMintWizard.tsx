@@ -850,7 +850,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
+                Back to artwork
               </Button>
               <Button 
                 onClick={handleNext} 
@@ -978,7 +978,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={handleBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
+                Back to details
               </Button>
               <div className="flex flex-col items-end gap-2">
                 <Button 

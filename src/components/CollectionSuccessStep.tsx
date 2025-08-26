@@ -181,44 +181,49 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isOffChain && (
-                <div className="flex flex-col items-center gap-2">
-                  <Button 
-                    onClick={!publicKey ? () => connect() : () => {
-                      setFeeError(null);
-                      fetchMintFee();
-                      setShowMintConfirm(true);
-                    }}
-                    disabled={isMintingOnChain || connecting}
-                    className="w-full"
-                    variant="default"
-                  >
-                    <Zap className="mr-2 h-4 w-4" />
-                    {connecting ? 'Connecting...' : isMintingOnChain ? 'Minting On-Chain...' : !publicKey ? 'Connect Wallet' : 'Mint On-Chain Now'}
-                  </Button>
-                  {!publicKey && (
-                    <button 
-                      onClick={() => connect()}
-                      disabled={connecting}
-                      className="text-xs text-primary hover:text-primary/80 underline"
-                    >
-                      {connecting ? 'Connecting...' : 'Connect now'}
-                    </button>
-                  )}
-                </div>
-              )}
+              {/* Primary CTAs */}
               <Button 
                 onClick={() => navigate(`/mint/nft?collection=${collection?.id}`)}
                 className="w-full"
+                size="lg"
               >
-                🎨 Mint your NFT from this collection
+                🎨 Mint your first NFT
               </Button>
-              <Button variant="outline" onClick={onCreateAnother} className="w-full">
-                Create Another Collection
+              
+              <Button 
+                variant="outline" 
+                onClick={onCreateAnother} 
+                className="w-full"
+                size="lg"
+              >
+                Create another collection
               </Button>
-              <Button variant="secondary" onClick={handleGoToProfile} className="w-full">
-                Go to Profile
-              </Button>
+
+              {/* Secondary actions */}
+              <div className="pt-2 space-y-2 text-center">
+                {isOffChain && (
+                  <div className="text-sm text-muted-foreground">
+                    Want to make this official? 
+                    <button 
+                      onClick={!publicKey ? () => connect() : () => {
+                        setFeeError(null);
+                        fetchMintFee();
+                        setShowMintConfirm(true);
+                      }}
+                      disabled={isMintingOnChain || connecting}
+                      className="text-primary hover:text-primary/80 underline ml-1"
+                    >
+                      {connecting ? 'Connecting...' : isMintingOnChain ? 'Minting...' : !publicKey ? 'Connect & mint on-chain' : 'Mint on-chain'}
+                    </button>
+                  </div>
+                )}
+                
+                <div className="text-sm">
+                  <Button variant="ghost" size="sm" onClick={handleGoToProfile}>
+                    Go to profile
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

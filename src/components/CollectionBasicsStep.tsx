@@ -11,7 +11,7 @@ import { PropertiesEditor, Property } from '@/components/PropertiesEditor';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Palette, Users, Infinity, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Palette, Users, Infinity, Calendar as CalendarIcon } from 'lucide-react';
 
 interface FormData {
   name: string;
@@ -310,7 +310,10 @@ export const CollectionBasicsStep: React.FC<CollectionBasicsStepProps> = ({
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between gap-3 pt-6">
-          <div></div>
+          <Button variant="outline" onClick={() => window.history.length > 1 ? window.history.back() : window.location.href = '/mint'} className="w-full sm:w-auto">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to mint options
+          </Button>
           <Button onClick={onNext} disabled={!formData.name.trim()} className="w-full sm:w-auto">
             Next: Upload Images
             <ArrowRight className="ml-2 h-4 w-4" />
