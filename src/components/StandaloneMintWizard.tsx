@@ -110,9 +110,15 @@ export const StandaloneMintWizard = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && !formData.media_file && !formData.image_file) {
-      toast.error('Please upload media first');
-      return;
+    if (currentStep === 1) {
+      if (!formData.media_file && !formData.image_file) {
+        toast.error('Please upload primary media first');
+        return;
+      }
+      if (!formData.cover_image_file) {
+        toast.error('Please upload a cover image');
+        return;
+      }
     }
     // Allow empty name for automatic numbering when collection is selected
     if (currentStep === 2 && !formData.name.trim() && !selectedCollection) {
@@ -419,39 +425,34 @@ export const StandaloneMintWizard = () => {
 
             {/* Cover Image Upload */}
             <div className="space-y-3">
-              <Label className="text-base font-medium">Cover Image</Label>
+              <Label className="text-base font-medium">Cover Image *</Label>
               <p className="text-sm text-muted-foreground">
-                Optional thumbnail for marketplace display. If not provided, the primary media or collection image will be used.
+                Required thumbnail for marketplace display. This will appear in galleries and collections.
               </p>
               
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      onClick={() => document.getElementById('cover-upload')?.click()}
-                      className="gap-2"
-                    >
-                      <ImageIcon className="h-4 w-4" />
-                      {formData.cover_image_file ? 'Change Cover' : 'Upload Cover'}
-                    </Button>
-                    
-                    {selectedCollection && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleUseCollectionCover}
-                        className="text-xs"
-                      >
-                        Use Collection Cover
-                      </Button>
-                    )}
-                  </div>
+                  <FileUpload
+                    onFileSelect={(file) => {
+                      setFormData({ ...formData, cover_image_file: file });
+                    }}
+                    accept="image/*"
+                    currentFile={formData.cover_image_file}
+                    placeholder="Click to upload cover image"
+                    aspectRatio={1}
+                    maxSizeText="JPG, PNG, GIF, WEBP • Max 10MB"
+                    className="h-32"
+                  />
                   
-                  {formData.cover_image_file && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Selected: {formData.cover_image_file.name}
-                    </p>
+                  {selectedCollection && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleUseCollectionCover}
+                      className="text-xs mt-2"
+                    >
+                      Use Collection Cover
+                    </Button>
                   )}
                 </div>
                 
@@ -484,8 +485,8 @@ export const StandaloneMintWizard = () => {
                       Primary media uploaded
                     </div>
                     <div className="flex items-center gap-2">
-                      {formData.cover_image_file || getOnChainPreviewUrl() ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3" />}
-                      Cover image set (or will use media/collection)
+                      {formData.cover_image_file ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3" />}
+                      Cover image uploaded
                     </div>
                   </div>
                 </div>
@@ -533,7 +534,7 @@ export const StandaloneMintWizard = () => {
                 </Button>
                 <Button
                   onClick={handleNext}
-                  disabled={!formData.media_file && !formData.image_file}
+                  disabled={!formData.media_file || !formData.cover_image_file}
                 >
                   Next: Details
                   <ArrowRight className="ml-2 h-4 w-4" />
