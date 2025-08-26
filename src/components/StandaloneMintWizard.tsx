@@ -328,14 +328,6 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
         </CardContent>
       </Card>
 
-      {/* Collection Info Banner */}
-      {selectedCollection && currentStep === 1 && (
-        <CollectionInfoBanner 
-          collection={selectedCollection} 
-          className="mb-6"
-        />
-      )}
-
       {/* Progress Steps */}
       <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
         <div className="flex items-center">
@@ -367,6 +359,14 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
           </p>
         </div>
       </div>
+
+      {/* Collection Info Banner - Show in Steps 1, 2, and 3 */}
+      {selectedCollection && currentStep <= 3 && (
+        <CollectionInfoBanner 
+          collection={selectedCollection} 
+          className="mb-6"
+        />
+      )}
 
       {/* Step 1: Upload Media */}
       {currentStep === 1 && (
