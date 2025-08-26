@@ -947,6 +947,12 @@ export type Database = {
           transaction_signature_masked: string
         }[]
       }
+      get_marketplace_fees_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          platform_fee_percentage: number
+        }[]
+      }
       get_marketplace_info_public: {
         Args: Record<PropertyKey, never>
         Returns: {
