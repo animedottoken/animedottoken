@@ -333,7 +333,10 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
 
       {/* Media Container */}
       <div className="absolute inset-0 flex items-center justify-center p-2 pt-24 pb-16">
-        <div className="relative w-full h-full flex items-center justify-center max-w-[95vw] max-h-[95vh]">
+        <div className="relative flex items-center justify-center" style={{ 
+          width: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6), 
+          height: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6) 
+        }}>
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-black/50 rounded-lg p-6">

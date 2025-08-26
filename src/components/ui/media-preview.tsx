@@ -9,6 +9,7 @@ interface MediaPreviewProps {
   aspectRatio?: number;
   showBadge?: boolean;
   enablePlayback?: boolean;
+  fit?: 'cover' | 'contain';
 }
 
 export const MediaPreview: React.FC<MediaPreviewProps> = ({
@@ -17,7 +18,8 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
   className = '',
   aspectRatio = 1,
   showBadge = true,
-  enablePlayback = false
+  enablePlayback = false,
+  fit = 'cover'
 }) => {
   const mediaType = file.type;
   const isImage = mediaType.startsWith('image/');
@@ -47,7 +49,7 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
         <img
           src={previewUrl}
           alt="Media preview"
-          className="w-full h-full object-cover"
+          className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
         />
       )}
 
@@ -55,7 +57,7 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
         <div className="relative w-full h-full bg-black rounded-lg overflow-hidden">
           <video
             src={previewUrl}
-            className="w-full h-full object-cover"
+            className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
             muted={!enablePlayback}
             loop
             playsInline

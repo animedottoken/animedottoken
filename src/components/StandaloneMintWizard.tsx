@@ -885,13 +885,14 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 {/* Media Preview */}
                 {(formData.media_file || formData.image_file) && (
                   <div className="w-full max-w-sm rounded-xl overflow-hidden bg-muted border-2 border-border">
-                    <MediaPreview
-                      file={formData.media_file || formData.image_file!}
-                      previewUrl={URL.createObjectURL(formData.media_file || formData.image_file!)}
-                      className="w-full"
-                      aspectRatio={1}
-                      enablePlayback={true}
-                    />
+                     <MediaPreview
+                       file={formData.media_file || formData.image_file!}
+                       previewUrl={URL.createObjectURL(formData.media_file || formData.image_file!)}
+                       className="w-full"
+                       aspectRatio={1}
+                       enablePlayback={true}
+                       fit="contain"
+                     />
                   </div>
                 )}
                 
