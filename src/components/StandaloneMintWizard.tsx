@@ -10,7 +10,7 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, Image as ImageIcon, X } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, Image as ImageIcon, X, Circle } from 'lucide-react';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
@@ -176,6 +176,77 @@ export const StandaloneMintWizard = () => {
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
   };
 
+  // Helper functions for preview URLs
+  const getOnChainPreviewUrl = (): string | null => {
+    if (formData.media_file && formData.media_file.type.startsWith('image/')) {
+      return URL.createObjectURL(formData.media_file);
+    }
+    if (formData.cover_image_file) {
+      return URL.createObjectURL(formData.cover_image_file);
+    }
+    if (selectedCollection?.image_url) {
+      return selectedCollection.image_url;
+    }
+    return null;
+  };
+
+  const getMarketplacePreviewUrl = (): string | null => {
+    if (formData.cover_image_file) {
+      return URL.createObjectURL(formData.cover_image_file);
+    }
+    if (formData.media_file && formData.media_file.type.startsWith('image/')) {
+      return URL.createObjectURL(formData.media_file);
+    }
+    if (selectedCollection?.image_url) {
+      return selectedCollection.image_url;
+    }
+    return null;
+  };
+
+  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ 
+        ...formData, 
+        media_file: file,
+        image_file: file.type.startsWith('image/') ? file : formData.image_file
+      });
+    }
+  };
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, cover_image_file: file });
+    }
+  };
+
+  const handleUseCollectionAvatar = () => {
+    if (selectedCollection?.image_url) {
+      fetch(selectedCollection.image_url)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
+          setFormData({ ...formData, media_file: file, image_file: file });
+          toast.success('Collection avatar loaded!');
+        })
+        .catch(() => toast.error('Failed to load collection avatar'));
+    }
+  };
+
+  const handleUseCollectionCover = () => {
+    if (selectedCollection?.image_url) {
+      fetch(selectedCollection.image_url)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], `${selectedCollection.name}-cover.png`, { type: blob.type });
+          setFormData({ ...formData, cover_image_file: file });
+          toast.success('Collection cover loaded!');
+        })
+        .catch(() => toast.error('Failed to load collection cover'));
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Collection Selector */}
@@ -286,202 +357,167 @@ export const StandaloneMintWizard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Upload Your NFT Media
+              Upload Artwork
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-6">
-              {/* Primary Media Upload */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">
-                  Primary Media *
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Upload your main NFT content. Supported formats: Images (PNG, JPEG, GIF), Videos (MP4, WebM), Audio (MP3, WAV, M4A, OGG), 3D Models (GLB, GLTF). Preview will appear in Review step.
-                </p>
-                <div className="space-y-4">
-                  {/* Simple Upload Button */}
-                  <div className="text-center">
+            {/* Primary Media Upload */}
+            <div className="space-y-3">
+              <Label className="text-base font-medium">Primary Media *</Label>
+              <p className="text-sm text-muted-foreground">
+                This is the main file that will be stored on-chain. Supports images, videos, audio, and 3D models.
+              </p>
+              
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
-                      size="lg"
-                      className="h-12 px-8"
-                      onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*,video/mp4,video/webm,audio/mpeg,audio/wav,audio/m4a,audio/ogg,.glb,.gltf';
-                        input.onchange = (e) => {
-                          const file = (e.target as HTMLInputElement).files?.[0];
-                          if (file) {
-                            setFormData({ 
-                              ...formData, 
-                              media_file: file,
-                              image_file: file.type.startsWith('image/') ? file : formData.image_file
-                            });
-                          }
-                        };
-                        input.click();
-                      }}
+                      onClick={() => document.getElementById('media-upload')?.click()}
+                      className="gap-2"
                     >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Primary Media
+                      <Upload className="h-4 w-4" />
+                      {formData.media_file ? 'Change Media' : 'Upload Media'}
                     </Button>
                     
-                    {formData.media_file && (
-                      <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                        <ImageIcon className="h-4 w-4" />
-                        <span className="truncate max-w-[200px]">{formData.media_file.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFormData({ ...formData, media_file: undefined, image_file: formData.image_file?.type.startsWith('image/') ? undefined : formData.image_file })}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
+                    {selectedCollection && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleUseCollectionAvatar}
+                        className="text-xs"
+                      >
+                        Use Collection Avatar
+                      </Button>
                     )}
                   </div>
                   
-                  {/* Option to use collection avatar - always show when collection is selected */}
-                  {selectedCollection?.image_url && (
-                    <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20">
-                      <img
-                        src={selectedCollection.image_url}
-                        alt={selectedCollection.name}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Use Collection Avatar</p>
-                        <p className="text-xs text-muted-foreground">Use the collection's image as your NFT media</p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={formData.media_file?.name?.includes(selectedCollection.name)}
-                        onClick={() => {
-                          fetch(selectedCollection.image_url!)
-                            .then(response => response.blob())
-                            .then(blob => {
-                              const file = new File([blob], `${selectedCollection.name}-avatar.png`, { type: blob.type });
-                              setFormData({ ...formData, media_file: file, image_file: file });
-                              toast.success('Collection avatar loaded!');
-                            })
-                            .catch(() => toast.error('Failed to load collection avatar'));
-                        }}
-                      >
-                        {formData.media_file?.name?.includes(selectedCollection.name) ? 'Using' : 'Use'}
-                      </Button>
-                    </div>
+                  {formData.media_file && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Selected: {formData.media_file.name}
+                    </p>
                   )}
                 </div>
-              </div>
-
-              {/* Cover Image Upload for Video/Audio */}
-              {formData.media_file && 
-               (formData.media_file.type.startsWith('video/') || 
-                formData.media_file.type.startsWith('audio/') ||
-                formData.media_file.name.toLowerCase().endsWith('.glb') ||
-                formData.media_file.name.toLowerCase().endsWith('.gltf')) && (
-                <div className="space-y-3">
-                  <Label className="text-base font-medium">
-                    Cover Image (Required for video/audio/3D)
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    Add a cover image to improve how your NFT appears in galleries and marketplaces. Preview will appear in Review step.
-                  </p>
-                  <div className="space-y-4">
-                    {/* Simple Upload Button */}
-                    <div className="text-center">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="h-12 px-8"
-                        onClick={() => {
-                          const input = document.createElement('input');
-                          input.type = 'file';
-                          input.accept = 'image/*';
-                          input.onchange = (e) => {
-                            const file = (e.target as HTMLInputElement).files?.[0];
-                            if (file) {
-                              setFormData({ ...formData, cover_image_file: file });
-                            }
-                          };
-                          input.click();
-                        }}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Cover Image
-                      </Button>
-                      
-                      {formData.cover_image_file && (
-                        <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                          <ImageIcon className="h-4 w-4" />
-                          <span className="truncate max-w-[200px]">{formData.cover_image_file.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setFormData({ ...formData, cover_image_file: undefined })}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Option to use collection avatar as cover */}
-                    {selectedCollection?.image_url && (
-                      <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20">
-                        <img
-                          src={selectedCollection.image_url}
-                          alt={selectedCollection.name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Use Collection Cover</p>
-                          <p className="text-xs text-muted-foreground">Use collection image as cover</p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={formData.cover_image_file?.name?.includes(selectedCollection.name)}
-                          onClick={() => {
-                            fetch(selectedCollection.image_url!)
-                              .then(response => response.blob())
-                              .then(blob => {
-                                const file = new File([blob], `${selectedCollection.name}-cover.png`, { type: blob.type });
-                                setFormData({ ...formData, cover_image_file: file });
-                                toast.success('Collection cover loaded!');
-                              })
-                              .catch(() => toast.error('Failed to load collection cover'));
-                          }}
-                        >
-                          {formData.cover_image_file?.name?.includes(selectedCollection.name) ? 'Using' : 'Use'}
-                        </Button>
-                      </div>
+                
+                {/* On-chain Preview Thumbnail */}
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                    {getOnChainPreviewUrl() ? (
+                      <img 
+                        src={getOnChainPreviewUrl()!} 
+                        alt="On-chain preview" 
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    ) : (
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
                     )}
                   </div>
+                  <p className="text-xs text-muted-foreground text-center mt-1">On-chain</p>
                 </div>
-              )}
-
-              {/* Helpful tips */}
-              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
-                <h4 className="font-medium text-sm mb-2">💡 Tips for best results:</h4>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• <strong>Images & GIFs:</strong> Will display directly and animate where supported</li>
-                  <li>• <strong>Videos:</strong> Will show with play controls - <strong>cover image required</strong></li>
-                  <li>• <strong>Audio:</strong> Will display with audio player - <strong>cover image required</strong></li>
-                  <li>• <strong>3D Models:</strong> GLB/GLTF format supported - <strong>cover image required</strong></li>
-                  <li>• <strong>No real funds:</strong> This is a simulation for demonstration only</li>
-                </ul>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              {/* Cover required warning */}
-              {(formData.media_file && !formData.media_file.type.startsWith('image/') && !formData.cover_image_file) && (
-                <p className="text-xs text-destructive">Cover image is required for video, audio, or 3D media.</p>
-              )}
+            {/* Cover Image Upload */}
+            <div className="space-y-3">
+              <Label className="text-base font-medium">Cover Image</Label>
+              <p className="text-sm text-muted-foreground">
+                Optional thumbnail for marketplace display. If not provided, the primary media or collection image will be used.
+              </p>
+              
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      onClick={() => document.getElementById('cover-upload')?.click()}
+                      className="gap-2"
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                      {formData.cover_image_file ? 'Change Cover' : 'Upload Cover'}
+                    </Button>
+                    
+                    {selectedCollection && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleUseCollectionCover}
+                        className="text-xs"
+                      >
+                        Use Collection Cover
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {formData.cover_image_file && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Selected: {formData.cover_image_file.name}
+                    </p>
+                  )}
+                </div>
+                
+                {/* Marketplace Preview Thumbnail */}
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/30">
+                    {getMarketplacePreviewUrl() ? (
+                      <img 
+                        src={getMarketplacePreviewUrl()!} 
+                        alt="Marketplace preview" 
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    ) : (
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center mt-1">Marketplace</p>
+                </div>
+              </div>
+            </div>
 
+            {/* Quick Actions & Status */}
+            <div className="bg-muted/50 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm mb-2">Quick Checklist</h4>
+                  <div className="space-y-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      {formData.media_file ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3" />}
+                      Primary media uploaded
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {formData.cover_image_file || getOnChainPreviewUrl() ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Circle className="h-3 w-3" />}
+                      Cover image set (or will use media/collection)
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentStep(3)}
+                  disabled={!formData.media_file}
+                  className="text-xs"
+                >
+                  View Large Preview →
+                </Button>
+              </div>
+            </div>
+
+            {/* Hidden file inputs */}
+            <input
+              id="media-upload"
+              type="file"
+              accept="image/*,video/*,audio/*,.glb,.gltf,.obj,.fbx"
+              onChange={handleMediaUpload}
+              className="hidden"
+            />
+            <input
+              id="cover-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleCoverUpload}
+              className="hidden"
+            />
+
+            <div className="flex items-center justify-between pt-4">
               <div className="ml-auto flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -497,8 +533,7 @@ export const StandaloneMintWizard = () => {
                 </Button>
                 <Button
                   onClick={handleNext}
-                  disabled={(!formData.media_file && !formData.image_file) ||
-                    (formData.media_file && !formData.media_file.type.startsWith('image/') && !formData.cover_image_file)}
+                  disabled={!formData.media_file && !formData.image_file}
                 >
                   Next: Details
                   <ArrowRight className="ml-2 h-4 w-4" />
