@@ -26,15 +26,17 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     try {
       setLoading(true);
       
-      // Load stats from the creators_public_stats view
-      const { data: statsData, error } = await supabase
-        .from('creators_public_stats')
-        .select('wallet_address, follower_count, nft_likes_count, collection_likes_count, total_likes_count')
-        .in('wallet_address', walletAddresses);
+      // Load stats using the secure RPC function
+      const { data: statsData, error } = await supabase.rpc('get_creators_public_stats');
 
       if (error) throw error;
 
-      const statsMap = (statsData || []).reduce((acc, stat) => ({
+      // Filter by requested wallet addresses and create map
+      const filteredStats = (statsData || []).filter(stat => 
+        walletAddresses.includes(stat.wallet_address)
+      );
+      
+      const statsMap = filteredStats.reduce((acc, stat) => ({
         ...acc,
         [stat.wallet_address]: {
           follower_count: stat.follower_count || 0,

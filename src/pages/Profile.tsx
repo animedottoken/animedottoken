@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User, Trash2, Eye, Plus } from 'lucide-react';
 import { ImageLazyLoad } from '@/components/ImageLazyLoad';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
-import { ExportTradingDataButton } from '@/components/ExportTradingDataButton';
+
 import { useGamifiedProfile } from "@/hooks/useGamifiedProfile";
 import { useUserNFTs } from "@/hooks/useUserNFTs";
 import { useRealtimeCreatorStats } from "@/hooks/useRealtimeCreatorStats";
@@ -339,7 +339,6 @@ export default function Profile() {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Profile</h1>
         <div className="flex items-center gap-3">
-          <ExportTradingDataButton variant="outline" size="sm" />
           <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
         </div>
       </div>

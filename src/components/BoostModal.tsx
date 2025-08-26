@@ -210,7 +210,7 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
                           <div>
                             <p className="font-medium text-sm">{bid.nft_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {bid.bidder_wallet.slice(0, 4)}...{bid.bidder_wallet.slice(-4)}
+                              {bid.bidder_wallet_masked}
                             </p>
                           </div>
                         </div>

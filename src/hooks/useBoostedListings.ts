@@ -8,14 +8,14 @@ interface BoostedListing {
   nft_id: string;
   bid_amount: number;
   token_mint: string;
-  bidder_wallet: string;
+  bidder_wallet_masked: string;
   tx_signature: string;
   start_time: string;
   end_time: string;
   is_active: boolean;
   nft_name: string;
   nft_image_url: string;
-  owner_address: string;
+  owner_address_masked: string;
   bid_rank: number;
   tier: 'god' | 'top' | 'boosted';
 }
@@ -30,23 +30,19 @@ export const useBoostedListings = () => {
   const loadBoostedListings = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('boosted_leaderboard')
-        .select('*')
-        .order('bid_rank', { ascending: true });
+      
+      // Use the secure RPC function for boosted listings
+      const { data, error } = await supabase.rpc('get_boosted_listings_public');
 
       if (error) {
         console.error('Error loading boosted listings:', error);
         return;
       }
 
-      // Transform the data to ensure tier property matches our interface
-      const transformedData = (data || []).map(item => ({
+      setBoostedListings((data || []).map((item: any) => ({
         ...item,
-        tier: item.tier as 'god' | 'top' | 'boosted' // Type assertion to fix the type mismatch
-      }));
-
-      setBoostedListings(transformedData);
+        tier: item.tier as 'god' | 'top' | 'boosted'
+      })));
     } catch (error) {
       console.error('Error loading boosted listings:', error);
     } finally {
