@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -1037,28 +1037,32 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 
                 {/* View Your NFTs */}
                 <Button
-                  onClick={() => navigate('/profile?tab=nfts')}
+                  asChild
                   className="flex items-center justify-center gap-2 h-auto p-4"
                   variant="default"
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">📂</div>
-                    <div className="font-medium">View My NFTs</div>
-                    <div className="text-xs opacity-80">See all your created NFTs</div>
-                  </div>
+                  <Link to="/profile?tab=nfts">
+                    <div className="text-center">
+                      <div className="text-lg mb-1">📂</div>
+                      <div className="font-medium">View My NFTs</div>
+                      <div className="text-xs opacity-80">See all your created NFTs</div>
+                    </div>
+                  </Link>
                 </Button>
 
                 {/* Create Collection */}
                 <Button
-                  onClick={() => navigate('/mint/collection')}
+                  asChild
                   className="flex items-center justify-center gap-2 h-auto p-4"
                   variant="outline"
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">🎨</div>
-                    <div className="font-medium">Create Collection</div>
-                    <div className="text-xs opacity-80">Organize NFTs in collections</div>
-                  </div>
+                  <Link to="/mint/collection">
+                    <div className="text-center">
+                      <div className="text-lg mb-1">🎨</div>
+                      <div className="font-medium">Create Collection</div>
+                      <div className="text-xs opacity-80">Organize NFTs in collections</div>
+                    </div>
+                  </Link>
                 </Button>
 
                 {/* Mint Another */}
@@ -1076,15 +1080,17 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
 
                 {/* View Marketplace */}
                 <Button
-                  onClick={() => navigate('/marketplace')}
+                  asChild
                   className="flex items-center justify-center gap-2 h-auto p-4"
                   variant="outline"
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">🏪</div>
-                    <div className="font-medium">Explore Marketplace</div>
-                    <div className="text-xs opacity-80">Discover other creators</div>
-                  </div>
+                  <Link to="/marketplace">
+                    <div className="text-center">
+                      <div className="text-lg mb-1">🏪</div>
+                      <div className="font-medium">Explore Marketplace</div>
+                      <div className="text-xs opacity-80">Discover other creators</div>
+                    </div>
+                  </Link>
                 </Button>
               </div>
             </div>

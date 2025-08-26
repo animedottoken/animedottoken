@@ -11,7 +11,7 @@ import {
   Users,
   Coins
 } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import React from "react";
 
 import {
@@ -178,14 +178,16 @@ export function AppSidebar() {
               {routes.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    onClick={() => handleNavigation(item)}
+                    asChild
                     className={`cursor-pointer transition-colors ${
                       isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
                     }`}
                     tooltip={!showLabel ? item.title : undefined}
                   >
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    {showLabel && <span className="ml-2">{item.title}</span>}
+                    <Link to={item.path!}>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {showLabel && <span className="ml-2">{item.title}</span>}
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -203,12 +205,14 @@ export function AppSidebar() {
               {sections.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    onClick={() => handleNavigation(item)}
+                    asChild
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
                     tooltip={!showLabel ? item.title : undefined}
                   >
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    {showLabel && <span className="ml-2">{item.title}</span>}
+                    <Link to={`/#${item.hash}`} onClick={() => handleNavigation(item)}>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {showLabel && <span className="ml-2">{item.title}</span>}
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

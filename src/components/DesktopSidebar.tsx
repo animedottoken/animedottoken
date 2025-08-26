@@ -158,10 +158,12 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                         "w-full justify-start gap-3 h-10",
                         collapsed && "justify-center px-2"
                       )}
-                      onClick={() => handleNavigation(item)}
+                      asChild
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
-                      {!collapsed && <span className="font-medium">{item.title}</span>}
+                      <Link to={`/#${item.hash}`} onClick={() => handleNavigation(item)}>
+                        <item.icon className="h-5 w-5 shrink-0" />
+                        {!collapsed && <span className="font-medium">{item.title}</span>}
+                      </Link>
                     </Button>
                   </TooltipTrigger>
                 </Tooltip>
