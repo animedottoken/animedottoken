@@ -328,9 +328,9 @@ const Profile = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {profile?.profile_rank === 'DEFAULT' 
+                            {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
                               ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                              : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                              : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -358,9 +358,9 @@ const Profile = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {profile?.profile_rank === 'DEFAULT' 
+                            {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
                               ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                              : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                              : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -379,9 +379,9 @@ const Profile = () => {
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          {profile?.profile_rank === 'DEFAULT' 
+                          {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
                             ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                            : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                            : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
                         </p>
                       </TooltipContent>
                     </Tooltip>
