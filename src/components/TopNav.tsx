@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, LogOut, LogIn } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, LogOut, LogIn, Wallet, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
 
 type RouteItem = {
@@ -46,6 +48,7 @@ export const TopNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { connected, connecting, connect } = useSolanaWallet();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -96,8 +99,22 @@ export const TopNav = () => {
           <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
-        <nav className="flex items-center gap-2">
-          {/* Single unified authentication button */}
+        <nav className="flex items-center gap-3">
+          {/* Always visible wallet status */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => connected ? null : connect()}
+            className={`flex items-center gap-2 ${connected ? 'border-green-500/20 bg-green-500/10' : 'border-red-500/20 bg-red-500/10'}`}
+          >
+            <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <Wallet className="h-4 w-4" />
+            <span className="text-sm font-medium">
+              {connecting ? 'Connecting...' : connected ? 'Connected' : 'Connect Wallet'}
+            </span>
+          </Button>
+          
+          {/* Single authentication button */}
           {user ? (
             <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
               <LogOut className="h-4 w-4" />
@@ -169,7 +186,18 @@ export const TopNav = () => {
       </div>
       
       <nav className="flex items-center gap-2">
-        {/* Single unified authentication button */}
+        {/* Always visible wallet status (mobile) */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => connected ? null : connect()}
+          className={`flex items-center gap-1 ${connected ? 'border-green-500/20 bg-green-500/10' : 'border-red-500/20 bg-red-500/10'}`}
+        >
+          <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <Wallet className="h-4 w-4" />
+        </Button>
+        
+        {/* Single authentication button */}
         {user ? (
           <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
             <LogOut className="h-4 w-4" />
