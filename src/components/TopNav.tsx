@@ -109,7 +109,11 @@ export const TopNav = () => {
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-background border-border z-50">
+            <DropdownMenuContent 
+              align="end" 
+              className="w-56 bg-background/95 backdrop-blur-sm border border-border shadow-lg z-[9999]"
+              sideOffset={5}
+            >
               {/* Navigation Items */}
               <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
                 <Coins className="h-4 w-4" />
