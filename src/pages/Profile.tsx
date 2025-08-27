@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Edit2, Camera, Star, Info } from 'lucide-react';
+import { Heart, Users, CheckCircle, Edit2, Camera, Star, Info, Share, Copy, UserPlus, UserMinus } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -26,6 +26,8 @@ import { useLikedCollections } from '@/hooks/useLikedCollections';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
 import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData";
+import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { setNavContext } from "@/lib/navContext";
@@ -52,6 +54,11 @@ const Profile = () => {
   const { followedCreators } = useCreatorFollows();
   const { getLikeCount: getNFTLikeCount } = useNFTLikeCounts();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
+  
+  // Real-time creator stats
+  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
+    targetWallet ? [targetWallet] : []
+  );
 
   // Filter states
   const [nftFilters, setNftFilters] = useState<FilterState>({
@@ -82,6 +89,33 @@ const Profile = () => {
   useEffect(() => {
     setIsOwnProfile(connected && targetWallet === publicKey);
   }, [connected, targetWallet, publicKey]);
+
+  // Helper functions for rank progression
+  const getRankProgress = (tradeCount: number) => {
+    const thresholds = { DEFAULT: 0, BRONZE: 10, SILVER: 50, GOLD: 250, DIAMOND: 1000 };
+    const currentRank = profile?.profile_rank || 'DEFAULT';
+    
+    if (currentRank === 'DIAMOND') return { progress: 100, nextRank: null, needed: 0 };
+    
+    const nextRankMap = { DEFAULT: 'BRONZE', BRONZE: 'SILVER', SILVER: 'GOLD', GOLD: 'DIAMOND' };
+    const nextRank = nextRankMap[currentRank as keyof typeof nextRankMap];
+    const nextThreshold = thresholds[nextRank as keyof typeof thresholds];
+    const currentThreshold = thresholds[currentRank as keyof typeof thresholds];
+    
+    const progress = Math.min(100, ((tradeCount - currentThreshold) / (nextThreshold - currentThreshold)) * 100);
+    const needed = Math.max(0, nextThreshold - tradeCount);
+    
+    return { progress, nextRank, needed };
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy to clipboard');
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -436,6 +470,115 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Profile Actions Row */}
+        <div className="px-6 pb-4">
+          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+            {isOwnProfile ? (
+              <>
+                <Button variant="outline" size="sm" onClick={() => setShowNicknameDialog(true)}>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowBannerDialog(true)}>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Change Banner
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard(window.location.href)}>
+                  <Share className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard(targetWallet || '')}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Address
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Follow
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard(window.location.href)}>
+                  <Share className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard(targetWallet || '')}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Address
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Stats Strip */}
+        <div className="px-6 pb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-lg font-bold text-foreground">
+                {getCreatorFollowerCount(targetWallet || '')}
+              </div>
+              <div className="text-xs text-muted-foreground">Followers</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-lg font-bold text-foreground">
+                {getCreatorTotalLikeCount(targetWallet || '')}
+              </div>
+              <div className="text-xs text-muted-foreground">Total Likes</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-lg font-bold text-foreground">
+                {userCollections.length}
+              </div>
+              <div className="text-xs text-muted-foreground">Collections</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
+              <div className="text-lg font-bold text-foreground">
+                {nfts.length}
+              </div>
+              <div className="text-xs text-muted-foreground">NFTs</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rank Progress Indicator */}
+        {profile && (
+          <div className="px-6 pb-6">
+            <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium">
+                    {profile.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                      ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                      : 'Starter'} Rank
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {profile.trade_count || 0} trades
+                </span>
+              </div>
+              
+              {(() => {
+                const { progress, nextRank, needed } = getRankProgress(profile.trade_count || 0);
+                return nextRank ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Progress to {nextRank.charAt(0) + nextRank.slice(1).toLowerCase()}</span>
+                      <span>{needed} trades needed</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                  </div>
+                ) : (
+                  <div className="text-xs text-muted-foreground">
+                    Maximum rank achieved! 💎
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        )}
 
       {/* Profile Content */}
       <Tabs defaultValue="collections" className="space-y-6">
