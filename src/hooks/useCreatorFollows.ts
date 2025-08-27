@@ -17,15 +17,18 @@ export const useCreatorFollows = () => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('creator_follows')
-        .select('creator_wallet')
-        .eq('follower_wallet', publicKey);
+      const { data, error } = await supabase.functions.invoke('get-followed-creators', {
+        body: { follower_wallet: publicKey },
+      });
 
       if (error) throw error;
-      setFollowedCreators(data?.map(f => f.creator_wallet) || []);
+      
+      if (data?.success) {
+        setFollowedCreators(data.creators || []);
+      }
     } catch (err) {
       console.error('Error loading followed creators:', err);
+      // Don't clear the list on error to preserve optimistic updates
     }
   }, [connected, publicKey]);
 
@@ -77,7 +80,11 @@ export const useCreatorFollows = () => {
       
       // Update local state
       if (action === 'follow') {
-        setFollowedCreators(prev => [...prev, creatorWallet]);
+        setFollowedCreators(prev => {
+          // Prevent duplicates
+          if (prev.includes(creatorWallet)) return prev;
+          return [...prev, creatorWallet];
+        });
         toast.success('Successfully followed creator!');
       } else {
         setFollowedCreators(prev => prev.filter(c => c !== creatorWallet));
@@ -108,7 +115,9 @@ export const useCreatorFollows = () => {
   useEffect(() => {
     loadFollowedCreators();
 
-    // Set up real-time subscription for creator follows
+    if (!connected || !publicKey) return;
+
+    // Set up real-time subscription for creator follows - only for current user
     const channel = supabase
       .channel('creator-follows-realtime')
       .on(
@@ -116,14 +125,20 @@ export const useCreatorFollows = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'creator_follows'
+          table: 'creator_follows',
+          filter: `follower_wallet=eq.${publicKey}`
         },
         (payload) => {
-          console.log('🔥 Real-time creator follows change detected:', payload);
+          console.log('🔥 Real-time creator follows change detected for current user:', payload);
           console.log('Event type:', payload.eventType);
           console.log('Table:', payload.table);
-          // Refresh followed creators when any change occurs
-          loadFollowedCreators();
+          
+          // Only refresh if this change is for the current user
+          const newRecord = payload.new as any;
+          const oldRecord = payload.old as any;
+          if (newRecord?.follower_wallet === publicKey || oldRecord?.follower_wallet === publicKey) {
+            loadFollowedCreators();
+          }
         }
       )
       .subscribe((status) => {
@@ -134,7 +149,7 @@ export const useCreatorFollows = () => {
       console.log('🔌 Cleaning up creator follows subscription');
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey]);
+  }, [connected, publicKey, loadFollowedCreators]);
 
   return {
     followedCreators,
