@@ -6,12 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, X } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { useNFTs } from "@/hooks/useNFTs";
 import { usePublicCollections } from "@/hooks/usePublicCollections";
 import { NFTCard } from "@/components/NFTCard";
 import { CollectionCard } from "@/components/CollectionCard";
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { hasRequiredListingFields } from '@/lib/attributeHelpers';
 import { setNavContext } from "@/lib/navContext";
 
@@ -22,15 +23,11 @@ const Marketplace = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [activeTab, setActiveTab] = useState<'collections' | 'nfts' | 'creators'>('collections');
   const navigate = useNavigate();
 
   const { nfts, loading: nftsLoading } = useNFTs();
   const { collections, loading: collectionsLoading } = usePublicCollections();
-  const { publicKey } = useSolanaWallet();
-
-  useEffect(() => {
-    // Optional: Fetch initial data or perform other setup tasks
-  }, []);
 
   // Filter NFTs to only show listed items with required fields
   const filteredNFTs = useMemo(() => {
@@ -149,189 +146,256 @@ const Marketplace = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Filter Bar */}
-      <div className="bg-card p-4 rounded-lg border space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search NFTs and collections..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+      <Helmet>
+        <title>Marketplace | ANIME.TOKEN Collections & NFTs</title>
+        <meta name="description" content="Discover and collect ANIME.TOKEN collections and NFTs from the community. Browse, filter, and explore creators." />
+        <link rel="canonical" href="/marketplace" />
+      </Helmet>
 
-        {/* Primary Filters Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Category</Label>
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All categories</SelectItem>
-                <SelectItem value="Art">Art</SelectItem>
-                <SelectItem value="Gaming">Gaming</SelectItem>
-                <SelectItem value="Music">Music</SelectItem>
-                <SelectItem value="Photography">Photography</SelectItem>
-                <SelectItem value="Sports">Sports</SelectItem>
-                <SelectItem value="Utility">Utility</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Header */}
+      <header className="space-y-2">
+        <h1 className="text-3xl font-bold">Marketplace</h1>
+        <p className="text-muted-foreground">Discover and collect unique digital art from the ANIME community</p>
+      </header>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
+        <TabsList className="w-full max-w-md">
+          <TabsTrigger value="collections" className="flex-1">Collections</TabsTrigger>
+          <TabsTrigger value="nfts" className="flex-1">NFTs</TabsTrigger>
+          <TabsTrigger value="creators" className="flex-1">Creators</TabsTrigger>
+        </TabsList>
+
+        {/* Collections Tab */}
+        <TabsContent value="collections" className="space-y-6">
+          {/* Filter Bar */}
+          <div className="bg-card p-4 rounded-lg border space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search collections..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Primary Filters Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Category</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All categories</SelectItem>
+                    <SelectItem value="Art">Art</SelectItem>
+                    <SelectItem value="Gaming">Gaming</SelectItem>
+                    <SelectItem value="Music">Music</SelectItem>
+                    <SelectItem value="Photography">Photography</SelectItem>
+                    <SelectItem value="Sports">Sports</SelectItem>
+                    <SelectItem value="Utility">Utility</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Sort By</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                    <SelectItem value="price-high">Price High to Low</SelectItem>
+                    <SelectItem value="price-low">Price Low to High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-6">
+                <Switch id="explicit-col" checked={includeExplicit} onCheckedChange={setIncludeExplicit} />
+                <Label htmlFor="explicit-col" className="text-sm">Include Explicit</Label>
+              </div>
+
+              <div className="flex items-end">
+                {(searchQuery || selectedCategory !== 'all' || includeExplicit || minPrice || maxPrice) && (
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="text-xs">
+                    <X className="h-3 w-3 mr-1" />
+                    Clear All
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Price Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Min Price (SOL)</Label>
+                <Input type="number" placeholder="0.0" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Max Price (SOL)</Label>
+                <Input type="number" placeholder="1000.0" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Sort By</Label>
-            <Select
-              value={sortBy}
-              onValueChange={setSortBy}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="oldest">Oldest</SelectItem>
-                <SelectItem value="price-high">Price High to Low</SelectItem>
-                <SelectItem value="price-low">Price Low to High</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center space-x-2 pt-6">
-            <Switch
-              id="explicit"
-              checked={includeExplicit}
-              onCheckedChange={setIncludeExplicit}
-            />
-            <Label htmlFor="explicit" className="text-sm">Include Explicit</Label>
-          </div>
-
-          <div className="flex items-end">
-            {(searchQuery || selectedCategory || includeExplicit || minPrice || maxPrice) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-                className="text-xs"
-              >
-                <X className="h-3 w-3 mr-1" />
-                Clear All
-              </Button>
+          {/* Collections Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {collectionsLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-t-lg"></div>
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : filteredCollections.length > 0 ? (
+              filteredCollections.map((collection) => (
+                <CollectionCard
+                  key={collection.id}
+                  collection={{
+                    ...collection,
+                    image_url: collection.image_url || '/placeholder.svg',
+                    creator_address_masked: collection.creator_address,
+                    items_redeemed: collection.items_redeemed || 0
+                  }}
+                  onNavigate={() => setNavContext({ type: 'collection', items: filteredCollections.map(c => c.id), source: 'marketplace' })}
+                />
+              ))
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No collections match your filters.</p>
+                </CardContent>
+              </Card>
             )}
           </div>
-        </div>
+        </TabsContent>
 
-        {/* Price Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Min Price (SOL)</Label>
-            <Input
-              type="number"
-              placeholder="0.0"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Max Price (SOL)</Label>
-            <Input
-              type="number"
-              placeholder="1000.0"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+        {/* NFTs Tab */}
+        <TabsContent value="nfts" className="space-y-6">
+          {/* Filter Bar */}
+          <div className="bg-card p-4 rounded-lg border space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search NFTs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {/* Reuse same filters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Category</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All categories</SelectItem>
+                    <SelectItem value="Art">Art</SelectItem>
+                    <SelectItem value="Gaming">Gaming</SelectItem>
+                    <SelectItem value="Music">Music</SelectItem>
+                    <SelectItem value="Photography">Photography</SelectItem>
+                    <SelectItem value="Sports">Sports</SelectItem>
+                    <SelectItem value="Utility">Utility</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-      {/* NFT Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {nftsLoading ? (
-          // Skeleton loaders
-          Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="aspect-square bg-muted rounded-t-lg"></div>
-              <CardContent className="p-4">
-                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
-              </CardContent>
-            </Card>
-          ))
-        ) : filteredNFTs.length > 0 ? (
-          // NFT Cards
-           filteredNFTs.map((nft) => (
-             <NFTCard
-               key={nft.id}
-               nft={nft}
-               onNavigate={() => setNavContext({ 
-                 type: 'nft', 
-                 items: filteredNFTs.map(n => n.id), 
-                 source: 'marketplace' 
-               })}
-             />
-           ))
-        ) : (
-          // Empty state
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Sort By</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                    <SelectItem value="price-high">Price High to Low</SelectItem>
+                    <SelectItem value="price-low">Price Low to High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-6">
+                <Switch id="explicit-nft" checked={includeExplicit} onCheckedChange={setIncludeExplicit} />
+                <Label htmlFor="explicit-nft" className="text-sm">Include Explicit</Label>
+              </div>
+
+              <div className="flex items-end">
+                {(searchQuery || selectedCategory !== 'all' || includeExplicit || minPrice || maxPrice) && (
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="text-xs">
+                    <X className="h-3 w-3 mr-1" />
+                    Clear All
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Price Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Min Price (SOL)</Label>
+                <Input type="number" placeholder="0.0" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Max Price (SOL)</Label>
+                <Input type="number" placeholder="1000.0" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* NFT Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {nftsLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-t-lg"></div>
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : filteredNFTs.length > 0 ? (
+              filteredNFTs.map((nft) => (
+                <NFTCard
+                  key={nft.id}
+                  nft={nft}
+                  onNavigate={() => setNavContext({ type: 'nft', items: filteredNFTs.map(n => n.id), source: 'marketplace' })}
+                />
+              ))
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No NFTs match your filters.</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Creators Tab */}
+        <TabsContent value="creators" className="space-y-6">
           <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">
-                No NFTs match your filters.
-              </p>
+            <CardContent className="p-8 text-center text-muted-foreground">
+              Creators browse is coming soon.
             </CardContent>
           </Card>
-        )}
-      </div>
-
-      {/* Collection Grid */}
-      <h2 className="text-2xl font-bold mt-8">Collections</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {collectionsLoading ? (
-          // Skeleton loaders
-          Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="aspect-square bg-muted rounded-t-lg"></div>
-              <CardContent className="p-4">
-                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
-              </CardContent>
-            </Card>
-          ))
-        ) : filteredCollections.length > 0 ? (
-          // Collection Cards
-           filteredCollections.map((collection) => (
-             <CollectionCard
-               key={collection.id}
-               collection={{
-                 ...collection,
-                 image_url: collection.image_url || '/placeholder.svg',
-                 creator_address_masked: collection.creator_address,
-                 items_redeemed: collection.items_redeemed || 0
-               }}
-               onNavigate={() => setNavContext({ 
-                 type: 'collection', 
-                 items: filteredCollections.map(c => c.id), 
-                 source: 'marketplace' 
-               })}
-             />
-           ))
-        ) : (
-          // Empty state
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">
-                No collections match your filters.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
