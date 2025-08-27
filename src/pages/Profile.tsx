@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -262,149 +262,180 @@ const Profile = () => {
           />
         </div>
 
-        {/* Avatar - overlapping banner */}
+        {/* Avatar and Info Combined - overlapping banner */}
         <div className="relative -mt-20 px-6">
-          <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
-            <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
-              {profile?.profile_image_url ? (
-                <img 
-                  src={profile.profile_image_url} 
-                  alt="Profile Picture" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                  {targetWallet?.slice(0, 2).toUpperCase()}
-                </div>
-              )}
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
+            {/* Avatar Column */}
+            <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
+              <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
+                {profile?.profile_image_url ? (
+                  <img 
+                    src={profile.profile_image_url} 
+                    alt="Profile Picture" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
+                    {targetWallet?.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Profile Info - below banner */}
-        <div className="px-6 pt-4 pb-6">
-          <div className="space-y-3">
-              {/* Name */}
-              <div>
+            {/* Info Column */}
+            <div className="pt-4 sm:pt-12 space-y-3">
+              {/* Name Row with Actions */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
                   {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
                 </h1>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => targetWallet && toggleFollow(targetWallet)}
+                    disabled={followLoading}
+                  >
+                    {isFollowing(targetWallet || '') ? (
+                      <>
+                        <UserMinus className="h-4 w-4 mr-2" />
+                        Unfollow
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Follow
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => copyToClipboard(window.location.href)}
+                    aria-label="Share profile"
+                  >
+                    <Share className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
-              {/* Wallet (short) with copy */}
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-5 w-5 p-0"
-                  onClick={() => copyToClipboard(targetWallet || '')}
-                  aria-label="Copy wallet address"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
+              {/* Wallet and Rank */}
+              <div className="flex items-center gap-4 flex-wrap">
+                {/* Wallet with copy */}
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 p-0"
+                    onClick={() => copyToClipboard(targetWallet || '')}
+                    aria-label="Copy wallet address"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
 
-              {/* Starter Badge */}
-              <div className="flex items-center gap-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <Star className="h-3 w-3 text-yellow-500" />
-                        {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                          ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                          : 'Starter'}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Learn about ranks</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <Dialog open={showRankInfo} onOpenChange={setShowRankInfo}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 p-0"
-                      aria-label="About ranks"
-                      data-testid="rank-info-button"
-                    >
-                      <Info className="h-3.5 w-3.5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Profile Ranks</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="text-sm space-y-1">
-                          <div className={`flex justify-between items-center p-2 rounded ${
-                            (profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' ? 'bg-muted/50 border border-primary/30' : ''
-                          }`}>
-                            <span className="flex items-center gap-2">
-                              <Star className="h-4 w-4 text-yellow-500" />
-                              <span>Starter:</span>
-                              {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' && (
-                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
-                              )}
-                            </span>
-                            <span className="text-muted-foreground">0-9 trades</span>
-                          </div>
-                          <div className={`flex justify-between items-center p-2 rounded ${
-                            profile?.profile_rank === 'BRONZE' ? 'bg-muted/50 border border-primary/30' : ''
-                          }`}>
-                            <span className="flex items-center gap-2">
-                              🥉 <span>Bronze:</span>
-                              {profile?.profile_rank === 'BRONZE' && (
-                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
-                              )}
-                            </span>
-                            <span className="text-muted-foreground">10-49 trades</span>
-                          </div>
-                          <div className={`flex justify-between items-center p-2 rounded ${
-                            profile?.profile_rank === 'SILVER' ? 'bg-muted/50 border border-primary/30' : ''
-                          }`}>
-                            <span className="flex items-center gap-2">
-                              🥈 <span>Silver:</span>
-                              {profile?.profile_rank === 'SILVER' && (
-                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
-                              )}
-                            </span>
-                            <span className="text-muted-foreground">50-199 trades</span>
-                          </div>
-                          <div className={`flex justify-between items-center p-2 rounded ${
-                            profile?.profile_rank === 'GOLD' ? 'bg-muted/50 border border-primary/30' : ''
-                          }`}>
-                            <span className="flex items-center gap-2">
-                              🥇 <span>Gold:</span>
-                              {profile?.profile_rank === 'GOLD' && (
-                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
-                              )}
-                            </span>
-                            <span className="text-muted-foreground">200-999 trades</span>
-                          </div>
-                          <div className={`flex justify-between items-center p-2 rounded ${
-                            profile?.profile_rank === 'DIAMOND' ? 'bg-muted/50 border border-primary/30' : ''
-                          }`}>
-                            <span className="flex items-center gap-2">
-                              💎 <span>Diamond:</span>
-                              {profile?.profile_rank === 'DIAMOND' && (
-                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
-                              )}
-                            </span>
-                            <span className="text-muted-foreground">1000+ trades</span>
+                {/* Rank Badge */}
+                <div className="flex items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                          <Star className="h-3 w-3 text-yellow-500" />
+                          {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                            ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                            : 'Starter'}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Learn about ranks</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <Dialog open={showRankInfo} onOpenChange={setShowRankInfo}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-6 w-6 p-0"
+                        aria-label="About ranks"
+                        data-testid="rank-info-button"
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Profile Ranks</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div className={`flex justify-between items-center p-2 rounded ${
+                              (profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' ? 'bg-muted/50 border border-primary/30' : ''
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-yellow-500" />
+                                <span>Starter:</span>
+                                {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' && (
+                                  <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                                )}
+                              </span>
+                              <span className="text-muted-foreground">0-9 trades</span>
+                            </div>
+                            <div className={`flex justify-between items-center p-2 rounded ${
+                              profile?.profile_rank === 'BRONZE' ? 'bg-muted/50 border border-primary/30' : ''
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                🥉 <span>Bronze:</span>
+                                {profile?.profile_rank === 'BRONZE' && (
+                                  <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                                )}
+                              </span>
+                              <span className="text-muted-foreground">10-49 trades</span>
+                            </div>
+                            <div className={`flex justify-between items-center p-2 rounded ${
+                              profile?.profile_rank === 'SILVER' ? 'bg-muted/50 border border-primary/30' : ''
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                🥈 <span>Silver:</span>
+                                {profile?.profile_rank === 'SILVER' && (
+                                  <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                                )}
+                              </span>
+                              <span className="text-muted-foreground">50-199 trades</span>
+                            </div>
+                            <div className={`flex justify-between items-center p-2 rounded ${
+                              profile?.profile_rank === 'GOLD' ? 'bg-muted/50 border border-primary/30' : ''
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                🥇 <span>Gold:</span>
+                                {profile?.profile_rank === 'GOLD' && (
+                                  <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                                )}
+                              </span>
+                              <span className="text-muted-foreground">200-999 trades</span>
+                            </div>
+                            <div className={`flex justify-between items-center p-2 rounded ${
+                              profile?.profile_rank === 'DIAMOND' ? 'bg-muted/50 border border-primary/30' : ''
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                💎 <span>Diamond:</span>
+                                {profile?.profile_rank === 'DIAMOND' && (
+                                  <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                                )}
+                              </span>
+                              <span className="text-muted-foreground">1000+ trades</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               {/* Bio */}
@@ -415,109 +446,51 @@ const Profile = () => {
                   </p>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
 
-        {/* Profile Actions Row */}
-        <div className="px-6 pb-4">
-          <div className="flex items-center gap-2 justify-end">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => targetWallet && toggleFollow(targetWallet)}
-              disabled={followLoading}
-            >
-              {isFollowing(targetWallet || '') ? (
-                <>
-                  <UserMinus className="h-4 w-4 mr-2" />
-                  Unfollow
-                </>
-              ) : (
-                <>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Follow
-                </>
-              )}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => copyToClipboard(window.location.href)}
-              aria-label="Share profile"
-            >
-              <Share className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Quick Stats Strip */}
-        <div className="px-6 pb-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
-              <div className="text-lg font-bold text-foreground">
-                {getCreatorFollowerCount(targetWallet || '')}
-              </div>
-              <div className="text-xs text-muted-foreground">Followers</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
-              <div className="text-lg font-bold text-foreground">
-                {getCreatorTotalLikeCount(targetWallet || '')}
-              </div>
-              <div className="text-xs text-muted-foreground">Total Likes</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
-              <div className="text-lg font-bold text-foreground">
-                {userCollections.length}
-              </div>
-              <div className="text-xs text-muted-foreground">Collections</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
-              <div className="text-lg font-bold text-foreground">
-                {nfts.length}
-              </div>
-              <div className="text-xs text-muted-foreground">NFTs</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Rank Progress Indicator */}
-        {profile && (
-          <div className="px-6 pb-6">
-            <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium">
-                    {profile.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                      ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                      : 'Starter'} Rank
-                  </span>
+              {/* Compact Stats Row with Icons */}
+              <div className="flex flex-wrap items-center gap-4 text-xs">
+                <div className="flex items-center gap-1">
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium">{getCreatorFollowerCount(targetWallet || '')}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {profile.trade_count || 0} trades
-                </span>
+                <div className="flex items-center gap-1">
+                  <Heart className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium">{getCreatorTotalLikeCount(targetWallet || '')}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium">{userCollections.length}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Image className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium">{nfts.length}</span>
+                </div>
               </div>
-              
-              {(() => {
-                const { progress, nextRank, needed } = getRankProgress(profile.trade_count || 0);
-                return nextRank ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Progress to {nextRank.charAt(0) + nextRank.slice(1).toLowerCase()}</span>
-                      <span>{needed} trades needed</span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                  </div>
-                ) : (
-                  <div className="text-xs text-muted-foreground">
-                    Maximum rank achieved! 💎
-                  </div>
-                );
-              })()}
+
+              {/* Inline Progress Bar */}
+              {profile && (
+                <div className="space-y-1">
+                  {(() => {
+                    const { progress, nextRank, needed } = getRankProgress(profile.trade_count || 0);
+                    return nextRank ? (
+                      <>
+                        <div className="text-xs text-muted-foreground">
+                          {profile.trade_count || 0} trades • {needed} to {nextRank.charAt(0) + nextRank.slice(1).toLowerCase()}
+                        </div>
+                        <Progress value={progress} className="h-1" />
+                      </>
+                    ) : (
+                      <div className="text-xs text-muted-foreground">
+                        {profile.trade_count || 0} trades • Max rank achieved! 💎
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
       {/* Profile Content */}
       <Tabs defaultValue="collections" className="space-y-6">
