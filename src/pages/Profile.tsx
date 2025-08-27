@@ -276,7 +276,7 @@ const Profile = () => {
             </div>
 
             {/* Profile Info */}
-            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4 h-40 sm:h-44">
+            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4 min-h-40 sm:min-h-44">
               {/* Name & Edit */}
               <div className="flex items-center gap-3 group">
                 <h1 className="text-2xl font-bold text-foreground">
