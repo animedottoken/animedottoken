@@ -17,15 +17,6 @@ serve(async (req) => {
   }
 
   try {
-    // Extract JWT token from Authorization header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-    }
-
     const { nft_id, user_wallet, action } = await req.json();
 
     if (!nft_id || !user_wallet || !action) {
@@ -43,41 +34,19 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !supabaseAnonKey || !serviceKey) {
+    if (!supabaseUrl || !serviceKey) {
       return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
-    // Verify JWT with anon key client
-    const jwt = authHeader.substring(7);
-    const authClient = createClient(supabaseUrl, supabaseAnonKey);
-    
-    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-    }
-
-    // Verify the wallet address matches the authenticated user's wallet
-    const userWalletFromAuth = user.user_metadata?.wallet_address;
-    if (userWalletFromAuth !== user_wallet) {
-      return new Response(JSON.stringify({ error: "Wallet address mismatch" }), {
-        status: 403,
-        headers: corsHeaders,
-      });
-    }
-
-    // Use service role for the actual operation (now that auth is verified)
     const supabase = createClient(supabaseUrl, serviceKey);
 
     if (action === 'like') {
+      // Attempt to insert; unique constraint will prevent duplicates
       const { error } = await supabase
         .from("nft_likes")
         .insert({ 
@@ -87,14 +56,18 @@ serve(async (req) => {
         });
 
       if (error) {
-        // Check if already liked
-        if (error.code === '23505') {
+        // Handle duplicates nicely
+        if ((error as any).code === '23505') {
           return new Response(JSON.stringify({ error: "NFT already liked" }), {
             status: 409,
             headers: corsHeaders,
           });
         }
-        throw error;
+        // Foreign key or other constraint error
+        return new Response(JSON.stringify({ error: error.message || "Failed to like NFT" }), {
+          status: 400,
+          headers: corsHeaders,
+        });
       }
     } else {
       const { error } = await supabase
@@ -104,7 +77,10 @@ serve(async (req) => {
         .eq("user_wallet", user_wallet);
 
       if (error) {
-        throw error;
+        return new Response(JSON.stringify({ error: error.message || "Failed to unlike NFT" }), {
+          status: 400,
+          headers: corsHeaders,
+        });
       }
     }
 
@@ -118,6 +94,7 @@ serve(async (req) => {
       headers: corsHeaders,
     });
   } catch (err) {
+    console.error('Unexpected error in like-nft function:', err);
     return new Response(JSON.stringify({ error: (err as Error).message || "Unexpected error" }), {
       status: 500,
       headers: corsHeaders,
