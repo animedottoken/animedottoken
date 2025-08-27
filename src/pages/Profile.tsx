@@ -221,9 +221,9 @@ const Profile = () => {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Profile Header */}
-      <Card className="relative overflow-hidden">
+      <div className="relative">
         {/* Banner */}
-        <div className="relative h-48 bg-gradient-to-r from-primary/20 to-accent/20">
+        <div className="relative h-64 bg-gradient-to-br from-purple-600/80 to-purple-800/80 rounded-lg overflow-hidden">
           {profile?.banner_image_url && (
             <img 
               src={profile.banner_image_url} 
@@ -235,7 +235,7 @@ const Profile = () => {
             <Button
               variant="secondary"
               size="sm"
-              className="absolute top-4 right-4"
+              className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white border-white/20"
               onClick={() => setShowBannerDialog(true)}
             >
               <Edit2 className="h-4 w-4 mr-2" />
@@ -244,12 +244,12 @@ const Profile = () => {
           )}
         </div>
 
-        {/* Profile Info */}
-        <CardContent className="relative -mt-16 pt-16">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* Profile Content */}
+        <div className="relative -mt-20 px-6 pb-6">
+          <div className="flex flex-col sm:flex-row gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full border-4 border-background bg-muted overflow-hidden">
+              <div className="w-32 h-32 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
                 {profile?.profile_image_url ? (
                   <img 
                     src={profile.profile_image_url} 
@@ -257,7 +257,7 @@ const Profile = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20 text-2xl font-bold">
+                  <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
                     {targetWallet?.slice(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -265,8 +265,8 @@ const Profile = () => {
               {isOwnProfile && (
                 <Button
                   variant="secondary"
-                  size="sm"
-                  className="absolute -bottom-2 -right-2 rounded-full"
+                  size="icon"
+                  className="absolute -bottom-1 -right-1 rounded-full w-8 h-8"
                   onClick={() => setShowPfpDialog(true)}
                 >
                   <Edit2 className="h-4 w-4" />
@@ -274,49 +274,49 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Profile Details */}
-            <div className="flex-1 space-y-4">
-              {/* Nickname */}
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold">
+            {/* Profile Info */}
+            <div className="flex-1 space-y-3 mt-4">
+              {/* Name & Edit */}
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-foreground">
                   {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
                 </h1>
                 {isOwnProfile && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
+                    className="h-8 w-8"
                     onClick={() => setShowNicknameDialog(true)}
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
                 )}
-                <Badge variant="outline" className="ml-2">
-                  <UserProfileDisplay
-                    walletAddress={targetWallet}
-                    showRankBadge={true}
-                    showTradeCount={false}
-                    size="sm"
-                  />
+                <Badge 
+                  variant="secondary" 
+                  className="text-xs px-2 py-1"
+                >
+                  {targetWallet?.slice(0, 2).toUpperCase()}
                 </Badge>
               </div>
 
-              {/* Wallet Address */}
-              <p className="text-muted-foreground font-mono text-sm">
+              {/* Full Wallet Address */}
+              <p className="font-mono text-sm text-muted-foreground">
                 {targetWallet}
               </p>
 
-              {/* Bio */}
-              <div className="space-y-2">
+              {/* Bio Section */}
+              <div>
                 {profile?.bio ? (
                   <div className="flex items-start gap-2">
                     <p className="text-muted-foreground">{profile.bio}</p>
                     {isOwnProfile && (
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon" 
+                        className="h-6 w-6 mt-1"
                         onClick={() => setShowBioDialog(true)}
                       >
-                        <Edit2 className="h-4 w-4" />
+                        <Edit2 className="h-3 w-3" />
                       </Button>
                     )}
                   </div>
@@ -325,6 +325,7 @@ const Profile = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowBioDialog(true)}
+                    className="text-sm"
                   >
                     Add Bio
                   </Button>
@@ -332,7 +333,11 @@ const Profile = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1 text-sm">
+                <Badge variant="secondary" className="text-xs">
+                  {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
+                </Badge>
+                <span className="text-muted-foreground">•</span>
                 <UserProfileDisplay
                   walletAddress={targetWallet}
                   showRankBadge={false}
@@ -342,8 +347,8 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Profile Content */}
       <Tabs defaultValue="collections" className="space-y-6">
