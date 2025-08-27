@@ -148,15 +148,23 @@ export const useGamifiedProfile = () => {
 
     setPfpLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('set-pfp', {
-        body: { 
+      const res = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/set-pfp', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6dHpkZHlram5tbnBvZXlmcWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzcwNDIsImV4cCI6MjA3MDgxMzA0Mn0.gr027JXjQ7SE_OOo17VnQSYTIOOQA0iI5JiaqP8J2AA'
+        },
+        body: JSON.stringify({ 
           nft_mint_address: nftMintAddress, 
           wallet_address: publicKey.toString(),
           transaction_signature: transactionSignature
-        },
+        }),
       });
 
-      if (error) throw error;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || (data && data.error)) {
+        throw new Error(data?.error || `Failed to set PFP (${res.status})`);
+      }
       
       toast.success('Profile picture updated successfully!');
       await fetchProfile(); // Refresh profile
@@ -178,23 +186,22 @@ export const useGamifiedProfile = () => {
 
     setBioLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('set-bio', {
-        body: { 
+      const res = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/set-bio', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6dHpkZHlram5tbnBvZXlmcWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzcwNDIsImV4cCI6MjA3MDgxMzA0Mn0.gr027JXjQ7SE_OOo17VnQSYTIOOQA0iI5JiaqP8J2AA'
+        },
+        body: JSON.stringify({
           bio: bio.trim(),
           transaction_signature: transactionSignature,
           wallet_address: publicKey.toString()
-        },
+        })
       });
-
-      if (error) {
-        console.error('Error setting bio:', error);
-        toast.error(error.message || 'Failed to set bio');
-        return false;
-      }
-
-      if (data.error) {
-        console.error('Error in set-bio response:', data.error);
-        toast.error(data.error);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || (data && data.error)) {
+        console.error('Error setting bio:', data?.error || res.statusText);
+        toast.error(data?.error || 'Failed to set bio');
         return false;
       }
 
