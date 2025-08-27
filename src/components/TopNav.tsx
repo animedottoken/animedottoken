@@ -102,7 +102,7 @@ export const TopNav = () => {
         </Link>
         <nav className="flex items-center gap-3">
           {/* Menu dropdown with navigation + wallet */}
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Menu className="h-4 w-4" />
@@ -218,7 +218,7 @@ export const TopNav = () => {
         </Link>
       </div>
       <nav className="flex items-center">
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
               <Menu className="h-4 w-4" />
