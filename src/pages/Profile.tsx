@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Edit2, Camera } from 'lucide-react';
+import { Heart, Users, CheckCircle, Edit2, Camera, Star } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -15,6 +15,7 @@ import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { BioEditDialog } from '@/components/BioEditDialog';
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
@@ -245,8 +246,8 @@ const Profile = () => {
         </div>
 
         {/* Profile Content */}
-        <div className="relative mt-6 px-6 pb-6">
-          <div className="flex flex-col sm:flex-row gap-6">
+        <div className="relative -mt-20 px-6 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-6">
             {/* Avatar */}
             <div className="relative group">
               <div className="w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
@@ -266,7 +267,7 @@ const Profile = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute bottom-2 left-2 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute bottom-0 right-0 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setShowPfpDialog(true)}
                 >
                   <Camera className="h-4 w-4" />
@@ -275,7 +276,7 @@ const Profile = () => {
             </div>
 
             {/* Profile Info */}
-            <div className="flex-1 space-y-3 mt-4 rounded-xl bg-background/80 border border-border/50 p-4">
+            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4">
               {/* Name & Edit */}
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-foreground">
@@ -292,7 +293,6 @@ const Profile = () => {
                   </Button>
                 )}
               </div>
-
 
               {/* Wallet (short) */}
               <div className="flex items-center gap-2">
@@ -316,11 +316,25 @@ const Profile = () => {
                         <Edit2 className="h-3 w-3" />
                       </Button>
                     )}
-                    <Badge variant="secondary">
-                      {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                        ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                        : 'Starter'}
-                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Star className="h-3 w-3" />
+                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                              : 'Starter'}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {profile?.profile_rank === 'DEFAULT' 
+                              ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
+                              : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 ) : isOwnProfile ? (
                   <div className="flex items-center gap-2">
@@ -332,22 +346,48 @@ const Profile = () => {
                     >
                       Add Bio
                     </Button>
-                    <Badge variant="secondary">
-                      {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                        ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                        : 'Starter'}
-                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Star className="h-3 w-3" />
+                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                              : 'Starter'}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {profile?.profile_rank === 'DEFAULT' 
+                              ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
+                              : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 ) : (
-                  <Badge variant="secondary">
-                    {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                      ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                      : 'Starter'}
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                          <Star className="h-3 w-3" />
+                          {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                            ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                            : 'Starter'}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {profile?.profile_rank === 'DEFAULT' 
+                            ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
+                            : `${profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()} rank member with exclusive benefits`}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
-
-              {/* Program and stats row removed per design: only short wallet is shown above */}
             </div>
           </div>
         </div>
