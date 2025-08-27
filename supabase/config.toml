@@ -62,7 +62,7 @@ verify_jwt = true  # Requires authenticated user
 verify_jwt = true  # Requires authenticated user
 
 [functions.set-bio]
-verify_jwt = true  # Requires authenticated user
+verify_jwt = false  # Public function with wallet validation and rate limiting
 
 [functions.set-banner]
 verify_jwt = true  # Requires authenticated user

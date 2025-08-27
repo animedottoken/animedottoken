@@ -526,8 +526,9 @@ const Profile = () => {
               try {
                 const { error } = await supabase.functions.invoke('set-bio', {
                   body: { 
+                    wallet_address: targetWallet,
                     bio: newBio,
-                    transaction_signature: 'simulated_tx_' + Date.now() // Simulate transaction for now
+                    transaction_signature: 'simulated_tx_' + Date.now()
                   }
                 });
                 

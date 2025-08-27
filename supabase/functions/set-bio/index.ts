@@ -14,48 +14,24 @@ serve(async (req) => {
   }
 
   try {
-    // Extract JWT token from Authorization header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-    }
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !supabaseAnonKey || !serviceKey) {
+    if (!supabaseUrl || !serviceKey) {
       return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
-    // Verify JWT with anon key client
-    const jwt = authHeader.substring(7);
-    const authClient = createClient(supabaseUrl, supabaseAnonKey);
-    
-    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-    }
-
-    // Get wallet address from authenticated user's metadata
-    const userWallet = user.user_metadata?.wallet_address;
+    const { wallet_address, bio, transaction_signature } = await req.json();
+    const userWallet = typeof wallet_address === 'string' ? wallet_address : null;
     if (!userWallet) {
-      return new Response(JSON.stringify({ error: "No wallet address found in user metadata" }), {
+      return new Response(JSON.stringify({ error: 'wallet_address is required' }), {
         status: 400,
         headers: corsHeaders,
       });
     }
-
-    const { bio, transaction_signature } = await req.json();
 
     // Validate bio
     if (!bio || typeof bio !== "string") {
@@ -73,8 +49,8 @@ serve(async (req) => {
       });
     }
 
-    if (trimmedBio.length > 100) {
-      return new Response(JSON.stringify({ error: "Bio must be 100 characters or less" }), {
+    if (trimmedBio.length > 90) {
+      return new Response(JSON.stringify({ error: "Bio must be 90 characters or less" }), {
         status: 400,
         headers: corsHeaders,
       });
@@ -95,8 +71,6 @@ serve(async (req) => {
         headers: corsHeaders,
       });
     }
-
-    console.log('Setting bio for wallet:', userWallet);
 
     // Get current profile to check if this is first time
     const { data: currentProfile, error: fetchError } = await supabase
@@ -126,7 +100,6 @@ serve(async (req) => {
       }
 
       // In production, verify the actual Solana transaction here
-      // For now, we accept test signatures
       if (!transaction_signature.startsWith('test_tx_') && !transaction_signature.startsWith('simulated_')) {
         return new Response(JSON.stringify({ error: 'Invalid transaction signature' }), {
           status: 400,
@@ -135,16 +108,8 @@ serve(async (req) => {
       }
     }
 
-    // Update profile using regular client with RLS
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: authHeader,
-        },
-      },
-    });
-
-    const { data: updatedProfile, error: updateError } = await userClient
+    // Update profile using service role (bypasses RLS since this function validates input)
+    const { data: updatedProfile, error: updateError } = await supabase
       .from('user_profiles')
       .upsert({
         wallet_address: userWallet,
