@@ -1,863 +1,339 @@
-import { useNavigate } from 'react-router-dom';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { useCollections } from '@/hooks/useCollections';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Edit, Camera, Trophy, Coins, Star, Users, Info, Grid3x3, User, Trash2, Eye, Plus } from 'lucide-react';
-import { ImageLazyLoad } from '@/components/ImageLazyLoad';
-import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 
-import { useGamifiedProfile } from "@/hooks/useGamifiedProfile";
-import { useUserNFTs } from "@/hooks/useUserNFTs";
-import { useRealtimeCreatorStats } from "@/hooks/useRealtimeCreatorStats";
-import { useCreatorFollows } from "@/hooks/useCreatorFollows";
-import { FollowedAuthorCard } from "@/components/FollowedAuthorCard";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useLikedNFTs } from '@/hooks/useLikedNFTs';
-import { useLikedCollections } from '@/hooks/useLikedCollections';
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { PfpPickerDialog } from '@/components/PfpPickerDialog';
-import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Heart, Users, CheckCircle, Edit2 } from 'lucide-react';
+import { NFTCard } from '@/components/NFTCard';
+import { CollectionCard } from '@/components/CollectionCard';
+import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
+import { UserProfileDisplay } from '@/components/UserProfileDisplay';
 import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { BioEditDialog } from '@/components/BioEditDialog';
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { toast } from 'sonner';
-import profileBanner from '@/assets/profile-banner.jpg';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { PfpPickerDialog } from '@/components/PfpPickerDialog';
+import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useUserNFTs } from '@/hooks/useUserNFTs';
+import { useCollections } from '@/hooks/useCollections';
+import { useLikedNFTs } from '@/hooks/useLikedNFTs';
+import { useLikedCollections } from '@/hooks/useLikedCollections';
+import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
+import { useFilteredNFTs, useFilteredCollections } from '@/hooks/useFilteredData';
 import { supabase } from '@/integrations/supabase/client';
-import { NFTCard } from '@/components/NFTCard';
-import { EditNFTDialog } from '@/components/EditNFTDialog';
-import { useBurnNFT } from '@/hooks/useBurnNFT';
-import { useDeleteCollection } from '@/hooks/useDeleteCollection';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { toast } from 'sonner';
 
-export default function Profile() {
-  const navigate = useNavigate();
-  const { publicKey, connected, connect } = useSolanaWallet();
-  const { collections, loading, refreshCollections } = useCollections();
-  const { likedCollections, toggleLike, isLiked } = useCollectionLikes();
-  const { profile, setNickname, setBio, setPFP, setBanner, getRankBadge, getRankColor, nicknameLoading, bioLoading, pfpLoading } = useGamifiedProfile();
-  const { nfts, refreshNFTs } = useUserNFTs();
-  const { likedNFTs, loading: likedNFTsLoading } = useLikedNFTs();
-  const { likedCollections: likedCollectionsData, loading: likedCollectionsLoading } = useLikedCollections();
-  const { toggleFollow, isFollowing, followedCreators } = useCreatorFollows();
-  const { burning, burnNFT } = useBurnNFT();
-  const { deleting, deleteCollection } = useDeleteCollection();
-  
-  const scrollPositionRef = useRef<number>(0);
-  
-  // Save and restore scroll position instantly with useLayoutEffect
-  useLayoutEffect(() => {
-    const savedScrollPosition = sessionStorage.getItem('profile-scroll-position');
-    if (savedScrollPosition) {
-      window.scrollTo(0, parseInt(savedScrollPosition));
-      sessionStorage.removeItem('profile-scroll-position');
-    }
-  }, []);
+const Profile = () => {
+  const { wallet } = useParams();
+  const { publicKey, connected } = useSolanaWallet();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [showNicknameDialog, setShowNicknameDialog] = useState(false);
+  const [showBioDialog, setShowBioDialog] = useState(false);
+  const [showPfpDialog, setShowPfpDialog] = useState(false);
+  const [showBannerDialog, setShowBannerDialog] = useState(false);
 
-  // Save scroll position before navigating to collection
-  const handleCollectionClick = (collectionId: string, source: string = 'collections', navIds?: string[]) => {
-    sessionStorage.setItem('profile-scroll-position', window.scrollY.toString());
-    
-    let queryString = `from=${source}`;
-    if (navIds && navIds.length > 0) {
-      queryString += `&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-    }
-    
-    navigate(`/collection/${collectionId}?${queryString}`);
-  };
-  
-  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
-    profile?.wallet_address ? [profile.wallet_address, ...followedCreators] : followedCreators
-  );
-  const profileLikes = profile?.wallet_address ? getCreatorFollowerCount(profile.wallet_address) : 0;
-  const nftLikes = profile?.wallet_address ? getCreatorTotalLikeCount(profile.wallet_address) : 0;
-  
-  const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
-  const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
-  const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
-  const [bioDialogOpen, setBioDialogOpen] = useState(false);
-  const [followedProfiles, setFollowedProfiles] = useState<any[]>([]);
-  const [loadingProfiles, setLoadingProfiles] = useState(false);
-  const [editDialogNFTId, setEditDialogNFTId] = useState<string | null>(null);
-  const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    title: string;
-    description: string;
-    onConfirm: () => void;
-    loading?: boolean;
-  }>({
-    open: false,
-    title: '',
-    description: '',
-    onConfirm: () => {},
+  const targetWallet = wallet || publicKey;
+
+  // Data hooks
+  const { nfts, loading: nftsLoading, fetchUserNFTs } = useUserNFTs();
+  const { collections, loading: collectionsLoading } = useCollections();
+  const { likedNFTs } = useLikedNFTs();
+  const { likedCollections } = useLikedCollections();
+  const { followedCreators } = useCreatorFollows();
+  const { getLikeCount: getNFTLikeCount } = useNFTLikeCounts();
+  const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
+
+  // Filter states
+  const [nftFilters, setNftFilters] = useState<FilterState>({
+    searchQuery: '',
+    source: 'all',
+    sortBy: 'newest',
+    includeExplicit: false,
+    category: '',
+    minPrice: '',
+    maxPrice: '',
+    minRoyalty: '',
+    maxRoyalty: '',
+    listing: 'all'
   });
 
-  // Optimized: Fetch profile details for followed creators with stats in single query
+  const [collectionFilters, setCollectionFilters] = useState<FilterState>({
+    searchQuery: '',
+    source: 'all',
+    sortBy: 'newest',
+    includeExplicit: false,
+    category: '',
+    minPrice: '',
+    maxPrice: '',
+    minRoyalty: '',
+    maxRoyalty: ''
+  });
+
   useEffect(() => {
-    const fetchFollowedProfiles = async () => {
-      if (followedCreators.length === 0) {
-        setFollowedProfiles([]);
-        return;
-      }
+    setIsOwnProfile(connected && targetWallet === publicKey);
+  }, [connected, targetWallet, publicKey]);
 
-      setLoadingProfiles(true);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!targetWallet) return;
+      
+      setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select(`
-            wallet_address, 
-            nickname, 
-            bio, 
-            profile_image_url,
-            creators_public_stats!wallet_address (
-              follower_count,
-              total_likes_count
-            )
-          `)
-          .in('wallet_address', followedCreators);
-
-        if (error) throw error;
+        const { data, error } = await supabase.functions.invoke('get-profile', {
+          body: { wallet_address: targetWallet }
+        });
         
-        // Include stats in profile data
-        const profilesWithStats = (data || []).map(profile => ({
-          ...profile,
-          follower_count: (profile as any).creators_public_stats?.[0]?.follower_count || 0,
-          total_likes_count: (profile as any).creators_public_stats?.[0]?.total_likes_count || 0,
-        }));
+        if (error) {
+          console.error('Error fetching profile:', error);
+          toast.error('Failed to load profile');
+          return;
+        }
         
-        setFollowedProfiles(profilesWithStats);
+        setProfile(data?.profile || null);
       } catch (error) {
-        console.error('Error fetching followed profiles:', error);
-        setFollowedProfiles([]);
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile');
       } finally {
-        setLoadingProfiles(false);
+        setLoading(false);
       }
     };
 
-    fetchFollowedProfiles();
-  }, [followedCreators]);
+    fetchProfile();
+  }, [targetWallet]);
 
-  const renderCollectionsGrid = () => {
-    if (collections.length === 0) {
-      return (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No collections created yet</p>
-          <Button onClick={() => navigate('/mint')}>Create Your First Collection</Button>
-        </div>
-      );
-    }
+  // Get collections created by this user
+  const userCollections = useMemo(() => {
+    return collections.filter(collection => 
+      collection.creator_address === targetWallet && collection.is_active
+    );
+  }, [collections, targetWallet]);
 
-    const collectionIds = collections.map(c => c.id);
+  // Get NFTs and Collections from liked creators
+  const nftsFromLikedCreators = useMemo(() => {
+    return nfts.filter(nft => followedCreators.includes(nft.creator_address));
+  }, [nfts, followedCreators]);
 
+  const collectionsFromLikedCreators = useMemo(() => {
+    return userCollections.filter(collection => 
+      followedCreators.includes(collection.creator_address)
+    );
+  }, [userCollections, followedCreators]);
+
+  // Apply filters
+  const filteredNFTs = useFilteredNFTs(
+    nfts,
+    likedNFTs,
+    nftsFromLikedCreators,
+    followedCreators,
+    nftFilters,
+    getNFTLikeCount
+  );
+
+  const filteredCollections = useFilteredCollections(
+    userCollections,
+    likedCollections,
+    collectionsFromLikedCreators,
+    followedCreators,
+    collectionFilters,
+    getCollectionLikeCount
+  );
+
+  if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {collections.map((collection) => (
-          <Card 
-            key={collection.id}
-            data-testid="collection-card"
-            className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-            onClick={() => handleCollectionClick(collection.id, 'collections', collectionIds)}
-          >
-            <div className="aspect-square relative overflow-hidden group/image">
-              <ImageLazyLoad
-                src={collection.image_url}
-                alt={collection.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                fallbackSrc="/placeholder.svg"
-              />
-              
-              {/* Heart button for liking collections */}
-              <button
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  if (!connected) {
-                    await connect();
-                    return;
-                  }
-                  toggleLike(collection.id);
-                }}
-                className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  connected && isLiked(collection.id)
-                    ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
-                    : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
-                }`}
-                title={!connected ? "Connect to like" : isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
-                aria-label={!connected ? "Connect to like this collection" : isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
-              >
-                <Heart className={`w-4 h-4 ${connected && isLiked(collection.id) ? 'fill-current' : ''}`} />
-              </button>
-
-              {/* Status badges */}
-              <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-                {collection.is_live && (
-                  <Badge variant="secondary" className="bg-green-500/90 text-white">
-                    Live
-                  </Badge>
-                )}
-                {collection.verified && (
-                  <Badge variant="secondary" className="bg-blue-500/90 text-white">
-                    Verified
-                  </Badge>
-                )}
-              </div>
-
-              {/* Overlay Actions - Simplified to View only */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                <div className="flex items-center justify-center gap-1 px-2 pointer-events-auto">
-                  <Button
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCollectionClick(collection.id, 'collections', collectionIds);
-                    }}
-                    className="bg-white/90 text-black hover:bg-white hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
-                    title="View Collection"
-                    aria-label="View Collection Details"
-                  >
-                    <Eye className="w-4 h-4" />
-                    <span className="ml-1 hidden sm:inline">View</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <CardContent className="p-4 flex flex-col h-full">
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                  {collection.name}
-                </h3>
-                
-                {collection.site_description && (
-                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                    {collection.site_description}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {collection.items_redeemed}/{collection.max_supply || '∞'} minted
-                  </span>
-                  {collection.mint_price > 0 && (
-                    <span className="font-medium">
-                      <span className="text-primary">Price</span> {collection.mint_price} SOL
-                    </span>
-                  )}
-                </div>
-            </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-48 bg-muted rounded-lg"></div>
+          <div className="h-32 bg-muted rounded-lg"></div>
+        </div>
       </div>
     );
-  };
+  }
 
-  if (!connected) {
+  if (!targetWallet) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
-        <div className="container mx-auto px-4 py-16">
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              My Profile
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Connect your Solana wallet to view and manage your NFT collections, track your creations, and engage with the community.
-            </p>
-          </div>
-
-          {/* Connect Wallet Card */}
-          <div className="max-w-md mx-auto mb-16">
-            <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-8 text-center">
-                <h3 className="text-xl font-semibold mb-4">Connect Your Wallet</h3>
-                <p className="text-muted-foreground mb-6">
-                  Connect your Solana wallet to access your profile and manage your NFT collections.
-                </p>
-                <Button 
-                  onClick={() => connect()}
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  Connect Wallet
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Feature highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-card/30 border-primary/10">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Manage Collections</h3>
-                <p className="text-sm text-muted-foreground">
-                  View and organize all your created NFT collections in one place.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/30 border-primary/10">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <User className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Profile Customization</h3>
-                <p className="text-sm text-muted-foreground">
-                  Customize your profile with banners, avatars, and personal information.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/30 border-primary/10">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Badge variant="outline" className="border-primary/20 text-primary">
-                    <span className="text-xs">LIVE</span>
-                  </Badge>
-                </div>
-                <h3 className="font-semibold mb-2">Track Performance</h3>
-                <p className="text-sm text-muted-foreground">
-                  Monitor your collection metrics, likes, and community engagement.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold text-muted-foreground">
+          Connect your wallet to view profile
+        </h1>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Profile</h1>
-        <div className="flex items-center gap-3">
-          <Button onClick={() => navigate('/mint')}>Create New Collection</Button>
-        </div>
-      </div>
-
-      {/* Enhanced Profile Section */}
-      <div className="mb-8">
-        {/* Universal Banner */}
-        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden group">
-          <ImageLazyLoad
-            src={profile?.banner_image_url || profileBanner}
-            alt="Profile Banner"
-            className="absolute inset-0 w-full h-full object-cover"
-            fallbackSrc="/placeholder.svg"
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* Profile Header */}
+      <Card>
+        <CardContent className="p-6">
+          <UserProfileDisplay
+            profile={profile}
+            walletAddress={targetWallet}
+            isOwnProfile={isOwnProfile}
+            onEditNickname={() => setShowNicknameDialog(true)}
+            onEditBio={() => setShowBioDialog(true)}
+            onEditPfp={() => setShowPfpDialog(true)}
+            onEditBanner={() => setShowBannerDialog(true)}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-          
-          {/* Banner Edit Button */}
-          <button
-            onClick={() => setBannerDialogOpen(true)}
-            className="absolute top-4 right-4 p-2 rounded-full bg-background/80 border hover:bg-muted transition opacity-0 group-hover:opacity-100"
-            aria-label="Change banner"
-            title="Change banner (visible on profile & marketplace)"
-          >
-            <Camera className="w-5 h-5" />
-          </button>
-        </AspectRatio>
+        </CardContent>
+      </Card>
 
-        {/* Profile Info */}
-        <div className="flex items-start justify-between mt-4">
-          <div className="flex items-center gap-4">
-            <div className="relative -mt-16">
-              <Avatar className="w-40 h-40 rounded-full border-4 border-background bg-card">
-                <AvatarImage src={profile?.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-                <AvatarFallback className="text-3xl font-bold">
-                  {profile?.nickname?.charAt(0)?.toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <button
-                onClick={() => setPfpDialogOpen(true)}
-                className="absolute bottom-0 right-0 p-2 rounded-full bg-background/80 border hover:bg-muted transition"
-                aria-label="Change profile picture"
-                title="Change profile picture"
-              >
-                <Camera className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="mt-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold">{profile?.nickname || 'Set Nickname'}</h2>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => setNicknameDialogOpen(true)}
-                      className="p-1 h-auto"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <button
-                      onClick={() => profile?.wallet_address && toggleFollow(profile.wallet_address)}
-                      className="transition-colors duration-200"
-                      disabled={!profile?.wallet_address}
-                      aria-label={profile?.wallet_address && isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
-                      title={profile?.wallet_address && isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
-                    >
-                      <Heart className={`w-5 h-5 ${
-                        profile?.wallet_address && isFollowing(profile.wallet_address)
-                          ? 'fill-red-500 text-red-500' 
-                          : 'text-muted-foreground hover:text-red-500'
-                      }`} />
-                    </button>
-                  </div>
-              </div>
-              
-              <p className="text-sm text-muted-foreground mb-2">
-                {publicKey ? `${publicKey.slice(0,4)}...${publicKey.slice(-4)}` : ''}
-              </p>
+      {/* Profile Content */}
+      <Tabs defaultValue="collections" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="collections">
+            My Collections ({userCollections.length})
+          </TabsTrigger>
+          <TabsTrigger value="nfts">
+            My NFTs ({nfts.length})
+          </TabsTrigger>
+        </TabsList>
 
-              {/* Bio Section */}
-              <div className="max-w-md">
-                <div className="flex items-center gap-2">
-                  <p className="text-muted-foreground text-sm italic">
-                    {profile?.bio || 'Add your bio (100 characters max)'}
-                  </p>
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    onClick={() => setBioDialogOpen(true)}
-                    className="p-1 h-auto"
-                  >
-                    <Edit className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TabsContent value="collections" className="space-y-6">
+          <SearchFilterBar
+            filters={collectionFilters}
+            onFiltersChange={setCollectionFilters}
+            showListingFilter={false}
+            showSourceFilter={isOwnProfile}
+            showPriceFilters={true}
+            showRoyaltyFilters={true}
+            placeholder="Search collections..."
+            categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
+          />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <Card className="bg-secondary/5 border-secondary/20">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="inline-flex items-center">
-                        <span className="text-2xl font-bold text-foreground mr-1">
-                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).icon : '🌟'}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {profile?.profile_rank ? getRankBadge(profile.profile_rank).text : 'Starter'}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground mx-2">/</span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {profile?.trade_count || 0}
-                        </span>
-                        <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
-                          <Info className="w-3 h-3 text-white" />
-                        </div>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="text-sm space-y-1">
-                        <p className="font-semibold">🏆 Diamond: 1,000+ trades</p>
-                        <p className="font-semibold">🥇 Gold: 250+ trades</p>
-                        <p className="font-semibold">🥈 Silver: 50+ trades</p>
-                        <p className="font-semibold">🥉 Bronze: 10+ trades</p>
-                        <p className="font-semibold">🌟 Starter: 0-9 trades</p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <p className="text-sm text-muted-foreground">Rank / Trades</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
-                <span className="text-2xl font-bold text-primary">
-                  {nfts?.length || 0} / {collections?.length || 0}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-accent/5 border-accent/20">
-            <CardContent className="p-4 text-center">
-               <div className="flex items-center justify-center mb-2">
-                 <Heart className="w-5 h-5 text-destructive mr-1" />
-                 <span className="text-2xl font-bold text-foreground">
-                   {profileLikes} / {nftLikes}
-                 </span>
-               </div>
-               <p className="text-sm text-muted-foreground">Followers / Likes Received</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-
-      {/* Content Tabs */}
-      <Tabs defaultValue="collections" className="w-full">
-        <div className="w-full overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" >
-          <TabsList className="flex h-12 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground min-w-max md:mx-auto md:justify-center">
-            <TabsTrigger 
-              value="collections" 
-              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
-            >
-              My Collections
-            </TabsTrigger>
-            <TabsTrigger 
-              value="nfts"
-              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
-            >
-              My NFTs
-            </TabsTrigger>
-            <TabsTrigger 
-              value="liked-collections"
-              className="flex-shrink-0 whitespace-nowrap px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
-            >
-              Collections I Like
-            </TabsTrigger>
-            <TabsTrigger 
-              value="liked-nfts"
-              className="flex-shrink-0 whitespace-nowrap px-3 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
-            >
-              NFTs I Like
-            </TabsTrigger>
-            <TabsTrigger 
-              value="following"
-              className="flex-shrink-0 whitespace-nowrap px-2 md:px-4 py-2 text-xs md:text-sm font-medium transition-all"
-            >
-              Authors I Follow
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        <TabsContent value="collections" className="mt-6">
-          {/* CRITICAL: Only show loading when no collections exist - prevents grid from unmounting */}
-          {loading && collections.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading your collections...</p>
-              <p className="text-sm text-muted-foreground mt-2">This may take a moment</p>
-            </div>
-          ) : (
-            <div data-testid="collection-grid">
-              {renderCollectionsGrid()}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="nfts" className="mt-6">
-          {nfts && nfts.length > 0 ? (
+          {collectionsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {nfts.map((nft) => {
-                const allNFTIds = nfts.map(n => n.id);
-                const queryString = `from=nfts&tab=nfts&nav=${encodeURIComponent(JSON.stringify(allNFTIds))}`;
-                
-                return (
-                  <NFTCard
-                    key={nft.id}
-                    nft={{
-                      id: nft.id,
-                      name: nft.name,
-                      image_url: nft.image_url || '',
-                      price: nft.price,
-                      owner_address: nft.owner_address,
-                      creator_address: nft.creator_address,
-                      mint_address: nft.mint_address,
-                      is_listed: nft.is_listed || false,
-                      collection_id: nft.collection_id,
-                      description: nft.description,
-                    }}
-                    navigationQuery={queryString}
-                    // Removed overlayActions - Edit/Burn moved to NFT detail page
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No NFTs found</p>
-              <Button onClick={() => navigate('/marketplace')}>Browse Marketplace</Button>
-            </div>
-          )}
-          
-          {/* Edit NFT Dialog */}
-          {editDialogNFTId && nfts && (
-            <EditNFTDialog 
-              nft={nfts.find(n => n.id === editDialogNFTId)!} 
-              onUpdate={() => {
-                refreshNFTs();
-                setEditDialogNFTId(null);
-              }}
-              open={true}
-              onOpenChange={(open) => !open && setEditDialogNFTId(null)}
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value="liked-collections" className="mt-6">
-          {likedCollectionsLoading && likedCollectionsData.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading liked collections...</p>
-            </div>
-          ) : likedCollectionsData.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {likedCollectionsData.map((collection) => (
-                <Card 
-                  key={collection.id}
-                  className="group hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-                  onClick={() => {
-                    const likedCollectionIds = likedCollectionsData.map(c => c.id);
-                    handleCollectionClick(collection.id, 'favorites', likedCollectionIds);
-                  }}
-                >
-                  <div className="aspect-square relative overflow-hidden">
-                    <ImageLazyLoad
-                      src={collection.image_url}
-                      alt={collection.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      fallbackSrc="/placeholder.svg"
-                    />
-                    
-                    {/* Heart button for unliking collections */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleLike(collection.id);
-                      }}
-                      className="absolute top-2 right-2 p-2 rounded-full transition-all duration-200 bg-red-500 text-white hover:bg-red-600 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2"
-                      title="Unlike Collection"
-                      aria-label="Unlike this collection"
-                    >
-                      <Heart className="w-4 h-4 fill-current" />
-                    </button>
-
-                    {/* Status badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {collection.is_live && (
-                        <Badge variant="secondary" className="bg-green-500/90 text-white">
-                          Live
-                        </Badge>
-                      )}
-                      {collection.verified && (
-                        <Badge variant="secondary" className="bg-blue-500/90 text-white">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
                   </div>
-
-                  <CardContent className="p-4 flex flex-col h-full">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                        {collection.name}
-                      </h3>
-                      
-                      {collection.site_description && (
-                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                          {collection.site_description}
-                        </p>
-                      )}
-
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          {collection.items_redeemed}/{collection.max_supply || '∞'} minted
-                        </span>
-                        {collection.mint_price > 0 && (
-                          <span className="font-medium">
-                            <span className="text-primary">Price</span> {collection.mint_price} SOL
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <p className="text-xs text-muted-foreground/70">
-                      Liked on {new Date(collection.liked_at).toLocaleDateString()}
-                    </p>
-                  </CardContent>
-                </Card>
+                </div>
+              ))}
+            </div>
+          ) : filteredCollections.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredCollections.map((collection) => (
+                <CollectionCard
+                  key={collection.id}
+                  collection={collection}
+                  showOwnerInfo={!isOwnProfile}
+                  likeCount={getCollectionLikeCount(collection.id)}
+                />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">No liked collections yet</p>
-              <p className="text-sm text-muted-foreground/70 mb-4">
-                Explore the marketplace and like collections to see them here
-              </p>
-              <Button onClick={() => navigate('/marketplace?tab=collections')}>Browse Collections</Button>
-            </div>
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground">
+                  {collectionFilters.searchQuery || collectionFilters.source !== 'all'
+                    ? 'No collections match your filters'
+                    : isOwnProfile
+                    ? 'You haven\'t created any collections yet'
+                    : 'This user hasn\'t created any collections yet'
+                  }
+                </p>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
 
-        <TabsContent value="liked-nfts" className="mt-6">
-          {likedNFTsLoading && likedNFTs.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading liked NFTs...</p>
-            </div>
-          ) : likedNFTs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {likedNFTs.map((nft) => {
-                const likedNFTIds = likedNFTs.map(n => n.id);
-                const queryString = `from=profile&liked_nfts=${likedNFTIds.join(',')}`;
-                
-                return (
-                  <NFTCard
-                    key={nft.id}
-                    nft={{
-                      id: nft.id,
-                      name: nft.name,
-                      image_url: nft.image_url || '',
-                      price: nft.price,
-                      owner_address: nft.owner_address,
-                      creator_address: nft.creator_address,
-                      mint_address: nft.mint_address,
-                      is_listed: nft.is_listed,
-                      collection_id: nft.collection_id,
-                      description: nft.description,
-                      attributes: nft.attributes,
-                    }}
-                    navigationQuery={queryString}
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">No liked NFTs yet</p>
-              <p className="text-sm text-muted-foreground/70 mb-4">
-                Explore the marketplace and like NFTs to see them here
-              </p>
-              <Button onClick={() => navigate('/marketplace')}>Browse NFTs</Button>
-            </div>
-          )}
-        </TabsContent>
+        <TabsContent value="nfts" className="space-y-6">
+          <SearchFilterBar
+            filters={nftFilters}
+            onFiltersChange={setNftFilters}
+            showListingFilter={isOwnProfile}
+            showSourceFilter={isOwnProfile}
+            showPriceFilters={true}
+            showRoyaltyFilters={false}
+            placeholder="Search NFTs..."
+            categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
+          />
 
-        <TabsContent value="following" className="mt-6">
-          {loadingProfiles && followedProfiles.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading followed profiles...</p>
-            </div>
-          ) : followedProfiles.length > 0 ? (
+          {nftsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {followedProfiles.map((followedProfile) => {
-                const followerCount = getCreatorFollowerCount(followedProfile.wallet_address);
-                return (
-                  <FollowedAuthorCard
-                    key={followedProfile.wallet_address}
-                    wallet_address={followedProfile.wallet_address}
-                    nickname={followedProfile.nickname}
-                    bio={followedProfile.bio}
-                    profile_image_url={followedProfile.profile_image_url}
-                    followerCount={followerCount}
-                    onClick={(walletAddress) => navigate(`/profile/${walletAddress}`)}
-                  />
-                );
-              })}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredNFTs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredNFTs.map((nft) => (
+                <NFTCard
+                  key={nft.id}
+                  nft={nft}
+                  showOwnerInfo={!isOwnProfile}
+                  navigationQuery="from=profile"
+                />
+              ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">You haven't liked any profiles yet</p>
-              <p className="text-sm text-muted-foreground/70 mb-4">
-                Like profiles to see them here - including your own!
-              </p>
-              <Button onClick={() => navigate('/marketplace?tab=creators')}>Explore Creators</Button>
-            </div>
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground">
+                  {nftFilters.searchQuery || nftFilters.source !== 'all' || nftFilters.listing !== 'all'
+                    ? 'No NFTs match your filters'
+                    : isOwnProfile
+                    ? 'You don\'t own any NFTs yet'
+                    : 'This user doesn\'t own any NFTs yet'
+                  }
+                </p>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
       </Tabs>
 
-      {/* Bio Edit Dialog */}
-      <BioEditDialog
-        open={bioDialogOpen}
-        onOpenChange={setBioDialogOpen}
-        profile={profile}
-        loading={bioLoading}
-        currentBio={profile?.bio}
-        onConfirm={async (bio) => {
-          const ok = await setBio(bio, 'simulated_transaction_signature');
-          if (ok) {
-            toast.success('Bio updated successfully!');
-          }
-          return ok;
-        }}
-      />
+      {/* Edit Dialogs */}
+      {isOwnProfile && (
+        <>
+          <NicknameEditDialog
+            open={showNicknameDialog}
+            onOpenChange={setShowNicknameDialog}
+            currentNickname={profile?.display_name || ''}
+            onSuccess={(newNickname) => {
+              setProfile(prev => ({ ...prev, display_name: newNickname }));
+            }}
+          />
 
-      {/* Nickname Edit Dialog */}
-      <NicknameEditDialog
-        open={nicknameDialogOpen}
-        onOpenChange={setNicknameDialogOpen}
-        profile={profile}
-        loading={nicknameLoading}
-        currentNickname={profile?.nickname}
-        onConfirm={async (nickname) => {
-          const ok = await setNickname(nickname, 'simulated_transaction_signature');
-          if (ok) {
-            toast.success('Nickname updated successfully!');
-          }
-          return ok;
-        }}
-      />
+          <BioEditDialog
+            open={showBioDialog}
+            onOpenChange={setShowBioDialog}
+            currentBio={profile?.bio || ''}
+            onSuccess={(newBio) => {
+              setProfile(prev => ({ ...prev, bio: newBio }));
+            }}
+          />
 
-      {/* PFP Selection Dialog */}
-      <PfpPickerDialog
-        open={pfpDialogOpen}
-        onOpenChange={setPfpDialogOpen}
-        profile={profile}
-        nfts={nfts}
-        loading={pfpLoading}
-        isFirstChange={!profile?.profile_image_url}
-        onConfirm={async (mint) => {
-          const ok = await setPFP(mint, 'simulated_transaction_signature');
-          if (ok) {
-            toast.success('Profile picture updated!');
-          }
-          return ok;
-        }}
-      />
+          <PfpPickerDialog
+            open={showPfpDialog}
+            onOpenChange={setShowPfpDialog}
+            onSuccess={(pfpUrl) => {
+              setProfile(prev => ({ ...prev, profile_image_url: pfpUrl }));
+            }}
+          />
 
-      {/* Banner Selection Dialog */}
-      <BannerPickerDialog
-        open={bannerDialogOpen}
-        onOpenChange={setBannerDialogOpen}
-        profile={profile}
-        loading={bioLoading} // Reusing bio loading state
-        isFirstChange={false} // Banner changes are never free
-          onConfirm={async (file) => {
-            const ok = await setBanner(file);
-            return ok;
-          }}
-        />
-        
-        {/* Confirm Dialog */}
-        <ConfirmDialog
-          data-testid="confirm-dialog"
-          open={confirmDialog.open}
-          onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
-          title={confirmDialog.title}
-          description={confirmDialog.description}
-          confirmText="Confirm"
-          cancelText="Cancel"
-          variant="destructive"
-          onConfirm={confirmDialog.onConfirm}
-          loading={confirmDialog.loading}
-        />
-      </div>
-    );
-  }
+          <BannerPickerDialog
+            open={showBannerDialog}
+            onOpenChange={setShowBannerDialog}
+            onSuccess={(bannerUrl) => {
+              setProfile(prev => ({ ...prev, banner_image_url: bannerUrl }));
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Profile;

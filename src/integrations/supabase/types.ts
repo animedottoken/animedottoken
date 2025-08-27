@@ -853,6 +853,13 @@ export type Database = {
           like_count: number
         }[]
       }
+      get_collection_like_counts_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          collection_id: string
+          like_count: number
+        }[]
+      }
       get_collections_authenticated: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1034,6 +1041,13 @@ export type Database = {
           platform_fee_percentage: number
           platform_wallet_address: string
           updated_at: string
+        }[]
+      }
+      get_nft_like_counts_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          like_count: number
+          nft_id: string
         }[]
       }
       get_nfts_authenticated: {
