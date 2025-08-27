@@ -122,7 +122,7 @@ export const TopNav = () => {
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-background border-border">
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border z-50">
               {/* Navigation Items */}
               <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
                 <Coins className="h-4 w-4" />
