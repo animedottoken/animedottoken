@@ -101,7 +101,7 @@ const Profile = () => {
           return;
         }
         
-        console.log('Profile data received:', data);
+        
         setProfile(data || null);
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -226,7 +226,7 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="relative">
         {/* Banner */}
-        <div className="relative h-64 rounded-lg overflow-hidden group">
+        <div className="relative h-64 rounded-lg overflow-hidden group" data-testid="profile-banner">
           <img 
             src={profile?.banner_image_url || defaultBanner} 
             alt="Profile Banner" 
@@ -251,7 +251,7 @@ const Profile = () => {
           <div className="flex flex-col sm:flex-row sm:items-end gap-6">
             {/* Avatar */}
             <div className="relative group">
-              <div className="w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
+              <div className="w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
                 {profile?.profile_image_url ? (
                   <img 
                     src={profile.profile_image_url} 
@@ -280,7 +280,7 @@ const Profile = () => {
             <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4 min-h-40 sm:min-h-44">
               {/* Name & Edit */}
               <div className="flex items-center gap-3 group">
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
                   {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
                 </h1>
                 {isOwnProfile && (
@@ -315,21 +315,30 @@ const Profile = () => {
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>
-                        {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
-                          ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                          : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
-                      </p>
+                      <div className="space-y-2">
+                        <p className="font-semibold">Ranking System</p>
+                        <div className="space-y-1 text-sm">
+                          <div>🌟 <strong>Starter:</strong> 0-9 trades</div>
+                          <div>🥉 <strong>Bronze:</strong> 10-49 trades</div>
+                          <div>🥈 <strong>Silver:</strong> 50-199 trades</div>
+                          <div>🥇 <strong>Gold:</strong> 200-999 trades</div>
+                          <div>🏆 <strong>Diamond:</strong> 1000+ trades</div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
+                            ? 'Trade NFTs to unlock higher ranks and exclusive benefits!'
+                            : `You have ${profile?.trade_count ?? 0} trades completed.`}
+                        </p>
+                      </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
 
               {/* Bio */}
-              {(() => { console.log('Bio check - profile:', profile, 'bio:', profile?.bio); return null; })()}
               {profile?.bio ? (
                 <div className="flex items-start gap-2 group">
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem]" data-testid="profile-bio">
                     {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
                   </p>
                   {isOwnProfile && (
