@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 const FAVORITES_EVENT = 'favorites-updated';
 interface Favorite {
   id: string;

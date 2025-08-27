@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, TrendingUp, Crown, Rocket } from 'lucide-react';
 import { useBoostedListings } from '@/hooks/useBoostedListings';
 import { useToast } from '@/hooks/use-toast';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface BoostModalProps {
   isOpen: boolean;

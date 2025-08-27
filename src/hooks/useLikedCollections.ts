@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface LikedCollection {
   id: string;

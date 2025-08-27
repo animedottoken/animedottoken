@@ -12,7 +12,7 @@ import { Slider } from '@/components/ui/slider';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Upload, Image as ImageIcon, Loader2, Plus, Palette, Settings, Coins } from 'lucide-react';
 import { useCollections, type CreateCollectionData } from '@/hooks/useCollections';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 
 interface CollectionCreatorProps {

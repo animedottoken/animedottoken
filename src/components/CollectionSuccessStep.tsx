@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Copy, Zap, Loader2 } from "lucide-react";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { supabase } from "@/integrations/supabase/client";

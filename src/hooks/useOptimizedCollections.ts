@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 // Separate interfaces for masked vs user data
 interface Collection {

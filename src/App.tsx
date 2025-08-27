@@ -10,7 +10,7 @@ import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
 import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
-import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
+import { SolanaWalletProvider } from "@/contexts/MockSolanaWalletContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";

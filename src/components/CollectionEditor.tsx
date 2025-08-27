@@ -7,7 +7,7 @@ import { Settings, Image, DollarSign, Users, Info, Trash2, Play, Pause, Flame, C
 import { ConfirmDialog } from './ConfirmDialog';
 import { Collection, useCollections } from '@/hooks/useCollections';
 import { FlexibleFieldEditor } from './FlexibleFieldEditor';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
 import { useDeleteCollection } from '@/hooks/useDeleteCollection';
 import { useBurnAllNFTs } from '@/hooks/useBurnAllNFTs';

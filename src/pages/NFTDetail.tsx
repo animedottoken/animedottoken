@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { BidModal } from "@/components/BidModal";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 import { EditNFTDialog } from "@/components/EditNFTDialog";
 import { normalizeAttributes } from '@/lib/attributes';

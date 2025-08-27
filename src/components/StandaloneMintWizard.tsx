@@ -13,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, ArrowLeft, Upload, FileText, CheckCircle, Image as ImageIcon, X, Circle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useStandaloneMint, StandaloneNFTData } from '@/hooks/useStandaloneMint';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useCollection } from '@/hooks/useCollection';
 import { useCollections } from '@/hooks/useCollections';
 import { toast } from 'sonner';

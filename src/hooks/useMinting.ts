@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { solanaService } from '@/services/solanaService';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { solanaService } from '@/services/mockSolanaService';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { toast } from 'sonner';
 
 export interface MintResult {

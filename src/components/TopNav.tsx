@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
 
 type RouteItem = {

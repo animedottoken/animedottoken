@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useMintQueue } from '@/hooks/useMintQueue';
 import { MintQueueStatus } from '@/components/MintQueueStatus';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Collection {

@@ -3,7 +3,7 @@ import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { Zap, Coins, Users, Layers, FileImage } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
 export default function Mint() {

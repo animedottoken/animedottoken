@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 export const GamifiedProfileCard = () => {
   const { publicKey } = useSolanaWallet();
   const {

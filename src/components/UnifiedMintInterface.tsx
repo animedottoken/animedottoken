@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { CollectionBasicsStep } from './CollectionBasicsStep';
 import { CollectionSettingsStep } from './CollectionSettingsStep';
 import { CollectionReviewStep } from './CollectionReviewStep';

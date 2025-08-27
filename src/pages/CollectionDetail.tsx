@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useCollections } from "@/hooks/useCollections";
 import { NFTCard } from "@/components/NFTCard";
 

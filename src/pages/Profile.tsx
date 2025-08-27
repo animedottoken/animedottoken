@@ -15,7 +15,7 @@ import { UserProfileDisplay } from '@/components/UserProfileDisplay';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useCollections } from '@/hooks/useCollections';
 import { useLikedNFTs } from '@/hooks/useLikedNFTs';
