@@ -248,38 +248,38 @@ const Profile = () => {
           )}
         </div>
 
-        {/* Profile Content */}
-        <div className="relative -mt-20 px-6 pb-6">
-          <div className="flex flex-col sm:flex-row sm:items-end gap-6">
-            {/* Avatar */}
-            <div className="relative group">
-              <div className="w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
-                {profile?.profile_image_url ? (
-                  <img 
-                    src={profile.profile_image_url} 
-                    alt="Profile Picture" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                    {targetWallet?.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
-              </div>
-              {/* Edit overlay - shows on hover */}
-              {isOwnProfile && (
-                <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
-                  onClick={() => setShowPfpDialog(true)}>
-                  <div className="text-white text-center">
-                    <Camera className="h-6 w-6 mx-auto mb-1" />
-                    <span className="text-sm font-medium">Edit</span>
-                  </div>
+        {/* Avatar - overlapping banner */}
+        <div className="relative -mt-20 px-6">
+          <div className="relative group w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
+            <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
+              {profile?.profile_image_url ? (
+                <img 
+                  src={profile.profile_image_url} 
+                  alt="Profile Picture" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
+                  {targetWallet?.slice(0, 2).toUpperCase()}
                 </div>
               )}
             </div>
+            {/* Edit overlay - shows on hover */}
+            {isOwnProfile && (
+              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                onClick={() => setShowPfpDialog(true)}>
+                <div className="text-white text-center">
+                  <Camera className="h-6 w-6 mx-auto mb-1" />
+                  <span className="text-sm font-medium">Edit</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-            {/* Profile Info */}
-            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4 min-h-40 sm:min-h-44">
+        {/* Profile Info - below banner */}
+        <div className="px-6 pt-4 pb-6">
+          <div className="space-y-3">
               {/* Name & Edit */}
               <div className="flex items-center gap-3 group">
                 <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
@@ -436,7 +436,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Profile Content */}
       <Tabs defaultValue="collections" className="space-y-6">
