@@ -80,7 +80,11 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!targetWallet) return;
+      if (!targetWallet) {
+        // No wallet connected or provided via URL -> show connect message
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {
