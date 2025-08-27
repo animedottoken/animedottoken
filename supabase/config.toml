@@ -32,13 +32,13 @@ verify_jwt = true  # Requires authenticated user
 verify_jwt = false  # Public read function
 
 [functions.set-nickname]
-verify_jwt = true  # Requires authenticated user and payment verification
+verify_jwt = false  # Public function with wallet validation and rate limiting
 
 [functions.unlock-pfp]
 verify_jwt = true  # Requires authenticated user and transaction verification
 
 [functions.set-pfp]
-verify_jwt = true  # Requires authenticated user and NFT ownership verification
+verify_jwt = false  # Public function with wallet + ownership validation
 
 [functions.get-anime-price]
 verify_jwt = false  # Public read function
