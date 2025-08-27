@@ -1,7 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+import nacl from "https://esm.sh/tweetnacl@1.0.3";
+import bs58 from "https://esm.sh/bs58@6.0.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": process.env.NODE_ENV === 'production' 
     ? "https://*.lovable.app" 
@@ -17,29 +18,29 @@ serve(async (req) => {
   }
 
   try {
-    // Extract JWT token from Authorization header
     const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
-        status: 401,
-        headers: corsHeaders,
-      });
-    }
 
-    const { creator_wallet, follower_wallet, action } = await req.json();
+    const {
+      creator_wallet,
+      follower_wallet,
+      action,
+      signature,
+      message,
+      timestamp,
+    } = await req.json();
 
     if (!creator_wallet || !follower_wallet || !action) {
-      return new Response(JSON.stringify({ error: "creator_wallet, follower_wallet, and action are required" }), {
-        status: 400,
-        headers: corsHeaders,
-      });
+      return new Response(
+        JSON.stringify({ error: "creator_wallet, follower_wallet, and action are required" }),
+        { status: 400, headers: corsHeaders }
+      );
     }
 
     if (!['follow', 'unfollow'].includes(action)) {
-      return new Response(JSON.stringify({ error: "action must be 'follow' or 'unfollow'" }), {
-        status: 400,
-        headers: corsHeaders,
-      });
+      return new Response(
+        JSON.stringify({ error: "action must be 'follow' or 'unfollow'" }),
+        { status: 400, headers: corsHeaders }
+      );
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -53,28 +54,81 @@ serve(async (req) => {
       });
     }
 
-    // Verify JWT with anon key client
-    const jwt = authHeader.substring(7);
     const authClient = createClient(supabaseUrl, supabaseAnonKey);
-    
-    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
+
+    let verified = false;
+
+    // 1) Try JWT verification if provided
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const jwt = authHeader.substring(7);
+      const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
+      if (!userError && user) {
+        const userWallet = (user as any).user_metadata?.wallet_address;
+        if (!userWallet || userWallet !== follower_wallet) {
+          return new Response(JSON.stringify({ error: "Follower wallet address mismatch" }), {
+            status: 403,
+            headers: corsHeaders,
+          });
+        }
+        verified = true;
+      }
+    }
+
+    // 2) If no valid JWT, verify Solana signature
+    if (!verified) {
+      if (!signature || !message || !timestamp) {
+        return new Response(JSON.stringify({ error: "Missing signature parameters" }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      // Replay protection: 10 minutes
+      const now = Date.now();
+      const ts = Number(timestamp);
+      if (!Number.isFinite(ts) || Math.abs(now - ts) > 10 * 60 * 1000) {
+        return new Response(JSON.stringify({ error: "Signature expired" }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      const expected = `toggle-follow:${creator_wallet}:${follower_wallet}:${action}:${timestamp}`;
+      if (message !== expected) {
+        return new Response(JSON.stringify({ error: "Invalid signed message" }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+
+      try {
+        const msgBytes = new TextEncoder().encode(message);
+        const sigBytes = bs58.decode(signature);
+        const pubkeyBytes = bs58.decode(follower_wallet);
+        const ok = nacl.sign.detached.verify(msgBytes, sigBytes, pubkeyBytes);
+        if (!ok) {
+          return new Response(JSON.stringify({ error: "Invalid signature" }), {
+            status: 401,
+            headers: corsHeaders,
+          });
+        }
+        verified = true;
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "Signature verification failed" }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+    }
+
+    if (!verified) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: corsHeaders,
       });
     }
 
-    // Verify the follower wallet matches the authenticated user's wallet
-    const userWallet = user.user_metadata?.wallet_address;
-    if (userWallet !== follower_wallet) {
-      return new Response(JSON.stringify({ error: "Follower wallet address mismatch" }), {
-        status: 403,
-        headers: corsHeaders,
-      });
-    }
-
-    // Use service role for the actual operation (now that auth is verified)
+    // Use service role for the actual operation (authorization already verified)
     const supabase = createClient(supabaseUrl, serviceKey);
 
     if (action === 'follow') {

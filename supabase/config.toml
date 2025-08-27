@@ -56,7 +56,7 @@ verify_jwt = false  # Public read function
 verify_jwt = false  # Public read function
 
 [functions.toggle-follow]
-verify_jwt = true  # Requires authenticated user
+verify_jwt = false  # Public function with wallet-signature verification
 
 [functions.upsert-profile]
 verify_jwt = true  # Requires authenticated user

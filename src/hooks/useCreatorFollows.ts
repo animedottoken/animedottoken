@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import bs58 from 'bs58';
 
 export const useCreatorFollows = () => {
   const [followedCreators, setFollowedCreators] = useState<string[]>([]);
@@ -46,11 +47,29 @@ export const useCreatorFollows = () => {
     try {
       const action = wasFollowing ? 'unfollow' : 'follow';
 
+      // Prepare and sign a message with the connected wallet
+      const anyWin: any = window as any;
+      const providers = anyWin?.solana?.providers ?? [anyWin?.solana].filter(Boolean);
+      const provider = providers?.find((p: any) => typeof p?.signMessage === 'function' && (p?.isConnected || p?.connected)) || providers?.[0];
+      if (!provider?.signMessage) {
+        throw new Error('Wallet does not support message signing');
+      }
+
+      const timestamp = Date.now().toString();
+      const message = `toggle-follow:${creatorWallet}:${publicKey}:${action}:${timestamp}`;
+      const encoded = new TextEncoder().encode(message);
+      const signed = await provider.signMessage(encoded, 'utf8');
+      const sigBytes: Uint8Array = (signed && signed.signature) ? new Uint8Array(signed.signature) : new Uint8Array(signed);
+      const signature = bs58.encode(sigBytes);
+
       const { data, error } = await supabase.functions.invoke('toggle-follow', {
         body: { 
           creator_wallet: creatorWallet,
           follower_wallet: publicKey,
-          action
+          action,
+          message,
+          timestamp,
+          signature,
         },
       });
 
