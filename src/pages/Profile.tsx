@@ -341,46 +341,62 @@ const Profile = () => {
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <div className="text-sm space-y-1">
-                          <div className="flex justify-between items-center p-2 rounded bg-muted/50">
+                          <div className={`flex justify-between items-center p-2 rounded ${
+                            (profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' ? 'bg-muted/50 border border-primary/30' : ''
+                          }`}>
                             <span className="flex items-center gap-2">
                               <Star className="h-4 w-4 text-yellow-500" />
                               <span>Starter:</span>
+                              {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' && (
+                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                              )}
                             </span>
                             <span className="text-muted-foreground">0-9 trades</span>
                           </div>
-                          <div className="flex justify-between items-center p-2 rounded">
+                          <div className={`flex justify-between items-center p-2 rounded ${
+                            profile?.profile_rank === 'BRONZE' ? 'bg-muted/50 border border-primary/30' : ''
+                          }`}>
                             <span className="flex items-center gap-2">
                               🥉 <span>Bronze:</span>
+                              {profile?.profile_rank === 'BRONZE' && (
+                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                              )}
                             </span>
                             <span className="text-muted-foreground">10-49 trades</span>
                           </div>
-                          <div className="flex justify-between items-center p-2 rounded">
+                          <div className={`flex justify-between items-center p-2 rounded ${
+                            profile?.profile_rank === 'SILVER' ? 'bg-muted/50 border border-primary/30' : ''
+                          }`}>
                             <span className="flex items-center gap-2">
                               🥈 <span>Silver:</span>
+                              {profile?.profile_rank === 'SILVER' && (
+                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                              )}
                             </span>
                             <span className="text-muted-foreground">50-199 trades</span>
                           </div>
-                          <div className="flex justify-between items-center p-2 rounded">
+                          <div className={`flex justify-between items-center p-2 rounded ${
+                            profile?.profile_rank === 'GOLD' ? 'bg-muted/50 border border-primary/30' : ''
+                          }`}>
                             <span className="flex items-center gap-2">
                               🥇 <span>Gold:</span>
+                              {profile?.profile_rank === 'GOLD' && (
+                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                              )}
                             </span>
                             <span className="text-muted-foreground">200-999 trades</span>
                           </div>
-                          <div className="flex justify-between items-center p-2 rounded">
+                          <div className={`flex justify-between items-center p-2 rounded ${
+                            profile?.profile_rank === 'DIAMOND' ? 'bg-muted/50 border border-primary/30' : ''
+                          }`}>
                             <span className="flex items-center gap-2">
                               💎 <span>Diamond:</span>
+                              {profile?.profile_rank === 'DIAMOND' && (
+                                <span className="text-xs text-primary font-medium">Your current rank ({profile?.trade_count || 0} trades)</span>
+                              )}
                             </span>
                             <span className="text-muted-foreground">1000+ trades</span>
                           </div>
-                        </div>
-                        <div className="pt-2 border-t text-sm text-center">
-                          <span className="font-medium">Your current rank: </span>
-                          <span className="text-primary">
-                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                              : 'Starter'}
-                          </span>
-                          <span className="text-muted-foreground"> ({profile?.trade_count || 0} trades)</span>
                         </div>
                       </div>
                     </div>
