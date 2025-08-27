@@ -32,7 +32,7 @@ export default function AuthModal({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + window.location.pathname,
+          redirectTo: window.location.origin + '/auth',
         }
       });
       
@@ -73,7 +73,7 @@ export default function AuthModal({
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin + window.location.pathname,
+          emailRedirectTo: window.location.origin + '/auth',
         }
       });
 
