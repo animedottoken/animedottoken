@@ -262,28 +262,30 @@ const Profile = () => {
           />
         </div>
 
-        {/* Avatar and Info Combined - overlapping banner */}
-        <div className="relative -mt-20 px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
-            {/* Avatar Column */}
-            <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
-              <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
-                {profile?.profile_image_url ? (
-                  <img 
-                    src={profile.profile_image_url} 
-                    alt="Profile Picture" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                    {targetWallet?.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
-              </div>
-            </div>
+      </div>
 
-            {/* Info Column */}
-            <div className="pt-4 sm:pt-12 space-y-3">
+      {/* Profile Info - below banner */}
+      <div className="px-6 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
+          {/* Avatar Column */}
+          <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0">
+            <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden" data-testid="profile-avatar">
+              {profile?.profile_image_url ? (
+                <img 
+                  src={profile.profile_image_url} 
+                  alt="Profile Picture" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
+                  {targetWallet?.slice(0, 2).toUpperCase()}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Info Column */}
+          <div className="space-y-3">
               {/* Name Row with Actions */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
@@ -337,23 +339,47 @@ const Profile = () => {
                   </Button>
                 </div>
 
-                {/* Rank Badge */}
+                {/* Rank Badge with Micro Progress */}
                 <div className="flex items-center gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Star className="h-3 w-3 text-yellow-500" />
-                          {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                            ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                            : 'Starter'}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Learn about ranks</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <div className="space-y-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Star className="h-3 w-3 text-yellow-500" />
+                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                              : 'Starter'}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Learn about ranks</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    {/* Micro Progress Line */}
+                    {profile && (() => {
+                      const { progress } = getRankProgress(profile.trade_count || 0);
+                      const rankColors = {
+                        'DEFAULT': 'bg-primary',
+                        'BRONZE': 'bg-amber-600', 
+                        'SILVER': 'bg-slate-400',
+                        'GOLD': 'bg-yellow-500',
+                        'DIAMOND': 'bg-cyan-400'
+                      };
+                      const currentRank = profile.profile_rank || 'DEFAULT';
+                      const colorClass = rankColors[currentRank as keyof typeof rankColors] || 'bg-primary';
+                      
+                      return (
+                        <div className="w-16 h-0.5 bg-muted/40 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full ${colorClass} transition-all duration-300`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      );
+                    })()}
+                  </div>
                   
                   <Dialog open={showRankInfo} onOpenChange={setShowRankInfo}>
                     <DialogTrigger asChild>
@@ -465,28 +491,6 @@ const Profile = () => {
                   <Image className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="font-medium">{nfts.length}</span>
                 </div>
-              </div>
-
-              {/* Inline Progress Bar */}
-              {profile && (
-                <div className="space-y-1">
-                  {(() => {
-                    const { progress, nextRank, needed } = getRankProgress(profile.trade_count || 0);
-                    return nextRank ? (
-                      <>
-                        <div className="text-xs text-muted-foreground">
-                          {profile.trade_count || 0} trades • {needed} to {nextRank.charAt(0) + nextRank.slice(1).toLowerCase()}
-                        </div>
-                        <Progress value={progress} className="h-1" />
-                      </>
-                    ) : (
-                      <div className="text-xs text-muted-foreground">
-                        {profile.trade_count || 0} trades • Max rank achieved! 💎
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
             </div>
           </div>
         </div>
