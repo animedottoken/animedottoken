@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, LogOut, LogIn, Wallet, ChevronDown } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -100,19 +100,6 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
-          {/* Single authentication button */}
-          {user ? (
-            <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              <span className="text-sm font-medium">Sign Out</span>
-            </Button>
-          ) : (
-            <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
-              <LogIn className="h-4 w-4" />
-              <span className="text-sm font-medium">Sign In</span>
-            </Button>
-          )}
-          
           {/* Menu dropdown with navigation + wallet */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -257,19 +244,6 @@ export const TopNav = () => {
           <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
         </Link>
       </div>
-      
-      <nav className="flex items-center gap-2">
-        {/* Single authentication button */}
-        {user ? (
-          <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
-            <LogOut className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-1">
-            <LogIn className="h-4 w-4" />
-          </Button>
-        )}
-      </nav>
     </header>
   );
 };
