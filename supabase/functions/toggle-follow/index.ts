@@ -27,7 +27,6 @@ serve(async (req) => {
       signature,
       message,
       timestamp,
-      session_token,
     } = await req.json();
 
     if (!creator_wallet || !follower_wallet || !action) {
@@ -59,63 +58,8 @@ serve(async (req) => {
 
     let verified = false;
 
-    // 1) Try session token verification if provided
-    if (session_token) {
-      try {
-        const [payloadB64, signatureB64] = session_token.split('.');
-        if (!payloadB64 || !signatureB64) {
-          throw new Error("Invalid session token format");
-        }
-
-        const sessionPayload = atob(payloadB64);
-        const sessionData = JSON.parse(sessionPayload);
-
-        // Verify expiration
-        if (Date.now() > sessionData.expires_at) {
-          return new Response(JSON.stringify({ error: "Session token expired" }), {
-            status: 401,
-            headers: corsHeaders,
-          });
-        }
-
-        // Verify wallet matches
-        if (sessionData.wallet_address !== follower_wallet) {
-          return new Response(JSON.stringify({ error: "Session wallet mismatch" }), {
-            status: 403,
-            headers: corsHeaders,
-          });
-        }
-
-        // Verify HMAC signature
-        const sessionSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-        if (!sessionSecret) {
-          throw new Error("Missing session secret");
-        }
-
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-          "raw",
-          encoder.encode(sessionSecret),
-          { name: "HMAC", hash: "SHA-256" },
-          false,
-          ["verify"]
-        );
-
-        const providedSig = Uint8Array.from(atob(signatureB64), c => c.charCodeAt(0));
-        const isValid = await crypto.subtle.verify("HMAC", key, providedSig, encoder.encode(sessionPayload));
-        
-        if (isValid) {
-          verified = true;
-          console.log(`✅ Session token verified for wallet: ${follower_wallet}`);
-        }
-      } catch (e) {
-        console.log("Session token verification failed:", e.message);
-        // Fall through to other auth methods
-      }
-    }
-
-    // 2) Try JWT verification if provided
-    if (!verified && authHeader && authHeader.startsWith('Bearer ')) {
+    // 1) Try JWT verification if provided
+    if (authHeader && authHeader.startsWith('Bearer ')) {
       const jwt = authHeader.substring(7);
       const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
       if (!userError && user) {
@@ -130,7 +74,7 @@ serve(async (req) => {
       }
     }
 
-    // 3) If no valid session token or JWT, verify Solana signature
+    // 2) If no valid JWT, verify Solana signature
     if (!verified) {
       if (!signature || !message || !timestamp) {
         return new Response(JSON.stringify({ error: "Missing signature parameters" }), {
