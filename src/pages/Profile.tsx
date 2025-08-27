@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Edit2 } from 'lucide-react';
+import { Heart, Users, CheckCircle, Edit2, Camera } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -233,12 +233,13 @@ const Profile = () => {
           {isOwnProfile && (
             <Button
               variant="secondary"
-              size="sm"
-              className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+              size="icon"
+              className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
               onClick={() => setShowBannerDialog(true)}
+              aria-label="Change banner"
             >
-              <Edit2 className="h-4 w-4 mr-2" />
-              Edit Banner
+              <Camera className="h-4 w-4" />
+              <span className="sr-only">Edit banner</span>
             </Button>
           )}
         </div>
@@ -265,16 +266,16 @@ const Profile = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute bottom-2 right-2 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute bottom-2 left-2 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setShowPfpDialog(true)}
                 >
-                  <Edit2 className="h-4 w-4" />
+                  <Camera className="h-4 w-4" />
                 </Button>
               )}
             </div>
 
             {/* Profile Info */}
-            <div className="flex-1 space-y-3 mt-4">
+            <div className="flex-1 space-y-3 mt-4 rounded-xl bg-background/80 border border-border/50 p-4">
               {/* Name & Edit */}
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-foreground">
@@ -292,10 +293,6 @@ const Profile = () => {
                 )}
               </div>
 
-              {/* Full Wallet Address */}
-              <p className="font-mono text-sm text-muted-foreground">
-                {targetWallet}
-              </p>
 
               {/* Bio Section */}
               <div>
@@ -331,12 +328,7 @@ const Profile = () => {
                   {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
                 </Badge>
                 <span className="text-muted-foreground">•</span>
-                <UserProfileDisplay
-                  walletAddress={targetWallet}
-                  showRankBadge={false}
-                  showTradeCount={true}
-                  size="sm"
-                />
+                <span className="text-muted-foreground">{profile?.trade_count ?? 0} trades</span>
               </div>
             </div>
           </div>
