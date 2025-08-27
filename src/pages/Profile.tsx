@@ -276,7 +276,7 @@ const Profile = () => {
             </div>
 
             {/* Profile Info */}
-            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4">
+            <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4 h-40 sm:h-44">
               {/* Name & Edit */}
               <div className="flex items-center gap-3 group">
                 <h1 className="text-2xl font-bold text-foreground">
@@ -327,7 +327,9 @@ const Profile = () => {
               {/* Bio */}
               {profile?.bio ? (
                 <div className="flex items-start gap-2 group">
-                  <p className="text-muted-foreground">{profile.bio}</p>
+                  <p className="text-muted-foreground">
+                    {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
+                  </p>
                   {isOwnProfile && (
                     <Button
                       variant="ghost"
@@ -521,8 +523,28 @@ const Profile = () => {
             profile={profile}
             currentBio={profile?.bio || ''}
             onConfirm={async (newBio) => {
-              setProfile(prev => ({ ...prev, bio: newBio }));
-              return true;
+              try {
+                const { error } = await supabase.functions.invoke('set-bio', {
+                  body: { 
+                    bio: newBio,
+                    transaction_signature: 'simulated_tx_' + Date.now() // Simulate transaction for now
+                  }
+                });
+                
+                if (error) {
+                  console.error('Error updating bio:', error);
+                  toast.error('Failed to update bio');
+                  return false;
+                }
+                
+                setProfile(prev => ({ ...prev, bio: newBio }));
+                toast.success('Bio updated successfully');
+                return true;
+              } catch (error) {
+                console.error('Error updating bio:', error);
+                toast.error('Failed to update bio');
+                return false;
+              }
             }}
           />
 

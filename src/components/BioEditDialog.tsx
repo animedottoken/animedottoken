@@ -68,11 +68,11 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell us about yourself..."
-              maxLength={100}
+              maxLength={90}
               className="resize-none min-h-[80px]"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              {bio.length}/100 characters
+              {bio.length}/90 characters
             </p>
           </div>
 
