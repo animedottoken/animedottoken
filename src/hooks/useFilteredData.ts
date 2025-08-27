@@ -61,7 +61,7 @@ export const useFilteredNFTs = (
       }
 
       // Category filter
-      if (filters.category && nft.category !== filters.category) {
+      if (filters.category !== 'all' && nft.category !== filters.category) {
         return false;
       }
 
@@ -147,7 +147,7 @@ export const useFilteredCollections = (
       }
 
       // Category filter
-      if (filters.category && collection.category !== filters.category) {
+      if (filters.category !== 'all' && collection.category !== filters.category) {
         return false;
       }
 

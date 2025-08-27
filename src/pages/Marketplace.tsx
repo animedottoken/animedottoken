@@ -17,7 +17,7 @@ import { setNavContext } from "@/lib/navContext";
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [includeExplicit, setIncludeExplicit] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
   const [minPrice, setMinPrice] = useState('');
@@ -51,7 +51,7 @@ const Marketplace = () => {
       }
 
       // Category filter
-      if (selectedCategory && nft.category !== selectedCategory) {
+      if (selectedCategory !== 'all' && nft.category !== selectedCategory) {
         return false;
       }
 
@@ -105,7 +105,7 @@ const Marketplace = () => {
       }
 
       // Category filter
-      if (selectedCategory && collection.category !== selectedCategory) {
+      if (selectedCategory !== 'all' && collection.category !== selectedCategory) {
         return false;
       }
 
@@ -141,7 +141,7 @@ const Marketplace = () => {
 
   const clearFilters = () => {
     setSearchQuery('');
-    setSelectedCategory('');
+    setSelectedCategory('all');
     setIncludeExplicit(false);
     setMinPrice('');
     setMaxPrice('');
@@ -174,7 +174,7 @@ const Marketplace = () => {
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All categories</SelectItem>
+                <SelectItem value="all">All categories</SelectItem>
                 <SelectItem value="Art">Art</SelectItem>
                 <SelectItem value="Gaming">Gaming</SelectItem>
                 <SelectItem value="Music">Music</SelectItem>

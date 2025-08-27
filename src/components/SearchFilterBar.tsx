@@ -75,7 +75,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       source: 'all',
       sortBy: 'newest',
       includeExplicit: false,
-      category: '',
+      category: 'all',
       minPrice: '',
       maxPrice: '',
       minRoyalty: '',
@@ -184,7 +184,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All categories</SelectItem>
+              <SelectItem value="all">All categories</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
