@@ -77,7 +77,9 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
   };
 
   const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    
     if (likeLoading || connecting) return;
     
     if (!publicKey) {
@@ -85,7 +87,8 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
       return;
     }
     
-    toggleLike(nft.id);
+    console.log('Toggling like for NFT:', nft.id);
+    await toggleLike(nft.id);
   };
 
   return (

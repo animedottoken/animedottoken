@@ -97,33 +97,34 @@ export const useCollectionLikes = () => {
   useEffect(() => {
     loadLikedCollections();
 
-    // Set up real-time subscription for collection likes
+    // Set up real-time subscription for collection likes - only if connected
+    if (!connected || !publicKey) {
+      return;
+    }
+
+    const channelName = `collection-likes-${publicKey}`;
     const channel = supabase
-      .channel('collection-likes-realtime')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'collection_likes'
+          table: 'collection_likes',
+          filter: `user_wallet=eq.${publicKey}`
         },
         (payload) => {
           console.log('🔥 Real-time collection likes change detected:', payload);
-          console.log('Event type:', payload.eventType);
-          console.log('Table:', payload.table);
           // Refresh liked collections when any change occurs
           loadLikedCollections();
         }
       )
-      .subscribe((status) => {
-        console.log('🔌 Collection Likes subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
-      console.log('🔌 Cleaning up collection likes subscription');
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey]);
+  }, [connected, publicKey, loadLikedCollections]);
 
   return {
     likedCollections,

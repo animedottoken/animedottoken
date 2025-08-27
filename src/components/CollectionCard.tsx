@@ -77,7 +77,9 @@ export const CollectionCard = ({
   };
 
   const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    
     if (likeLoading || connecting) return;
     
     if (!publicKey) {
@@ -85,7 +87,9 @@ export const CollectionCard = ({
       return;
     }
     
-    toggleLike(collection.id);
+    console.log('Toggling like for collection:', collection.id);
+    const success = await toggleLike(collection.id);
+    console.log('Like toggle result:', success);
   };
 
   const displayCreatorInfo = collection.creator_address_masked.includes('...') 
