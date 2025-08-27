@@ -10,6 +10,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
 import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
 import { SolanaWalletProvider } from "@/contexts/SolanaWalletContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
 import CreatorProfile from "./pages/CreatorProfile";
 import NFTDetail from "./pages/NFTDetail";
+import Auth from "./pages/Auth";
 import { ErrorBoundary } from "react-error-boundary";
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -63,6 +65,7 @@ const AppLayout = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -94,6 +97,7 @@ const AppLayout = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -106,8 +110,9 @@ const AppLayout = () => {
 const App = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <HelmetProvider>
-      <SolanaWalletProvider>
-        <TooltipProvider>
+      <AuthProvider>
+        <SolanaWalletProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -116,7 +121,8 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </SolanaWalletProvider>
-    </HelmetProvider>
+    </AuthProvider>
+  </HelmetProvider>
   </ErrorBoundary>
 );
 

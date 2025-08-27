@@ -14,18 +14,66 @@ serve(async (req) => {
   }
 
   try {
-    const { nft_id, user_wallet, action } = await req.json();
-    
-    console.log(`NFT like request: ${action} - NFT: ${nft_id}, Wallet: ${user_wallet}`);
+    // Get JWT from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: "Authorization required", 
+        code: "LKN401",
+        message: "Please log in to like NFTs"
+      }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
 
-    if (!nft_id || !user_wallet || !action) {
+    const jwt = authHeader.replace('Bearer ', '');
+    
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !anonKey || !serviceKey) {
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: "Server configuration error", 
+        code: "LKN500",
+        message: "Service is temporarily unavailable"
+      }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
+    // Verify JWT and get user
+    const supabaseClient = createClient(supabaseUrl, anonKey);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    
+    if (authError || !user) {
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: "Invalid session", 
+        code: "LKN401",
+        message: "Your session has expired. Please log in again."
+      }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
+    const { nft_id, action } = await req.json();
+    
+    console.log(`NFT like request: ${action} - NFT: ${nft_id}, User: ${user.id}`);
+
+    if (!nft_id || !action) {
       return new Response(JSON.stringify({ 
         success: false,
         error: "Missing required fields", 
         code: "LKN400",
-        message: "NFT ID, wallet address, and action are required"
+        message: "NFT ID and action are required"
       }), {
-        status: 200, // Always return 200 for consistent error handling
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -42,21 +90,7 @@ serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !serviceKey) {
-      return new Response(JSON.stringify({ 
-        success: false,
-        error: "Server configuration error", 
-        code: "LKN500",
-        message: "Service is temporarily unavailable"
-      }), {
-        status: 200,
-        headers: corsHeaders,
-      });
-    }
-
+    // Use service role for database operations
     const supabase = createClient(supabaseUrl, serviceKey);
 
     if (action === 'like') {
@@ -65,19 +99,18 @@ serve(async (req) => {
         .from("nft_likes")
         .select("id")
         .eq("nft_id", nft_id)
-        .eq("user_wallet", user_wallet)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (existing) {
         // Already liked - return success (idempotent)
-        console.log(`NFT ${nft_id} already liked by ${user_wallet}`);
+        console.log(`NFT ${nft_id} already liked by user ${user.id}`);
         return new Response(JSON.stringify({ 
           success: true, 
           action: 'like',
           code: "LKN200",
           message: "NFT liked successfully",
-          nft_id,
-          user_wallet
+          nft_id
         }), {
           status: 200,
           headers: corsHeaders,
@@ -87,7 +120,7 @@ serve(async (req) => {
       // Insert new like
       const { error } = await supabase
         .from("nft_likes")
-        .insert({ nft_id, user_wallet });
+        .insert({ nft_id, user_id: user.id });
 
       if (error) {
         console.error("Database error during like:", error);
@@ -113,14 +146,14 @@ serve(async (req) => {
         });
       }
 
-      console.log(`NFT ${nft_id} liked successfully by ${user_wallet}`);
+      console.log(`NFT ${nft_id} liked successfully by user ${user.id}`);
     } else {
       // Unlike - delete if exists (idempotent)
       const { error } = await supabase
         .from("nft_likes")
         .delete()
         .eq("nft_id", nft_id)
-        .eq("user_wallet", user_wallet);
+        .eq("user_id", user.id);
 
       if (error) {
         console.error("Database error during unlike:", error);
@@ -135,7 +168,7 @@ serve(async (req) => {
         });
       }
 
-      console.log(`NFT ${nft_id} unliked successfully by ${user_wallet}`);
+      console.log(`NFT ${nft_id} unliked successfully by user ${user.id}`);
     }
 
     return new Response(JSON.stringify({ 
@@ -143,8 +176,7 @@ serve(async (req) => {
       action,
       code: "LKN200",
       message: `NFT ${action}d successfully`,
-      nft_id,
-      user_wallet
+      nft_id
     }), {
       status: 200,
       headers: corsHeaders,

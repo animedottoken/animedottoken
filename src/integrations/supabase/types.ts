@@ -69,18 +69,21 @@ export type Database = {
           collection_id: string
           created_at: string
           id: string
+          user_id: string | null
           user_wallet: string
         }
         Insert: {
           collection_id: string
           created_at?: string
           id?: string
+          user_id?: string | null
           user_wallet: string
         }
         Update: {
           collection_id?: string
           created_at?: string
           id?: string
+          user_id?: string | null
           user_wallet?: string
         }
         Relationships: [
@@ -242,18 +245,21 @@ export type Database = {
           creator_wallet: string
           follower_wallet: string
           id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           creator_wallet: string
           follower_wallet: string
           id?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           creator_wallet?: string
           follower_wallet?: string
           id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -458,18 +464,21 @@ export type Database = {
           created_at: string
           id: string
           nft_id: string
+          user_id: string | null
           user_wallet: string
         }
         Insert: {
           created_at?: string
           id?: string
           nft_id: string
+          user_id?: string | null
           user_wallet: string
         }
         Update: {
           created_at?: string
           id?: string
           nft_id?: string
+          user_id?: string | null
           user_wallet?: string
         }
         Relationships: [

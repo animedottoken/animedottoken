@@ -13,24 +13,27 @@ serve(async (req) => {
   }
 
   try {
-    const { user_wallet } = await req.json();
-
-    if (!user_wallet) {
+    // Get JWT from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Missing user_wallet', 
-          code: 'LKC400',
-          message: 'Wallet address is required' 
+          error: 'Authorization required', 
+          code: 'LKC401',
+          message: 'Please log in to view liked collections' 
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       );
     }
 
+    const jwt = authHeader.replace('Bearer ', '');
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !anonKey || !supabaseServiceKey) {
       console.error('Missing Supabase configuration');
       return new Response(
         JSON.stringify({ 
@@ -43,14 +46,31 @@ serve(async (req) => {
       );
     }
 
+    // Verify JWT and get user
+    const supabaseClient = createClient(supabaseUrl, anonKey);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid session', 
+          code: 'LKC401',
+          message: 'Your session has expired. Please log in again.' 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Use service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log(`Fetching liked collections for wallet: ${user_wallet}`);
+    console.log(`Fetching liked collections for user: ${user.id}`);
 
     const { data, error } = await supabase
       .from('collection_likes')
       .select('collection_id')
-      .eq('user_wallet', user_wallet);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Database error:', error);
@@ -66,7 +86,7 @@ serve(async (req) => {
     }
 
     const likedCollectionIds = data?.map(l => l.collection_id) || [];
-    console.log(`Found ${likedCollectionIds.length} liked collections for wallet: ${user_wallet}`);
+    console.log(`Found ${likedCollectionIds.length} liked collections for user: ${user.id}`);
 
     return new Response(
       JSON.stringify({ 

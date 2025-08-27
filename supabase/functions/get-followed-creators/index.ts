@@ -18,24 +18,40 @@ Deno.serve(async (req) => {
     // Use service role client to bypass RLS
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { follower_wallet } = await req.json();
-
-    if (!follower_wallet) {
+    // Get JWT from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({ error: 'follower_wallet is required' }),
+        JSON.stringify({ error: 'Authorization header required' }),
         { 
-          status: 400, 
+          status: 401, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
 
-    console.log('🔍 Getting followed creators for wallet:', follower_wallet);
+    const jwt = authHeader.replace('Bearer ', '');
+    
+    // Verify JWT and get user
+    const supabaseClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    console.log('🔍 Getting followed creators for user:', user.id);
 
     const { data, error } = await supabase
       .from('creator_follows')
       .select('creator_wallet')
-      .eq('follower_wallet', follower_wallet);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('❌ Error fetching followed creators:', error);
