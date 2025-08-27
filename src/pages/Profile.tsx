@@ -1,4 +1,5 @@
 
+import defaultBanner from '@/assets/default-profile-banner.jpg';
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -223,14 +224,12 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="relative">
         {/* Banner */}
-        <div className="relative h-64 bg-gradient-to-br from-purple-600/80 to-purple-800/80 rounded-lg overflow-hidden">
-          {profile?.banner_image_url && (
-            <img 
-              src={profile.banner_image_url} 
-              alt="Profile Banner" 
-              className="w-full h-full object-cover"
-            />
-          )}
+        <div className="relative h-64 rounded-lg overflow-hidden">
+          <img 
+            src={profile?.banner_image_url || defaultBanner} 
+            alt="Profile Banner" 
+            className="w-full h-full object-cover"
+          />
           {isOwnProfile && (
             <Button
               variant="secondary"
