@@ -29,10 +29,11 @@ export default function AuthModal({
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/auth',
+          skipBrowserRedirect: true,
         }
       });
       
@@ -42,9 +43,12 @@ export default function AuthModal({
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        onOpenChange(false);
-        onSuccess?.();
+      } else if (data?.url) {
+        if (window.top) {
+          window.top.location.href = data.url;
+        } else {
+          window.location.href = data.url;
+        }
       }
     } catch (error) {
       toast({

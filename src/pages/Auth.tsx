@@ -43,19 +43,27 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth`,
+          skipBrowserRedirect: true,
         }
       });
-      
+
       if (error) {
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
+      } else if (data?.url) {
+        // Open Google's OAuth page in the top window (break out of Lovable iframe)
+        if (window.top) {
+          window.top.location.href = data.url;
+        } else {
+          window.location.href = data.url;
+        }
       }
     } catch (error) {
       toast({
