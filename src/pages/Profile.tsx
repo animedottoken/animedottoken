@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Edit2, Camera, Star } from 'lucide-react';
+import { Heart, Users, CheckCircle, Edit2, Camera, Star, Info } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -16,6 +16,7 @@ import { BioEditDialog } from '@/components/BioEditDialog';
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
@@ -39,6 +40,7 @@ const Profile = () => {
   const [showBioDialog, setShowBioDialog] = useState(false);
   const [showPfpDialog, setShowPfpDialog] = useState(false);
   const [showBannerDialog, setShowBannerDialog] = useState(false);
+  const [showRankInfo, setShowRankInfo] = useState(false);
 
   const targetWallet = wallet || publicKey;
 
@@ -315,24 +317,75 @@ const Profile = () => {
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div className="space-y-2">
-                        <p className="font-semibold">Ranking System</p>
-                        <div className="space-y-1 text-sm">
-                          <div>🌟 <strong>Starter:</strong> 0-9 trades</div>
-                          <div>🥉 <strong>Bronze:</strong> 10-49 trades</div>
-                          <div>🥈 <strong>Silver:</strong> 50-199 trades</div>
-                          <div>🥇 <strong>Gold:</strong> 200-999 trades</div>
-                          <div>🏆 <strong>Diamond:</strong> 1000+ trades</div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
-                            ? 'Trade NFTs to unlock higher ranks and exclusive benefits!'
-                            : `You have ${profile?.trade_count ?? 0} trades completed.`}
-                        </p>
-                      </div>
+                      <p className="text-xs">Learn about ranks</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+                
+                <Dialog open={showRankInfo} onOpenChange={setShowRankInfo}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 p-0"
+                      aria-label="About ranks"
+                      data-testid="rank-info-button"
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Profile Ranks</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="text-sm space-y-1">
+                          <div className="flex justify-between items-center p-2 rounded bg-muted/50">
+                            <span className="flex items-center gap-2">
+                              <Star className="h-4 w-4 text-yellow-500" />
+                              <span>Starter:</span>
+                            </span>
+                            <span className="text-muted-foreground">0-9 trades</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded">
+                            <span className="flex items-center gap-2">
+                              🥉 <span>Bronze:</span>
+                            </span>
+                            <span className="text-muted-foreground">10-49 trades</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded">
+                            <span className="flex items-center gap-2">
+                              🥈 <span>Silver:</span>
+                            </span>
+                            <span className="text-muted-foreground">50-199 trades</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded">
+                            <span className="flex items-center gap-2">
+                              🥇 <span>Gold:</span>
+                            </span>
+                            <span className="text-muted-foreground">200-999 trades</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded">
+                            <span className="flex items-center gap-2">
+                              💎 <span>Diamond:</span>
+                            </span>
+                            <span className="text-muted-foreground">1000+ trades</span>
+                          </div>
+                        </div>
+                        <div className="pt-2 border-t text-sm text-center">
+                          <span className="font-medium">Your current rank: </span>
+                          <span className="text-primary">
+                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                              : 'Starter'}
+                          </span>
+                          <span className="text-muted-foreground"> ({profile?.trade_count || 0} trades)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               {/* Bio */}
