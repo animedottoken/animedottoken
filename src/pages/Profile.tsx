@@ -263,22 +263,22 @@ const Profile = () => {
                   </div>
                 )}
               </div>
+              {/* Edit overlay - shows on hover */}
               {isOwnProfile && (
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute bottom-0 right-0 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => setShowPfpDialog(true)}
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
+                <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                  onClick={() => setShowPfpDialog(true)}>
+                  <div className="text-white text-center">
+                    <Camera className="h-6 w-6 mx-auto mb-1" />
+                    <span className="text-sm font-medium">Edit</span>
+                  </div>
+                </div>
               )}
             </div>
 
             {/* Profile Info */}
             <div className="flex-1 space-y-3 rounded-xl bg-background/80 border border-border/50 p-4">
               {/* Name & Edit */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 group">
                 <h1 className="text-2xl font-bold text-foreground">
                   {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
                 </h1>
@@ -286,7 +286,7 @@ const Profile = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => setShowNicknameDialog(true)}
                   >
                     <Edit2 className="h-4 w-4" />
@@ -301,93 +301,56 @@ const Profile = () => {
                 </Badge>
               </div>
 
-              {/* Bio + Program */}
-              <div className="flex items-start gap-2">
-                {profile?.bio ? (
-                  <div className="flex items-start gap-2 flex-wrap">
-                    <p className="text-muted-foreground">{profile.bio}</p>
-                    {isOwnProfile && (
-                      <Button
-                        variant="ghost"
-                        size="icon" 
-                        className="h-6 w-6 mt-1"
-                        onClick={() => setShowBioDialog(true)}
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                    )}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge variant="secondary" className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />
-                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                              : 'Starter'}
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
-                              ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                              : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                ) : isOwnProfile ? (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowBioDialog(true)}
-                      className="text-sm"
-                    >
-                      Add Bio
-                    </Button>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge variant="secondary" className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />
-                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                              : 'Starter'}
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
-                              ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                              : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                ) : (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Star className="h-3 w-3" />
-                          {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                            ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                            : 'Starter'}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
-                            ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
-                            : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+              {/* Starter Badge */}
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        <Star className="h-3 w-3 text-yellow-500" />
+                        {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                          ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                          : 'Starter'}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {(profile?.profile_rank ?? 'DEFAULT') === 'DEFAULT' 
+                          ? 'New member in our community program. Trade NFTs to unlock higher ranks!'
+                          : `${((profile?.profile_rank ?? 'DEFAULT').charAt(0) + (profile?.profile_rank ?? 'DEFAULT').slice(1).toLowerCase())} rank member with exclusive benefits`}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
+
+              {/* Bio */}
+              {profile?.bio ? (
+                <div className="flex items-start gap-2 group">
+                  <p className="text-muted-foreground">{profile.bio}</p>
+                  {isOwnProfile && (
+                    <Button
+                      variant="ghost"
+                      size="icon" 
+                      className="h-6 w-6 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setShowBioDialog(true)}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              ) : isOwnProfile ? (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowBioDialog(true)}
+                    className="text-sm"
+                  >
+                    Add Bio
+                  </Button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
