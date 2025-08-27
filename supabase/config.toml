@@ -44,10 +44,16 @@ verify_jwt = true  # Requires authenticated user and NFT ownership verification
 verify_jwt = false  # Public read function
 
 [functions.like-nft]
-verify_jwt = true  # Requires authenticated user
+verify_jwt = false  # Public function with wallet validation
 
 [functions.like-collection]
-verify_jwt = true  # Requires authenticated user
+verify_jwt = false  # Public function with wallet validation
+
+[functions.get-liked-nfts]
+verify_jwt = false  # Public read function
+
+[functions.get-liked-collections]
+verify_jwt = false  # Public read function
 
 [functions.toggle-follow]
 verify_jwt = true  # Requires authenticated user

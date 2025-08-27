@@ -1,30 +1,38 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+let toggleDebounceTimeout: NodeJS.Timeout | null = null;
+
 export const useNFTLikes = () => {
   const [likedNFTs, setLikedNFTs] = useState<string[]>([]);
+  const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const { publicKey, connected } = useSolanaWallet();
 
   const loadLikedNFTs = useCallback(async () => {
     if (!connected || !publicKey) {
       setLikedNFTs([]);
+      setOptimisticLikes(new Set());
       return;
     }
 
     try {
-      const { data, error } = await supabase
-        .from('nft_likes')
-        .select('nft_id')
-        .eq('user_wallet', publicKey);
+      const { data, error } = await supabase.functions.invoke('get-liked-nfts', {
+        body: { user_wallet: publicKey }
+      });
 
       if (error) throw error;
-      setLikedNFTs(data?.map(l => l.nft_id) || []);
+      
+      if (data?.success && data.liked_nft_ids) {
+        setLikedNFTs(data.liked_nft_ids);
+      } else {
+        setLikedNFTs([]);
+      }
     } catch (err) {
       console.error('Error loading liked NFTs:', err);
+      setLikedNFTs([]);
     }
   }, [connected, publicKey]);
 
@@ -34,18 +42,33 @@ export const useNFTLikes = () => {
       return false;
     }
 
-    // Validate that nftId is a valid UUID
+    // Validate UUID
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(nftId)) {
-      console.error('Invalid NFT ID provided to toggleLike:', nftId);
       toast.error('Invalid NFT ID - only NFTs can be liked');
       return false;
     }
 
-    const wasLiked = likedNFTs.includes(nftId);
-    setLoading(true);
+    // Debounce rapid clicks
+    if (toggleDebounceTimeout) {
+      clearTimeout(toggleDebounceTimeout);
+    }
 
-    // Dispatch optimistic update signals
+    const wasLiked = likedNFTs.includes(nftId) || optimisticLikes.has(nftId);
+    const action = wasLiked ? 'unlike' : 'like';
+
+    // Optimistic UI update
+    setOptimisticLikes(prev => {
+      const newSet = new Set(prev);
+      if (action === 'like') {
+        newSet.add(nftId);
+      } else {
+        newSet.delete(nftId);
+      }
+      return newSet;
+    });
+
+    // Dispatch optimistic update signals for stats
     const nftDelta = wasLiked ? -1 : 1;
     window.dispatchEvent(new CustomEvent('nft-stats-update', {
       detail: { nftId, delta: nftDelta }
@@ -57,70 +80,94 @@ export const useNFTLikes = () => {
       }));
     }
 
-    try {
-      const action = wasLiked ? 'unlike' : 'like';
+    return new Promise<boolean>((resolve) => {
+      toggleDebounceTimeout = setTimeout(async () => {
+        setLoading(true);
+        try {
+          const { data, error } = await supabase.functions.invoke('like-nft', {
+            body: { 
+              nft_id: nftId,
+              user_wallet: publicKey,
+              action
+            },
+          });
 
-      const { data, error } = await supabase.functions.invoke('like-nft', {
-        body: { 
-          nft_id: nftId,
-          user_wallet: publicKey,
-          action
-        },
-      });
-
-      if (error) {
-        console.error('Edge function error:', error);
-        throw error;
-      }
-      
-      // Update local state
-      if (action === 'like') {
-        setLikedNFTs(prev => [...prev, nftId]);
-        toast.success('NFT liked!');
-      } else {
-        setLikedNFTs(prev => prev.filter(id => id !== nftId));
-        toast.success('NFT unliked!');
-      }
-      
-      return true;
-    } catch (err: any) {
-      console.error('Error toggling like:', err);
-      if (err.message?.includes('violates foreign key constraint')) {
-        toast.error('This item cannot be liked - only NFTs can be liked');
-      } else {
-        toast.error(err.message || 'Failed to update like status');
-      }
-      
-      // Revert optimistic updates on error
-      const revertDelta = wasLiked ? 1 : -1;
-      window.dispatchEvent(new CustomEvent('nft-stats-update', {
-        detail: { nftId, delta: revertDelta }
-      }));
-      
-      if (creatorAddress) {
-        window.dispatchEvent(new CustomEvent('creator-stats-update', {
-          detail: { wallet: creatorAddress, type: 'nft_like', delta: revertDelta }
-        }));
-      }
-      
-      return false;
-    } finally {
-      setLoading(false);
-    }
+          if (error) {
+            console.error('Edge function error:', error);
+            throw new Error(error.message || 'Network error');
+          }
+          
+          if (!data?.success) {
+            const errorCode = data?.code || 'LKN500';
+            const friendlyMessage = data?.message || 'Failed to update like status';
+            
+            // Show friendly error message with error code
+            toast.error(`${friendlyMessage} (Error: ${errorCode})`, {
+              description: 'You can report this error code to our support team.'
+            });
+            throw new Error(friendlyMessage);
+          }
+          
+          // Update actual state
+          if (action === 'like') {
+            setLikedNFTs(prev => prev.includes(nftId) ? prev : [...prev, nftId]);
+          } else {
+            setLikedNFTs(prev => prev.filter(id => id !== nftId));
+          }
+          
+          // Clear optimistic state - actual state now matches
+          setOptimisticLikes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(nftId);
+            return newSet;
+          });
+          
+          resolve(true);
+        } catch (err: any) {
+          console.error('Error toggling like:', err);
+          
+          // Revert optimistic UI and stats updates on error
+          setOptimisticLikes(prev => {
+            const newSet = new Set(prev);
+            if (action === 'like') {
+              newSet.delete(nftId);
+            } else {
+              newSet.add(nftId);
+            }
+            return newSet;
+          });
+          
+          const revertDelta = wasLiked ? 1 : -1;
+          window.dispatchEvent(new CustomEvent('nft-stats-update', {
+            detail: { nftId, delta: revertDelta }
+          }));
+          
+          if (creatorAddress) {
+            window.dispatchEvent(new CustomEvent('creator-stats-update', {
+              detail: { wallet: creatorAddress, type: 'nft_like', delta: revertDelta }
+            }));
+          }
+          
+          resolve(false);
+        } finally {
+          setLoading(false);
+        }
+      }, 300); // 300ms debounce
+    });
   }, [connected, publicKey, likedNFTs]);
 
   const isLiked = useCallback((nftId: string) => {
-    return likedNFTs.includes(nftId);
-  }, [likedNFTs]);
+    return likedNFTs.includes(nftId) || optimisticLikes.has(nftId);
+  }, [likedNFTs, optimisticLikes]);
 
   useEffect(() => {
     loadLikedNFTs();
 
+    // Reduced real-time subscription frequency
     if (!connected || !publicKey) {
       return;
     }
 
-    // Set up real-time subscription for NFT likes only when connected
     const channel = supabase
       .channel('nft-likes-realtime')
       .on(
@@ -131,24 +178,19 @@ export const useNFTLikes = () => {
           table: 'nft_likes',
           filter: `user_wallet=eq.${publicKey}`
         },
-        (payload) => {
-          console.log('🔥 Real-time NFT likes change detected:', payload);
-          // Only refresh if this change affects the current user
-          const userWallet = (payload.new as any)?.user_wallet || (payload.old as any)?.user_wallet;
-          if (userWallet === publicKey) {
-            loadLikedNFTs();
+        () => {
+          // Throttled refresh - only update if no optimistic updates pending
+          if (optimisticLikes.size === 0) {
+            setTimeout(() => loadLikedNFTs(), 1000);
           }
         }
       )
-      .subscribe((status) => {
-        console.log('🔌 NFT Likes subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
-      console.log('🔌 Cleaning up NFT likes subscription');
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey, loadLikedNFTs]);
+  }, [connected, publicKey, loadLikedNFTs, optimisticLikes.size]);
 
   return {
     likedNFTs,
