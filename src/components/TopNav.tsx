@@ -105,7 +105,6 @@ export const TopNav = () => {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Menu className="h-4 w-4" />
                 <span className="text-sm font-medium">Menu</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -221,7 +220,6 @@ export const TopNav = () => {
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Menu className="h-4 w-4" />
               <span className="text-sm font-medium">Menu</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
