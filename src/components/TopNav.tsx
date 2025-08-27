@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronDown, Wallet, LogOut, Copy } from "lucide-react";
+import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronDown, Wallet, LogOut, Copy, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 type RouteItem = {
@@ -49,6 +50,7 @@ export const TopNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { connected, connecting, publicKey, connect, connectWith, disconnect, listProviders } = useSolanaWallet();
+  const { user, signOut } = useAuth();
   const providers = listProviders();
 
   const handleHomeNavigation = () => {
@@ -100,7 +102,20 @@ export const TopNav = () => {
           <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-2">
+          {/* Authentication button */}
+          {user ? (
+            <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              <span className="text-sm font-medium">Sign Out</span>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
+              <LogIn className="h-4 w-4" />
+              <span className="text-sm font-medium">Sign In</span>
+            </Button>
+          )}
+          
           {/* Always show wallet dropdown with navigation */}
           {connected ? (
             <DropdownMenu>
@@ -283,7 +298,18 @@ export const TopNav = () => {
         </Link>
       </div>
       
-      <nav className="flex items-center gap-1">
+      <nav className="flex items-center gap-2">
+        {/* Authentication button */}
+        {user ? (
+          <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
+            <LogOut className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-1">
+            <LogIn className="h-4 w-4" />
+          </Button>
+        )}
+        
         {/* Mobile wallet dropdown - same as desktop */}
         {connected ? (
           <DropdownMenu>
