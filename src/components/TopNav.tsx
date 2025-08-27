@@ -49,7 +49,7 @@ export const TopNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { connected, connecting, connect } = useSolanaWallet();
+  const { connected, connecting, connect, disconnect } = useSolanaWallet();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -137,7 +137,7 @@ export const TopNav = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (connected) {
-                      // Add disconnect logic here when available
+                      disconnect();
                     } else {
                       connect();
                     }
@@ -246,7 +246,7 @@ export const TopNav = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (connected) {
-                    // Add disconnect logic here when available
+                    disconnect();
                   } else {
                     connect();
                   }
