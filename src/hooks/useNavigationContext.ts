@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getNavContext } from '@/lib/navContext';
 
@@ -52,7 +52,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
     setCurrentIndex(index);
   }, [navContext, legacyNavItems, currentId, itemType, navigate, searchParams]);
 
-  const navigateToItem = (direction: 'prev' | 'next') => {
+  const navigateToItem = useCallback((direction: 'prev' | 'next') => {
     if (items.length === 0 || currentIndex === -1) return;
 
     let newIndex: number;
@@ -72,7 +72,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
       
       navigate(targetUrl);
     }
-  };
+  }, [items, currentIndex, searchParams, itemType, navigate]);
 
   // Keyboard navigation (disabled when in fullscreen view)
   useEffect(() => {
@@ -93,7 +93,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [items, currentIndex, searchParams]);
+  }, [items, currentIndex, searchParams, navigateToItem]);
 
   const canNavigate = items.length > 1;
   const hasPrev = canNavigate && items.length > 0;

@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -111,7 +111,7 @@ export default function CreatorProfile() {
   }, [wallet]);
 
   // Navigation state - use storage context with legacy URL support
-  const navContext = getNavContext('collection'); // assuming creator profiles navigate collections
+  const navContext = getNavContext('nft'); // Creator profiles can navigate through creator lists
   const from = navContext?.source || searchParams.get('from');
   const navCreators = navContext?.items || (searchParams.get('nav') ? JSON.parse(decodeURIComponent(searchParams.get('nav')!)) : []);
   const currentIndex = wallet ? navCreators.indexOf(wallet) : -1;
@@ -126,6 +126,21 @@ export default function CreatorProfile() {
     }
   }, [navigate, searchParams]);
 
+  // Navigation functions
+  const handlePrevious = useCallback(() => {
+    if (hasPrevious) {
+      const prevWallet = navCreators[currentIndex - 1];
+      navigate(`/profile/${prevWallet}`);
+    }
+  }, [hasPrevious, navCreators, currentIndex, navigate]);
+
+  const handleNext = useCallback(() => {
+    if (hasNext) {
+      const nextWallet = navCreators[currentIndex + 1];
+      navigate(`/profile/${nextWallet}`);
+    }
+  }, [hasNext, navCreators, currentIndex, navigate]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -138,22 +153,7 @@ export default function CreatorProfile() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasPrevious, hasNext]);
-
-  // Navigation functions
-  const handlePrevious = () => {
-    if (hasPrevious) {
-      const prevWallet = navCreators[currentIndex - 1];
-      navigate(`/profile/${prevWallet}`);
-    }
-  };
-
-  const handleNext = () => {
-    if (hasNext) {
-      const nextWallet = navCreators[currentIndex + 1];
-      navigate(`/profile/${nextWallet}`);
-    }
-  };
+  }, [hasPrevious, hasNext, handlePrevious, handleNext]);
 
   // Toggle follow with real-time stats
   const handleToggleFollow = async (creatorWallet: string) => {
