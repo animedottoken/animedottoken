@@ -85,7 +85,7 @@ export const TopNav = () => {
   // For tablet and desktop, show top navigation
   if (!isMobile) {
     return (
-      <header className="h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
+      <header className="h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm">
         <Link 
           to="/"
           onClick={(e) => {
@@ -101,7 +101,7 @@ export const TopNav = () => {
         </Link>
         <nav className="flex items-center gap-3">
           {/* Menu dropdown with navigation + wallet */}
-          <DropdownMenu modal={false}>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Menu className="h-4 w-4" />
@@ -111,11 +111,8 @@ export const TopNav = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="w-56 bg-popover text-popover-foreground border border-border shadow-lg fixed"
-              sideOffset={8}
-              alignOffset={0}
-              collisionPadding={8}
-              style={{ zIndex: 99999 }}
+              className="w-56 bg-popover text-popover-foreground border border-border shadow-lg z-[9999]"
+              sideOffset={5}
             >
               {/* Navigation Items */}
               <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
@@ -164,7 +161,7 @@ export const TopNav = () => {
 
   // Mobile view - hamburger menu in left corner, same options as desktop
   return (
-    <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
+    <header className="h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm">
       <div className="flex items-center gap-2">
         {/* Hamburger menu in far left corner */}
         <Sheet open={open} onOpenChange={setOpen}>
