@@ -224,7 +224,7 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="relative">
         {/* Banner */}
-        <div className="relative h-64 rounded-lg overflow-hidden">
+        <div className="relative h-64 rounded-lg overflow-hidden group">
           <img 
             src={profile?.banner_image_url || defaultBanner} 
             alt="Profile Banner" 
@@ -234,7 +234,7 @@ const Profile = () => {
             <Button
               variant="secondary"
               size="sm"
-              className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white border-white/20"
+              className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={() => setShowBannerDialog(true)}
             >
               <Edit2 className="h-4 w-4 mr-2" />
@@ -247,7 +247,7 @@ const Profile = () => {
         <div className="relative -mt-20 px-6 pb-6">
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Avatar */}
-            <div className="relative">
+            <div className="relative group">
               <div className="w-32 h-32 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
                 {profile?.profile_image_url ? (
                   <img 
@@ -265,7 +265,7 @@ const Profile = () => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute -bottom-1 -right-1 rounded-full w-8 h-8"
+                  className="absolute bottom-2 right-2 rounded-full w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setShowPfpDialog(true)}
                 >
                   <Edit2 className="h-4 w-4" />
@@ -290,12 +290,6 @@ const Profile = () => {
                     <Edit2 className="h-4 w-4" />
                   </Button>
                 )}
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs px-2 py-1"
-                >
-                  {targetWallet?.slice(0, 2).toUpperCase()}
-                </Badge>
               </div>
 
               {/* Full Wallet Address */}
