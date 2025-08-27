@@ -131,18 +131,23 @@ export const TopNav = () => {
               <DropdownMenuSeparator />
               
               {/* Wallet Section */}
-              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={(e) => {
-                e.stopPropagation();
-                if (connected) {
-                  // Add disconnect logic here when available
-                } else {
-                  connect();
-                }
-              }}>
-                <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-                <Wallet className="h-4 w-4" />
-                <span>{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
-              </DropdownMenuItem>
+              <div className="px-2 py-1.5">
+                <div 
+                  className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (connected) {
+                      // Add disconnect logic here when available
+                    } else {
+                      connect();
+                    }
+                  }}
+                >
+                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <Wallet className="h-4 w-4" />
+                  <span className="text-sm">{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
@@ -235,18 +240,23 @@ export const TopNav = () => {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={(e) => {
-              e.stopPropagation();
-              if (connected) {
-                // Add disconnect logic here when available
-              } else {
-                connect();
-              }
-            }}>
-              <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-              <Wallet className="h-4 w-4" />
-              <span>{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
-            </DropdownMenuItem>
+            <div className="px-2 py-1.5">
+              <div 
+                className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (connected) {
+                    // Add disconnect logic here when available
+                  } else {
+                    connect();
+                  }
+                }}
+              >
+                <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                <Wallet className="h-4 w-4" />
+                <span className="text-sm">{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
+              </div>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
