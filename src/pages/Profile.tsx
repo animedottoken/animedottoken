@@ -6,15 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Edit2, Camera, Star, Info, Share, Copy, UserPlus, UserMinus } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
 import { UserProfileDisplay } from '@/components/UserProfileDisplay';
-import { NicknameEditDialog } from '@/components/NicknameEditDialog';
-import { BioEditDialog } from '@/components/BioEditDialog';
-import { PfpPickerDialog } from '@/components/PfpPickerDialog';
-import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
@@ -38,10 +34,6 @@ const Profile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [showNicknameDialog, setShowNicknameDialog] = useState(false);
-  const [showBioDialog, setShowBioDialog] = useState(false);
-  const [showPfpDialog, setShowPfpDialog] = useState(false);
-  const [showBannerDialog, setShowBannerDialog] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
 
   const targetWallet = wallet || publicKey;
@@ -51,7 +43,7 @@ const Profile = () => {
   const { collections, loading: collectionsLoading } = useCollections();
   const { likedNFTs } = useLikedNFTs();
   const { likedCollections } = useLikedCollections();
-  const { followedCreators } = useCreatorFollows();
+  const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { getLikeCount: getNFTLikeCount } = useNFTLikeCounts();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
   
@@ -262,29 +254,17 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="relative">
         {/* Banner */}
-        <div className="relative h-64 rounded-lg overflow-hidden group" data-testid="profile-banner">
+        <div className="relative h-64 rounded-lg overflow-hidden" data-testid="profile-banner">
           <img 
             src={profile?.banner_image_url || defaultBanner} 
             alt="Profile Banner" 
             className="w-full h-full object-cover"
           />
-          {isOwnProfile && (
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-              onClick={() => setShowBannerDialog(true)}
-              aria-label="Change banner"
-            >
-              <Camera className="h-4 w-4" />
-              <span className="sr-only">Edit banner</span>
-            </Button>
-          )}
         </div>
 
         {/* Avatar - overlapping banner */}
         <div className="relative -mt-20 px-6">
-          <div className="relative group w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
+          <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0 z-10">
             <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm" data-testid="profile-avatar">
               {profile?.profile_image_url ? (
                 <img 
@@ -298,44 +278,33 @@ const Profile = () => {
                 </div>
               )}
             </div>
-            {/* Edit overlay - shows on hover */}
-            {isOwnProfile && (
-              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
-                onClick={() => setShowPfpDialog(true)}>
-                <div className="text-white text-center">
-                  <Camera className="h-6 w-6 mx-auto mb-1" />
-                  <span className="text-sm font-medium">Edit</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
         {/* Profile Info - below banner */}
         <div className="px-6 pt-4 pb-6">
           <div className="space-y-3">
-              {/* Name & Edit */}
-              <div className="flex items-center gap-3 group">
+              {/* Name */}
+              <div>
                 <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
                   {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
                 </h1>
-                {isOwnProfile && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => setShowNicknameDialog(true)}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
 
-              {/* Wallet (short) */}
+              {/* Wallet (short) with copy */}
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
                   {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
                 </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 p-0"
+                  onClick={() => copyToClipboard(targetWallet || '')}
+                  aria-label="Copy wallet address"
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
               </div>
 
               {/* Starter Badge */}
@@ -439,76 +408,46 @@ const Profile = () => {
               </div>
 
               {/* Bio */}
-              {profile?.bio ? (
-                <div className="flex items-start gap-2 group">
+              {profile?.bio && (
+                <div>
                   <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem]" data-testid="profile-bio">
                     {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
                   </p>
-                  {isOwnProfile && (
-                    <Button
-                      variant="ghost"
-                      size="icon" 
-                      className="h-6 w-6 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => setShowBioDialog(true)}
-                    >
-                      <Edit2 className="h-3 w-3" />
-                    </Button>
-                  )}
                 </div>
-              ) : isOwnProfile ? (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowBioDialog(true)}
-                    className="text-sm"
-                  >
-                    Add Bio
-                  </Button>
-                </div>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
 
         {/* Profile Actions Row */}
         <div className="px-6 pb-4">
-          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-            {isOwnProfile ? (
-              <>
-                <Button variant="outline" size="sm" onClick={() => setShowNicknameDialog(true)}>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowBannerDialog(true)}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Change Banner
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(window.location.href)}>
-                  <Share className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(targetWallet || '')}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Address
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="outline" size="sm">
+          <div className="flex items-center gap-2 justify-end">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => targetWallet && toggleFollow(targetWallet)}
+              disabled={followLoading}
+            >
+              {isFollowing(targetWallet || '') ? (
+                <>
+                  <UserMinus className="h-4 w-4 mr-2" />
+                  Unfollow
+                </>
+              ) : (
+                <>
                   <UserPlus className="h-4 w-4 mr-2" />
                   Follow
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(window.location.href)}>
-                  <Share className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard(targetWallet || '')}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Address
-                </Button>
-              </>
-            )}
+                </>
+              )}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => copyToClipboard(window.location.href)}
+              aria-label="Share profile"
+            >
+              <Share className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -724,76 +663,6 @@ const Profile = () => {
           )}
         </TabsContent>
       </Tabs>
-
-      {/* Edit Dialogs */}
-      {isOwnProfile && (
-        <>
-          <NicknameEditDialog
-            open={showNicknameDialog}
-            onOpenChange={setShowNicknameDialog}
-            profile={profile}
-            currentNickname={profile?.display_name || ''}
-            onConfirm={async (newNickname) => {
-              setProfile(prev => ({ ...prev, display_name: newNickname }));
-              return true;
-            }}
-          />
-
-          <BioEditDialog
-            open={showBioDialog}
-            onOpenChange={setShowBioDialog}
-            profile={profile}
-            currentBio={profile?.bio || ''}
-            onConfirm={async (newBio) => {
-              try {
-                const { error } = await supabase.functions.invoke('set-bio', {
-                  body: { 
-                    wallet_address: targetWallet,
-                    bio: newBio,
-                    transaction_signature: 'simulated_tx_' + Date.now()
-                  }
-                });
-                
-                if (error) {
-                  console.error('Error updating bio:', error);
-                  toast.error('Failed to update bio');
-                  return false;
-                }
-                
-                setProfile(prev => ({ ...prev, bio: newBio }));
-                toast.success('Bio updated successfully');
-                return true;
-              } catch (error) {
-                console.error('Error updating bio:', error);
-                toast.error('Failed to update bio');
-                return false;
-              }
-            }}
-          />
-
-          <PfpPickerDialog
-            open={showPfpDialog}
-            onOpenChange={setShowPfpDialog}
-            profile={profile}
-            nfts={nfts}
-            onConfirm={async (mintAddress) => {
-              setProfile(prev => ({ ...prev, current_pfp_nft_mint_address: mintAddress }));
-              return true;
-            }}
-          />
-
-          <BannerPickerDialog
-            open={showBannerDialog}
-            onOpenChange={setShowBannerDialog}
-            profile={profile}
-            onConfirm={async (file) => {
-              // Handle file upload logic here
-              setProfile(prev => ({ ...prev, banner_image_url: URL.createObjectURL(file) }));
-              return true;
-            }}
-          />
-        </>
-      )}
     </div>
   );
 };
