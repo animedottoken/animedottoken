@@ -101,7 +101,8 @@ const Profile = () => {
           return;
         }
         
-        setProfile(data?.profile || null);
+        console.log('Profile data received:', data);
+        setProfile(data || null);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
@@ -325,6 +326,7 @@ const Profile = () => {
               </div>
 
               {/* Bio */}
+              {(() => { console.log('Bio check - profile:', profile, 'bio:', profile?.bio); return null; })()}
               {profile?.bio ? (
                 <div className="flex items-start gap-2 group">
                   <p className="text-muted-foreground">
