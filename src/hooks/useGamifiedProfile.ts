@@ -41,7 +41,7 @@ export const useGamifiedProfile = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('get-profile', {
-        body: { wallet_address: publicKey },
+        body: { wallet_address: publicKey.toString() },
       });
 
       if (error) throw error;
@@ -64,7 +64,7 @@ export const useGamifiedProfile = () => {
       const { data, error } = await supabase
         .from('nfts')
         .select('mint_address, name, image_url, symbol')
-        .eq('owner_address', publicKey);
+        .eq('owner_address', publicKey.toString());
 
       if (error) throw error;
       setUserNFTs(data || []);
@@ -85,7 +85,7 @@ export const useGamifiedProfile = () => {
       const { data, error } = await supabase.functions.invoke('set-nickname', {
         body: { 
           nickname, 
-          wallet_address: publicKey,
+          wallet_address: publicKey.toString(),
           transaction_signature: transactionSignature 
         },
       });
@@ -123,7 +123,7 @@ export const useGamifiedProfile = () => {
     setPfpLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('unlock-pfp', {
-        body: { wallet_address: publicKey, transaction_signature: transactionSignature },
+        body: { wallet_address: publicKey.toString(), transaction_signature: transactionSignature },
       });
 
       if (error) throw error;
@@ -151,7 +151,7 @@ export const useGamifiedProfile = () => {
       const { data, error } = await supabase.functions.invoke('set-pfp', {
         body: { 
           nft_mint_address: nftMintAddress, 
-          wallet_address: publicKey,
+          wallet_address: publicKey.toString(),
           transaction_signature: transactionSignature
         },
       });
@@ -182,7 +182,7 @@ export const useGamifiedProfile = () => {
         body: { 
           bio: bio.trim(),
           transaction_signature: transactionSignature,
-          wallet_address: publicKey
+          wallet_address: publicKey.toString()
         },
       });
 
@@ -220,7 +220,7 @@ export const useGamifiedProfile = () => {
     setBioLoading(true); // Reuse bio loading state for banner
     try {
       // Upload to Supabase Storage
-      const fileName = `banner_${publicKey}_${Date.now()}.${bannerFile.name.split('.').pop()}`;
+      const fileName = `banner_${publicKey.toString()}_${Date.now()}.${bannerFile.name.split('.').pop()}`;
       const filePath = `banners/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -242,7 +242,7 @@ export const useGamifiedProfile = () => {
       const { data, error } = await supabase.functions.invoke('set-banner', {
         body: { 
           banner_url: urlData.publicUrl,
-          wallet_address: publicKey,
+          wallet_address: publicKey.toString(),
           transaction_signature: 'simulated_banner_transaction'
         },
       });
