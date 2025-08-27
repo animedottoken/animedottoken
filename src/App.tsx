@@ -27,8 +27,6 @@ import NFTDetail from "./pages/NFTDetail";
 import Auth from "./pages/Auth";
 import { ErrorBoundary } from "react-error-boundary";
 
-const queryClient = new QueryClient();
-
 function ErrorFallback({ error }: { error: Error }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -110,25 +108,29 @@ const AppLayout = () => {
   );
 };
 
-const App = () => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <AuthProvider>
-          <SolanaWalletProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ScrollToTopOnRoute />
-                <AppLayout />
-              </BrowserRouter>
-            </TooltipProvider>
-          </SolanaWalletProvider>
-        </AuthProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  const queryClient = new QueryClient();
+  
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>
+          <AuthProvider>
+            <SolanaWalletProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ScrollToTopOnRoute />
+                  <AppLayout />
+                </BrowserRouter>
+              </TooltipProvider>
+            </SolanaWalletProvider>
+          </AuthProvider>
+        </HelmetProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
