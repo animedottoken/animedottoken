@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -9,19 +9,17 @@ export const useNFTLikes = () => {
   const [likedNFTs, setLikedNFTs] = useState<string[]>([]);
   const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const { publicKey, connected } = useSolanaWallet();
+  const { user } = useAuth();
 
   const loadLikedNFTs = useCallback(async () => {
-    if (!connected || !publicKey) {
+    if (!user) {
       setLikedNFTs([]);
       setOptimisticLikes(new Set());
       return;
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('get-liked-nfts', {
-        body: { user_wallet: publicKey }
-      });
+      const { data, error } = await supabase.functions.invoke('get-liked-nfts');
 
       if (error) throw error;
       
@@ -34,11 +32,10 @@ export const useNFTLikes = () => {
       console.error('Error loading liked NFTs:', err);
       setLikedNFTs([]);
     }
-  }, [connected, publicKey]);
+  }, [user]);
 
   const toggleLike = useCallback(async (nftId: string, creatorAddress?: string) => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+    if (!user) {
       return false;
     }
 
@@ -87,7 +84,6 @@ export const useNFTLikes = () => {
           const { data, error } = await supabase.functions.invoke('like-nft', {
             body: { 
               nft_id: nftId,
-              user_wallet: publicKey,
               action
             },
           });
@@ -154,7 +150,7 @@ export const useNFTLikes = () => {
         }
       }, 300); // 300ms debounce
     });
-  }, [connected, publicKey, likedNFTs]);
+  }, [user, likedNFTs]);
 
   const isLiked = useCallback((nftId: string) => {
     return likedNFTs.includes(nftId) || optimisticLikes.has(nftId);
@@ -164,7 +160,7 @@ export const useNFTLikes = () => {
     loadLikedNFTs();
 
     // Reduced real-time subscription frequency
-    if (!connected || !publicKey) {
+    if (!user) {
       return;
     }
 
@@ -176,7 +172,7 @@ export const useNFTLikes = () => {
           event: '*',
           schema: 'public',
           table: 'nft_likes',
-          filter: `user_wallet=eq.${publicKey}`
+          filter: `user_id=eq.${user.id}`
         },
         () => {
           // Throttled refresh - only update if no optimistic updates pending
@@ -190,7 +186,7 @@ export const useNFTLikes = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey, loadLikedNFTs, optimisticLikes.size]);
+  }, [user, loadLikedNFTs, optimisticLikes.size]);
 
   return {
     likedNFTs,

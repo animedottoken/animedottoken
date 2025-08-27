@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { BottomNav } from "@/components/BottomNav";
@@ -25,6 +26,8 @@ import CreatorProfile from "./pages/CreatorProfile";
 import NFTDetail from "./pages/NFTDetail";
 import Auth from "./pages/Auth";
 import { ErrorBoundary } from "react-error-boundary";
+
+const queryClient = new QueryClient();
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -109,20 +112,22 @@ const AppLayout = () => {
 
 const App = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <HelmetProvider>
-      <AuthProvider>
-        <SolanaWalletProvider>
-          <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTopOnRoute />
-            <AppLayout />
-          </BrowserRouter>
-        </TooltipProvider>
-      </SolanaWalletProvider>
-    </AuthProvider>
-  </HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <AuthProvider>
+          <SolanaWalletProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ScrollToTopOnRoute />
+                <AppLayout />
+              </BrowserRouter>
+            </TooltipProvider>
+          </SolanaWalletProvider>
+        </AuthProvider>
+      </HelmetProvider>
+    </QueryClientProvider>
   </ErrorBoundary>
 );
 

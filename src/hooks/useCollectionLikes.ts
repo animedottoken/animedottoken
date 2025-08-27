@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -9,19 +9,17 @@ export const useCollectionLikes = () => {
   const [likedCollections, setLikedCollections] = useState<string[]>([]);
   const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const { publicKey, connected } = useSolanaWallet();
+  const { user } = useAuth();
 
   const loadLikedCollections = useCallback(async () => {
-    if (!connected || !publicKey) {
+    if (!user) {
       setLikedCollections([]);
       setOptimisticLikes(new Set());
       return;
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('get-liked-collections', {
-        body: { user_wallet: publicKey }
-      });
+      const { data, error } = await supabase.functions.invoke('get-liked-collections');
 
       if (error) throw error;
       
@@ -34,11 +32,10 @@ export const useCollectionLikes = () => {
       console.error('Error loading liked collections:', err);
       setLikedCollections([]);
     }
-  }, [connected, publicKey]);
+  }, [user]);
 
   const toggleLike = useCallback(async (collectionId: string) => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+    if (!user) {
       return false;
     }
 
@@ -75,7 +72,6 @@ export const useCollectionLikes = () => {
           const { data, error } = await supabase.functions.invoke('like-collection', {
             body: { 
               collection_id: collectionId,
-              user_wallet: publicKey,
               action
             },
           });
@@ -131,7 +127,7 @@ export const useCollectionLikes = () => {
         }
       }, 300); // 300ms debounce
     });
-  }, [connected, publicKey, likedCollections]);
+  }, [user, likedCollections]);
 
   const isLiked = useCallback((collectionId: string) => {
     return likedCollections.includes(collectionId) || optimisticLikes.has(collectionId);
@@ -141,11 +137,11 @@ export const useCollectionLikes = () => {
     loadLikedCollections();
 
     // Reduced real-time subscription frequency - only when connected
-    if (!connected || !publicKey) {
+    if (!user) {
       return;
     }
 
-    const channelName = `collection-likes-${publicKey}`;
+    const channelName = `collection-likes-${user.id}`;
     const channel = supabase
       .channel(channelName)
       .on(
@@ -154,7 +150,7 @@ export const useCollectionLikes = () => {
           event: '*',
           schema: 'public',
           table: 'collection_likes',
-          filter: `user_wallet=eq.${publicKey}`
+          filter: `user_id=eq.${user.id}`
         },
         () => {
           // Throttled refresh - only update if no optimistic updates pending
@@ -168,7 +164,7 @@ export const useCollectionLikes = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey, loadLikedCollections, optimisticLikes.size]);
+  }, [user, loadLikedCollections, optimisticLikes.size]);
 
   return {
     likedCollections,

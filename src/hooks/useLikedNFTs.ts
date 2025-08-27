@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LikedNFT {
   id: string;
@@ -20,10 +20,10 @@ interface LikedNFT {
 export const useLikedNFTs = () => {
   const [likedNFTs, setLikedNFTs] = useState<LikedNFT[]>([]);
   const [loading, setLoading] = useState(false);
-  const { publicKey } = useSolanaWallet();
+  const { user } = useAuth();
 
   const fetchLikedNFTs = async (preserveScrollPosition = false) => {
-    if (!publicKey) {
+    if (!user) {
       setLikedNFTs([]);
       return;
     }
@@ -33,10 +33,8 @@ export const useLikedNFTs = () => {
 
     setLoading(true);
     try {
-      // First get liked NFT IDs from edge function (bypasses RLS)
-      const { data: likedData, error: likedError } = await supabase.functions.invoke('get-liked-nfts', {
-        body: { user_wallet: publicKey }
-      });
+      // Get liked NFT IDs from JWT-authenticated edge function
+      const { data: likedData, error: likedError } = await supabase.functions.invoke('get-liked-nfts');
 
       if (likedError) {
         console.error('Error fetching liked NFT IDs:', likedError);
@@ -69,7 +67,7 @@ export const useLikedNFTs = () => {
       const { data: likesData, error: likesError } = await supabase
         .from('nft_likes')
         .select('nft_id, created_at')
-        .eq('user_wallet', publicKey)
+        .eq('user_id', user.id)
         .in('nft_id', likedNftIds);
 
       if (likesError) {
@@ -113,7 +111,7 @@ export const useLikedNFTs = () => {
   useEffect(() => {
     fetchLikedNFTs();
 
-    if (!publicKey) return;
+    if (!user) return;
 
     // Set up real-time subscription for liked NFTs
     const channel = supabase
@@ -124,7 +122,7 @@ export const useLikedNFTs = () => {
           event: '*',
           schema: 'public',
           table: 'nft_likes',
-          filter: `user_wallet=eq.${publicKey}`
+          filter: `user_id=eq.${user.id}`
         },
         () => {
           fetchLikedNFTs(true); // Preserve scroll position on real-time updates
@@ -135,7 +133,7 @@ export const useLikedNFTs = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [publicKey]);
+  }, [user]);
 
   return {
     likedNFTs,

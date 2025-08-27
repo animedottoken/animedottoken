@@ -1,25 +1,21 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import bs58 from 'bs58';
 
 export const useCreatorFollows = () => {
   const [followedCreators, setFollowedCreators] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const { publicKey, connected } = useSolanaWallet();
+  const { user } = useAuth();
 
   const loadFollowedCreators = useCallback(async () => {
-    if (!connected || !publicKey) {
+    if (!user) {
       setFollowedCreators([]);
       return;
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('get-followed-creators', {
-        body: { follower_wallet: publicKey },
-      });
+      const { data, error } = await supabase.functions.invoke('get-followed-creators');
 
       if (error) throw error;
       
@@ -30,11 +26,10 @@ export const useCreatorFollows = () => {
       console.error('Error loading followed creators:', err);
       // Don't clear the list on error to preserve optimistic updates
     }
-  }, [connected, publicKey]);
+  }, [user]);
 
   const toggleFollow = useCallback(async (creatorWallet: string) => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+    if (!user) {
       return false;
     }
 
@@ -50,29 +45,10 @@ export const useCreatorFollows = () => {
     try {
       const action = wasFollowing ? 'unfollow' : 'follow';
 
-      // Prepare and sign a message with the connected wallet
-      const anyWin: any = window as any;
-      const providers = anyWin?.solana?.providers ?? [anyWin?.solana].filter(Boolean);
-      const provider = providers?.find((p: any) => typeof p?.signMessage === 'function' && (p?.isConnected || p?.connected)) || providers?.[0];
-      if (!provider?.signMessage) {
-        throw new Error('Wallet does not support message signing');
-      }
-
-      const timestamp = Date.now().toString();
-      const message = `toggle-follow:${creatorWallet}:${publicKey}:${action}:${timestamp}`;
-      const encoded = new TextEncoder().encode(message);
-      const signed = await provider.signMessage(encoded, 'utf8');
-      const sigBytes: Uint8Array = (signed && signed.signature) ? new Uint8Array(signed.signature) : new Uint8Array(signed);
-      const signature = bs58.encode(sigBytes);
-
       const { data, error } = await supabase.functions.invoke('toggle-follow', {
         body: { 
           creator_wallet: creatorWallet,
-          follower_wallet: publicKey,
           action,
-          message,
-          timestamp,
-          signature,
         },
       });
 
@@ -106,7 +82,7 @@ export const useCreatorFollows = () => {
     } finally {
       setLoading(false);
     }
-  }, [connected, publicKey, followedCreators]);
+  }, [user, followedCreators]);
 
   const isFollowing = useCallback((creatorWallet: string) => {
     return followedCreators.includes(creatorWallet);
@@ -115,7 +91,7 @@ export const useCreatorFollows = () => {
   useEffect(() => {
     loadFollowedCreators();
 
-    if (!connected || !publicKey) return;
+    if (!user) return;
 
     // Set up real-time subscription for creator follows - only for current user
     const channel = supabase
@@ -126,7 +102,7 @@ export const useCreatorFollows = () => {
           event: '*',
           schema: 'public',
           table: 'creator_follows',
-          filter: `follower_wallet=eq.${publicKey}`
+          filter: `user_id=eq.${user.id}`
         },
         (payload) => {
           console.log('🔥 Real-time creator follows change detected for current user:', payload);
@@ -136,7 +112,7 @@ export const useCreatorFollows = () => {
           // Only refresh if this change is for the current user
           const newRecord = payload.new as any;
           const oldRecord = payload.old as any;
-          if (newRecord?.follower_wallet === publicKey || oldRecord?.follower_wallet === publicKey) {
+          if (newRecord?.user_id === user.id || oldRecord?.user_id === user.id) {
             loadFollowedCreators();
           }
         }
@@ -149,7 +125,7 @@ export const useCreatorFollows = () => {
       console.log('🔌 Cleaning up creator follows subscription');
       supabase.removeChannel(channel);
     };
-  }, [connected, publicKey, loadFollowedCreators]);
+  }, [user, loadFollowedCreators]);
 
   return {
     followedCreators,
