@@ -14,6 +14,7 @@ import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { BioEditDialog } from '@/components/BioEditDialog';
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
 import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useCollections } from '@/hooks/useCollections';
@@ -202,10 +203,17 @@ const Profile = () => {
 
   if (!targetWallet) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold text-muted-foreground">
-          Connect your wallet to view profile
-        </h1>
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-3xl mx-auto">
+          <CardContent className="py-10 text-center">
+            <div className="text-6xl mb-4">🔒</div>
+            <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
+            <p className="text-muted-foreground mb-6">
+              Connect your Solana wallet to view and customize your profile.
+            </p>
+            <SolanaWalletButton />
+          </CardContent>
+        </Card>
       </div>
     );
   }
