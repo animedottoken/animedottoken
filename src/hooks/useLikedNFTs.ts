@@ -33,48 +33,69 @@ export const useLikedNFTs = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('nft_likes')
-        .select(`
-          created_at,
-          nfts (
-            id,
-            name,
-            image_url,
-            mint_address,
-            creator_address,
-            owner_address,
-            price,
-            is_listed,
-            collection_id,
-            description,
-            attributes
-          )
-        `)
-        .eq('user_wallet', publicKey)
-        .order('created_at', { ascending: false });
+      // First get liked NFT IDs from edge function (bypasses RLS)
+      const { data: likedData, error: likedError } = await supabase.functions.invoke('get-liked-nfts', {
+        body: { user_wallet: publicKey }
+      });
 
-      if (error) {
-        console.error('Error fetching liked NFTs:', error);
+      if (likedError) {
+        console.error('Error fetching liked NFT IDs:', likedError);
         return;
       }
 
-      const formattedData = data
-        ?.filter(item => item.nfts)
-        ?.map(item => ({
-          id: item.nfts.id,
-          name: item.nfts.name,
-          image_url: item.nfts.image_url || '',
-          mint_address: item.nfts.mint_address,
-          creator_address: item.nfts.creator_address,
-          owner_address: item.nfts.owner_address,
-          price: item.nfts.price,
-          is_listed: item.nfts.is_listed,
-          collection_id: item.nfts.collection_id,
-          description: item.nfts.description,
-          attributes: item.nfts.attributes,
-          liked_at: item.created_at,
-        })) || [];
+      const likedNftIds = likedData?.liked_nft_ids || [];
+      
+      if (likedNftIds.length === 0) {
+        setLikedNFTs([]);
+        // Restore scroll position if it was saved
+        if (preserveScrollPosition && scrollY > 0) {
+          setTimeout(() => window.scrollTo(0, scrollY), 0);
+        }
+        return;
+      }
+
+      // Then fetch NFT details for liked NFTs
+      const { data: nftsData, error: nftsError } = await supabase
+        .from('nfts')
+        .select('*')
+        .in('id', likedNftIds);
+
+      if (nftsError) {
+        console.error('Error fetching NFT details:', nftsError);
+        return;
+      }
+
+      // Get the like timestamps
+      const { data: likesData, error: likesError } = await supabase
+        .from('nft_likes')
+        .select('nft_id, created_at')
+        .eq('user_wallet', publicKey)
+        .in('nft_id', likedNftIds);
+
+      if (likesError) {
+        console.error('Error fetching like timestamps:', likesError);
+      }
+
+      // Create a map of nft_id to like timestamp
+      const likeTimestamps = (likesData || []).reduce((acc, like) => {
+        acc[like.nft_id] = like.created_at;
+        return acc;
+      }, {} as Record<string, string>);
+
+      const formattedData = (nftsData || []).map(nft => ({
+        id: nft.id,
+        name: nft.name,
+        image_url: nft.image_url || '',
+        mint_address: nft.mint_address,
+        creator_address: nft.creator_address,
+        owner_address: nft.owner_address,
+        price: nft.price,
+        is_listed: nft.is_listed,
+        collection_id: nft.collection_id,
+        description: nft.description,
+        attributes: nft.attributes,
+        liked_at: likeTimestamps[nft.id] || new Date().toISOString(),
+      })).sort((a, b) => new Date(b.liked_at).getTime() - new Date(a.liked_at).getTime());
 
       setLikedNFTs(formattedData);
 
