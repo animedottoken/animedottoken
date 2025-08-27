@@ -123,19 +123,61 @@ const Profile = () => {
     );
   }, [userCollections, followedCreators]);
 
-  // Apply filters
+  // Apply filters - Convert UserNFT to NFT format
+  const nftsForFiltering = nfts.map(nft => ({
+    id: nft.id,
+    name: nft.name,
+    description: nft.description,
+    is_listed: nft.is_listed || false,
+    creator_address: nft.creator_address || targetWallet || '',
+    created_at: nft.created_at || new Date().toISOString(),
+    category: undefined,
+    price: nft.price,
+    attributes: undefined
+  }));
+
+  // Also map likedNFTs to include created_at
+  const likedNFTsForFiltering = likedNFTs.map(nft => ({
+    ...nft,
+    created_at: new Date().toISOString()
+  }));
+
+  // Map nftsFromLikedCreators to NFT format
+  const nftsFromLikedCreatorsForFiltering = nftsFromLikedCreators.map(nft => ({
+    id: nft.id,
+    name: nft.name,
+    description: nft.description,
+    is_listed: nft.is_listed || false,
+    creator_address: nft.creator_address || '',
+    created_at: nft.created_at || new Date().toISOString(),
+    category: undefined,
+    price: nft.price,
+    attributes: undefined
+  }));
+
   const filteredNFTs = useFilteredNFTs(
-    nfts,
-    likedNFTs,
-    nftsFromLikedCreators,
+    nftsForFiltering,
+    likedNFTsForFiltering,
+    nftsFromLikedCreatorsForFiltering,
     followedCreators,
     nftFilters,
     getNFTLikeCount
   );
 
+  // Convert collections to include created_at for filtering
+  const collectionsForFiltering = userCollections.map(collection => ({
+    ...collection,
+    created_at: collection.created_at || new Date().toISOString()
+  }));
+
+  const likedCollectionsForFiltering = likedCollections.map(collection => ({
+    ...collection,
+    created_at: new Date().toISOString()
+  }));
+
   const filteredCollections = useFilteredCollections(
-    userCollections,
-    likedCollections,
+    collectionsForFiltering,
+    likedCollectionsForFiltering,
     collectionsFromLikedCreators,
     followedCreators,
     collectionFilters,
@@ -169,13 +211,10 @@ const Profile = () => {
       <Card>
         <CardContent className="p-6">
           <UserProfileDisplay
-            profile={profile}
             walletAddress={targetWallet}
-            isOwnProfile={isOwnProfile}
-            onEditNickname={() => setShowNicknameDialog(true)}
-            onEditBio={() => setShowBioDialog(true)}
-            onEditPfp={() => setShowPfpDialog(true)}
-            onEditBanner={() => setShowBannerDialog(true)}
+            showRankBadge={true}
+            showTradeCount={true}
+            size="lg"
           />
         </CardContent>
       </Card>
@@ -220,9 +259,16 @@ const Profile = () => {
               {filteredCollections.map((collection) => (
                 <CollectionCard
                   key={collection.id}
-                  collection={collection}
-                  showOwnerInfo={!isOwnProfile}
-                  likeCount={getCollectionLikeCount(collection.id)}
+                  collection={{
+                    id: collection.id,
+                    name: collection.name,
+                    image_url: '/placeholder.svg',
+                    creator_address_masked: collection.creator_address || '',
+                    mint_price: collection.mint_price,
+                    items_redeemed: 0,
+                    verified: false,
+                    description: collection.description
+                  }}
                 />
               ))}
             </div>
@@ -271,8 +317,20 @@ const Profile = () => {
               {filteredNFTs.map((nft) => (
                 <NFTCard
                   key={nft.id}
-                  nft={nft}
-                  showOwnerInfo={!isOwnProfile}
+                  nft={{
+                    id: nft.id,
+                    name: nft.name,
+                    image_url: '/placeholder.svg',
+                    owner_address: targetWallet || '',
+                    mint_address: nft.id,
+                    creator_address: targetWallet || '',
+                    price: nft.price,
+                    is_listed: nft.is_listed || false,
+                    collection_id: undefined,
+                    description: nft.description,
+                    attributes: undefined,
+                    collections: undefined
+                  }}
                   navigationQuery="from=profile"
                 />
               ))}
@@ -300,34 +358,44 @@ const Profile = () => {
           <NicknameEditDialog
             open={showNicknameDialog}
             onOpenChange={setShowNicknameDialog}
+            profile={profile}
             currentNickname={profile?.display_name || ''}
-            onSuccess={(newNickname) => {
+            onConfirm={async (newNickname) => {
               setProfile(prev => ({ ...prev, display_name: newNickname }));
+              return true;
             }}
           />
 
           <BioEditDialog
             open={showBioDialog}
             onOpenChange={setShowBioDialog}
+            profile={profile}
             currentBio={profile?.bio || ''}
-            onSuccess={(newBio) => {
+            onConfirm={async (newBio) => {
               setProfile(prev => ({ ...prev, bio: newBio }));
+              return true;
             }}
           />
 
           <PfpPickerDialog
             open={showPfpDialog}
             onOpenChange={setShowPfpDialog}
-            onSuccess={(pfpUrl) => {
-              setProfile(prev => ({ ...prev, profile_image_url: pfpUrl }));
+            profile={profile}
+            nfts={nfts}
+            onConfirm={async (mintAddress) => {
+              setProfile(prev => ({ ...prev, current_pfp_nft_mint_address: mintAddress }));
+              return true;
             }}
           />
 
           <BannerPickerDialog
             open={showBannerDialog}
             onOpenChange={setShowBannerDialog}
-            onSuccess={(bannerUrl) => {
-              setProfile(prev => ({ ...prev, banner_image_url: bannerUrl }));
+            profile={profile}
+            onConfirm={async (file) => {
+              // Handle file upload logic here
+              setProfile(prev => ({ ...prev, banner_image_url: URL.createObjectURL(file) }));
+              return true;
             }}
           />
         </>

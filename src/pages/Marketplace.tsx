@@ -305,7 +305,12 @@ const Marketplace = () => {
           filteredCollections.map((collection) => (
             <CollectionCard
               key={collection.id}
-              collection={collection}
+              collection={{
+                ...collection,
+                image_url: collection.image_url || '/placeholder.svg',
+                creator_address_masked: collection.creator_address,
+                items_redeemed: collection.items_redeemed || 0
+              }}
               navigationQuery="from=marketplace"
             />
           ))
