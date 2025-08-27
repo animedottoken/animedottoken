@@ -307,8 +307,7 @@ export const GamifiedProfileCard = () => {
           {/* Profile Stats: Trades + Level */}
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="text-sm text-muted-foreground">{profile.trade_count} trades</span>
-            {profile.wallet_address !== publicKey?.toString() && (
-              <button
+            <button
                 onClick={() => toggleFollow(profile.wallet_address)}
                 className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
                 aria-label={isFollowing(profile.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
@@ -321,7 +320,6 @@ export const GamifiedProfileCard = () => {
                 )}
                 <span className="text-xs">{isFollowing(profile.wallet_address) ? 'Following' : 'Follow'}</span>
               </button>
-            )}
           </div>
         </div>
         
@@ -342,9 +340,8 @@ export const GamifiedProfileCard = () => {
           </div>
         )}
 
-        {/* Profile Like/Follow - Remove self-follow */}
-        {profile.wallet_address !== publicKey?.toString() && (
-          <div className="mb-4">
+        {/* Profile Like/Follow */}
+        <div className="mb-4">
             <button
               aria-label={isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
               disabled={followLoading}
@@ -367,7 +364,6 @@ export const GamifiedProfileCard = () => {
               )}
             </button>
           </div>
-        )}
         
         {/* Content Stats */}
         <div className="flex items-center justify-center gap-4 text-sm mb-3">

@@ -421,7 +421,7 @@ const Profile = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {!isOwnProfile && targetWallet && (
+                  {targetWallet && (
                     <Button 
                       variant="outline" 
                       size="sm"
