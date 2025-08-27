@@ -21,9 +21,10 @@ import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { useLikedCollections } from '@/hooks/useLikedCollections';
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
-import { useFilteredNFTs, useFilteredCollections } from '@/hooks/useFilteredData';
+import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { setNavContext } from "@/lib/navContext";
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -257,19 +258,25 @@ const Profile = () => {
           ) : filteredCollections.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredCollections.map((collection) => (
-                <CollectionCard
-                  key={collection.id}
-                  collection={{
-                    id: collection.id,
-                    name: collection.name,
-                    image_url: '/placeholder.svg',
-                    creator_address_masked: collection.creator_address || '',
-                    mint_price: collection.mint_price,
-                    items_redeemed: 0,
-                    verified: false,
-                    description: collection.description
-                  }}
-                />
+                 <CollectionCard
+                   key={collection.id}
+                   collection={{
+                     id: collection.id,
+                     name: collection.name,
+                     image_url: '/placeholder.svg',
+                     creator_address_masked: collection.creator_address || '',
+                     mint_price: collection.mint_price,
+                     items_redeemed: 0,
+                     verified: false,
+                     description: collection.description
+                   }}
+                   onNavigate={() => setNavContext({ 
+                     type: 'collection', 
+                     items: filteredCollections.map(c => c.id), 
+                     source: 'profile',
+                     tab: 'collections'
+                   })}
+                 />
               ))}
             </div>
           ) : (
@@ -315,24 +322,30 @@ const Profile = () => {
           ) : filteredNFTs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredNFTs.map((nft) => (
-                <NFTCard
-                  key={nft.id}
-                  nft={{
-                    id: nft.id,
-                    name: nft.name,
-                    image_url: '/placeholder.svg',
-                    owner_address: targetWallet || '',
-                    mint_address: nft.id,
-                    creator_address: targetWallet || '',
-                    price: nft.price,
-                    is_listed: nft.is_listed || false,
-                    collection_id: undefined,
-                    description: nft.description,
-                    attributes: undefined,
-                    collections: undefined
-                  }}
-                  navigationQuery="from=profile"
-                />
+                 <NFTCard
+                   key={nft.id}
+                   nft={{
+                     id: nft.id,
+                     name: nft.name,
+                     image_url: '/placeholder.svg',
+                     owner_address: targetWallet || '',
+                     mint_address: nft.id,
+                     creator_address: targetWallet || '',
+                     price: nft.price,
+                     is_listed: nft.is_listed || false,
+                     collection_id: undefined,
+                     description: nft.description,
+                     attributes: undefined,
+                     collections: undefined
+                   }}
+                   showOwnerInfo={false}
+                   onNavigate={() => setNavContext({ 
+                     type: 'nft', 
+                     items: filteredNFTs.map(n => n.id), 
+                     source: 'profile',
+                     tab: 'nfts'
+                   })}
+                 />
               ))}
             </div>
           ) : (

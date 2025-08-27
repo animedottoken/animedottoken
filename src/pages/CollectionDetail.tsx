@@ -47,6 +47,7 @@ import { CollectionAvatarDialog } from "@/components/CollectionAvatarDialog";
 import { CollectionBannerDialog } from "@/components/CollectionBannerDialog";
 import { ProfileStyleEditButton } from "@/components/ProfileStyleEditButton";
 import { EmptyNFTTile } from "@/components/EmptyNFTTile";
+import { setNavContext } from "@/lib/navContext";
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -700,10 +701,14 @@ export default function CollectionDetail() {
                      <NFTCard
                        key={nft.id}
                        nft={nft}
-                       navigationQuery={`from=collection&collectionId=${collectionId}&${searchParams.toString()}`}
                        showOwnerInfo={false}
                        verified={displayCollection?.verified}
                        mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
+                       onNavigate={() => setNavContext({ 
+                         type: 'nft', 
+                         items: mints.map(m => m.id), 
+                         source: 'collection'
+                       })}
                      />
                   ))}
                 </div>

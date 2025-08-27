@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import profileBanner from '@/assets/profile-banner.jpg';
+import { getNavContext, clearNavContext } from "@/lib/navContext";
 
 interface Creator {
   wallet_address: string;
@@ -109,13 +110,21 @@ export default function CreatorProfile() {
     };
   }, [wallet]);
 
-  // Navigation state
-  const from = searchParams.get('from');
-  const navParam = searchParams.get('nav');
-  const navCreators = navParam ? JSON.parse(decodeURIComponent(navParam)) : [];
+  // Navigation state - use storage context with legacy URL support
+  const navContext = getNavContext('collection'); // assuming creator profiles navigate collections
+  const from = navContext?.source || searchParams.get('from');
+  const navCreators = navContext?.items || (searchParams.get('nav') ? JSON.parse(decodeURIComponent(searchParams.get('nav')!)) : []);
   const currentIndex = wallet ? navCreators.indexOf(wallet) : -1;
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < navCreators.length - 1;
+
+  // Clean legacy URL parameters on mount
+  useEffect(() => {
+    const hasLegacyParams = searchParams.get('nav') || searchParams.get('from');
+    if (hasLegacyParams) {
+      navigate(window.location.pathname, { replace: true });
+    }
+  }, [navigate, searchParams]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -135,18 +144,14 @@ export default function CreatorProfile() {
   const handlePrevious = () => {
     if (hasPrevious) {
       const prevWallet = navCreators[currentIndex - 1];
-      const tab = searchParams.get('tab') || 'creators';
-      const queryString = `from=${from}&tab=${tab}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
-      navigate(`/profile/${prevWallet}?${queryString}`);
+      navigate(`/profile/${prevWallet}`);
     }
   };
 
   const handleNext = () => {
     if (hasNext) {
       const nextWallet = navCreators[currentIndex + 1];
-      const tab = searchParams.get('tab') || 'creators';
-      const queryString = `from=${from}&tab=${tab}&nav=${encodeURIComponent(JSON.stringify(navCreators))}`;
-      navigate(`/profile/${nextWallet}?${queryString}`);
+      navigate(`/profile/${nextWallet}`);
     }
   };
 

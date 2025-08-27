@@ -42,9 +42,10 @@ interface NFTCardProps {
   showOwnerInfo?: boolean;
   verified?: boolean;
   mintedProgress?: string;
+  onNavigate?: () => void;
 }
 
-export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress }: NFTCardProps) => {
+export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress, onNavigate }: NFTCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const { connect, connecting, publicKey } = useSolanaWallet();
   const navigate = useNavigate();
@@ -95,6 +96,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
     <Link 
       to={`/nft/${nft.id}?${navigationQuery || 'from=marketplace'}`}
       className="block"
+      onClick={onNavigate}
     >
       <Card 
         className="group hover:shadow-lg transition-all cursor-pointer relative"

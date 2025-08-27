@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getNavContext } from '@/lib/navContext';
 
 interface NavigationItem {
   id: string;
@@ -12,28 +13,44 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [items, setItems] = useState<NavigationItem[]>([]);
   
-  const source = searchParams.get('from'); // 'collections', 'nfts', 'favorites', 'marketplace'
-  const navItems = searchParams.get('nav'); // JSON encoded array of item IDs
+  // Try to get from storage first, then fall back to URL params for legacy support
+  const navContext = getNavContext(itemType);
+  const legacyNavItems = searchParams.get('nav');
+  const source = navContext?.source || searchParams.get('from') || '';
 
   useEffect(() => {
-    if (navItems) {
+    let navigationItems: NavigationItem[] = [];
+    
+    // Priority: storage context > legacy URL params
+    if (navContext?.items) {
+      navigationItems = navContext.items.map((id: string) => ({
+        id,
+        type: itemType
+      }));
+    } else if (legacyNavItems) {
       try {
-        const parsedItems = JSON.parse(decodeURIComponent(navItems));
-        const navigationItems: NavigationItem[] = parsedItems.map((id: string) => ({
+        const parsedItems = JSON.parse(decodeURIComponent(legacyNavItems));
+        navigationItems = parsedItems.map((id: string) => ({
           id,
           type: itemType
         }));
-        setItems(navigationItems);
         
-        const index = navigationItems.findIndex(item => item.id === currentId);
-        setCurrentIndex(index);
+        // Clean legacy URL by navigating without nav param
+        if (navigationItems.length > 0) {
+          const currentPath = window.location.pathname;
+          const viewParam = searchParams.get('view');
+          const cleanUrl = viewParam ? `${currentPath}?view=${viewParam}` : currentPath;
+          navigate(cleanUrl, { replace: true });
+        }
       } catch (error) {
         console.error('Error parsing navigation items:', error);
-        setItems([]);
-        setCurrentIndex(-1);
       }
     }
-  }, [navItems, currentId, itemType]);
+    
+    setItems(navigationItems);
+    const index = navigationItems.findIndex(item => item.id === currentId);
+    setCurrentIndex(index);
+  }, [navContext, legacyNavItems, currentId, itemType, navigate, searchParams]);
 
   const navigateToItem = (direction: 'prev' | 'next') => {
     if (items.length === 0 || currentIndex === -1) return;
@@ -47,17 +64,13 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
 
     const targetItem = items[newIndex];
     if (targetItem) {
-      const fromParam = source ? `from=${source}` : '';
-      const tabParam = searchParams.get('tab') ? `tab=${searchParams.get('tab')}` : '';
-      const navParam = `nav=${encodeURIComponent(JSON.stringify(items.map(item => item.id)))}`;
-      const viewParam = searchParams.get('view') ? `view=${searchParams.get('view')}` : '';
-      const queryString = [fromParam, tabParam, navParam, viewParam].filter(Boolean).join('&');
+      // Keep minimal URL - only preserve view param if present
+      const viewParam = searchParams.get('view');
+      const targetUrl = itemType === 'collection' 
+        ? `/collection/${targetItem.id}${viewParam ? `?view=${viewParam}` : ''}`
+        : `/nft/${targetItem.id}${viewParam ? `?view=${viewParam}` : ''}`;
       
-      if (itemType === 'collection') {
-        navigate(`/collection/${targetItem.id}?${queryString}`);
-      } else {
-        navigate(`/nft/${targetItem.id}?${queryString}`);
-      }
+      navigate(targetUrl);
     }
   };
 

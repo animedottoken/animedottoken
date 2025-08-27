@@ -32,13 +32,15 @@ interface CollectionCardProps {
   navigationQuery?: string;
   overlayActions?: OverlayAction[];
   showCreatorInfo?: boolean;
+  onNavigate?: () => void;
 }
 
 export const CollectionCard = ({ 
   collection, 
   navigationQuery, 
   overlayActions, 
-  showCreatorInfo = true 
+  showCreatorInfo = true,
+  onNavigate
 }: CollectionCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useCollectionLikes();
   const { connect, connecting, publicKey } = useSolanaWallet();
@@ -100,6 +102,7 @@ export const CollectionCard = ({
     <Link 
       to={`/collection/${collection.id}?${navigationQuery || 'from=marketplace'}`}
       className="block"
+      onClick={onNavigate}
     >
       <Card 
         className="group hover:shadow-lg transition-all cursor-pointer relative"

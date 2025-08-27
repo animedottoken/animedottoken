@@ -6,15 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { NFTCard } from '@/components/NFTCard';
-import { CollectionCard } from '@/components/CollectionCard';
 import { Search, X } from 'lucide-react';
-import { useNFTs } from '@/hooks/useNFTs';
-import { useCollections } from '@/hooks/useCollections';
+import { useNFTs } from "@/hooks/useNFTs";
+import { useCollections } from "@/hooks/useCollections";
+import { NFTCard } from "@/components/NFTCard";
+import { CollectionCard } from "@/components/CollectionCard";
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
-import { isCollectionMarketEligible, hasRequiredListingFields } from '@/lib/attributeHelpers';
-import { PriceTag } from '@/components/ui/price-tag';
-import { Badge } from '@/components/ui/badge';
+import { hasRequiredListingFields } from '@/lib/attributeHelpers';
+import { setNavContext } from "@/lib/navContext";
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -267,13 +266,17 @@ const Marketplace = () => {
           ))
         ) : filteredNFTs.length > 0 ? (
           // NFT Cards
-          filteredNFTs.map((nft) => (
-            <NFTCard
-              key={nft.id}
-              nft={nft}
-              navigationQuery="from=marketplace"
-            />
-          ))
+           filteredNFTs.map((nft) => (
+             <NFTCard
+               key={nft.id}
+               nft={nft}
+               onNavigate={() => setNavContext({ 
+                 type: 'nft', 
+                 items: filteredNFTs.map(n => n.id), 
+                 source: 'marketplace' 
+               })}
+             />
+           ))
         ) : (
           // Empty state
           <Card>
@@ -302,18 +305,22 @@ const Marketplace = () => {
           ))
         ) : filteredCollections.length > 0 ? (
           // Collection Cards
-          filteredCollections.map((collection) => (
-            <CollectionCard
-              key={collection.id}
-              collection={{
-                ...collection,
-                image_url: collection.image_url || '/placeholder.svg',
-                creator_address_masked: collection.creator_address,
-                items_redeemed: collection.items_redeemed || 0
-              }}
-              navigationQuery="from=marketplace"
-            />
-          ))
+           filteredCollections.map((collection) => (
+             <CollectionCard
+               key={collection.id}
+               collection={{
+                 ...collection,
+                 image_url: collection.image_url || '/placeholder.svg',
+                 creator_address_masked: collection.creator_address,
+                 items_redeemed: collection.items_redeemed || 0
+               }}
+               onNavigate={() => setNavContext({ 
+                 type: 'collection', 
+                 items: filteredCollections.map(c => c.id), 
+                 source: 'marketplace' 
+               })}
+             />
+           ))
         ) : (
           // Empty state
           <Card>
