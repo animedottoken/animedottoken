@@ -65,19 +65,94 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [balance, setBalance] = useState(0);
   const [airdropping, setAirdropping] = useState(false);
+  const [lastProviderId, setLastProviderId] = useState<string | null>(
+    localStorage.getItem('solana-wallet-provider')
+  );
   const network = 'devnet'; // Force devnet for zero-cost testing
 
-  // Do NOT auto-connect. Only ensure we clear state on external disconnects.
+  // Auto-reconnect on app load and tab visibility changes
+  useEffect(() => {
+    const attemptAutoReconnect = async () => {
+      if (lastProviderId && !connected && !connecting) {
+        try {
+          // Inline connect logic to avoid circular dependency
+          const wallets = detectProviders();
+          const target = wallets.find(w => w.id === lastProviderId) || wallets.find(w => w.name.toLowerCase() === lastProviderId.toLowerCase());
+          const p = target?.provider;
+          if (p) {
+            const resp = await p.connect({ onlyIfTrusted: true }); // Use onlyIfTrusted for auto-reconnect
+            if (resp?.publicKey) {
+              setPublicKey(resp.publicKey.toString());
+              setConnected(true);
+            }
+          }
+        } catch (error) {
+          console.warn('Auto-reconnect failed:', error);
+          // Clear invalid provider from storage
+          localStorage.removeItem('solana-wallet-provider');
+          setLastProviderId(null);
+        }
+      }
+    };
+
+    // Try auto-reconnect on mount
+    attemptAutoReconnect();
+
+    // Handle tab visibility changes
+    const handleVisibilityChange = () => {
+      if (!document.hidden && lastProviderId && !connected) {
+        attemptAutoReconnect();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [lastProviderId, connected, connecting]);
+
+  // Listen for wallet events
   useEffect(() => {
     const anyWin = window as any;
     const solana = anyWin.solana;
     if (!solana) return;
+
+    const handleConnect = (publicKey: any) => {
+      if (publicKey) {
+        setPublicKey(publicKey.toString());
+        setConnected(true);
+      }
+    };
+
     const handleDisconnect = () => {
       setConnected(false);
       setPublicKey(null);
+      // Don't clear lastProviderId here - we want to remember for auto-reconnect
     };
-    try { solana.on?.('disconnect', handleDisconnect); } catch {}
-    return () => { try { solana.off?.('disconnect', handleDisconnect); } catch {} };
+
+    const handleAccountChanged = (publicKey: any) => {
+      if (publicKey) {
+        setPublicKey(publicKey.toString());
+      } else {
+        handleDisconnect();
+      }
+    };
+
+    try {
+      solana.on?.('connect', handleConnect);
+      solana.on?.('disconnect', handleDisconnect);
+      solana.on?.('accountChanged', handleAccountChanged);
+    } catch (error) {
+      console.warn('Failed to attach wallet event listeners:', error);
+    }
+
+    return () => {
+      try {
+        solana.off?.('connect', handleConnect);
+        solana.off?.('disconnect', handleDisconnect);
+        solana.off?.('accountChanged', handleAccountChanged);
+      } catch (error) {
+        console.warn('Failed to remove wallet event listeners:', error);
+      }
+    };
   }, []);
 
   const connectWith = useCallback(async (providerId: string) => {
@@ -89,14 +164,14 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
       const p = target?.provider;
       if (!p) throw new Error('Selected wallet not available');
 
-      // Hard reset provider state
-      try { await p.disconnect?.(); } catch {}
-      await new Promise(r => setTimeout(r, 150));
-
+      // Try to connect without disconnecting first (preserve existing connection)
       const resp = await p.connect({ onlyIfTrusted: false });
       if (resp?.publicKey) {
         setPublicKey(resp.publicKey.toString());
         setConnected(true);
+        // Store successful provider for auto-reconnect
+        localStorage.setItem('solana-wallet-provider', providerId);
+        setLastProviderId(providerId);
       } else {
         throw new Error('No wallet selected');
       }
@@ -133,6 +208,9 @@ export const SolanaWalletProvider = ({ children }: SolanaWalletProviderProps) =>
     }
     setConnected(false);
     setPublicKey(null);
+    // Clear stored provider on manual disconnect
+    localStorage.removeItem('solana-wallet-provider');
+    setLastProviderId(null);
   }, []);
 
   const updateBalance = useCallback(async () => {
