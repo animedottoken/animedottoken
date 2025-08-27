@@ -8,6 +8,8 @@ import bs58 from 'bs58';
 export const useCreatorFollows = () => {
   const [followedCreators, setFollowedCreators] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [sessionExpiry, setSessionExpiry] = useState<number | null>(null);
   const { publicKey, connected } = useSolanaWallet();
 
   const loadFollowedCreators = useCallback(async () => {
@@ -32,6 +34,54 @@ export const useCreatorFollows = () => {
     }
   }, [connected, publicKey]);
 
+  const getOrCreateSessionToken = useCallback(async () => {
+    if (!connected || !publicKey) return null;
+
+    // Check if current session token is still valid (with 2 min buffer)
+    if (sessionToken && sessionExpiry && Date.now() < (sessionExpiry - 2 * 60 * 1000)) {
+      return sessionToken;
+    }
+
+    try {
+      // Get wallet provider for signing
+      const anyWin: any = window as any;
+      const providers = anyWin?.solana?.providers ?? [anyWin?.solana].filter(Boolean);
+      const provider = providers?.find((p: any) => typeof p?.signMessage === 'function' && (p?.isConnected || p?.connected)) || providers?.[0];
+      if (!provider?.signMessage) {
+        throw new Error('Wallet does not support message signing');
+      }
+
+      // Sign session start message
+      const timestamp = Date.now().toString();
+      const message = `follow-session-start:${publicKey}:${timestamp}`;
+      const encoded = new TextEncoder().encode(message);
+      const signed = await provider.signMessage(encoded, 'utf8');
+      const sigBytes: Uint8Array = (signed && signed.signature) ? new Uint8Array(signed.signature) : new Uint8Array(signed);
+      const signature = bs58.encode(sigBytes);
+
+      const { data, error } = await supabase.functions.invoke('follow-session/start', {
+        body: {
+          wallet_address: publicKey,
+          signature,
+          message,
+          timestamp,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setSessionToken(data.session_token);
+        setSessionExpiry(data.expires_at);
+        console.log('📝 Session token created, expires at:', new Date(data.expires_at));
+        return data.session_token;
+      }
+    } catch (err) {
+      console.error('Failed to create session token:', err);
+      return null;
+    }
+  }, [connected, publicKey, sessionToken, sessionExpiry]);
+
   const toggleFollow = useCallback(async (creatorWallet: string) => {
     if (!connected || !publicKey) {
       toast.error('Please connect your wallet first');
@@ -50,30 +100,42 @@ export const useCreatorFollows = () => {
     try {
       const action = wasFollowing ? 'unfollow' : 'follow';
 
-      // Prepare and sign a message with the connected wallet
-      const anyWin: any = window as any;
-      const providers = anyWin?.solana?.providers ?? [anyWin?.solana].filter(Boolean);
-      const provider = providers?.find((p: any) => typeof p?.signMessage === 'function' && (p?.isConnected || p?.connected)) || providers?.[0];
-      if (!provider?.signMessage) {
-        throw new Error('Wallet does not support message signing');
-      }
+      // Try to use session token first
+      let token = await getOrCreateSessionToken();
+      let requestBody: any = {
+        creator_wallet: creatorWallet,
+        follower_wallet: publicKey,
+        action,
+      };
 
-      const timestamp = Date.now().toString();
-      const message = `toggle-follow:${creatorWallet}:${publicKey}:${action}:${timestamp}`;
-      const encoded = new TextEncoder().encode(message);
-      const signed = await provider.signMessage(encoded, 'utf8');
-      const sigBytes: Uint8Array = (signed && signed.signature) ? new Uint8Array(signed.signature) : new Uint8Array(signed);
-      const signature = bs58.encode(sigBytes);
+      if (token) {
+        requestBody.session_token = token;
+      } else {
+        // Fallback to signature-based auth
+        const anyWin: any = window as any;
+        const providers = anyWin?.solana?.providers ?? [anyWin?.solana].filter(Boolean);
+        const provider = providers?.find((p: any) => typeof p?.signMessage === 'function' && (p?.isConnected || p?.connected)) || providers?.[0];
+        if (!provider?.signMessage) {
+          throw new Error('Wallet does not support message signing');
+        }
 
-      const { data, error } = await supabase.functions.invoke('toggle-follow', {
-        body: { 
-          creator_wallet: creatorWallet,
-          follower_wallet: publicKey,
-          action,
+        const timestamp = Date.now().toString();
+        const message = `toggle-follow:${creatorWallet}:${publicKey}:${action}:${timestamp}`;
+        const encoded = new TextEncoder().encode(message);
+        const signed = await provider.signMessage(encoded, 'utf8');
+        const sigBytes: Uint8Array = (signed && signed.signature) ? new Uint8Array(signed.signature) : new Uint8Array(signed);
+        const signature = bs58.encode(sigBytes);
+
+        requestBody = {
+          ...requestBody,
           message,
           timestamp,
           signature,
-        },
+        };
+      }
+
+      const { data, error } = await supabase.functions.invoke('toggle-follow', {
+        body: requestBody,
       });
 
       if (error) throw error;
@@ -106,7 +168,7 @@ export const useCreatorFollows = () => {
     } finally {
       setLoading(false);
     }
-  }, [connected, publicKey, followedCreators]);
+  }, [connected, publicKey, followedCreators, getOrCreateSessionToken]);
 
   const isFollowing = useCallback((creatorWallet: string) => {
     return followedCreators.includes(creatorWallet);
@@ -115,7 +177,12 @@ export const useCreatorFollows = () => {
   useEffect(() => {
     loadFollowedCreators();
 
-    if (!connected || !publicKey) return;
+    if (!connected || !publicKey) {
+      // Clear session when disconnected
+      setSessionToken(null);
+      setSessionExpiry(null);
+      return;
+    }
 
     // Set up real-time subscription for creator follows - only for current user
     const channel = supabase

@@ -125,7 +125,9 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
       return;
     }
     
-    toggleLike(listing.nft_id);
+    // We need the unmasked creator address for optimistic updates
+    // For now, we'll pass null as a fallback - ideally we'd fetch the real address
+    toggleLike(listing.nft_id, null);
   };
 
   const handleViewDetails = () => {

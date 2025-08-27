@@ -88,8 +88,8 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
       return;
     }
     
-    console.log('Toggling like for NFT:', nft.id);
-    await toggleLike(nft.id);
+    console.log('Toggling like for NFT:', nft.id, 'Creator:', nft.creator_address);
+    await toggleLike(nft.id, nft.creator_address);
   };
 
   return (
