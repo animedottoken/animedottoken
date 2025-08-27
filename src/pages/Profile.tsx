@@ -221,14 +221,127 @@ const Profile = () => {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Profile Header */}
-      <Card>
-        <CardContent className="p-6">
-          <UserProfileDisplay
-            walletAddress={targetWallet}
-            showRankBadge={true}
-            showTradeCount={true}
-            size="lg"
-          />
+      <Card className="relative overflow-hidden">
+        {/* Banner */}
+        <div className="relative h-48 bg-gradient-to-r from-primary/20 to-accent/20">
+          {profile?.banner_image_url && (
+            <img 
+              src={profile.banner_image_url} 
+              alt="Profile Banner" 
+              className="w-full h-full object-cover"
+            />
+          )}
+          {isOwnProfile && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="absolute top-4 right-4"
+              onClick={() => setShowBannerDialog(true)}
+            >
+              <Edit2 className="h-4 w-4 mr-2" />
+              Edit Banner
+            </Button>
+          )}
+        </div>
+
+        {/* Profile Info */}
+        <CardContent className="relative -mt-16 pt-16">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full border-4 border-background bg-muted overflow-hidden">
+                {profile?.profile_image_url ? (
+                  <img 
+                    src={profile.profile_image_url} 
+                    alt="Profile Picture" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20 text-2xl font-bold">
+                    {targetWallet?.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              {isOwnProfile && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="absolute -bottom-2 -right-2 rounded-full"
+                  onClick={() => setShowPfpDialog(true)}
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            {/* Profile Details */}
+            <div className="flex-1 space-y-4">
+              {/* Nickname */}
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">
+                  {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
+                </h1>
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowNicknameDialog(true)}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                )}
+                <Badge variant="outline" className="ml-2">
+                  <UserProfileDisplay
+                    walletAddress={targetWallet}
+                    showRankBadge={true}
+                    showTradeCount={false}
+                    size="sm"
+                  />
+                </Badge>
+              </div>
+
+              {/* Wallet Address */}
+              <p className="text-muted-foreground font-mono text-sm">
+                {targetWallet}
+              </p>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                {profile?.bio ? (
+                  <div className="flex items-start gap-2">
+                    <p className="text-muted-foreground">{profile.bio}</p>
+                    {isOwnProfile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowBioDialog(true)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ) : isOwnProfile ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowBioDialog(true)}
+                  >
+                    Add Bio
+                  </Button>
+                ) : null}
+              </div>
+
+              {/* Stats */}
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <UserProfileDisplay
+                  walletAddress={targetWallet}
+                  showRankBadge={false}
+                  showTradeCount={true}
+                  size="sm"
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
