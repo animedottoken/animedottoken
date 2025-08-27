@@ -25,15 +25,15 @@ serve(async (req) => {
     }
 
     const { wallet_address, bio, transaction_signature } = await req.json();
-    const userWallet = typeof wallet_address === 'string' ? wallet_address : null;
-    if (!userWallet) {
+    
+    // Validate required fields
+    if (!wallet_address || typeof wallet_address !== 'string') {
       return new Response(JSON.stringify({ error: 'wallet_address is required' }), {
         status: 400,
         headers: corsHeaders,
       });
     }
 
-    // Validate bio
     if (!bio || typeof bio !== "string") {
       return new Response(JSON.stringify({ error: "Bio is required" }), {
         status: 400,
@@ -56,10 +56,12 @@ serve(async (req) => {
       });
     }
 
-    // Rate limiting check
+    // Create Supabase client with service role key
     const supabase = createClient(supabaseUrl, serviceKey);
+
+    // Rate limiting check
     const rateLimitCheck = await supabase.rpc('check_rate_limit', {
-      p_user_wallet: userWallet,
+      p_user_wallet: wallet_address,
       p_endpoint: 'set-bio',
       p_max_requests: 5,
       p_window_minutes: 1
@@ -72,11 +74,13 @@ serve(async (req) => {
       });
     }
 
+    console.log('Setting bio for wallet:', wallet_address);
+
     // Get current profile to check if this is first time
     const { data: currentProfile, error: fetchError } = await supabase
       .from('user_profiles')
       .select('bio, bio_unlock_status')
-      .eq('wallet_address', userWallet)
+      .eq('wallet_address', wallet_address)
       .maybeSingle();
 
     if (fetchError) {
@@ -108,11 +112,11 @@ serve(async (req) => {
       }
     }
 
-    // Update profile using service role (bypasses RLS since this function validates input)
+    // Update profile using service role (bypasses RLS)
     const { data: updatedProfile, error: updateError } = await supabase
       .from('user_profiles')
       .upsert({
-        wallet_address: userWallet,
+        wallet_address: wallet_address,
         bio: trimmedBio,
         bio_unlock_status: true,
         updated_at: new Date().toISOString()
@@ -124,13 +128,13 @@ serve(async (req) => {
 
     if (updateError) {
       console.error('Error updating profile:', updateError);
-      return new Response(JSON.stringify({ error: 'Failed to update bio' }), {
+      return new Response(JSON.stringify({ error: 'Failed to update bio', details: updateError.message }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
-    console.log('Bio updated successfully for wallet:', userWallet);
+    console.log('Bio updated successfully for wallet:', wallet_address);
 
     return new Response(JSON.stringify({ 
       success: true, 
