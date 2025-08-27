@@ -100,6 +100,19 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
+          {/* Single authentication button */}
+          {user ? (
+            <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              <span className="text-sm font-medium">Sign Out</span>
+            </Button>
+          ) : (
+            <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
+              <LogIn className="h-4 w-4" />
+              <span className="text-sm font-medium">Sign In</span>
+            </Button>
+          )}
+          
           {/* Menu dropdown with navigation + wallet */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -150,19 +163,6 @@ export const TopNav = () => {
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          {/* Single authentication button */}
-          {user ? (
-            <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
-              <LogOut className="h-4 w-4" />
-              <span className="text-sm font-medium">Sign Out</span>
-            </Button>
-          ) : (
-            <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
-              <LogIn className="h-4 w-4" />
-              <span className="text-sm font-medium">Sign In</span>
-            </Button>
-          )}
         </nav>
       </header>
     );
