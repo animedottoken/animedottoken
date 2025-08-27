@@ -356,12 +356,12 @@ const Profile = () => {
             <div className="absolute top-4 right-4">
               <Button
                 variant="secondary" 
-                size="sm"
+                size="icon"
                 onClick={() => setShowBannerPicker(true)}
                 className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
+                aria-label="Change banner"
               >
-                <Camera className="h-4 w-4 mr-2" />
-                Change Banner
+                <Camera className="h-4 w-4" />
               </Button>
             </div>
           )}
@@ -421,14 +421,14 @@ const Profile = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {!isOwnProfile && (
+                  {!isOwnProfile && targetWallet && (
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => targetWallet && toggleFollow(targetWallet)}
+                      onClick={() => toggleFollow(targetWallet)}
                       disabled={followLoading}
                     >
-                      {isFollowing(targetWallet || '') ? (
+                      {isFollowing(targetWallet) ? (
                         <>
                           <UserMinus className="h-4 w-4 mr-2" />
                           Unfollow
