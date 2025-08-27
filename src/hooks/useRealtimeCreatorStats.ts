@@ -26,17 +26,19 @@ export const useRealtimeCreatorStats = (walletAddresses: string[] = []) => {
     try {
       setLoading(true);
       
-      // Load stats using the secure RPC function
-      const { data: statsData, error } = await supabase.rpc('get_creators_public_stats');
+      // Use edge function to bypass RLS issues
+      const { data: response, error } = await supabase.functions.invoke('get-creator-stats', {
+        body: { wallet_addresses: walletAddresses }
+      });
 
       if (error) throw error;
 
-      // Filter by requested wallet addresses and create map
-      const filteredStats = (statsData || []).filter(stat => 
-        walletAddresses.includes(stat.wallet_address)
-      );
-      
-      const statsMap = filteredStats.reduce((acc, stat) => ({
+      if (!response?.success) {
+        throw new Error(response?.error || 'Failed to fetch creator stats');
+      }
+
+      // Create stats map from response
+      const statsMap = (response.stats || []).reduce((acc: any, stat: any) => ({
         ...acc,
         [stat.wallet_address]: {
           follower_count: stat.follower_count || 0,
