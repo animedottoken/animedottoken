@@ -245,11 +245,11 @@ const Profile = () => {
         </div>
 
         {/* Profile Content */}
-        <div className="relative -mt-20 px-6 pb-6">
+        <div className="relative mt-6 px-6 pb-6">
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Avatar */}
             <div className="relative group">
-              <div className="w-32 h-32 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
+              <div className="w-40 h-40 sm:w-44 sm:h-44 rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-sm">
                 {profile?.profile_image_url ? (
                   <img 
                     src={profile.profile_image_url} 
@@ -294,10 +294,17 @@ const Profile = () => {
               </div>
 
 
-              {/* Bio Section */}
-              <div>
+              {/* Wallet (short) */}
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
+                </Badge>
+              </div>
+
+              {/* Bio + Program */}
+              <div className="flex items-start gap-2">
                 {profile?.bio ? (
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-2 flex-wrap">
                     <p className="text-muted-foreground">{profile.bio}</p>
                     {isOwnProfile && (
                       <Button
@@ -309,27 +316,38 @@ const Profile = () => {
                         <Edit2 className="h-3 w-3" />
                       </Button>
                     )}
+                    <Badge variant="secondary">
+                      {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                        ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                        : 'Starter'}
+                    </Badge>
                   </div>
                 ) : isOwnProfile ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowBioDialog(true)}
-                    className="text-sm"
-                  >
-                    Add Bio
-                  </Button>
-                ) : null}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowBioDialog(true)}
+                      className="text-sm"
+                    >
+                      Add Bio
+                    </Button>
+                    <Badge variant="secondary">
+                      {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                        ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                        : 'Starter'}
+                    </Badge>
+                  </div>
+                ) : (
+                  <Badge variant="secondary">
+                    {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                      ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                      : 'Starter'}
+                  </Badge>
+                )}
               </div>
 
-              {/* Stats */}
-              <div className="flex items-center gap-1 text-sm">
-                <Badge variant="secondary" className="text-xs">
-                  {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
-                </Badge>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">{profile?.trade_count ?? 0} trades</span>
-              </div>
+              {/* Program and stats row removed per design: only short wallet is shown above */}
             </div>
           </div>
         </div>
