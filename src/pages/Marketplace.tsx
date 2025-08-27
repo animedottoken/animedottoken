@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Search, X } from 'lucide-react';
 import { useNFTs } from "@/hooks/useNFTs";
-import { useCollections } from "@/hooks/useCollections";
+import { usePublicCollections } from "@/hooks/usePublicCollections";
 import { NFTCard } from "@/components/NFTCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { useSolanaWallet } from '@/contexts/SolanaWalletContext';
@@ -25,7 +25,7 @@ const Marketplace = () => {
   const navigate = useNavigate();
 
   const { nfts, loading: nftsLoading } = useNFTs();
-  const { collections, loading: collectionsLoading } = useCollections();
+  const { collections, loading: collectionsLoading } = usePublicCollections();
   const { publicKey } = useSolanaWallet();
 
   useEffect(() => {
