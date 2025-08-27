@@ -1,7 +1,8 @@
 
 import defaultBanner from '@/assets/default-profile-banner.jpg';
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,8 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 const Profile = () => {
   const { wallet } = useParams();
   const { publicKey, connected } = useSolanaWallet();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -324,12 +327,31 @@ const Profile = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-3xl mx-auto">
+          <CardContent className="py-10 text-center">
+            <div className="text-6xl mb-4">🔐</div>
+            <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+            <p className="text-muted-foreground mb-6">
+              Please sign in to view and customize your profile.
+            </p>
+            <Button onClick={() => navigate('/auth')} size="lg">
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (!targetWallet) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-3xl mx-auto">
           <CardContent className="py-10 text-center">
-            <div className="text-6xl mb-4">🔒</div>
+            <div className="text-6xl mb-4">🔗</div>
             <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
             <p className="text-muted-foreground mb-6">
               Connect your Solana wallet to view and customize your profile.

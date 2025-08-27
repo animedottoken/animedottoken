@@ -100,19 +100,56 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
-          {/* Always visible wallet status */}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => connected ? null : connect()}
-            className={`flex items-center gap-2 ${connected ? 'border-green-500/20 bg-green-500/10' : 'border-red-500/20 bg-red-500/10'}`}
-          >
-            <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <Wallet className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              {connecting ? 'Connecting...' : connected ? 'Connected' : 'Connect Wallet'}
-            </span>
-          </Button>
+          {/* Menu dropdown with navigation + wallet */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Menu className="h-4 w-4" />
+                <span className="text-sm font-medium">Menu</span>
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border">
+              {/* Navigation Items */}
+              <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
+                <Coins className="h-4 w-4" />
+                <span>Mint NFTs</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer">
+                <ShoppingCart className="h-4 w-4" />
+                <span>Marketplace</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/profile')} className="flex items-center gap-2 cursor-pointer">
+                <User className="h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+              
+              {/* Wallet Section */}
+              <div className="px-2 py-1.5">
+                <div className="text-xs font-medium text-muted-foreground mb-1">Wallet</div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <Wallet className="h-4 w-4" />
+                  <span>{connecting ? 'Connecting...' : connected ? 'Connected' : 'Disconnected'}</span>
+                </div>
+                {!connected && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      connect();
+                    }}
+                    className="w-full mt-1 h-8 text-xs"
+                  >
+                    Connect Wallet
+                  </Button>
+                )}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* Single authentication button */}
           {user ? (
@@ -152,8 +189,45 @@ export const TopNav = () => {
                 </div>
               </div>
 
-              {/* Home Sections - same as desktop sidebar */}
-              <div className="space-y-1">
+              {/* Navigation Routes */}
+              <div className="space-y-1 mb-6">
+                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Navigation</div>
+                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={(e) => handleNavigation(item, e)}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.title}</span>
+                  </Button>
+                ))}
+              </div>
+
+              {/* Wallet Section */}
+              <div className="border-t pt-4">
+                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Wallet</div>
+                <div className="flex items-center gap-2 px-2 py-2 text-sm">
+                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <Wallet className="h-4 w-4" />
+                  <span>{connecting ? 'Connecting...' : connected ? 'Connected' : 'Disconnected'}</span>
+                </div>
+                {!connected && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => connect()}
+                    className="w-full mx-2 h-10"
+                  >
+                    Connect Wallet
+                  </Button>
+                )}
+              </div>
+
+              {/* Home Sections */}
+              <div className="space-y-1 border-t pt-4">
+                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Home Sections</div>
                 {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
                   <Button
                     key={item.hash}
@@ -163,7 +237,6 @@ export const TopNav = () => {
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="font-medium">{item.title}</span>
-                    
                   </Button>
                 ))}
               </div>
@@ -186,17 +259,6 @@ export const TopNav = () => {
       </div>
       
       <nav className="flex items-center gap-2">
-        {/* Always visible wallet status (mobile) */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => connected ? null : connect()}
-          className={`flex items-center gap-1 ${connected ? 'border-green-500/20 bg-green-500/10' : 'border-red-500/20 bg-red-500/10'}`}
-        >
-          <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-          <Wallet className="h-4 w-4" />
-        </Button>
-        
         {/* Single authentication button */}
         {user ? (
           <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
