@@ -122,6 +122,7 @@ All colors MUST be HSL. */
     background-attachment: fixed;
     /* Avoid 100vw which can cause right-edge clipping when scrollbars appear */
     overflow-x: hidden;
+    overflow-y: scroll; /* Always reserve scrollbar space to prevent layout shift */
     padding-right: env(safe-area-inset-right);
     padding-left: env(safe-area-inset-left);
   }

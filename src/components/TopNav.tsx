@@ -111,7 +111,7 @@ export const TopNav = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="w-56 bg-background/95 backdrop-blur-sm border border-border shadow-lg z-[9999]"
+              className="w-56 bg-popover text-popover-foreground border border-border shadow-lg z-[9999]"
               sideOffset={5}
             >
               {/* Navigation Items */}
