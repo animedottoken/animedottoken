@@ -4,6 +4,7 @@ import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users,
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -171,7 +172,7 @@ export const TopNav = () => {
               <span className="sr-only">Navigation menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 sm:w-80">
+          <SheetContent side="left" className="w-72 sm:w-80 max-h-[100dvh] overflow-y-auto overscroll-contain touch-pan-y pb-[env(safe-area-inset-bottom)]">
             <div className="flex flex-col gap-4 mt-8">
               <div className="flex items-center gap-2 px-2 mb-6">
                 <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-10 w-10" />
@@ -217,19 +218,29 @@ export const TopNav = () => {
               </div>
 
               {/* Home Sections */}
-              <div className="space-y-1 border-t pt-4">
-                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Home Sections</div>
-                {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
-                  <Button
-                    key={item.hash}
-                    variant="ghost"
-                    className="w-full justify-start gap-3 h-12"
-                    onClick={(e) => handleNavigation(item, e)}
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.title}</span>
-                  </Button>
-                ))}
+              <div className="border-t pt-4">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="home-sections">
+                    <AccordionTrigger className="px-2 text-xs font-medium text-muted-foreground hover:no-underline">
+                      Home Sections
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-1 mt-2">
+                        {navigationItems.filter((item): item is SectionItem => item.type === "section").map((item) => (
+                          <Button
+                            key={item.hash}
+                            variant="ghost"
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={(e) => handleNavigation(item, e)}
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span className="font-medium">{item.title}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </div>
           </SheetContent>
