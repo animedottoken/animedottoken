@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2 } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -27,6 +27,11 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { setNavContext } from "@/lib/navContext";
+import { BioEditDialog } from '@/components/BioEditDialog';
+import { NicknameEditDialog } from '@/components/NicknameEditDialog';
+import { PfpPickerDialog } from '@/components/PfpPickerDialog';
+import { BannerPickerDialog } from '@/components/BannerPickerDialog';
+import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -35,6 +40,22 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
+  
+  // Edit dialog states
+  const [showBioEdit, setShowBioEdit] = useState(false);
+  const [showNicknameEdit, setShowNicknameEdit] = useState(false);
+  const [showPfpPicker, setShowPfpPicker] = useState(false);
+  const [showBannerPicker, setShowBannerPicker] = useState(false);
+  
+  // Use gamified profile hook for editing functionality
+  const { 
+    userNFTs,
+    setNickname,
+    setBio,
+    setPFP,
+    setBanner,
+    loading: profileLoading
+  } = useGamifiedProfile();
 
   const targetWallet = wallet || publicKey;
 
@@ -98,6 +119,77 @@ const Profile = () => {
     const needed = Math.max(0, nextThreshold - tradeCount);
     
     return { progress, nextRank, needed };
+  };
+
+  const handleNicknameConfirm = async (nickname: string) => {
+    try {
+      await setNickname(nickname);
+      await fetchProfile();
+      toast.success('Nickname updated successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error updating nickname:', error);
+      toast.error('Failed to update nickname');
+      return false;
+    }
+  };
+
+  const handleBioConfirm = async (bio: string) => {
+    try {
+      await setBio(bio, 'dummy-tx-signature');
+      await fetchProfile();
+      toast.success('Bio updated successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error updating bio:', error);
+      toast.error('Failed to update bio');
+      return false;
+    }
+  };
+
+  const handlePfpConfirm = async (nftMintAddress: string) => {
+    try {
+      await setPFP(nftMintAddress, 'dummy-tx-signature');
+      await fetchProfile();
+      toast.success('Profile picture updated successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      toast.error('Failed to update profile picture');
+      return false;
+    }
+  };
+
+  const handleBannerConfirm = async (bannerFile: File) => {
+    try {
+      await setBanner(bannerFile);
+      await fetchProfile();
+      toast.success('Banner updated successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error updating banner:', error);
+      toast.error('Failed to update banner');
+      return false;
+    }
+  };
+
+  const fetchProfile = async () => {
+    if (!targetWallet) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('get-profile', {
+        body: { wallet_address: targetWallet }
+      });
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+      
+      setProfile(data || null);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
   };
 
   const copyToClipboard = async (text: string) => {
@@ -260,6 +352,19 @@ const Profile = () => {
             alt="Profile Banner" 
             className="w-full h-full object-cover"
           />
+          {isOwnProfile && (
+            <div className="absolute top-4 right-4">
+              <Button
+                variant="secondary" 
+                size="sm"
+                onClick={() => setShowBannerPicker(true)}
+                className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                Change Banner
+              </Button>
+            </div>
+          )}
         </div>
 
       </div>
@@ -282,34 +387,60 @@ const Profile = () => {
                 </div>
               )}
             </div>
+            {isOwnProfile && (
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setShowPfpPicker(true)}
+                className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 border-2 border-border/50 hover:border-border"
+                aria-label="Change profile picture"
+              >
+                <Camera className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Info Column */}
           <div className="space-y-3">
               {/* Name Row with Actions */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
-                  {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
-                </h1>
                 <div className="flex items-center gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => targetWallet && toggleFollow(targetWallet)}
-                    disabled={followLoading}
-                  >
-                    {isFollowing(targetWallet || '') ? (
-                      <>
-                        <UserMinus className="h-4 w-4 mr-2" />
-                        Unfollow
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Follow
-                      </>
-                    )}
-                  </Button>
+                  <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
+                    {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
+                  </h1>
+                  {isOwnProfile && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowNicknameEdit(true)}
+                      className="h-6 w-6 p-0"
+                      aria-label="Edit name"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {!isOwnProfile && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => targetWallet && toggleFollow(targetWallet)}
+                      disabled={followLoading}
+                    >
+                      {isFollowing(targetWallet || '') ? (
+                        <>
+                          <UserMinus className="h-4 w-4 mr-2" />
+                          Unfollow
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Follow
+                        </>
+                      )}
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
                     size="icon"
@@ -465,13 +596,28 @@ const Profile = () => {
               </div>
 
               {/* Bio */}
-              {profile?.bio && (
-                <div>
-                  <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem]" data-testid="profile-bio">
+              <div className="flex items-start gap-2">
+                {profile?.bio ? (
+                  <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem] flex-1" data-testid="profile-bio">
                     {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
                   </p>
-                </div>
-              )}
+                ) : isOwnProfile ? (
+                  <p className="text-muted-foreground/60 text-sm italic flex-1">
+                    Add a bio to tell others about yourself
+                  </p>
+                ) : null}
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowBioEdit(true)}
+                    className="h-6 w-6 p-0 flex-shrink-0"
+                    aria-label="Edit bio"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
 
               {/* Compact Stats Row with Icons */}
               <div className="flex flex-wrap items-center gap-4 text-xs">
@@ -640,6 +786,48 @@ const Profile = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Edit Dialogs */}
+      {isOwnProfile && (
+        <>
+          <BioEditDialog
+            open={showBioEdit}
+            onOpenChange={setShowBioEdit}
+            profile={profile}
+            onConfirm={handleBioConfirm}
+            loading={profileLoading}
+            currentBio={profile?.bio || ''}
+          />
+          
+          <NicknameEditDialog
+            open={showNicknameEdit}
+            onOpenChange={setShowNicknameEdit}
+            profile={profile}
+            onConfirm={handleNicknameConfirm}
+            loading={profileLoading}
+            currentNickname={profile?.nickname || ''}
+          />
+          
+          <PfpPickerDialog
+            open={showPfpPicker}
+            onOpenChange={setShowPfpPicker}
+            profile={profile}
+            nfts={userNFTs}
+            onConfirm={handlePfpConfirm}
+            loading={profileLoading}
+            isFirstChange={!profile?.pfp_unlock_status}
+          />
+          
+          <BannerPickerDialog
+            open={showBannerPicker}
+            onOpenChange={setShowBannerPicker}
+            profile={profile}
+            onConfirm={handleBannerConfirm}
+            loading={profileLoading}
+            isFirstChange={true}
+          />
+        </>
+      )}
     </div>
   );
 };
