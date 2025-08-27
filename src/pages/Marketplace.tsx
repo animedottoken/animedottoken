@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBoostedListings } from "@/hooks/useBoostedListings";
 import { BoostedNFTCard } from "@/components/BoostedNFTCard";
 import { NFTCard } from "@/components/NFTCard";
+import { CollectionCard } from "@/components/CollectionCard";
 import { PropertyFilter } from "@/components/PropertyFilter";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -614,45 +615,20 @@ export default function Marketplace() {
           </div>
         </div>
       ) : activeTab === "collections" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCollections.map((collection) => (
-            <Card 
-              key={collection.id}
-              className="group hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => {
-                const navIds = filteredCollections.map(c => c.id);
-                const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
-                navigate(`/collection/${collection.id}?${queryString}`);
-              }}
-            >
-               <div className="aspect-square overflow-hidden rounded-t-lg">
-                 <img
-                   src={collection.image_url || "/placeholder.svg"}
-                   alt={collection.name}
-                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                 />
-               </div>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold truncate">{collection.name}</h3>
-                  {collection.verified && (
-                    <Badge variant="secondary" className="text-xs">✓</Badge>
-                  )}
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {collection.items_redeemed}/{collection.max_supply || '∞'} minted
-                  </span>
-                  {collection.mint_price && collection.mint_price > 0 && (
-                    <span className="font-medium">
-                      <span className="text-primary">Price</span> {collection.mint_price} SOL
-                    </span>
-                  )}
-                </div>
-              </CardContent>
-             </Card>
-           ))}
-         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredCollections.map((collection) => {
+            const navIds = filteredCollections.map(c => c.id);
+            const queryString = `from=marketplace&tab=${activeTab}&nav=${encodeURIComponent(JSON.stringify(navIds))}`;
+            
+            return (
+              <CollectionCard 
+                key={collection.id}
+                collection={collection}
+                navigationQuery={queryString}
+              />
+            );
+          })}
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredCreators.map((creator) => (
