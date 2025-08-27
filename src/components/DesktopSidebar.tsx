@@ -144,6 +144,45 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
+          {/* Authentication Section */}
+          <div className="space-y-1">
+            {user ? (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={signOut}
+                    className={cn(
+                      "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
+                      collapsed && "justify-center px-2"
+                    )}
+                  >
+                    <LogOut className="h-5 w-5 shrink-0" />
+                    {!collapsed && <span className="font-medium">Sign Out</span>}
+                  </Button>
+                </TooltipTrigger>
+                {collapsed && <TooltipContent side="right">Sign Out</TooltipContent>}
+              </Tooltip>
+            ) : (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate('/auth')}
+                    className={cn(
+                      "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
+                      collapsed && "justify-center px-2"
+                    )}
+                  >
+                    <LogIn className="h-5 w-5 shrink-0" />
+                    {!collapsed && <span className="font-medium">Sign In</span>}
+                  </Button>
+                </TooltipTrigger>
+                {collapsed && <TooltipContent side="right">Sign In</TooltipContent>}
+              </Tooltip>
+            )}
+          </div>
+
           {/* Home Sections Only */}
           <div>
             <div className="space-y-1">

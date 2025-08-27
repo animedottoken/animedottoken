@@ -1,14 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronDown, Wallet, LogOut, Copy, LogIn } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useSolanaWallet } from "@/contexts/SolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
 
 type RouteItem = {
   type: "route";
@@ -49,9 +45,7 @@ export const TopNav = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { connected, connecting, publicKey, connect, connectWith, disconnect, listProviders } = useSolanaWallet();
   const { user, signOut } = useAuth();
-  const providers = listProviders();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -103,141 +97,17 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-2">
-          {/* Authentication button */}
+          {/* Single unified authentication button */}
           {user ? (
             <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-2">
               <LogOut className="h-4 w-4" />
               <span className="text-sm font-medium">Sign Out</span>
             </Button>
           ) : (
-            <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-2">
               <LogIn className="h-4 w-4" />
               <span className="text-sm font-medium">Sign In</span>
             </Button>
-          )}
-          
-          {/* Always show wallet dropdown with navigation */}
-          {connected ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 border-green-500/20 bg-green-500/10 hover:bg-green-500/20">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <Wallet className="h-4 w-4" />
-                  <span className="text-sm font-medium">Connected</span>
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-1.5 text-sm">
-                  <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    Wallet Connected
-                  </div>
-                  <div className="flex items-center gap-2 bg-muted/50 rounded p-2">
-                    <span className="font-mono text-sm text-foreground flex-1">
-                      {publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-6 w-6 p-0 hover:bg-muted"
-                      onClick={async () => {
-                        if (publicKey) {
-                          await navigator.clipboard.writeText(publicKey);
-                          toast.success("Wallet address copied!");
-                        }
-                      }}
-                      title="Copy wallet address"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                
-                {/* Switch Wallet Section */}
-                {providers.length > 1 && (
-                  <>
-                    <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
-                      Switch Wallet
-                    </div>
-                    {providers.map((provider) => (
-                      <DropdownMenuItem 
-                        key={provider.id}
-                        onClick={() => connectWith(provider.id)}
-                        className="cursor-pointer flex items-center gap-3"
-                      >
-                        <Wallet className="h-4 w-4" />
-                        <span>{provider.name}</span>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                
-                {/* Main Navigation Items */}
-                {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-                  <DropdownMenuItem key={item.path} asChild>
-                    <Link 
-                      to={item.path} 
-                      className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
-                    >
-                      <item.icon className="h-4 w-4 mr-2" />
-                      {item.title}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={disconnect} className="cursor-pointer text-red-600">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Disconnect
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 border-red-500/20 bg-red-500/10 hover:bg-red-500/20">
-                  <div className="w-2 h-2 bg-red-500 rounded-full" />
-                  <Wallet className="h-4 w-4" />
-                  <span className="text-sm font-medium">Disconnected</span>
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <div className="px-2 py-1.5 text-sm">
-                  <div className="flex items-center gap-2 text-red-600 font-medium">
-                    <div className="w-2 h-2 bg-red-500 rounded-full" />
-                    Wallet Disconnected
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                
-              {/* Main Navigation Items */}
-              {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-                <DropdownMenuItem key={item.path} asChild>
-                  <Link 
-                    to={item.path} 
-                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''} ${!connected ? 'text-muted-foreground opacity-50' : ''}`}
-                  >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    {item.title}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-                
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={() => connect()}
-                  disabled={connecting}
-                  className="cursor-pointer text-green-600"
-                >
-                  <Wallet className="h-4 w-4 mr-2" />
-                  {connecting ? "Connecting..." : "Connect Wallet"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           )}
         </nav>
       </header>
@@ -299,139 +169,15 @@ export const TopNav = () => {
       </div>
       
       <nav className="flex items-center gap-2">
-        {/* Authentication button */}
+        {/* Single unified authentication button */}
         {user ? (
           <Button variant="outline" size="sm" onClick={signOut} className="flex items-center gap-1">
             <LogOut className="h-4 w-4" />
           </Button>
         ) : (
-          <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-1">
+          <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="flex items-center gap-1">
             <LogIn className="h-4 w-4" />
           </Button>
-        )}
-        
-        {/* Mobile wallet dropdown - same as desktop */}
-        {connected ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2 border-green-500/20 bg-green-500/10 hover:bg-green-500/20">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <Wallet className="h-4 w-4" />
-                <span className="text-sm font-medium">Connected</span>
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-2 py-1.5 text-sm">
-                <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  Wallet Connected
-                </div>
-                <div className="flex items-center gap-2 bg-muted/50 rounded p-2">
-                  <span className="font-mono text-sm text-foreground flex-1">
-                    {publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}
-                  </span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 hover:bg-muted"
-                    onClick={async () => {
-                      if (publicKey) {
-                        await navigator.clipboard.writeText(publicKey);
-                        toast.success("Wallet address copied!");
-                      }
-                    }}
-                    title="Copy wallet address"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-              <DropdownMenuSeparator />
-              
-              {/* Switch Wallet Section */}
-              {providers.length > 1 && (
-                <>
-                  <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
-                    Switch Wallet
-                  </div>
-                  {providers.map((provider) => (
-                    <DropdownMenuItem 
-                      key={provider.id}
-                      onClick={() => connectWith(provider.id)}
-                      className="cursor-pointer flex items-center gap-3"
-                    >
-                      <Wallet className="h-4 w-4" />
-                      <span>{provider.name}</span>
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              
-              {/* Main Navigation Items */}
-              {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-                <DropdownMenuItem key={item.path} asChild>
-                  <Link 
-                    to={item.path} 
-                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''}`}
-                  >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    {item.title}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-              
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={disconnect} className="cursor-pointer text-red-600">
-                <LogOut className="h-4 w-4 mr-2" />
-                Disconnect
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2 border-red-500/20 bg-red-500/10 hover:bg-red-500/20">
-                <div className="w-2 h-2 bg-red-500 rounded-full" />
-                <Wallet className="h-4 w-4" />
-                <span className="text-sm font-medium">Disconnected</span>
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <div className="px-2 py-1.5 text-sm">
-                <div className="flex items-center gap-2 text-red-600 font-medium">
-                  <div className="w-2 h-2 bg-red-500 rounded-full" />
-                  Wallet Disconnected
-                </div>
-              </div>
-              <DropdownMenuSeparator />
-              
-              {/* Main Navigation Items */}
-              {navigationItems.filter((item): item is RouteItem => item.type === "route").map((item) => (
-                <DropdownMenuItem key={item.path} asChild>
-                  <Link 
-                    to={item.path} 
-                    className={`cursor-pointer ${isActive(item) ? 'bg-secondary' : ''} ${!connected ? 'text-muted-foreground opacity-50' : ''}`}
-                  >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    {item.title}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-              
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => connect()}
-                disabled={connecting}
-                className="cursor-pointer text-green-600"
-              >
-                <Wallet className="h-4 w-4 mr-2" />
-                {connecting ? "Connecting..." : "Connect Wallet"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         )}
       </nav>
     </header>
