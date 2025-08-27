@@ -183,6 +183,21 @@ export default function Auth() {
             </Button>
           </form>
 
+          {/* Temporary bypass for testing */}
+          <div className="mt-4 pt-4 border-t border-muted">
+            <Button
+              onClick={() => navigate('/')}
+              variant="secondary"
+              className="w-full"
+              size="lg"
+            >
+              Skip Authentication (Testing Only)
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Temporary bypass while we fix auth issues
+            </p>
+          </div>
+
           <div className="text-center text-sm text-muted-foreground">
             <p>
               By signing in, you agree to our terms and privacy policy.
