@@ -123,7 +123,6 @@ All colors MUST be HSL. */
     /* Avoid 100vw which can cause right-edge clipping when scrollbars appear */
     overflow-x: hidden;
     overflow-y: scroll; /* Always reserve scrollbar space to prevent layout shift */
-    padding-top: 3.5rem; /* Account for fixed header (h-14 = 3.5rem) */
     padding-right: env(safe-area-inset-right);
     padding-left: env(safe-area-inset-left);
   }
