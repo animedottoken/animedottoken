@@ -310,12 +310,10 @@ export default function Auth() {
           <div className="mt-4">
             <p className="text-xs text-muted-foreground text-center">
               Need help? Visit our{" "}
-              <a 
-                href="/#contact-support-section" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary underline hover:no-underline"
-              >
+            <a 
+              href="/#contact-support-section"
+              className="text-primary underline hover:no-underline"
+            >
                 Contact & Support
               </a>{" "}
               section
