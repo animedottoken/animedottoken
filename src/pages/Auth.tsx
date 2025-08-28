@@ -127,11 +127,10 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold mb-2">Welcome to</CardTitle>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
-            </div>
-            <CardTitle className="text-2xl font-bold">Welcome to ANIME.TOKEN</CardTitle>
+            <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-8 w-8" />
+            <span className="text-2xl font-bold">ANIME.TOKEN</span>
           </div>
           <CardDescription>
             Sign in to like NFTs, follow creators, and join the community

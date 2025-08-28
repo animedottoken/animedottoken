@@ -116,11 +116,10 @@ export default function AuthModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
+          <DialogTitle className="text-center mb-2">{title.split(' ')[0]} {title.split(' ')[1]}</DialogTitle>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/60 rounded-md flex items-center justify-center">
-              <span className="text-white font-bold text-xs">A</span>
-            </div>
-            <DialogTitle>{title}</DialogTitle>
+            <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-6 w-6" />
+            <span className="text-lg font-bold">ANIME.TOKEN</span>
           </div>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
