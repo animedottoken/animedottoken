@@ -94,10 +94,10 @@ export default function AuthModal({
       if (error) {
         // Check for rate limit error
         if (error.message.includes('rate_limit') || error.message.includes('429')) {
-          setCooldownSeconds(60);
+          setCooldownSeconds(3600);
           toast({
             title: "Too many requests",
-            description: "Please wait 60 seconds before trying again.",
+            description: "Please wait up to 1 hour before trying again.",
             variant: "destructive",
           });
         } else {

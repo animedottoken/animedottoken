@@ -167,10 +167,10 @@ export default function Auth() {
       if (error) {
         // Check for rate limit error
         if (error.message.includes('rate_limit') || error.message.includes('429')) {
-          setCooldownSeconds(60);
+          setCooldownSeconds(3600);
           toast({
             title: "Too many requests",
-            description: "Please wait 60 seconds before trying again. You can use Google OAuth as an alternative.",
+            description: "Please wait up to 1 hour before trying again. You can use Google OAuth as an alternative.",
             variant: "destructive",
           });
         } else {
