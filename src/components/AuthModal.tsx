@@ -116,7 +116,12 @@ export default function AuthModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/60 rounded-md flex items-center justify-center">
+              <span className="text-white font-bold text-xs">A</span>
+            </div>
+            <DialogTitle>{title}</DialogTitle>
+          </div>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         
@@ -149,9 +154,6 @@ export default function AuthModal({
 
           {/* Magic Link Form */}
           <form onSubmit={handleMagicLink} className="space-y-4">
-            <p className="text-xs text-muted-foreground text-center">
-              No password—use the link we email you to sign in
-            </p>
             <Input
               type="email"
               placeholder="Enter your email"
@@ -173,6 +175,9 @@ export default function AuthModal({
               )}
               Send Magic Link
             </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              No password—use the link we email you to sign in
+            </p>
           </form>
         </div>
       </DialogContent>
