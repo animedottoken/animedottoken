@@ -127,7 +127,7 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to ANIME.TOKEN</CardTitle>
           <CardDescription>
             Sign in to like NFTs, follow creators, and join the community
           </CardDescription>
@@ -167,6 +167,9 @@ export default function Auth() {
           {/* Magic Link Form */}
           <form onSubmit={handleMagicLink} className="space-y-4">
             <div className="space-y-2">
+              <p className="text-xs text-muted-foreground text-center">
+                No password—use the link we email you to sign in
+              </p>
               <Input
                 type="email"
                 placeholder="Enter your email"

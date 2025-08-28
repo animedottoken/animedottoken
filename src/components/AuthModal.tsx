@@ -18,8 +18,8 @@ interface AuthModalProps {
 export default function AuthModal({ 
   open, 
   onOpenChange, 
-  title = "Sign in to continue",
-  description = "Like NFTs, follow creators, and join the community",
+  title = "Welcome to ANIME.TOKEN",
+  description = "Sign in to like NFTs, follow creators, and join the community",
   onSuccess 
 }: AuthModalProps) {
   const [email, setEmail] = useState('');
@@ -149,6 +149,9 @@ export default function AuthModal({
 
           {/* Magic Link Form */}
           <form onSubmit={handleMagicLink} className="space-y-4">
+            <p className="text-xs text-muted-foreground text-center">
+              No password—use the link we email you to sign in
+            </p>
             <Input
               type="email"
               placeholder="Enter your email"
