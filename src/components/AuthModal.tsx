@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,15 @@ export default function AuthModal({
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Countdown timer for rate limit
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -83,11 +92,21 @@ export default function AuthModal({
       });
 
       if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Check for rate limit error
+        if (error.message.includes('rate_limit') || error.message.includes('429')) {
+          setCooldownSeconds(60);
+          toast({
+            title: "Too many requests",
+            description: "Please wait 60 seconds before trying again.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign in failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Check your email",
@@ -157,7 +176,7 @@ export default function AuthModal({
             />
             <Button
               type="submit"
-              disabled={loading || googleLoading}
+              disabled={loading || googleLoading || cooldownSeconds > 0}
               className="w-full"
               variant="outline"
               size="lg"
@@ -167,7 +186,7 @@ export default function AuthModal({
               ) : (
                 <Mail className="mr-2 h-4 w-4" />
               )}
-              Send Magic Link
+              {cooldownSeconds > 0 ? `Try again in ${cooldownSeconds}s` : 'Send Magic Link'}
             </Button>
             <p className="text-xs text-muted-foreground text-center">
               No password—use the link we email you to sign in

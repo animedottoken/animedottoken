@@ -15,6 +15,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const redirectTo = searchParams.get('redirect') || '/';
 
   useEffect(() => {
@@ -100,6 +101,14 @@ export default function Auth() {
     return () => subscription.unsubscribe();
   }, [navigate, redirectTo, completing]);
 
+  // Countdown timer for rate limit
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
+
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
@@ -155,11 +164,21 @@ export default function Auth() {
       });
 
       if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Check for rate limit error
+        if (error.message.includes('rate_limit') || error.message.includes('429')) {
+          setCooldownSeconds(60);
+          toast({
+            title: "Too many requests",
+            description: "Please wait 60 seconds before trying again. You can use Google OAuth as an alternative.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign in failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Check your email",
@@ -251,7 +270,7 @@ export default function Auth() {
             </div>
             <Button
               type="submit"
-              disabled={loading || googleLoading}
+              disabled={loading || googleLoading || cooldownSeconds > 0}
               className="w-full"
               variant="outline"
               size="lg"
@@ -261,7 +280,7 @@ export default function Auth() {
               ) : (
                 <Mail className="mr-2 h-4 w-4" />
               )}
-              Send Magic Link
+              {cooldownSeconds > 0 ? `Try again in ${cooldownSeconds}s` : 'Send Magic Link'}
             </Button>
             <p className="text-xs text-muted-foreground text-center">
               No password—use the link we email you to sign in
