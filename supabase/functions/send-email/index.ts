@@ -27,6 +27,12 @@ serve(async (req) => {
     const payload = await req.text()
     const headers = Object.fromEntries(req.headers)
     
+    console.log('📦 Payload length:', payload.length)
+    console.log('📋 Headers:', Object.keys(headers))
+    console.log('🔑 Hook secret exists:', !!hookSecret)
+    console.log('🔑 Hook secret format:', hookSecret?.substring(0, 10) + '...')
+    console.log('📧 Resend key exists:', !!Deno.env.get('RESEND_API_KEY'))
+    
     const wh = new Webhook(hookSecret)
     const {
       user,
