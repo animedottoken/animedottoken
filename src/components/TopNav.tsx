@@ -237,54 +237,8 @@ export const TopNav = () => {
                   <span className="font-medium">Marketplace</span>
                 </Button>
                 
-                {/* Unified Profile/Auth Row */}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between gap-3 h-12 p-3"
-                  onClick={handleProfileAction}
-                >
-                  <div className="flex items-center gap-3">
-                    <User className="h-5 w-5" />
-                    <span className="font-medium">My Profile</span>
-                  </div>
-                  {user ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                    >
-                      <LogOut className="h-3 w-3 mr-1" />
-                      Sign out
-                    </Button>
-                  ) : (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <LogIn className="h-3 w-3" />
-                      Sign in
-                    </div>
-                  )}
-                </Button>
               </div>
 
-              {/* Wallet Section */}
-              <div className="space-y-1 border-t pt-4">
-                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Wallet</div>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 h-12"
-                  onClick={() => {
-                    if (connected) {
-                      disconnect();
-                    } else {
-                      connect();
-                    }
-                  }}
-                >
-                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <Wallet className="h-5 w-5" />
-                  <span className="font-medium">{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
-                </Button>
-              </div>
 
               {/* Home Sections */}
               <div className="space-y-1 border-t pt-4">
