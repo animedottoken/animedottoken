@@ -346,44 +346,84 @@ const Profile = () => {
     );
   }
 
-  if (!targetWallet) {
-    // If we're at /profile (no wallet param) but not connected, show connect wallet
-    // If we're at /profile/:wallet but wallet doesn't exist, show error
-    if (!wallet) {
-      // Own profile route but no wallet connected
-      return (
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-3xl mx-auto">
-            <CardContent className="py-10 text-center">
-              <div className="text-6xl mb-4">🔗</div>
-              <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-              <p className="text-muted-foreground mb-6">
-                Connect your Solana wallet to view and customize your profile.
-              </p>
-              <SolanaWalletButton />
-            </CardContent>
-          </Card>
+  // For authenticated users without wallet, show profile with wallet connection option
+  if (!targetWallet && !wallet) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        {/* Profile Header */}
+        <div className="relative">
+          {/* Banner */}
+          <div className="relative h-64 rounded-lg overflow-hidden" data-testid="profile-banner">
+            <img 
+              src={defaultBanner} 
+              alt="Profile Banner" 
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
-      );
-    } else {
-      // Invalid wallet parameter
-      return (
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-3xl mx-auto">
-            <CardContent className="py-10 text-center">
-              <div className="text-6xl mb-4">❌</div>
-              <h2 className="text-2xl font-bold mb-4">Profile Not Found</h2>
-              <p className="text-muted-foreground mb-6">
-                The requested profile could not be found.
+
+        {/* Profile Info */}
+        <div className="px-6 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
+            {/* Avatar Column */}
+            <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0">
+              <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden" data-testid="profile-avatar">
+                <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
+                  {user.email?.slice(0, 2).toUpperCase()}
+                </div>
+              </div>
+            </div>
+
+            {/* Info Column */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
+                  {user.email}
+                </h1>
+              </div>
+              
+              <p className="text-muted-foreground">
+                Welcome! Connect your Solana wallet to unlock NFT features and customize your profile.
               </p>
-              <Button onClick={() => navigate('/')} variant="outline">
-                Go Home
-              </Button>
-            </CardContent>
-          </Card>
+              
+              <div className="flex flex-wrap gap-3 pt-2">
+                <SolanaWalletButton />
+              </div>
+            </div>
+          </div>
         </div>
-      );
-    }
+
+        {/* Wallet Connection Benefits */}
+        <Card className="max-w-3xl mx-auto mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Layers className="h-5 w-5" />
+              Connect Your Wallet to Unlock
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3">
+                <Image className="h-5 w-5 text-muted-foreground" />
+                <span>View & manage your NFTs</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Layers className="h-5 w-5 text-muted-foreground" />
+                <span>Create NFT collections</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Heart className="h-5 w-5 text-muted-foreground" />
+                <span>Like & favorite items</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Users className="h-5 w-5 text-muted-foreground" />
+                <span>Follow other creators</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
