@@ -94,10 +94,10 @@ export default function AuthModal({
       if (error) {
         // Check for rate limit error
         if (error.message.includes('rate_limit') || error.message.includes('429')) {
-          setCooldownSeconds(3600);
+          setCooldownSeconds(60);
           toast({
             title: "Too many requests",
-            description: "Please wait up to 1 hour before trying again.",
+            description: "Please wait 60 seconds before trying again.",
             variant: "destructive",
           });
         } else {
@@ -191,6 +191,9 @@ export default function AuthModal({
             </Button>
             <p className="text-xs text-muted-foreground text-center">
               No password—use the link we email you to sign in
+            </p>
+            <p className="text-xs text-muted-foreground text-center">
+              Trouble signing in? Reach us on <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="underline hover:text-foreground">Discord</a>.
             </p>
           </form>
         </div>
