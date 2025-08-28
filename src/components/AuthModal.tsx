@@ -210,10 +210,9 @@ export default function AuthModal({
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-xs">
-                      Delivery time depends on your email provider. Gmail is instant; others may be slower. 
-                      Need help? Ask in our <span className="font-semibold">#help-desk</span> on{" "}
+                      Need help?{" "}
                       <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                        Discord
+                        Join our Discord support
                       </a>.
                     </p>
                   </TooltipContent>
