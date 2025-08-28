@@ -25,6 +25,8 @@ import Profile from "./pages/Profile";
 import CreatorProfile from "./pages/CreatorProfile";
 import NFTDetail from "./pages/NFTDetail";
 import Auth from "./pages/Auth";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import { ErrorBoundary } from "react-error-boundary";
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -67,6 +69,8 @@ const AppLayout = () => {
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -99,6 +103,8 @@ const AppLayout = () => {
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

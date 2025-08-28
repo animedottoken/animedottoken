@@ -16,7 +16,8 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const redirectTo = searchParams.get('redirect') || '/';
+  const rawRedirectTo = searchParams.get('redirect') || '/';
+  const redirectTo = rawRedirectTo.startsWith('/auth') ? '/' : rawRedirectTo;
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -223,11 +224,6 @@ export default function Auth() {
           <CardDescription>
             Sign in to like NFTs, follow creators, and join the community
           </CardDescription>
-          {redirectTo !== '/' && (
-            <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
-              💡 After signing in, you'll be redirected back to where you were
-            </div>
-          )}
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Google Sign In */}
@@ -265,7 +261,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading || googleLoading}
-                className="w-full"
+                className="w-full h-11"
               />
             </div>
             <Button
@@ -287,24 +283,10 @@ export default function Auth() {
             </p>
           </form>
 
-          {/* Temporary bypass for testing */}
-          <div className="mt-4 pt-4 border-t border-muted">
-            <Button
-              onClick={() => navigate('/')}
-              variant="secondary"
-              className="w-full"
-              size="lg"
-            >
-              Skip Authentication (Testing Only)
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Temporary bypass while we fix auth issues
-            </p>
-          </div>
 
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              By signing in, you agree to our terms and privacy policy.
+              By signing in, you agree to our <a href="/terms" className="underline hover:text-foreground">Terms</a> and <a href="/privacy" className="underline hover:text-foreground">Privacy Policy</a>.
             </p>
           </div>
         </CardContent>

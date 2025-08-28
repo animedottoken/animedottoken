@@ -173,6 +173,7 @@ export default function AuthModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading || googleLoading}
+              className="w-full h-11"
             />
             <Button
               type="submit"
