@@ -590,7 +590,7 @@ const Index = () => {
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">I have more questions. Where can I ask?</span>
-                  <p className="mt-2 text-muted-foreground">Our community is always active and ready to help. The best place to ask questions is in our official <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a> or <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a> channels.</p>
+                  <p className="mt-2 text-muted-foreground">Our community is always active and ready to help. The best place to ask questions is in our official <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Telegram</a> or <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Discord</a> channels.</p>
                 </li>
               </ul>
             </CollapsibleContent>
@@ -652,7 +652,7 @@ const Index = () => {
             <h3 id="join-community" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Community</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
-              <Button asChild variant="glass"><a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+              <Button asChild variant="glass"><a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
             </div>
           </div>
         </div>
@@ -698,7 +698,7 @@ const Index = () => {
             sameAs: [
               'https://x.com/AnimeDotToken',
               'https://t.me/AnimeDotTokenCommunity',
-              'https://discord.com/invite/HmSJdT5MRX'
+              'https://discord.gg/jqxCbvZvn7'
             ]
           })
         }}

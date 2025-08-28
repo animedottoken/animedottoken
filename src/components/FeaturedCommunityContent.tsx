@@ -66,7 +66,7 @@ export function FeaturedCommunityContent() {
           <Button 
             variant="outline" 
             className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            onClick={() => window.open('https://discord.com/invite/HmSJdT5MRX', '_blank')}
+            onClick={() => window.open('https://discord.gg/jqxCbvZvn7', '_blank')}
           >
             <Upload className="w-4 h-4 text-purple-400" />
             Submit on Discord

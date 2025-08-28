@@ -16,7 +16,7 @@ export function SupportHelpCard() {
       </CardHeader>
       <CardContent className="pt-0 px-4 pb-4">
         <Button asChild className="w-full" size="sm">
-          <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener">
+          <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noreferrer noopener">
             Open Discord
           </a>
         </Button>
