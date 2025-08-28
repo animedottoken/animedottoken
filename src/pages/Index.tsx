@@ -24,6 +24,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { NewsletterSubscribe } from "@/components/NewsletterSubscribe";
+import { SupportHelpCard } from "@/components/SupportHelpCard";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
 import { ChevronDown, Copy, Share } from "lucide-react";
@@ -658,8 +659,9 @@ const Index = () => {
       </section>
 
       {/* Newsletter Subscription Section */}
-      <section className="mx-auto mt-16 max-w-5xl px-6 text-center">
-        <div className="flex justify-center">
+      <section className="mx-auto mt-16 max-w-5xl px-6">
+        <div className="grid gap-6 md:grid-cols-2 justify-items-center">
+          <SupportHelpCard />
           <NewsletterSubscribe />
         </div>
       </section>
