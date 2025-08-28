@@ -213,7 +213,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+    <div className="min-h-screen flex items-start justify-center bg-gradient-to-br from-background to-muted p-4 pt-16">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold mb-2">Welcome to</CardTitle>
