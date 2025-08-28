@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -29,7 +29,6 @@ const navigationItems: NavigationItem[] = [
   // Main routes
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
-  { type: "route", title: "Profile", icon: User, path: "/profile" },
   
   // Home sections - matching actual IDs and classes on the page
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
@@ -76,6 +75,20 @@ export const TopNav = () => {
       window.location.hash = `#${item.hash}`;
     }
   };
+
+  const handleProfileAction = () => {
+    setOpen(false);
+    if (user) {
+      navigate('/profile');
+    } else {
+      navigate('/auth?redirect=' + encodeURIComponent(location.pathname));
+    }
+  };
+
+  const handleSignOut = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await signOut();
+  };
   const isActive = (item: NavigationItem) => {
     if (item.type === "route") {
       return location.pathname === item.path;
@@ -101,10 +114,18 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
+          {/* Show email on desktop when signed in */}
+          {user?.email && (
+            <span className="text-sm text-muted-foreground max-w-32 truncate">
+              {user.email}
+            </span>
+          )}
+          
           {/* Menu dropdown with navigation + wallet */}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'} mr-1`} />
                 <span className="text-sm font-medium">Menu</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -123,9 +144,29 @@ export const TopNav = () => {
                 <ShoppingCart className="h-4 w-4" />
                 <span>Marketplace</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/profile')} className="flex items-center gap-2 cursor-pointer">
-                <User className="h-4 w-4" />
-                <span>Profile</span>
+              
+              {/* Unified Profile/Auth Row */}
+              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>My Profile</span>
+                </div>
+                {user ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <LogOut className="h-3 w-3 mr-1" />
+                    Sign out
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <LogIn className="h-3 w-3" />
+                    Sign in
+                  </div>
+                )}
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -162,7 +203,8 @@ export const TopNav = () => {
         {/* Hamburger menu in far left corner */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="sm" className="p-2 h-8 w-8">
+            <Button variant="ghost" size="sm" className="p-2 h-8 w-8 relative">
+              <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
               <Menu className="h-4 w-4" />
               <span className="sr-only">Navigation menu</span>
             </Button>
@@ -177,8 +219,72 @@ export const TopNav = () => {
               </div>
 
               {/* Navigation Routes */}
+              <div className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12"
+                  onClick={() => navigate('/mint')}
+                >
+                  <Coins className="h-5 w-5" />
+                  <span className="font-medium">Mint NFTs</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12"
+                  onClick={() => navigate('/marketplace')}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="font-medium">Marketplace</span>
+                </Button>
+                
+                {/* Unified Profile/Auth Row */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between gap-3 h-12 p-3"
+                  onClick={handleProfileAction}
+                >
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5" />
+                    <span className="font-medium">My Profile</span>
+                  </div>
+                  {user ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      <LogOut className="h-3 w-3 mr-1" />
+                      Sign out
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <LogIn className="h-3 w-3" />
+                      Sign in
+                    </div>
+                  )}
+                </Button>
+              </div>
 
               {/* Wallet Section */}
+              <div className="space-y-1 border-t pt-4">
+                <div className="text-xs font-medium text-muted-foreground px-2 mb-2">Wallet</div>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12"
+                  onClick={() => {
+                    if (connected) {
+                      disconnect();
+                    } else {
+                      connect();
+                    }
+                  }}
+                >
+                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <Wallet className="h-5 w-5" />
+                  <span className="font-medium">{connected ? 'Disconnect Wallet' : 'Connect Wallet'}</span>
+                </Button>
+              </div>
 
               {/* Home Sections */}
               <div className="space-y-1 border-t pt-4">
@@ -216,6 +322,7 @@ export const TopNav = () => {
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'} mr-1`} />
               <span className="text-sm font-medium">Menu</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
@@ -233,9 +340,29 @@ export const TopNav = () => {
               <ShoppingCart className="h-4 w-4" />
               <span>Marketplace</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/profile')} className="flex items-center gap-2 cursor-pointer">
-              <User className="h-4 w-4" />
-              <span>Profile</span>
+            
+            {/* Unified Profile/Auth Row */}
+            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span>My Profile</span>
+              </div>
+              {user ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <LogOut className="h-3 w-3 mr-1" />
+                  Sign out
+                </Button>
+              ) : (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <LogIn className="h-3 w-3" />
+                  Sign in
+                </div>
+              )}
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
