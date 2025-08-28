@@ -4,28 +4,23 @@ import { MessageSquare } from "lucide-react";
 
 export function SupportHelpCard() {
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
+    <Card className="w-full max-w-xs">
+      <CardHeader className="text-center pb-4">
         <div className="flex justify-center mb-2">
-          <MessageSquare className="h-8 w-8 text-primary" />
+          <MessageSquare className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle>Need Help & Support</CardTitle>
-        <CardDescription>
-          Get help from our team and community on Discord or Telegram.
+        <CardTitle className="text-lg">Need Help & Support</CardTitle>
+        <CardDescription className="text-sm">
+          Get help from our team and community on Discord.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="pt-0">
         <Button asChild className="w-full">
           <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener">
             Open Discord
           </a>
         </Button>
-        <Button asChild variant="outline" className="w-full">
-          <a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener">
-            Open Telegram
-          </a>
-        </Button>
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-xs text-muted-foreground text-center mt-3">
           Fastest responses on Discord.
         </p>
       </CardContent>
