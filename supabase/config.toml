@@ -75,3 +75,15 @@ verify_jwt = true  # Requires authenticated user
 
 [functions.export-trading-data]
 verify_jwt = true  # Uses Supabase JWT verification
+
+[functions.send-email]
+verify_jwt = false  # Called by Supabase Auth system with webhook signature
+
+[functions.newsletter-subscribe]
+verify_jwt = false  # Public newsletter subscription
+
+[functions.newsletter-confirm]
+verify_jwt = false  # Public email confirmation via link
+
+[functions.newsletter-unsubscribe]
+verify_jwt = false  # Public unsubscribe via link

@@ -23,6 +23,7 @@ import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { NewsletterSubscribe } from "@/components/NewsletterSubscribe";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
 import { ChevronDown, Copy, Share } from "lucide-react";
@@ -653,6 +654,13 @@ const Index = () => {
               <Button asChild variant="glass"><a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter Subscription Section */}
+      <section className="mx-auto mt-16 max-w-5xl px-6 text-center">
+        <div className="flex justify-center">
+          <NewsletterSubscribe />
         </div>
       </section>
 
