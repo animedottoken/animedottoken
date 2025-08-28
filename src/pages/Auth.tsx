@@ -309,7 +309,15 @@ export default function Auth() {
           
           <div className="mt-4 space-y-2">
             <p className="text-xs text-muted-foreground text-center">
-              Need help? Join our Discord support
+              Need help?{" "}
+              <a
+                href="https://discord.gg/jqxCbvZvn7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:no-underline"
+              >
+                Join our Discord support
+              </a>
             </p>
             <div className="flex items-center gap-2">
               <Input
