@@ -309,20 +309,17 @@ export default function Auth() {
           
           <div className="mt-4 text-center">
             <p className="text-xs text-muted-foreground">
-              Need help?{" "}
-              <a 
-                href="https://discord.gg/jqxCbvZvn7" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-primary underline hover:no-underline"
-                onClick={(e) => {
-                  console.log('Discord link clicked');
-                  e.preventDefault();
-                  window.open('https://discord.gg/jqxCbvZvn7', '_blank', 'noopener,noreferrer');
+              Need help? Join our Discord support:{" "}
+              <span 
+                className="text-primary underline cursor-pointer select-all"
+                onClick={() => {
+                  navigator.clipboard.writeText('https://discord.gg/jqxCbvZvn7');
+                  console.log('Discord URL copied to clipboard');
                 }}
+                title="Click to copy Discord URL"
               >
-                Join our Discord support
-              </a>
+                discord.gg/jqxCbvZvn7
+              </span>
             </p>
           </div>
 
