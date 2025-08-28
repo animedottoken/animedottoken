@@ -64,7 +64,23 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log(`Sending custom magic link email to ${user.email}`)
+    console.log(`Sending ${email_action_type} email to ${user.email}`)
+
+    // Determine email subject based on action type
+    const getEmailSubject = (actionType: string) => {
+      switch (actionType) {
+        case 'signup':
+          return '🎌 Welcome to ANIME.TOKEN - Verify your account'
+        case 'recovery':
+          return '🔐 Reset your ANIME.TOKEN password'
+        case 'email_change':
+          return '📧 Confirm your new email for ANIME.TOKEN'
+        default:
+          return '🔗 Your magic link to ANIME.TOKEN'
+      }
+    }
+
+    console.log(`Rendering email template for action: ${email_action_type}`)
 
     // Render the React email template
     const html = await renderAsync(
@@ -77,11 +93,13 @@ Deno.serve(async (req) => {
       })
     )
 
+    console.log('Email template rendered successfully')
+
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: 'ANIME.TOKEN <onboarding@resend.dev>', // temporary until domain verifies
+      from: 'ANIME.TOKEN <onboarding@resend.dev>',
       to: [user.email],
-      subject: '🔗 Your magic link to ANIME.TOKEN',
+      subject: getEmailSubject(email_action_type),
       html,
     })
 
