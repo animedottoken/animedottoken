@@ -635,7 +635,7 @@ const Index = () => {
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
           Contact & Support
         </h2>
-        <p className="mt-3 text-muted-foreground">Get help and stay updated. Reach us on Discord and X (Twitter).</p>
+        <p className="mt-3 text-muted-foreground">Get help and connect with our community. Follow our journey and share ideas with anime fans worldwide.</p>
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <div className="space-y-4">
