@@ -40,7 +40,7 @@ export default function AuthModal({
     setGoogleLoading(true);
     try {
       const currentPath = window.location.pathname + window.location.search;
-      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
+      const redirectUrl = `${window.location.origin}/profile`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -83,7 +83,7 @@ export default function AuthModal({
     setLoading(true);
     try {
       const currentPath = window.location.pathname + window.location.search;
-      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
+      const redirectUrl = `${window.location.origin}/profile`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
@@ -220,7 +220,16 @@ export default function AuthModal({
               
           <div className="mt-4">
             <p className="text-xs text-muted-foreground text-center">
-              Need help? Discord: discord.gg/jqxCbvZvn7
+              Need help? Visit our{" "}
+              <a 
+                href="/#contact-support-section" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary underline hover:no-underline"
+              >
+                Contact & Support
+              </a>{" "}
+              section
             </p>
           </div>
             </div>
