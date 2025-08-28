@@ -4,8 +4,24 @@ import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { MagicLinkEmail } from './_templates/magic-link.tsx'
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
-const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
+// Check for required environment variables
+const resendApiKey = Deno.env.get('RESEND_API_KEY')
+const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
+
+console.log('Environment check:', {
+  resendApiKey: resendApiKey ? 'SET' : 'MISSING',
+  hookSecret: hookSecret ? 'SET' : 'MISSING',
+})
+
+if (!resendApiKey) {
+  throw new Error('RESEND_API_KEY environment variable is not set')
+}
+
+if (!hookSecret) {
+  throw new Error('SEND_EMAIL_HOOK_SECRET environment variable is not set')
+}
+
+const resend = new Resend(resendApiKey)
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
