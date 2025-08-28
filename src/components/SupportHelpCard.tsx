@@ -20,9 +20,6 @@ export function SupportHelpCard() {
             Open Discord
           </a>
         </Button>
-        <p className="text-xs text-muted-foreground text-center mt-3">
-          Fastest responses on Discord.
-        </p>
       </CardContent>
     </Card>
   );
