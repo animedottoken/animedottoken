@@ -218,49 +218,9 @@ export default function AuthModal({
             </div>
               </form>
               
-          <div className="mt-4 space-y-2">
+          <div className="mt-4">
             <p className="text-xs text-muted-foreground text-center">
-              Need help?{" "}
-              <a
-                href="https://discord.gg/jqxCbvZvn7"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline hover:no-underline"
-              >
-                Join our Discord support
-              </a>
-            </p>
-            <div className="flex items-center gap-2">
-              <Input
-                readOnly
-                value="https://discord.gg/jqxCbvZvn7"
-                className="text-xs"
-                onFocus={(e) => e.currentTarget.select()}
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={async () => {
-                  const url = 'https://discord.gg/jqxCbvZvn7';
-                  try {
-                    await navigator.clipboard.writeText(url);
-                    toast({ title: 'Copied', description: 'Discord link copied to clipboard.' });
-                  } catch {
-                    const temp = document.createElement('input');
-                    temp.value = url;
-                    document.body.appendChild(temp);
-                    temp.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(temp);
-                    toast({ title: 'Copied', description: 'Link copied. Paste it in a new tab.' });
-                  }
-                }}
-              >
-                Copy
-              </Button>
-            </div>
-            <p className="text-[10px] text-muted-foreground text-center">
-              If clicking is blocked in preview, copy the URL and paste it in a new tab.
+              Need help? Discord: discord.gg/jqxCbvZvn7
             </p>
           </div>
             </div>

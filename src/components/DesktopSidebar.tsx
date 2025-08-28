@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
+import { Home, User, ShoppingCart, Coins, FileText, Star, Target, LifeBuoy, Trophy, Users, Shield, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -38,7 +38,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Create NFTs", icon: Coins, hash: "create-nfts" },
-  { type: "section", title: "Share & Promote", icon: Target, hash: "share-promote-section" },
+  { type: "section", title: "Contact & Support", icon: LifeBuoy, hash: "contact-support-section" },
 ];
 
 interface DesktopSidebarProps {

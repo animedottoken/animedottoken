@@ -6,7 +6,7 @@ import {
   TrendingUp, 
   ShoppingBag, 
   HelpCircle,
-  Share2,
+  LifeBuoy,
   Trophy,
   Users,
   Coins
@@ -101,9 +101,9 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "Share & Promote", 
-    icon: Share2,
-    hash: "share-promote-section",
+    title: "Contact & Support", 
+    icon: LifeBuoy,
+    hash: "contact-support-section",
     type: "section" as const
   }
 ];

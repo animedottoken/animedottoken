@@ -630,28 +630,36 @@ const Index = () => {
         <NFTPreviewSection />
       </div>
 
-      <section id="share-promote-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+      <section id="contact-support-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-bold">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🔗</span>
-          The Conversation is Happening Now. Join Us.
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
+          Contact & Support
         </h2>
-        <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
-        <div className="mt-6 space-y-4">
-          <div aria-labelledby="join-social">
-            <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />X (Twitter)</a></Button>
-              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
-              <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
-              <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
-              <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
+        <p className="mt-3 text-muted-foreground">Get help and stay updated. Reach us on Discord and X (Twitter).</p>
+        
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="space-y-4">
+            <div aria-labelledby="need-help">
+              <h3 id="need-help" className="text-lg font-semibold mb-4">Need Help?</h3>
+              <p className="text-muted-foreground mb-4">Visit our Discord: discord.gg/jqxCbvZvn7</p>
+              <div className="flex flex-col gap-3">
+                <Button asChild variant="glass"><a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+                <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
+              </div>
             </div>
           </div>
-          <div aria-labelledby="join-community">
-            <h3 id="join-community" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Community</h3>
-            <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
-              <Button asChild variant="glass"><a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+          
+          <div className="space-y-4">
+            <div aria-labelledby="stay-updated">
+              <h3 id="stay-updated" className="text-lg font-semibold mb-4">Stay Updated</h3>
+              <p className="text-muted-foreground mb-4">Follow our journey and connect with anime fans worldwide.</p>
+              <div className="flex flex-col gap-3">
+                <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />X (Twitter)</a></Button>
+                <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
+                <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
+                <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
+                <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
+              </div>
             </div>
           </div>
         </div>
