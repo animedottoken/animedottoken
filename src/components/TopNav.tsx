@@ -39,7 +39,6 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Create NFTs", icon: Coins, hash: "create-nfts" },
-  { type: "section", title: "Contact & Support", icon: Target, hash: "contact-support-section" },
 ];
 
 export const TopNav = () => {
@@ -143,16 +142,6 @@ export const TopNav = () => {
               <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer">
                 <ShoppingCart className="h-4 w-4" />
                 <span>Marketplace</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                if (location.pathname !== '/') {
-                  navigate('/#contact-support-section');
-                } else {
-                  window.location.hash = '#contact-support-section';
-                }
-              }} className="flex items-center gap-2 cursor-pointer">
-                <Target className="h-4 w-4" />
-                <span>Contact & Support</span>
               </DropdownMenuItem>
               
               {/* Unified Profile/Auth Row */}
@@ -303,16 +292,6 @@ export const TopNav = () => {
             <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer">
               <ShoppingCart className="h-4 w-4" />
               <span>Marketplace</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              if (location.pathname !== '/') {
-                navigate('/#contact-support-section');
-              } else {
-                window.location.hash = '#contact-support-section';
-              }
-            }} className="flex items-center gap-2 cursor-pointer">
-              <Target className="h-4 w-4" />
-              <span>Contact & Support</span>
             </DropdownMenuItem>
             
             {/* Unified Profile/Auth Row */}
