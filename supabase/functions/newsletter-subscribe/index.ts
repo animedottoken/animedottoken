@@ -1,9 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { Resend } from "npm:resend@4.0.0"
-import React from 'npm:react@18.3.1'
-import { renderAsync } from 'npm:@react-email/components@0.0.22'
-import { NewsletterConfirmEmail } from '../send-email/_templates/newsletter-confirm.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -91,13 +88,27 @@ serve(async (req) => {
     // Create confirmation URL
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
 
-    // Render confirmation email
-    const html = await renderAsync(
-      React.createElement(NewsletterConfirmEmail, {
-        confirmUrl,
-        email
-      })
-    )
+    // Build confirmation email HTML (no external template to keep deploy simple)
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Confirm your subscription</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; background:#000; color:#fff; padding:24px;">
+          <div style="max-width:600px;margin:0 auto;background:#111;padding:32px;border-radius:8px;">
+            <h1 style="margin-top:0;color:#8B5CF6;">ANIME.TOKEN Newsletter</h1>
+            <p style="color:#ddd;">Hi${' ' + email}, please confirm your subscription.</p>
+            <div style="text-align:center;margin:28px 0;">
+              <a href="${confirmUrl}" style="background:#8B5CF6;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Confirm subscription</a>
+            </div>
+            <p style="color:#aaa;font-size:14px;">Or copy this link: <a href="${confirmUrl}" style="color:#8B5CF6;word-break:break-all;">${confirmUrl}</a></p>
+            <p style="color:#666;font-size:12px;text-align:center;margin-top:24px;">If you didn't request this, ignore this email.</p>
+          </div>
+        </body>
+      </html>
+    `;
 
     // Send confirmation email
     const { error: emailError } = await resend.emails.send({
