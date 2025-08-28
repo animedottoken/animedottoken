@@ -92,12 +92,16 @@ export default function AuthModal({
       });
 
       if (error) {
-        // Check for rate limit error
+        // Check for rate limit error and parse wait time
         if (error.message.includes('rate_limit') || error.message.includes('429')) {
-          setCooldownSeconds(60);
+          // Try to parse the exact seconds from the error message
+          const waitMatch = error.message.match(/(\d+)\s*seconds?/);
+          const waitSeconds = waitMatch ? parseInt(waitMatch[1]) : 60;
+          
+          setCooldownSeconds(waitSeconds);
           toast({
             title: "Too many requests",
-            description: "Please wait 60 seconds before trying again.",
+            description: `Please wait ${waitSeconds} seconds before trying again.`,
             variant: "destructive",
           });
         } else {
@@ -189,6 +193,11 @@ export default function AuthModal({
               )}
               {cooldownSeconds > 0 ? `Try again in ${cooldownSeconds}s` : 'Send Magic Link'}
             </Button>
+            {cooldownSeconds > 0 && (
+              <p className="text-xs text-destructive text-center">
+                Rate limited. Please wait {cooldownSeconds} seconds before trying again.
+              </p>
+            )}
             <p className="text-xs text-muted-foreground text-center">
               No password—use the link we email you to sign in
             </p>
