@@ -1,10 +1,7 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 import { Resend } from 'npm:resend@4.0.0'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
-const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,30 +21,17 @@ serve(async (req) => {
   console.log('🔐 Processing auth email request...')
 
   try {
-    const payload = await req.text()
-    const headers = Object.fromEntries(req.headers)
+    const payload = await req.json()
     
-    console.log('📦 Payload length:', payload.length)
-    console.log('📋 Headers:', Object.keys(headers))
-    console.log('🔑 Hook secret exists:', !!hookSecret)
-    console.log('🔑 Hook secret format:', hookSecret?.substring(0, 10) + '...')
+    console.log('📦 Received webhook payload')
     console.log('📧 Resend key exists:', !!Deno.env.get('RESEND_API_KEY'))
     
-    const wh = new Webhook(hookSecret)
-    const {
-      user,
-      email_data: { token, token_hash, redirect_to, email_action_type },
-    } = wh.verify(payload, headers) as {
-      user: {
-        email: string
-      }
-      email_data: {
-        token: string
-        token_hash: string
-        redirect_to: string
-        email_action_type: string
-        site_url: string
-      }
+    // Extract data from Supabase auth webhook payload
+    const { user, email_data } = payload
+    const { token_hash, redirect_to, email_action_type } = email_data
+    
+    if (!user?.email) {
+      throw new Error('No user email found in payload')
     }
 
     console.log(`📧 Sending ${email_action_type} email to ${user.email}`)
