@@ -131,7 +131,7 @@ export default function Auth() {
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
-            <CardTitle className="text-2xl font-bold">ANIME.TOKEN</CardTitle>
+            <CardTitle className="text-2xl font-bold">Welcome to ANIME.TOKEN</CardTitle>
           </div>
           <CardDescription>
             Sign in to like NFTs, follow creators, and join the community
