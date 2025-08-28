@@ -60,7 +60,7 @@ const Profile = () => {
     loading: profileLoading
   } = useGamifiedProfile();
 
-  const targetWallet = wallet || publicKey;
+  const targetWallet = wallet || (connected ? publicKey : null);
 
   // Data hooks
   const { nfts, loading: nftsLoading, fetchUserNFTs } = useUserNFTs();
@@ -347,20 +347,43 @@ const Profile = () => {
   }
 
   if (!targetWallet) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-3xl mx-auto">
-          <CardContent className="py-10 text-center">
-            <div className="text-6xl mb-4">🔗</div>
-            <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-            <p className="text-muted-foreground mb-6">
-              Connect your Solana wallet to view and customize your profile.
-            </p>
-            <SolanaWalletButton />
-          </CardContent>
-        </Card>
-      </div>
-    );
+    // If we're at /profile (no wallet param) but not connected, show connect wallet
+    // If we're at /profile/:wallet but wallet doesn't exist, show error
+    if (!wallet) {
+      // Own profile route but no wallet connected
+      return (
+        <div className="container mx-auto px-4 py-8">
+          <Card className="max-w-3xl mx-auto">
+            <CardContent className="py-10 text-center">
+              <div className="text-6xl mb-4">🔗</div>
+              <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
+              <p className="text-muted-foreground mb-6">
+                Connect your Solana wallet to view and customize your profile.
+              </p>
+              <SolanaWalletButton />
+            </CardContent>
+          </Card>
+        </div>
+      );
+    } else {
+      // Invalid wallet parameter
+      return (
+        <div className="container mx-auto px-4 py-8">
+          <Card className="max-w-3xl mx-auto">
+            <CardContent className="py-10 text-center">
+              <div className="text-6xl mb-4">❌</div>
+              <h2 className="text-2xl font-bold mb-4">Profile Not Found</h2>
+              <p className="text-muted-foreground mb-6">
+                The requested profile could not be found.
+              </p>
+              <Button onClick={() => navigate('/')} variant="outline">
+                Go Home
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
   }
 
   return (
