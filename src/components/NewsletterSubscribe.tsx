@@ -46,7 +46,7 @@ export function NewsletterSubscribe() {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-2">
           <Mail className="h-8 w-8 text-primary" />

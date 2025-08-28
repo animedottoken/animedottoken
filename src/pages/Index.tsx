@@ -660,9 +660,15 @@ const Index = () => {
 
       {/* Newsletter Subscription Section */}
       <section className="mx-auto mt-16 max-w-5xl px-6">
-        <div className="grid gap-6 md:grid-cols-2 justify-items-center">
-          <SupportHelpCard />
-          <NewsletterSubscribe />
+        <div className="space-y-8">
+          <div className="flex justify-center">
+            <SupportHelpCard />
+          </div>
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl">
+              <NewsletterSubscribe />
+            </div>
+          </div>
         </div>
       </section>
 
