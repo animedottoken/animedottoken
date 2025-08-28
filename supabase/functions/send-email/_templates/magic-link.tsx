@@ -30,17 +30,37 @@ export const MagicLinkEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Magic Link</Preview>
+      <Preview>ANIME.TOKEN Magic Link - Welcome to the community!</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h2}>Magic Link</Heading>
+          <div style={logoContainer}>
+            <Img
+              src="https://animedottoken.com/icon-512.png"
+              alt="ANIME.TOKEN Logo"
+              width="48"
+              height="48"
+              style={logo}
+            />
+            <Heading style={heading}>ANIME.TOKEN Magic Link</Heading>
+          </div>
           
-          <Text style={text}>
-            Follow this link to login:
+          <Text style={welcomeText}>
+            Welcome to the community! Click below to securely log in to your ANIME.TOKEN account.
           </Text>
           
-          <Text style={text}>
-            <Link href={confirmationUrl} style={link}>Log In</Link>
+          <div style={buttonContainer}>
+            <Link href={confirmationUrl} style={button}>
+              Log In
+            </Link>
+          </div>
+          
+          <Text style={infoText}>
+            This link is valid for a limited time and can only be used once.
+          </Text>
+          
+          <Text style={footerText}>
+            If you didn't request this, you can safely ignore this email.<br />
+            Need help? <Link href="https://discord.gg/jqxCbvZvn7" style={supportLink}>Join our Discord support</Link>.
           </Text>
         </Container>
       </Body>
@@ -51,28 +71,74 @@ export const MagicLinkEmail = ({
 export default MagicLinkEmail
 
 const main = {
-  fontFamily: 'Arial, sans-serif',
+  fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
+  backgroundColor: '#ffffff',
+  color: '#18181b',
 }
 
 const container = {
   margin: '0 auto',
-  maxWidth: '600px',
-  padding: '20px',
+  maxWidth: '420px',
+  padding: '32px 20px',
+  borderRadius: '12px',
+  border: '1px solid #e5e7eb',
 }
 
-const h2 = {
-  fontSize: '18px',
+const logoContainer = {
+  textAlign: 'center' as const,
+  marginBottom: '24px',
+}
+
+const logo = {
+  borderRadius: '8px',
+  marginBottom: '12px',
+}
+
+const heading = {
+  fontSize: '24px',
   fontWeight: 'bold',
-  margin: '0 0 16px 0',
+  margin: '0',
+  color: '#7c3aed',
+  letterSpacing: '-0.5px',
 }
 
-const text = {
-  fontSize: '14px',
-  lineHeight: '20px',
-  margin: '0 0 8px 0',
+const welcomeText = {
+  fontSize: '17.28px', // 1.08em equivalent
+  lineHeight: '24px',
+  margin: '0 0 18px 0',
+  color: '#18181b',
 }
 
-const link = {
-  color: '#0066cc',
+const buttonContainer = {
+  textAlign: 'center' as const,
+  margin: '0 0 22px 0',
+}
+
+const button = {
+  backgroundColor: '#7c3aed',
+  color: '#ffffff',
+  textDecoration: 'none',
+  padding: '12px 32px',
+  borderRadius: '8px',
+  fontWeight: 'bold',
+  fontSize: '17.6px', // 1.1em equivalent
+  display: 'inline-block',
+  boxShadow: '0 2px 8px rgba(124, 58, 237, 0.2)',
+}
+
+const infoText = {
+  fontSize: '15.52px', // 0.97em equivalent
+  margin: '0 0 6px 0',
+  color: '#6b7280',
+}
+
+const footerText = {
+  fontSize: '14.88px', // 0.93em equivalent
+  color: '#a1a1aa',
+  margin: '0',
+}
+
+const supportLink = {
+  color: '#7c3aed',
   textDecoration: 'underline',
 }
