@@ -299,18 +299,27 @@ export default function Auth() {
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p className="text-xs">
-                      Delivery time depends on your email provider. Gmail is instant; others may be slower. 
-                      Need help?{" "}
-                      <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                        Join our Discord support
-                      </a>.
+                      Delivery time depends on your email provider. Gmail is instant; others may be slower.
                     </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
           </form>
-
+          
+          <div className="mt-4 text-center">
+            <p className="text-xs text-muted-foreground">
+              Need help?{" "}
+              <a 
+                href="https://discord.gg/jqxCbvZvn7" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-primary underline hover:no-underline"
+              >
+                Join our Discord support
+              </a>
+            </p>
+          </div>
 
           <div className="text-center text-sm text-muted-foreground">
             <p>
