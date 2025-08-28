@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: 'ANIME.TOKEN <onboarding@resend.dev>', // Change this to your verified domain
+      from: 'ANIME.TOKEN <noreply@animedottoken.com>',
       to: [user.email],
       subject: '🔗 Your magic link to ANIME.TOKEN',
       html,
