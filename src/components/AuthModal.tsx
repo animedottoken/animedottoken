@@ -36,7 +36,6 @@ export default function AuthModal({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
-          skipBrowserRedirect: true,
         }
       });
       
@@ -47,11 +46,7 @@ export default function AuthModal({
           variant: "destructive",
         });
       } else if (data?.url) {
-        if (window.top) {
-          window.top.location.href = data.url;
-        } else {
-          window.location.href = data.url;
-        }
+        window.location.href = data.url;
       }
     } catch (error) {
       toast({
@@ -96,7 +91,7 @@ export default function AuthModal({
       } else {
         toast({
           title: "Check your email",
-          description: "We've sent you a magic link to sign in. Click the link to continue (it will open in the app preview).",
+          description: "We've sent you a magic link to sign in. Click the link to continue.",
         });
         onOpenChange(false);
         setEmail('');

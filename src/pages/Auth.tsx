@@ -14,21 +14,81 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const redirectTo = searchParams.get('redirect') || '/';
 
   useEffect(() => {
+    const handleAuthCallback = async () => {
+      const url = window.location.href;
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // Check for OAuth callback or magic link
+      const hasAuthParams = urlParams.has('code') || urlParams.has('access_token') || urlParams.has('error_description');
+      
+      if (hasAuthParams) {
+        setCompleting(true);
+        console.log('Handling auth callback with URL:', url);
+        
+        try {
+          // Handle error in URL
+          const errorDescription = urlParams.get('error_description');
+          if (errorDescription) {
+            throw new Error(decodeURIComponent(errorDescription));
+          }
+          
+          // Exchange code/token for session
+          const { data, error } = await supabase.auth.exchangeCodeForSession(url);
+          
+          if (error) {
+            console.error('Session exchange error:', error);
+            throw error;
+          }
+          
+          if (data.session) {
+            console.log('Auth callback successful, session created');
+            toast({
+              title: "Welcome!",
+              description: "You've been signed in successfully.",
+            });
+            
+            // Clean URL and redirect
+            window.history.replaceState({}, document.title, `/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`);
+            navigate(redirectTo);
+            return;
+          }
+        } catch (error: any) {
+          console.error('Auth callback failed:', error);
+          toast({
+            title: "Sign in failed",
+            description: error.message || "Authentication failed. Please try again.",
+            variant: "destructive",
+          });
+          
+          // Clean URL but stay on auth page
+          window.history.replaceState({}, document.title, `/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`);
+        } finally {
+          setCompleting(false);
+        }
+      }
+    };
+
     // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         navigate(redirectTo);
+        return;
       }
+      
+      // Handle auth callback if present
+      await handleAuthCallback();
     };
+    
     checkUser();
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session && !completing) {
         toast({
           title: "Welcome!",
           description: "You've been signed in successfully.",
@@ -38,14 +98,12 @@ export default function Auth() {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, redirectTo]);
+  }, [navigate, redirectTo, completing]);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      console.log('Starting Google sign-in...');
       const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
-      console.log('Redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -54,22 +112,16 @@ export default function Auth() {
         }
       });
 
-      console.log('Google OAuth response:', { data, error });
-
       if (error) {
-        console.error('Google sign-in error:', error);
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
       } else if (data?.url) {
-        console.log('Redirecting to Google OAuth URL:', data.url);
-        // For Lovable development, redirect in same window
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error('Unexpected error during Google sign-in:', error);
       toast({
         title: "Sign in failed", 
         description: "An unexpected error occurred. Please try again.",
@@ -93,12 +145,12 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const authUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: authUrl,
+          emailRedirectTo: redirectUrl,
         }
       });
 
@@ -111,8 +163,9 @@ export default function Auth() {
       } else {
         toast({
           title: "Check your email",
-          description: "We've sent you a magic link to sign in. Click the link to continue (it will open in the app preview).",
+          description: "We've sent you a magic link to sign in. Click the link to continue.",
         });
+        setEmail('');
       }
     } catch (error) {
       toast({
@@ -124,6 +177,20 @@ export default function Auth() {
       setLoading(false);
     }
   };
+
+  // Show completing state during auth callback
+  if (completing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <p className="text-center text-muted-foreground">Completing sign-in...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
