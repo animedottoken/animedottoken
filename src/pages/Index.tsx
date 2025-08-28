@@ -632,10 +632,10 @@ const Index = () => {
 
       <section id="contact-support-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-bold">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🔗</span>
+          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
           Contact & Support
         </h2>
-        <p className="mt-3 text-muted-foreground">Follow our journey, share ideas, and connect with anime fans worldwide.</p>
+        <p className="mt-3 text-muted-foreground">Get help, ask questions, and connect with our community and support team.</p>
         <div className="mt-6 space-y-4">
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
