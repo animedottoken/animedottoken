@@ -36,19 +36,23 @@ export function scrollToHash(hash: string, opts: ScrollToHashOptions = {}) {
   const id = hash.replace(/^#/, "");
   const behavior = opts.behavior ?? "smooth";
   const block = opts.block ?? "start";
-  const retries = opts.retries ?? 8;
-  const delayMs = opts.delayMs ?? 100;
+  const retries = opts.retries ?? 12; // Increased retries
+  const delayMs = opts.delayMs ?? 150; // Slightly longer delay
 
   const attempt = (remaining: number) => {
     const el = findTarget(id);
     if (el) {
       updateHash(id);
+      
+      // Get the current scroll position for comparison
+      const initialScrollY = window.scrollY;
+      
       el.scrollIntoView({ behavior, block });
       
-      // Stabilization loop: ensure position stability after layout changes
+      // Enhanced stabilization with better timing
       const stabilize = () => {
-        let consecutiveStable = 0;
-        const maxAttempts = 20; // ~2 seconds max
+        let stableCount = 0;
+        const maxStabilizeAttempts = 30; // Increased attempts
         let attempts = 0;
         
         const checkStability = () => {
@@ -57,37 +61,39 @@ export function scrollToHash(hash: string, opts: ScrollToHashOptions = {}) {
           if (!currentEl) return;
           
           const rect = currentEl.getBoundingClientRect();
-          const targetTop = 0; // Should be at top with scroll-margin-top CSS
-          const tolerance = 10; // Allow small variance
+          const expectedTop = 0; // Should align to top with scroll-margin-top
+          const tolerance = 5; // Tighter tolerance
           
-          if (Math.abs(rect.top - targetTop) <= tolerance) {
-            consecutiveStable++;
-            if (consecutiveStable >= 2) {
-              // Stable for 2 frames, we're done
-              return;
+          if (Math.abs(rect.top - expectedTop) <= tolerance) {
+            stableCount++;
+            // Need 3 consecutive stable readings
+            if (stableCount >= 3) {
+              return; // Stable, we're done
             }
           } else {
-            consecutiveStable = 0;
-            // Re-scroll if not stable
-            currentEl.scrollIntoView({ behavior: "smooth", block });
+            stableCount = 0;
+            // Re-scroll with more precise positioning
+            currentEl.scrollIntoView({ behavior: "smooth", block: "start" });
           }
           
-          if (attempts < maxAttempts) {
+          if (attempts < maxStabilizeAttempts) {
             requestAnimationFrame(checkStability);
           }
         };
         
-        // Start stabilization after initial scroll settles
-        setTimeout(() => requestAnimationFrame(checkStability), 100);
+        // Wait longer for initial scroll to complete before stabilizing
+        setTimeout(() => requestAnimationFrame(checkStability), 200);
       };
       
       stabilize();
       return;
     }
+    
     if (remaining <= 0) {
-      // Final fallback: do nothing (avoid jumping to wrong position)
+      console.warn(`Could not find element with id: ${id}`);
       return;
     }
+    
     setTimeout(() => attempt(remaining - 1), delayMs);
   };
 
