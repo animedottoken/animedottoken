@@ -43,33 +43,35 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const authUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
+      console.log('Starting Google sign-in...');
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
+      console.log('Redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: authUrl,
-          skipBrowserRedirect: true,
+          redirectTo: redirectUrl,
         }
       });
 
+      console.log('Google OAuth response:', { data, error });
+
       if (error) {
+        console.error('Google sign-in error:', error);
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
       } else if (data?.url) {
-        // Open Google's OAuth page in the top window (break out of Lovable iframe)
-        if (window.top) {
-          window.top.location.href = data.url;
-        } else {
-          window.location.href = data.url;
-        }
+        console.log('Redirecting to Google OAuth URL:', data.url);
+        // For Lovable development, redirect in same window
+        window.location.href = data.url;
       }
     } catch (error) {
+      console.error('Unexpected error during Google sign-in:', error);
       toast({
-        title: "Sign in failed",
+        title: "Sign in failed", 
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
