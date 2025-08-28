@@ -315,6 +315,11 @@ export default function Auth() {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-primary underline hover:no-underline"
+                onClick={(e) => {
+                  console.log('Discord link clicked');
+                  e.preventDefault();
+                  window.open('https://discord.gg/jqxCbvZvn7', '_blank', 'noopener,noreferrer');
+                }}
               >
                 Join our Discord support
               </a>
