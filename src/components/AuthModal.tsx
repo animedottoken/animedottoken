@@ -212,7 +212,7 @@ export default function AuthModal({
                     <p className="text-xs">
                       Delivery time depends on your email provider. Gmail is instant; others may be slower. 
                       Need help? Ask in our <span className="font-semibold">#help-desk</span> on{" "}
-                      <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                      <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noopener noreferrer" className="text-primary underline">
                         Discord
                       </a>.
                     </p>
