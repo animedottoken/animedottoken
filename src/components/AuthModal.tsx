@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Chrome, Loader2 } from 'lucide-react';
+import { Mail, Chrome, Loader2, Info } from 'lucide-react';
 
 interface AuthModalProps {
   open: boolean;
@@ -198,12 +199,27 @@ export default function AuthModal({
                 Rate limited. Please wait {cooldownSeconds} seconds before trying again.
               </p>
             )}
-            <p className="text-xs text-muted-foreground text-center">
-              No password—use the link we email you to sign in
-            </p>
-            <p className="text-xs text-muted-foreground text-center">
-              Trouble signing in? Reach us on <a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="underline hover:text-foreground">Discord</a>.
-            </p>
+            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+              <span>No password—we'll email you a sign-in link</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex items-center justify-center rounded-full w-4 h-4 hover:bg-muted">
+                      <Info className="w-3 h-3" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">
+                      Delivery time depends on your email provider. Gmail is instant; others may be slower. 
+                      Need help? Ask in our <span className="font-semibold">#help-desk</span> on{" "}
+                      <a href="https://discord.gg/jqxCbvZvn7" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        Discord
+                      </a>.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </form>
         </div>
       </DialogContent>
