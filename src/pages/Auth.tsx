@@ -43,10 +43,12 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      const authUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: authUrl,
           skipBrowserRedirect: true,
         }
       });
@@ -89,10 +91,12 @@ export default function Auth() {
 
     setLoading(true);
     try {
+      const authUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
+      
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
+          emailRedirectTo: authUrl,
         }
       });
 
@@ -105,7 +109,7 @@ export default function Auth() {
       } else {
         toast({
           title: "Check your email",
-          description: "We've sent you a magic link to sign in. Check your inbox and click the link to continue.",
+          description: "We've sent you a magic link to sign in. Click the link to continue (it will open in the app preview).",
         });
       }
     } catch (error) {
@@ -127,6 +131,11 @@ export default function Auth() {
           <CardDescription>
             Sign in to like NFTs, follow creators, and join the community
           </CardDescription>
+          {redirectTo !== '/' && (
+            <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+              💡 After signing in, you'll be redirected back to where you were
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Google Sign In */}

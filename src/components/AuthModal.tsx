@@ -29,10 +29,13 @@ export default function AuthModal({
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      const currentPath = window.location.pathname + window.location.search;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/auth',
+          redirectTo: redirectUrl,
           skipBrowserRedirect: true,
         }
       });
@@ -74,10 +77,13 @@ export default function AuthModal({
 
     setLoading(true);
     try {
+      const currentPath = window.location.pathname + window.location.search;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
+      
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin + '/auth',
+          emailRedirectTo: redirectUrl,
         }
       });
 
@@ -90,7 +96,7 @@ export default function AuthModal({
       } else {
         toast({
           title: "Check your email",
-          description: "We've sent you a magic link to sign in. Check your inbox and click the link to continue.",
+          description: "We've sent you a magic link to sign in. Click the link to continue (it will open in the app preview).",
         });
         onOpenChange(false);
         setEmail('');
