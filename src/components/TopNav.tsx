@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -89,6 +89,11 @@ export const TopNav = () => {
     e.stopPropagation();
     await signOut();
   };
+
+  const handleSignIn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/auth?redirect=' + encodeURIComponent(location.pathname));
+  };
   const isActive = (item: NavigationItem) => {
     if (item.type === "route") {
       return location.pathname === item.path;
@@ -150,16 +155,20 @@ export const TopNav = () => {
                 <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                 <User className="h-4 w-4" />
                 <span>My Profile</span>
-                <span className="text-xs text-muted-foreground ml-auto">{user ? 'in' : 'out'}</span>
+                {user ? (
+                  <LogOut 
+                    className="h-4 w-4 text-red-500 ml-auto" 
+                    aria-label="Sign out"
+                    onClick={handleSignOut}
+                  />
+                ) : (
+                  <LogIn 
+                    className="h-4 w-4 text-green-500 ml-auto" 
+                    aria-label="Sign in"
+                    onClick={handleSignIn}
+                  />
+                )}
               </DropdownMenuItem>
-              
-              {/* Sign out option when logged in */}
-              {user && (
-                <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer py-3 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground">
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              )}
               
               <DropdownMenuSeparator />
               
@@ -294,16 +303,20 @@ export const TopNav = () => {
               <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
               <User className="h-4 w-4" />
               <span>My Profile</span>
-              <span className="text-xs text-muted-foreground ml-auto">{user ? 'in' : 'out'}</span>
+              {user ? (
+                <LogOut 
+                  className="h-4 w-4 text-red-500 ml-auto" 
+                  aria-label="Sign out"
+                  onClick={handleSignOut}
+                />
+              ) : (
+                <LogIn 
+                  className="h-4 w-4 text-green-500 ml-auto" 
+                  aria-label="Sign in"
+                  onClick={handleSignIn}
+                />
+              )}
             </DropdownMenuItem>
-            
-            {/* Sign out option when logged in */}
-            {user && (
-              <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer py-3 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground">
-                <LogOut className="h-4 w-4" />
-                <span>Sign out</span>
-              </DropdownMenuItem>
-            )}
 
             <DropdownMenuSeparator />
 
