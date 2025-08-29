@@ -61,6 +61,7 @@ const Profile = () => {
   } = useGamifiedProfile();
 
   const targetWallet = wallet || (connected ? publicKey : null);
+  const hasWallet = connected && publicKey;
 
   // Data hooks
   const { nfts, loading: nftsLoading, fetchUserNFTs } = useUserNFTs();
@@ -103,8 +104,9 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    setIsOwnProfile(connected && targetWallet === publicKey);
-  }, [connected, targetWallet, publicKey]);
+    // Own profile if viewing own wallet or if no wallet specified and we're authenticated
+    setIsOwnProfile((connected && targetWallet === publicKey) || (!wallet && !targetWallet));
+  }, [connected, targetWallet, publicKey, wallet]);
 
   // Helper functions for rank progression
   const getRankProgress = (tradeCount: number) => {
@@ -126,8 +128,19 @@ const Profile = () => {
 
   const handleNicknameConfirm = async (nickname: string) => {
     try {
-      await setNickname(nickname);
-      await fetchProfile();
+      if (hasWallet) {
+        await setNickname(nickname);
+        await fetchProfile();
+      } else {
+        // Update auth metadata for users without wallets
+        const { error } = await supabase.auth.updateUser({
+          data: { nickname }
+        });
+        if (error) throw error;
+        
+        // Update local profile state
+        setProfile(prev => prev ? { ...prev, nickname } : null);
+      }
       toast.success('Nickname updated successfully!');
       return true;
     } catch (error) {
@@ -139,8 +152,19 @@ const Profile = () => {
 
   const handleBioConfirm = async (bio: string) => {
     try {
-      await setBio(bio, 'dummy-tx-signature');
-      await fetchProfile();
+      if (hasWallet) {
+        await setBio(bio, 'dummy-tx-signature');
+        await fetchProfile();
+      } else {
+        // Update auth metadata for users without wallets
+        const { error } = await supabase.auth.updateUser({
+          data: { bio }
+        });
+        if (error) throw error;
+        
+        // Update local profile state
+        setProfile(prev => prev ? { ...prev, bio } : null);
+      }
       toast.success('Bio updated successfully!');
       return true;
     } catch (error) {
@@ -151,6 +175,11 @@ const Profile = () => {
   };
 
   const handlePfpConfirm = async (nftMintAddress: string) => {
+    if (!hasWallet) {
+      toast.error('Please connect your wallet to set an NFT as your profile picture');
+      return false;
+    }
+    
     try {
       await setPFP(nftMintAddress, 'dummy-tx-signature');
       await fetchProfile();
@@ -164,6 +193,11 @@ const Profile = () => {
   };
 
   const handleBannerConfirm = async (bannerFile: File) => {
+    if (!hasWallet) {
+      toast.error('Please connect your wallet to set a custom banner');
+      return false;
+    }
+    
     try {
       await setBanner(bannerFile);
       await fetchProfile();
@@ -206,26 +240,38 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!targetWallet) {
-        // No wallet connected or provided via URL -> show connect message
-        setLoading(false);
-        return;
-      }
-      
       setLoading(true);
       try {
-        const { data, error } = await supabase.functions.invoke('get-profile', {
-          body: { wallet_address: targetWallet }
-        });
-        
-        if (error) {
-          console.error('Error fetching profile:', error);
-          toast.error('Failed to load profile');
-          return;
+        if (targetWallet) {
+          // Fetch profile from wallet address
+          const { data, error } = await supabase.functions.invoke('get-profile', {
+            body: { wallet_address: targetWallet }
+          });
+          
+          if (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('Failed to load profile');
+            return;
+          }
+          
+          setProfile(data || null);
+        } else if (user && !wallet) {
+          // No wallet specified, show profile based on auth user metadata
+          const authProfile = {
+            wallet_address: '',
+            nickname: user.user_metadata?.nickname || user.email?.split('@')[0] || 'User',
+            bio: user.user_metadata?.bio || '',
+            trade_count: 0,
+            profile_rank: 'DEFAULT' as const,
+            pfp_unlock_status: false,
+            bio_unlock_status: false,
+            profile_image_url: user.user_metadata?.avatar_url,
+            banner_image_url: user.user_metadata?.banner_url
+          };
+          setProfile(authProfile);
+        } else {
+          setProfile(null);
         }
-        
-        
-        setProfile(data || null);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
@@ -235,7 +281,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, [targetWallet]);
+  }, [targetWallet, user, wallet]);
 
   // Get collections created by this user
   const userCollections = useMemo(() => {
@@ -346,85 +392,7 @@ const Profile = () => {
     );
   }
 
-  // For authenticated users without wallet, show profile with wallet connection option
-  if (!targetWallet && !wallet) {
-    return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        {/* Profile Header */}
-        <div className="relative">
-          {/* Banner */}
-          <div className="relative h-64 rounded-lg overflow-hidden" data-testid="profile-banner">
-            <img 
-              src={defaultBanner} 
-              alt="Profile Banner" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Profile Info */}
-        <div className="px-6 mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 items-start">
-            {/* Avatar Column */}
-            <div className="relative w-40 h-40 sm:w-44 sm:h-44 mx-auto sm:mx-0">
-              <div className="w-full h-full rounded-full border-4 border-background bg-muted-foreground/20 overflow-hidden" data-testid="profile-avatar">
-                <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                  {user.email?.slice(0, 2).toUpperCase()}
-                </div>
-              </div>
-            </div>
-
-            {/* Info Column */}
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
-                  {user.email}
-                </h1>
-              </div>
-              
-              <p className="text-muted-foreground">
-                Welcome! Connect your Solana wallet to unlock NFT features and customize your profile.
-              </p>
-              
-              <div className="flex flex-wrap gap-3 pt-2">
-                <SolanaWalletButton />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Wallet Connection Benefits */}
-        <Card className="max-w-3xl mx-auto mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5" />
-              Connect Your Wallet to Unlock
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <Image className="h-5 w-5 text-muted-foreground" />
-                <span>View & manage your NFTs</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Layers className="h-5 w-5 text-muted-foreground" />
-                <span>Create NFT collections</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Heart className="h-5 w-5 text-muted-foreground" />
-                <span>Like & favorite items</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-muted-foreground" />
-                <span>Follow other creators</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Always show profile for authenticated users
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -468,7 +436,7 @@ const Profile = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                  {targetWallet?.slice(0, 2).toUpperCase()}
+                  {targetWallet ? targetWallet.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || 'US')}
                 </div>
               )}
             </div>
@@ -491,7 +459,7 @@ const Profile = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
-                    {profile?.display_name || profile?.nickname || `${targetWallet?.slice(0, 4)}...${targetWallet?.slice(-4)}`}
+                    {profile?.display_name || profile?.nickname || (targetWallet ? `${targetWallet.slice(0, 4)}...${targetWallet.slice(-4)}` : user?.email?.split('@')[0] || 'User')}
                   </h1>
                   {isOwnProfile && (
                     <Button
@@ -537,23 +505,34 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Wallet and Rank */}
-              <div className="flex items-center gap-4 flex-wrap">
-                {/* Wallet with copy */}
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {targetWallet?.slice(0, 4)}...{targetWallet?.slice(-4)}
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-5 w-5 p-0"
-                    onClick={() => copyToClipboard(targetWallet || '')}
-                    aria-label="Copy wallet address"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </div>
+               {/* Wallet and Rank */}
+               <div className="flex items-center gap-4 flex-wrap">
+                 {/* Wallet with copy */}
+                 {targetWallet && (
+                   <div className="flex items-center gap-2">
+                     <Badge variant="secondary" className="text-xs">
+                       {targetWallet.slice(0, 4)}...{targetWallet.slice(-4)}
+                     </Badge>
+                     <Button
+                       variant="ghost"
+                       size="icon"
+                       className="h-5 w-5 p-0"
+                       onClick={() => copyToClipboard(targetWallet)}
+                       aria-label="Copy wallet address"
+                     >
+                       <Copy className="h-3 w-3" />
+                     </Button>
+                   </div>
+                 )}
+                 
+                 {!hasWallet && (
+                   <div className="flex items-center gap-2">
+                     <Badge variant="outline" className="text-xs">
+                       No wallet connected
+                     </Badge>
+                     <SolanaWalletButton />
+                   </div>
+                 )}
 
                 {/* Rank Badge with Micro Progress */}
                 <div className="flex items-center gap-2">
