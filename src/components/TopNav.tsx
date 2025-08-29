@@ -150,6 +150,7 @@ export const TopNav = () => {
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   <span>My Profile</span>
+                  <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                 </div>
                 {user ? (
                   <Button
@@ -302,6 +303,7 @@ export const TopNav = () => {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span>My Profile</span>
+                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
               </div>
               {user ? (
                 <Button
