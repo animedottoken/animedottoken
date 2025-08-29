@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { WalletAdapterNetwork, WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { 
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   TrustWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { WalletModalProvider, useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -49,8 +49,9 @@ export const useSolanaWallet = () => {
 };
 
 const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets } = useWallet();
+  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets, select, wallet } = useWallet();
   const { connection } = useConnection();
+  const { setVisible } = useWalletModal();
   const { user } = useAuth();
   const [balance, setBalance] = useState(0);
   const network = 'devnet';
@@ -95,11 +96,22 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connect = useCallback(async () => {
     try {
+      if (!wallet) {
+        // No wallet selected, open the selection modal
+        setVisible(true);
+        return;
+      }
       await walletConnect();
     } catch (error) {
-      toast.error('Failed to connect wallet');
+      // Only show error toast for actual connection failures, not wallet selection issues
+      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        setVisible(true);
+      } else {
+        console.error('Wallet connection error:', error);
+        toast.error('Failed to connect wallet');
+      }
     }
-  }, [walletConnect]);
+  }, [walletConnect, wallet, setVisible]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
@@ -115,9 +127,34 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [wallets]);
 
   const connectWith = useCallback(async (providerName: string) => {
-    // For now, just use the default connect - wallet selection is handled by the modal
-    await connect();
-  }, [connect]);
+    try {
+      // Find the specific wallet adapter by name
+      const selectedWallet = wallets.find(w => 
+        w.adapter.name.toLowerCase() === providerName.toLowerCase() ||
+        w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
+      );
+      
+      if (selectedWallet) {
+        // Select the wallet first
+        select(selectedWallet.adapter.name);
+        // Wait a bit for the selection to take effect, then connect
+        setTimeout(async () => {
+          try {
+            await walletConnect();
+          } catch (error) {
+            console.error('Wallet connection error:', error);
+            toast.error(`Failed to connect to ${providerName}`);
+          }
+        }, 100);
+      } else {
+        // Wallet not found, show selection modal
+        setVisible(true);
+      }
+    } catch (error) {
+      console.error('Wallet selection error:', error);
+      toast.error(`Failed to select ${providerName} wallet`);
+    }
+  }, [wallets, select, walletConnect, setVisible]);
 
   const value = {
     connected,
