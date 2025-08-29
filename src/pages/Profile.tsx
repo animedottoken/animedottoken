@@ -413,7 +413,7 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="relative">
         {/* Banner */}
-        <div className="relative h-64 rounded-lg overflow-hidden" data-testid="profile-banner">
+        <div className="relative aspect-[4/1] rounded-lg overflow-hidden" data-testid="profile-banner">
           <img 
             src={profile?.banner_image_url || defaultBanner} 
             alt="Profile Banner" 
