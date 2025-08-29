@@ -31,17 +31,6 @@ export function AuthEmailInfoContent() {
           </ul>
         </div>
         
-        <div className="pt-2 border-t">
-          <p className="text-xs text-muted-foreground">
-            Still having issues?{" "}
-            <a 
-              href="/support" 
-              className="text-primary underline hover:no-underline"
-            >
-              Contact Support
-            </a>
-          </p>
-        </div>
       </div>
     </>
   );
