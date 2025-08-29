@@ -38,6 +38,14 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
     }
   }, [open, profile?.banner_image_url, selectedFile]);
 
+  // Preserve selected file when wallet connects
+  useEffect(() => {
+    if (selectedFile && !previewUrl) {
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
+    }
+  }, [selectedFile, previewUrl]);
+
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);
     if (file) {
@@ -148,19 +156,21 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="banner-payment-confirmation"
-              checked={paymentConfirmed}
-              onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-            />
-            <label 
-              htmlFor="banner-payment-confirmation" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              I understand I will be charged the amount shown for this banner change
-            </label>
-          </div>
+          {connected && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="banner-payment-confirmation"
+                checked={paymentConfirmed}
+                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
+              />
+              <label 
+                htmlFor="banner-payment-confirmation" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I understand I will be charged the amount shown for this banner change
+              </label>
+            </div>
+          )}
           
           {connected ? (
             <Button
@@ -173,8 +183,12 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
             </Button>
           ) : (
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => connect()} disabled={connecting}>
-              {connecting ? 'Connecting...' : 'Connect Wallet'}
+            <Button 
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+              onClick={() => connect()} 
+              disabled={connecting}
+            >
+              {connecting ? 'Connecting...' : selectedFile ? 'Connect Wallet to Continue' : 'Connect Wallet'}
             </Button>
           )}
         </div>
