@@ -38,7 +38,7 @@ import { StatusDots } from '@/components/StatusDots';
 
 const Profile = () => {
   const { wallet } = useParams();
-  const { publicKey, connected, connect, disconnect, connecting } = useSolanaWallet();
+  const { publicKey, connected, connect, disconnect, connecting, walletName } = useSolanaWallet();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
@@ -542,9 +542,14 @@ const Profile = () => {
                   {isOwnProfile && (
                     <div className="flex items-center gap-2">
                       <StatusDots isLoggedIn={!!user} isWalletConnected={connected} />
-                      <Badge variant={profile?.wallet_address ? "secondary" : "outline"} className="text-xs">
-                        {profile?.wallet_address ? `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}` : 'No wallet connected'}
+                      <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
+                        {hasWallet && publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'No wallet connected'}
                       </Badge>
+                      {walletName && hasWallet && (
+                        <Badge variant="default" className="text-xs bg-primary/10 text-primary border-primary/20">
+                          {walletName}
+                        </Badge>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
