@@ -546,12 +546,12 @@ const Profile = () => {
                         {hasWallet && publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'No wallet connected'}
                       </Badge>
                       {walletName && hasWallet && (
-                        <Badge variant="default" className="text-xs bg-primary/10 text-primary border-primary/20">
+                        <Badge variant="secondary" className="text-xs">
                           {walletName}
                         </Badge>
                       )}
                       <Button
-                        variant="outline"
+                        variant={hasWallet ? "destructive" : "default"}
                         size="sm"
                         onClick={hasWallet ? disconnect : connect}
                         disabled={connecting}
