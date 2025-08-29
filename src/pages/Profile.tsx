@@ -58,6 +58,7 @@ const Profile = () => {
     setBio,
     setPFP,
     setBanner,
+    setAvatar,
     loading: profileLoading
   } = useGamifiedProfile();
 
@@ -209,6 +210,22 @@ const Profile = () => {
     } catch (error) {
       console.error('Error updating banner:', error);
       toast.error('Failed to update banner');
+      return false;
+    }
+  };
+
+  const handleAvatarConfirm = async (file: File) => {
+    try {
+      const result = await setAvatar(file);
+      if (result) {
+        await fetchProfile();
+        toast.success("Profile picture updated successfully!");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Avatar update error:', error);
+      toast.error("Failed to update profile picture");
       return false;
     }
   };
@@ -859,8 +876,7 @@ const Profile = () => {
             open={showPfpPicker}
             onOpenChange={setShowPfpPicker}
             profile={profile}
-            nfts={userNFTs}
-            onConfirm={handlePfpConfirm}
+            onConfirmUpload={handleAvatarConfirm}
             loading={profileLoading}
             isFirstChange={!profile?.pfp_unlock_status}
           />
