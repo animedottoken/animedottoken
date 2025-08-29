@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Chrome, Loader2, Info } from 'lucide-react';
+import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
 
 interface AuthModalProps {
   open: boolean;
@@ -201,20 +201,20 @@ export default function AuthModal({
             )}
             <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
               <span>No password—we'll email you a sign-in link</span>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex items-center justify-center rounded-full w-4 h-4 hover:bg-muted">
-                      <Info className="w-3 h-3" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p className="text-xs">
-                      Delivery time depends on your email provider. Gmail is instant; others may be slower.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button 
+                    type="button" 
+                    className="inline-flex items-center justify-center rounded-full w-4 h-4 bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 hover:text-violet-300 transition-colors"
+                    aria-label="Email delivery information"
+                  >
+                    <Info className="w-3 h-3" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <AuthEmailInfoContent />
+                </DialogContent>
+              </Dialog>
             </div>
               </form>
               
