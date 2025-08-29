@@ -206,7 +206,9 @@ export default function CreatorProfile() {
         });
         console.log('CreatorProfile: get-profile response:', profileResponse);
         console.log('CreatorProfile: get-profile error:', profileError);
-        const profile = profileResponse?.profile;
+        const profile = (profileResponse && typeof profileResponse === 'object')
+          ? (profileResponse as any).profile ?? (profileResponse as any)
+          : null;
 
         // Use RPC function for creator stats
         const { data: stats } = await supabase.rpc('get_creators_public_stats');
