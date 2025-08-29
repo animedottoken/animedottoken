@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { ImageIcon, DollarSign, Coins, Info } from 'lucide-react';
+import { Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
@@ -27,7 +26,6 @@ interface BannerPickerDialogProps {
 export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loading, isFirstChange = true }: BannerPickerDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
   const { connected, connecting, connect } = useSolanaWallet();
 
@@ -63,7 +61,6 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
       onOpenChange(false);
       setSelectedFile(null);
       setPreviewUrl('');
-      setPaymentConfirmed(false);
     }
   };
 
@@ -74,7 +71,6 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         if (!o) {
           setSelectedFile(null);
           setPreviewUrl('');
-          setPaymentConfirmed(false);
         }
       }
     }}>
@@ -161,31 +157,15 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          {connected && (
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="banner-payment-confirmation"
-                checked={paymentConfirmed}
-                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-              />
-              <label 
-                htmlFor="banner-payment-confirmation" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I understand I will be charged the amount shown for this banner change
-              </label>
-            </div>
-          )}
-          
           {connected ? (
             <Button
               className="w-full"
-              disabled={!selectedFile || loading || !paymentConfirmed || pricingLoading}
+              disabled={!selectedFile || loading || pricingLoading}
               onClick={handleConfirm}
             >
               {loading ? 'Updating...' : 
                pricingLoading ? 'Calculating Price...' :
-               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
+               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME (~$2.00 USDT)`}
             </Button>
           ) : (
             <Button 
