@@ -125,18 +125,18 @@ const App = () => {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <HelmetProvider>
-          <AuthProvider>
-            <SolanaWalletProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
+          <BrowserRouter>
+            <AuthProvider>
+              <SolanaWalletProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
                   <ScrollToTopOnRoute />
                   <AppLayout />
-                </BrowserRouter>
-              </TooltipProvider>
-            </SolanaWalletProvider>
-          </AuthProvider>
+                </TooltipProvider>
+              </SolanaWalletProvider>
+            </AuthProvider>
+          </BrowserRouter>
         </HelmetProvider>
       </QueryClientProvider>
     </ErrorBoundary>
