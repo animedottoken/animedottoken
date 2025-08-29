@@ -23,15 +23,13 @@ export const GamifiedProfileCard = () => {
     profile,
     userNFTs,
     loading,
-    nicknameLoading,
-    pfpLoading,
-    bioLoading,
     setNickname,
-    unlockPFP,
     setPFP,
     setBio,
+    setAvatar,
+    updateAssetCounts,
     getRankColor,
-    getRankBadge,
+    getRankBadge
   } = useGamifiedProfile();
 
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
@@ -429,9 +427,9 @@ export const GamifiedProfileCard = () => {
                   <Button 
                     onClick={handleSetNickname} 
                     className="w-full"
-                    disabled={nicknameLoading || nicknamePricing.loading}
+                    disabled={loading || nicknamePricing.loading}
                   >
-                    {nicknameLoading ? 'Processing Payment...' : `Pay ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME`}
+                    {loading ? 'Processing Payment...' : `Pay ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME`}
                   </Button>
                 </div>
               </DialogContent>
@@ -541,10 +539,10 @@ export const GamifiedProfileCard = () => {
                     </div>
                     <Button 
                       onClick={handleConfirmPFP}
-                      disabled={pfpLoading}
+                      disabled={loading}
                       className="w-full"
                     >
-                      {pfpLoading ? 'Processing Payment...' : 'Confirm & Pay'}
+                      {loading ? 'Processing Payment...' : 'Confirm & Pay'}
                     </Button>
                   </div>
                 ) : (
@@ -617,9 +615,9 @@ export const GamifiedProfileCard = () => {
                 <Button 
                   onClick={handleSetBio} 
                   className="w-full"
-                  disabled={bioLoading}
+                  disabled={loading}
                 >
-                  {bioLoading ? 'Processing...' : 
+                  {loading ? 'Processing...' : 
                     (!profile.bio && !profile.bio_unlock_status) ? 'Set Bio (Free!)' : 
                     (bioPricing.loading ? 'Confirm' : `Pay ${formatTokenAmount(bioPricing.animeAmount)} $ANIME`)
                   }

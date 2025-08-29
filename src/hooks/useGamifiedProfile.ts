@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface GamifiedProfile {
-  wallet_address: string;
+  user_id?: string;
+  wallet_address?: string;
   nickname?: string;
   bio?: string;
   trade_count: number;
@@ -14,6 +16,8 @@ export interface GamifiedProfile {
   current_pfp_nft_mint_address?: string;
   profile_image_url?: string;
   banner_image_url?: string;
+  nft_count?: number;
+  collection_count?: number;
 }
 
 export interface UserNFT {
@@ -23,25 +27,23 @@ export interface UserNFT {
   symbol?: string;
 }
 
-export const useGamifiedProfile = () => {
+export function useGamifiedProfile() {
   const [profile, setProfile] = useState<GamifiedProfile | null>(null);
   const [userNFTs, setUserNFTs] = useState<UserNFT[]>([]);
   const [loading, setLoading] = useState(false);
-  const [nicknameLoading, setNicknameLoading] = useState(false);
-  const [pfpLoading, setPfpLoading] = useState(false);
-  const [bioLoading, setBioLoading] = useState(false);
-  const { publicKey, connected } = useSolanaWallet();
+  const { publicKey } = useSolanaWallet();
+  const { user } = useAuth();
 
-  const fetchProfile = useCallback(async () => {
-    if (!connected || !publicKey) {
-      setProfile(null);
-      return;
-    }
+  const fetchProfile = async () => {
+    // Require authenticated user (Web2 identity)
+    if (!user) return;
 
-    setLoading(true);
     try {
+      setLoading(true);
       const { data, error } = await supabase.functions.invoke('get-profile', {
-        body: { wallet_address: publicKey.toString() },
+        body: { 
+          wallet_address: publicKey?.toString() || null
+        }
       });
 
       if (error) throw error;
@@ -52,10 +54,10 @@ export const useGamifiedProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [connected, publicKey]);
+  };
 
-  const fetchUserNFTs = useCallback(async () => {
-    if (!connected || !publicKey) {
+  const fetchUserNFTs = async () => {
+    if (!publicKey) {
       setUserNFTs([]);
       return;
     }
@@ -70,57 +72,45 @@ export const useGamifiedProfile = () => {
       setUserNFTs(data || []);
     } catch (err) {
       console.error('Error fetching user NFTs:', err);
-      toast.error('Failed to load your NFTs');
+      setUserNFTs([]);
     }
-  }, [connected, publicKey]);
+  };
 
-  const setNickname = useCallback(async (nickname: string, transactionSignature?: string) => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+  const setNickname = async (nickname: string, transactionSignature?: string): Promise<boolean> => {
+    if (!user) {
+      toast.error("Please log in first");
       return false;
     }
 
-    setNicknameLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('set-nickname', {
+      const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          nickname, 
-          wallet_address: publicKey.toString(),
-          transaction_signature: transactionSignature 
-        },
+          nickname: nickname,
+          wallet_address: publicKey?.toString() || null
+        }
       });
 
       if (error) {
-        // Handle specific error cases with better messaging
-        if (error.message?.includes('NICKNAME_ALREADY_SET')) {
-          toast.error('You already have a nickname set. You can only set your nickname once.');
-        } else if (error.message?.includes('already taken')) {
-          toast.error('This nickname is already taken. Please choose a different one.');
-        } else {
-          toast.error(error.message || 'Failed to set nickname');
-        }
+        toast.error(error.message || 'Failed to set nickname');
         return false;
       }
       
       toast.success(`Nickname "${nickname}" set successfully!`);
-      await fetchProfile(); // Refresh profile
+      await fetchProfile();
       return true;
     } catch (err: any) {
       console.error('Error setting nickname:', err);
       toast.error(err.message || 'Failed to set nickname');
       return false;
-    } finally {
-      setNicknameLoading(false);
     }
-  }, [connected, publicKey, fetchProfile]);
+  };
 
-  const unlockPFP = useCallback(async (transactionSignature: string) => {
-    if (!connected || !publicKey) {
+  const unlockPFP = async (transactionSignature: string): Promise<boolean> => {
+    if (!publicKey) {
       toast.error('Please connect your wallet first');
       return false;
     }
 
-    setPfpLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('unlock-pfp', {
         body: { wallet_address: publicKey.toString(), transaction_signature: transactionSignature },
@@ -129,155 +119,110 @@ export const useGamifiedProfile = () => {
       if (error) throw error;
       
       toast.success('PFP feature unlocked successfully!');
-      await fetchProfile(); // Refresh profile
+      await fetchProfile();
       return true;
     } catch (err: any) {
       console.error('Error unlocking PFP:', err);
       toast.error(err.message || 'Failed to unlock PFP feature');
       return false;
-    } finally {
-      setPfpLoading(false);
     }
-  }, [connected, publicKey, fetchProfile]);
+  };
 
-  const setPFP = useCallback(async (nftMintAddress: string, transactionSignature: string) => {
-    if (!connected || !publicKey) {
+  const setPFP = async (nftMintAddress: string, transactionSignature?: string): Promise<boolean> => {
+    if (!publicKey) {
       toast.error('Please connect your wallet first');
       return false;
     }
 
-    setPfpLoading(true);
     try {
-      const res = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/set-pfp', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6dHpkZHlram5tbnBvZXlmcWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzcwNDIsImV4cCI6MjA3MDgxMzA0Mn0.gr027JXjQ7SE_OOo17VnQSYTIOOQA0iI5JiaqP8J2AA'
-        },
-        body: JSON.stringify({ 
-          nft_mint_address: nftMintAddress, 
-          wallet_address: publicKey.toString(),
-          transaction_signature: transactionSignature
-        }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || (data && data.error)) {
-        throw new Error(data?.error || `Failed to set PFP (${res.status})`);
-      }
-      
       toast.success('Profile picture updated successfully!');
-      await fetchProfile(); // Refresh profile
+      await fetchProfile();
       return true;
     } catch (err: any) {
       console.error('Error setting PFP:', err);
       toast.error(err.message || 'Failed to set profile picture');
       return false;
-    } finally {
-      setPfpLoading(false);
     }
-  }, [connected, publicKey, fetchProfile]);
+  };
 
-  const setBio = useCallback(async (bio: string, transactionSignature?: string): Promise<boolean> => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+  const setBio = async (bio: string, transactionSignature?: string): Promise<boolean> => {
+    if (!user) {
+      toast.error("Please log in first");
       return false;
     }
 
-    setBioLoading(true);
     try {
-      const res = await fetch('https://eztzddykjnmnpoeyfqcg.supabase.co/functions/v1/set-bio', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6dHpkZHlram5tbnBvZXlmcWNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMzcwNDIsImV4cCI6MjA3MDgxMzA0Mn0.gr027JXjQ7SE_OOo17VnQSYTIOOQA0iI5JiaqP8J2AA'
-        },
-        body: JSON.stringify({
-          bio: bio.trim(),
-          transaction_signature: transactionSignature,
-          wallet_address: publicKey.toString()
-        })
+      const { data, error } = await supabase.functions.invoke('upsert-profile', {
+        body: { 
+          bio: bio,
+          wallet_address: publicKey?.toString() || null
+        }
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || (data && data.error)) {
-        console.error('Error setting bio:', data?.error || res.statusText);
-        toast.error(data?.error || 'Failed to set bio');
+
+      if (error) {
+        console.error('Error setting bio:', error);
+        toast.error(error.message || 'Failed to set bio');
         return false;
       }
 
-      // Refresh profile data
       await fetchProfile();
-      
       return true;
     } catch (error) {
       console.error('Error setting bio:', error);
       toast.error('Failed to set bio');
       return false;
-    } finally {
-      setBioLoading(false);
     }
-  }, [connected, publicKey, fetchProfile]);
+  };
 
-  const setBanner = useCallback(async (bannerFile: File): Promise<boolean> => {
-    if (!connected || !publicKey) {
-      toast.error('Please connect your wallet first');
+  const setBanner = async (bannerFile: File): Promise<boolean> => {
+    if (!user) {
+      toast.error("Please log in first");
       return false;
     }
 
-    setBioLoading(true); // Reuse bio loading state for banner
     try {
-      // Upload to Supabase Storage
-      const fileName = `banner_${publicKey.toString()}_${Date.now()}.${bannerFile.name.split('.').pop()}`;
-      const filePath = `banners/${fileName}`;
+      // Upload to Supabase storage using user ID path
+      const fileName = `${Date.now()}-banner.${bannerFile.type.split('/')[1]}`;
+      const filePath = `${user.id}/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('collection-images')
+        .from('profile-banners')
         .upload(filePath, bannerFile);
 
       if (uploadError) {
-        console.error('Error uploading banner:', uploadError);
-        toast.error('Failed to upload banner image');
+        console.error('Banner upload error:', uploadError);
+        toast.error("Failed to upload banner");
         return false;
       }
 
       // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('collection-images')
-        .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-banners')
+        .getPublicUrl(uploadData.path);
 
       // Update profile with new banner URL
-      const { data, error } = await supabase.functions.invoke('set-banner', {
+      const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          banner_url: urlData.publicUrl,
-          wallet_address: publicKey.toString(),
-          transaction_signature: 'simulated_banner_transaction'
-        },
+          banner_image_url: publicUrl,
+          wallet_address: publicKey?.toString() || null
+        }
       });
 
       if (error) {
-        console.error('Error setting banner:', error);
-        toast.error(error.message || 'Failed to update banner');
+        console.error('Banner update error:', error);
+        toast.error("Failed to update banner");
         return false;
       }
 
-      if (data.error) {
-        console.error('Error in set-banner response:', data.error);
-        toast.error(data.error);
-        return false;
-      }
-
-      toast.success('Banner updated successfully!');
       await fetchProfile();
-      
+      toast.success("Banner updated successfully!");
       return true;
     } catch (error) {
-      console.error('Error setting banner:', error);
-      toast.error('Failed to update banner');
+      console.error('Banner update error:', error);
+      toast.error("Failed to update banner");
       return false;
-    } finally {
-      setBioLoading(false);
     }
-  }, [connected, publicKey, fetchProfile]);
+  };
 
   const getRankColor = useCallback((rank: string) => {
     switch (rank) {
@@ -299,26 +244,101 @@ export const useGamifiedProfile = () => {
     }
   }, []);
 
+  // Add setAvatar function for file upload
+  const setAvatar = async (avatarFile: File): Promise<boolean> => {
+    if (!user) {
+      toast.error("Please log in first");
+      return false;
+    }
+
+    try {
+      // Upload to Supabase storage using user ID path
+      const fileName = `${Date.now()}-avatar.${avatarFile.type.split('/')[1]}`;
+      const filePath = `${user.id}/${fileName}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profile-avatars')
+        .upload(filePath, avatarFile);
+
+      if (uploadError) {
+        console.error('Avatar upload error:', uploadError);
+        toast.error("Failed to upload avatar");
+        return false;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-avatars')
+        .getPublicUrl(uploadData.path);
+
+      // Update profile with new avatar URL
+      const { data, error } = await supabase.functions.invoke('upsert-profile', {
+        body: { 
+          profile_image_url: publicUrl,
+          wallet_address: publicKey?.toString() || null
+        }
+      });
+
+      if (error) {
+        console.error('Avatar update error:', error);
+        toast.error("Failed to update avatar");
+        return false;
+      }
+
+      await fetchProfile();
+      toast.success("Avatar updated successfully!");
+      return true;
+    } catch (error) {
+      console.error('Avatar update error:', error);
+      toast.error("Failed to update avatar");
+      return false;
+    }
+  };
+
+  const updateAssetCounts = async (): Promise<boolean> => {
+    if (!publicKey) {
+      toast.error("Please connect your wallet first");
+      return false;
+    }
+
+    try {
+      const { error } = await supabase.functions.invoke('update-user-asset-counts', {
+        body: { wallet_address: publicKey.toString() }
+      });
+
+      if (error) {
+        console.error('Asset count update error:', error);
+        toast.error("Failed to update asset counts");
+        return false;
+      }
+
+      await fetchProfile();
+      toast.success("Asset counts updated!");
+      return true;
+    } catch (error) {
+      console.error('Asset count update error:', error);
+      toast.error("Failed to update asset counts");
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
     fetchUserNFTs();
-  }, [fetchProfile, fetchUserNFTs]);
+  }, [user, publicKey]);
 
   return {
     profile,
     userNFTs,
     loading,
-    nicknameLoading,
-    pfpLoading,
-    bioLoading,
     setNickname,
     unlockPFP,
     setPFP,
     setBio,
     setBanner,
+    setAvatar,
+    updateAssetCounts,
     getRankColor,
-    getRankBadge,
-    fetchProfile,
-    fetchUserNFTs,
+    getRankBadge
   };
 };

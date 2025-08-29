@@ -17,9 +17,30 @@ serve(async (req) => {
     const { wallet_address } = await req.json();
     console.log('get-profile request:', { wallet_address });
 
-    if (!wallet_address) {
-      console.log('get-profile error: Missing wallet address');
-      return new Response(JSON.stringify({ error: "Wallet address is required" }), {
+    // Get user from JWT (Web2 identity)
+    const authHeader = req.headers.get('authorization');
+    let userId = null;
+    
+    if (authHeader) {
+      const jwt = authHeader.replace('Bearer ', '');
+      const supabaseClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        {
+          global: { headers: { Authorization: authHeader } },
+        }
+      );
+      
+      const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+      if (!authError && user) {
+        userId = user.id;
+      }
+    }
+
+    // Require either wallet_address or authenticated user
+    if (!wallet_address && !userId) {
+      console.log('get-profile error: Missing wallet address and no authenticated user');
+      return new Response(JSON.stringify({ error: "Wallet address or authentication is required" }), {
         status: 400,
         headers: corsHeaders,
       });
@@ -37,9 +58,11 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: profile, error } = await supabase
+    // Query by user_id first (Web2), then by wallet_address (Web3 fallback)
+    let query = supabase
       .from("user_profiles")
       .select(`
+        user_id,
         wallet_address,
         nickname,
         bio,
@@ -49,11 +72,20 @@ serve(async (req) => {
         trade_count,
         pfp_unlock_status,
         current_pfp_nft_mint_address,
+        nft_count,
+        collection_count,
+        bio_unlock_status,
         created_at,
         updated_at
-      `)
-      .eq("wallet_address", wallet_address)
-      .single();
+      `);
+
+    if (userId) {
+      query = query.eq("user_id", userId);
+    } else {
+      query = query.eq("wallet_address", wallet_address);
+    }
+
+    const { data: profile, error } = await query.single();
 
     console.log('get-profile query result:', { profile, error });
 
@@ -68,7 +100,8 @@ serve(async (req) => {
     // Create default profile if doesn't exist
     if (!profile) {
       const defaultProfile = {
-        wallet_address: wallet_address,
+        user_id: userId,
+        wallet_address: wallet_address || null,
         nickname: null,
         bio: null,
         profile_image_url: null,
@@ -76,7 +109,10 @@ serve(async (req) => {
         trade_count: 0,
         profile_rank: 'DEFAULT',
         pfp_unlock_status: false,
+        bio_unlock_status: false,
         current_pfp_nft_mint_address: null,
+        nft_count: 0,
+        collection_count: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };

@@ -713,11 +713,13 @@ export type Database = {
           banner_image_url: string | null
           bio: string | null
           bio_unlock_status: boolean | null
+          collection_count: number | null
           created_at: string
           current_pfp_nft_mint_address: string | null
           discord_handle: string | null
           display_name: string | null
           id: string
+          nft_count: number | null
           nickname: string | null
           pfp_unlock_status: boolean | null
           profile_image_url: string | null
@@ -725,19 +727,22 @@ export type Database = {
           trade_count: number | null
           twitter_handle: string | null
           updated_at: string
+          user_id: string | null
           verified: boolean
-          wallet_address: string
+          wallet_address: string | null
           website_url: string | null
         }
         Insert: {
           banner_image_url?: string | null
           bio?: string | null
           bio_unlock_status?: boolean | null
+          collection_count?: number | null
           created_at?: string
           current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          nft_count?: number | null
           nickname?: string | null
           pfp_unlock_status?: boolean | null
           profile_image_url?: string | null
@@ -745,19 +750,22 @@ export type Database = {
           trade_count?: number | null
           twitter_handle?: string | null
           updated_at?: string
+          user_id?: string | null
           verified?: boolean
-          wallet_address: string
+          wallet_address?: string | null
           website_url?: string | null
         }
         Update: {
           banner_image_url?: string | null
           bio?: string | null
           bio_unlock_status?: boolean | null
+          collection_count?: number | null
           created_at?: string
           current_pfp_nft_mint_address?: string | null
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          nft_count?: number | null
           nickname?: string | null
           pfp_unlock_status?: boolean | null
           profile_image_url?: string | null
@@ -765,8 +773,9 @@ export type Database = {
           trade_count?: number | null
           twitter_handle?: string | null
           updated_at?: string
+          user_id?: string | null
           verified?: boolean
-          wallet_address?: string
+          wallet_address?: string | null
           website_url?: string | null
         }
         Relationships: []
@@ -1196,6 +1205,10 @@ export type Database = {
       }
       increment_user_trade_count: {
         Args: { user_wallet_address: string }
+        Returns: undefined
+      }
+      update_user_asset_counts: {
+        Args: { p_wallet_address: string }
         Returns: undefined
       }
     }

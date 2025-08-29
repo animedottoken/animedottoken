@@ -1,11 +1,8 @@
-// Secure user profile updates with proper authentication
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.NODE_ENV === 'production' 
-    ? "https://*.lovable.app" 
-    : "*",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json",
@@ -17,81 +14,156 @@ serve(async (req) => {
   }
 
   try {
-    // Extract JWT token from Authorization header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Missing or invalid authorization header" }), {
+    // Get authenticated user
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
         status: 401,
-        headers: corsHeaders,
-      });
-    }
-
-    const { wallet_address, display_name, transaction_signature } = await req.json();
-
-    if (!wallet_address || typeof wallet_address !== "string") {
-      return new Response(JSON.stringify({ error: "wallet_address is required" }), {
-        status: 400,
         headers: corsHeaders,
       });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!supabaseUrl || !supabaseAnonKey || !serviceKey) {
+    if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
       return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
-    // First, verify JWT with anon key client
-    const jwt = authHeader.substring(7);
-    const authClient = createClient(supabaseUrl, supabaseAnonKey);
-    
-    const { data: { user }, error: userError } = await authClient.auth.getUser(jwt);
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid JWT token" }), {
+    // Verify JWT and get user
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      console.log('upsert-profile auth error:', authError);
+      return new Response(JSON.stringify({ error: "Invalid authentication" }), {
         status: 401,
         headers: corsHeaders,
       });
     }
 
-    // Verify the wallet address matches the authenticated user's wallet
-    const userWallet = user.user_metadata?.wallet_address;
-    if (userWallet !== wallet_address) {
-      return new Response(JSON.stringify({ error: "Wallet address mismatch" }), {
-        status: 403,
-        headers: corsHeaders,
-      });
-    }
+    console.log('upsert-profile authenticated user:', user.id);
 
-    // Use service role for the actual update (now that auth is verified)
-    const serviceClient = createClient(supabaseUrl, serviceKey);
-    
-    const { error } = await serviceClient
+    // Parse request body
+    const { 
+      wallet_address, 
+      nickname, 
+      bio, 
+      profile_image_url, 
+      banner_image_url 
+    } = await req.json();
+
+    console.log('upsert-profile request:', { 
+      user_id: user.id,
+      wallet_address,
+      nickname,
+      bio,
+      profile_image_url,
+      banner_image_url
+    });
+
+    // Use service role for upsert
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    // Check if profile exists
+    const { data: existingProfile } = await supabase
       .from("user_profiles")
-      .upsert({ 
-        wallet_address, 
-        display_name: display_name ?? null,
-        updated_at: new Date().toISOString()
-      }, { onConflict: "wallet_address" });
+      .select("*")
+      .or(`user_id.eq.${user.id},wallet_address.eq.${wallet_address}`)
+      .single();
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), { 
-        status: 400, 
-        headers: corsHeaders 
-      });
+    let result;
+    
+    if (existingProfile) {
+      // Update existing profile
+      const updateData: any = {
+        updated_at: new Date().toISOString()
+      };
+
+      // Only update provided fields
+      if (nickname !== undefined) updateData.nickname = nickname;
+      if (bio !== undefined) updateData.bio = bio;
+      if (profile_image_url !== undefined) updateData.profile_image_url = profile_image_url;
+      if (banner_image_url !== undefined) updateData.banner_image_url = banner_image_url;
+      
+      // Link wallet if provided and not already linked
+      if (wallet_address && !existingProfile.wallet_address) {
+        updateData.wallet_address = wallet_address;
+      }
+
+      // Ensure user_id is set for Web2 identity
+      if (!existingProfile.user_id) {
+        updateData.user_id = user.id;
+      }
+
+      const { data: updatedProfile, error: updateError } = await supabase
+        .from("user_profiles")
+        .update(updateData)
+        .eq("id", existingProfile.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.log('upsert-profile update error:', updateError);
+        return new Response(JSON.stringify({ error: updateError.message }), {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+
+      result = updatedProfile;
+    } else {
+      // Create new profile
+      const newProfile = {
+        user_id: user.id,
+        wallet_address: wallet_address || null,
+        nickname: nickname || null,
+        bio: bio || null,
+        profile_image_url: profile_image_url || null,
+        banner_image_url: banner_image_url || null,
+        trade_count: 0,
+        profile_rank: 'DEFAULT',
+        pfp_unlock_status: false,
+        bio_unlock_status: false,
+        current_pfp_nft_mint_address: null,
+        nft_count: 0,
+        collection_count: 0,
+        verified: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: createdProfile, error: createError } = await supabase
+        .from("user_profiles")
+        .insert(newProfile)
+        .select()
+        .single();
+
+      if (createError) {
+        console.log('upsert-profile create error:', createError);
+        return new Response(JSON.stringify({ error: createError.message }), {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+
+      result = createdProfile;
     }
 
-    return new Response(JSON.stringify({ success: true }), { 
-      status: 200, 
-      headers: corsHeaders 
+    console.log('upsert-profile success:', result);
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: corsHeaders,
     });
   } catch (err) {
-    console.error("Profile update error:", err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error('upsert-profile unexpected error:', err);
+    return new Response(JSON.stringify({ error: (err as Error).message || "Unexpected error" }), {
       status: 500,
       headers: corsHeaders,
     });
