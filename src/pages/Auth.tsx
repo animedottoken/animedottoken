@@ -114,7 +114,9 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/profile`;
+      const redirectUrl = `${window.location.origin}/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
+      
+      console.log('Google OAuth redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -156,7 +158,7 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/profile`;
+      const redirectUrl = `${window.location.origin}/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
