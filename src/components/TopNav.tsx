@@ -135,17 +135,17 @@ export const TopNav = () => {
               sideOffset={5}
             >
               {/* Navigation Items */}
-              <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <Coins className="h-4 w-4" />
                 <span>Mint NFTs</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <ShoppingCart className="h-4 w-4" />
                 <span>Marketplace</span>
               </DropdownMenuItem>
               
               {/* Unified Profile/Auth Row */}
-              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer">
+              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer py-3 px-3">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   <span>My Profile</span>
@@ -173,7 +173,7 @@ export const TopNav = () => {
               {/* Wallet Section */}
               <div className="px-2 py-1.5">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                  className="flex items-center gap-2 cursor-pointer py-3 px-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (connected) {
@@ -285,17 +285,17 @@ export const TopNav = () => {
             className="w-56 bg-popover text-popover-foreground border border-border shadow-lg z-[9999]"
             sideOffset={5}
           >
-            <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer">
+            <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <Coins className="h-4 w-4" />
               <span>Mint NFTs</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer">
+            <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <ShoppingCart className="h-4 w-4" />
               <span>Marketplace</span>
             </DropdownMenuItem>
             
             {/* Unified Profile/Auth Row */}
-            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer">
+            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer py-3 px-3">
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span>My Profile</span>
@@ -322,7 +322,7 @@ export const TopNav = () => {
 
             <div className="px-2 py-1.5">
               <div 
-                className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="flex items-center gap-2 cursor-pointer py-3 px-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (connected) {
