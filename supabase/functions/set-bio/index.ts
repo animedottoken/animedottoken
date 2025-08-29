@@ -97,9 +97,9 @@ serve(async (req) => {
       });
     }
 
-    if (trimmedBio.length > 90) {
+    if (trimmedBio.length > 150) {
       console.error("❌ Bio too long:", trimmedBio.length);
-      return new Response(JSON.stringify({ error: "Bio must be 90 characters or less" }), {
+      return new Response(JSON.stringify({ error: "Bio must be 150 characters or less" }), {
         status: 400,
         headers: corsHeaders,
       });
