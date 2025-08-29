@@ -200,9 +200,12 @@ export default function CreatorProfile() {
         setLoading(true);
         
         // Fetch creator profile using edge function
-        const { data: profileResponse } = await supabase.functions.invoke('get-profile', {
+        console.log('CreatorProfile: Calling get-profile edge function for:', wallet);
+        const { data: profileResponse, error: profileError } = await supabase.functions.invoke('get-profile', {
           body: { wallet_address: wallet }
         });
+        console.log('CreatorProfile: get-profile response:', profileResponse);
+        console.log('CreatorProfile: get-profile error:', profileError);
         const profile = profileResponse?.profile;
 
         // Use RPC function for creator stats
