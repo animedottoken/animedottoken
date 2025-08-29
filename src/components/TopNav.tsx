@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { StatusDots } from "@/components/StatusDots";
 
 type RouteItem = {
   type: "route";
@@ -124,7 +125,7 @@ export const TopNav = () => {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'} mr-1`} />
+                <StatusDots isLoggedIn={!!user} isWalletConnected={connected} className="mr-1" />
                 <span className="text-sm font-medium">Menu</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -203,7 +204,9 @@ export const TopNav = () => {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="sm" className="p-2 h-8 w-8 relative">
-              <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div className="absolute -top-1 -right-1 flex gap-0.5">
+                <StatusDots isLoggedIn={!!user} isWalletConnected={connected} size="sm" />
+              </div>
               <Menu className="h-4 w-4" />
               <span className="sr-only">Navigation menu</span>
             </Button>
@@ -275,7 +278,7 @@ export const TopNav = () => {
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'} mr-1`} />
+              <StatusDots isLoggedIn={!!user} isWalletConnected={connected} className="mr-1" />
               <span className="text-sm font-medium">Menu</span>
               <ChevronDown className="h-3 w-3" />
             </Button>

@@ -34,6 +34,7 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
+import { StatusDots } from '@/components/StatusDots';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -540,6 +541,7 @@ const Profile = () => {
                   {/* Wallet connection for own profile */}
                   {isOwnProfile && (
                     <div className="flex items-center gap-2">
+                      <StatusDots isLoggedIn={!!user} isWalletConnected={connected} />
                       <Badge variant={profile?.wallet_address ? "secondary" : "outline"} className="text-xs">
                         {profile?.wallet_address ? `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}` : 'No wallet connected'}
                       </Badge>
