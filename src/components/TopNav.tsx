@@ -4,6 +4,7 @@ import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users,
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
@@ -156,14 +157,23 @@ export const TopNav = () => {
                   <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                   <span>My Profile</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-destructive/10"
-                  onClick={user ? handleSignOut : handleSignIn}
-                >
-                  {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-destructive" />}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-destructive/10"
+                        onClick={user ? handleSignOut : handleSignIn}
+                      >
+                        {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-green-500" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{user ? "Logout" : "Login to my profile"}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -300,14 +310,23 @@ export const TopNav = () => {
                 <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span>My Profile</span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-destructive/10"
-                onClick={user ? handleSignOut : handleSignIn}
-              >
-                {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-destructive" />}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-destructive/10"
+                      onClick={user ? handleSignOut : handleSignIn}
+                    >
+                      {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-green-500" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{user ? "Logout" : "Login to my profile"}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
