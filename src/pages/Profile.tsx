@@ -131,19 +131,17 @@ const Profile = () => {
 
   const handleNicknameConfirm = async (nickname: string) => {
     try {
-      if (hasWallet) {
-        await setNickname(nickname);
-        await fetchProfile();
-      } else {
-        // Update auth metadata for users without wallets
-        const { error } = await supabase.auth.updateUser({
-          data: { nickname }
-        });
-        if (error) throw error;
-        
-        // Update local profile state
-        setProfile(prev => prev ? { ...prev, nickname } : null);
+      if (!hasWallet) {
+        toast.error('Please connect your wallet to change your nickname');
+        return false;
       }
+
+      const success = await setNickname(nickname);
+      if (!success) {
+        toast.error('Failed to update nickname');
+        return false;
+      }
+      await fetchProfile();
       toast.success('Nickname updated successfully!');
       return true;
     } catch (error) {
@@ -156,7 +154,11 @@ const Profile = () => {
   const handleBioConfirm = async (bio: string) => {
     try {
       if (hasWallet) {
-        await setBio(bio, 'dummy-tx-signature');
+        const success = await setBio(bio);
+        if (!success) {
+          toast.error('Failed to update bio');
+          return false;
+        }
         await fetchProfile();
       } else {
         // Update auth metadata for users without wallets

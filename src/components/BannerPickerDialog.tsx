@@ -5,8 +5,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { ImageIcon, DollarSign, Coins, Info } from 'lucide-react';
+import { ImageIcon, DollarSign, Coins, Info, Wallet } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface ProfileLike {
   wallet_address: string;
@@ -28,6 +29,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+  const { connected, connecting, connect } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
   useEffect(() => {
@@ -133,6 +135,15 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
               </AlertDescription>
             </Alert>
+
+            {!connected && (
+              <Alert className="bg-destructive/10 border-destructive/30 text-destructive">
+                <Wallet className="h-4 w-4" />
+                <AlertDescription>
+                  Please connect your wallet to set a custom banner.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </div>
 
@@ -151,15 +162,21 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             </label>
           </div>
           
-          <Button
-            className="w-full"
-            disabled={!selectedFile || loading || !paymentConfirmed || pricingLoading}
-            onClick={handleConfirm}
-          >
-            {loading ? 'Updating...' : 
-             pricingLoading ? 'Calculating Price...' :
-             `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
-          </Button>
+          {connected ? (
+            <Button
+              className="w-full"
+              disabled={!selectedFile || loading || !paymentConfirmed || pricingLoading}
+              onClick={handleConfirm}
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
+            </Button>
+          ) : (
+            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => connect()} disabled={connecting}>
+              {connecting ? 'Connecting...' : 'Connect Wallet'}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

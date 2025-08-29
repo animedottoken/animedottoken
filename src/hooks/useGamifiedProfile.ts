@@ -178,7 +178,7 @@ export const useGamifiedProfile = () => {
     }
   }, [connected, publicKey, fetchProfile]);
 
-  const setBio = useCallback(async (bio: string, transactionSignature: string): Promise<boolean> => {
+  const setBio = useCallback(async (bio: string, transactionSignature?: string): Promise<boolean> => {
     if (!connected || !publicKey) {
       toast.error('Please connect your wallet first');
       return false;
