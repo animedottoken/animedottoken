@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -76,10 +76,10 @@ export const TopNav = () => {
     }
   };
 
-  const handleProfileAction = async () => {
+  const handleProfileAction = () => {
     setOpen(false);
     if (user) {
-      await signOut();
+      navigate('/profile');
     } else {
       navigate('/auth?redirect=/profile');
     }
@@ -151,10 +151,17 @@ export const TopNav = () => {
               </DropdownMenuItem>
               
               {/* Profile Row */}
-              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
-                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-                <User className="h-4 w-4" />
-                <span>{user ? 'Disconnect My Profile' : 'Connect My Profile'}</span>
+              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3 justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span>My Profile</span>
+                </div>
+                <div 
+                  className="p-1 hover:bg-accent rounded-sm"
+                  onClick={user ? handleSignOut : handleSignIn}
+                >
+                  {user ? <LogOut className="h-3 w-3 text-red-500" /> : <LogIn className="h-3 w-3 text-red-500" />}
+                </div>
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -286,10 +293,17 @@ export const TopNav = () => {
             </DropdownMenuItem>
             
             {/* Profile Row */}
-            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
-              <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-              <User className="h-4 w-4" />
-              <span>{user ? 'Disconnect My Profile' : 'Connect My Profile'}</span>
+            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3 justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
+                <span>My Profile</span>
+              </div>
+              <div 
+                className="p-1 hover:bg-accent rounded-sm"
+                onClick={user ? handleSignOut : handleSignIn}
+              >
+                {user ? <LogOut className="h-3 w-3 text-red-500" /> : <LogIn className="h-3 w-3 text-red-500" />}
+              </div>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
