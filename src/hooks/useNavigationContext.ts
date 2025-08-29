@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getNavContext } from '@/lib/navContext';
 
@@ -12,6 +12,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
   const [searchParams] = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [items, setItems] = useState<NavigationItem[]>([]);
+  const hasCleanedUrl = useRef(false);
   
   // Try to get from storage first, then fall back to URL params for legacy support
   const navContext = getNavContext(itemType);
@@ -34,14 +35,6 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
           id,
           type: itemType
         }));
-        
-        // Clean legacy URL by navigating without nav param
-        if (navigationItems.length > 0) {
-          const currentPath = window.location.pathname;
-          const viewParam = searchParams.get('view');
-          const cleanUrl = viewParam ? `${currentPath}?view=${viewParam}` : currentPath;
-          navigate(cleanUrl, { replace: true });
-        }
       } catch (error) {
         console.error('Error parsing navigation items:', error);
       }
@@ -50,7 +43,7 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
     setItems(navigationItems);
     const index = navigationItems.findIndex(item => item.id === currentId);
     setCurrentIndex(index);
-  }, [navContext, legacyNavItems, currentId, itemType, navigate, searchParams]);
+  }, [navContext, legacyNavItems, currentId, itemType]);
 
   const navigateToItem = useCallback((direction: 'prev' | 'next') => {
     if (items.length === 0 || currentIndex === -1) return;

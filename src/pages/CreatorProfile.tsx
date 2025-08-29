@@ -188,10 +188,15 @@ export default function CreatorProfile() {
 
   // Fetch creator data
   useEffect(() => {
+    console.log('CreatorProfile: useEffect triggered for wallet:', wallet);
     const fetchCreatorData = async () => {
-      if (!wallet) return;
+      if (!wallet) {
+        console.log('CreatorProfile: No wallet provided');
+        return;
+      }
 
       try {
+        console.log('CreatorProfile: Starting to fetch data for wallet:', wallet);
         setLoading(true);
         
         // Fetch creator profile using edge function
@@ -277,6 +282,7 @@ export default function CreatorProfile() {
         }
 
         if (profile) {
+          console.log('CreatorProfile: Profile found:', profile);
           setCreator({
             wallet_address: profile.wallet_address,
             nickname: profile.nickname,
@@ -290,6 +296,8 @@ export default function CreatorProfile() {
             nft_likes_count: creatorStats?.nft_likes_count || 0,
             created_nfts: nfts?.length || 0,
           });
+        } else {
+          console.log('CreatorProfile: No profile found for wallet:', wallet);
         }
 
         // Process NFTs data with like counts (only for authenticated users)
