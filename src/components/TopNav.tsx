@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -76,10 +76,10 @@ export const TopNav = () => {
     }
   };
 
-  const handleProfileAction = () => {
+  const handleProfileAction = async () => {
     setOpen(false);
     if (user) {
-      navigate('/profile');
+      await signOut();
     } else {
       navigate('/auth?redirect=' + encodeURIComponent(location.pathname));
     }
@@ -154,20 +154,7 @@ export const TopNav = () => {
               <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                 <User className="h-4 w-4" />
-                <span>My Profile</span>
-                {user ? (
-                  <LogOut 
-                    className="h-4 w-4 text-red-500 ml-auto" 
-                    aria-label="Sign out"
-                    onClick={handleSignOut}
-                  />
-                ) : (
-                  <LogIn 
-                    className="h-4 w-4 text-green-500 ml-auto" 
-                    aria-label="Sign in"
-                    onClick={handleSignIn}
-                  />
-                )}
+                <span>{user ? 'Disconnect My Profile' : 'Connect My Profile'}</span>
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -302,20 +289,7 @@ export const TopNav = () => {
             <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
               <User className="h-4 w-4" />
-              <span>My Profile</span>
-              {user ? (
-                <LogOut 
-                  className="h-4 w-4 text-red-500 ml-auto" 
-                  aria-label="Sign out"
-                  onClick={handleSignOut}
-                />
-              ) : (
-                <LogIn 
-                  className="h-4 w-4 text-green-500 ml-auto" 
-                  aria-label="Sign in"
-                  onClick={handleSignIn}
-                />
-              )}
+              <span>{user ? 'Disconnect My Profile' : 'Connect My Profile'}</span>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
