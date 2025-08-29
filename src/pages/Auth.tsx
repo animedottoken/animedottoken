@@ -17,8 +17,8 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const rawRedirectTo = searchParams.get('redirect') || '/';
-  const redirectTo = rawRedirectTo.startsWith('/auth') ? '/' : rawRedirectTo;
+  const rawRedirectTo = searchParams.get('redirect') || '/profile';
+  const redirectTo = rawRedirectTo.startsWith('/auth') ? '/profile' : rawRedirectTo;
 
   useEffect(() => {
     const handleAuthCallback = async () => {
