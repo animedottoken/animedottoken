@@ -101,9 +101,9 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "Contact & Support", 
+    title: "Get In Touch", 
     icon: LifeBuoy,
-    hash: "contact-support-section",
+    hash: "get-in-touch",
     type: "section" as const
   }
 ];

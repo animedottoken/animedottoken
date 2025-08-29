@@ -222,10 +222,10 @@ export default function AuthModal({
             <p className="text-xs text-muted-foreground text-center">
               Need help? Visit our{" "}
               <a 
-                href="/#contact-support-section"
+                href="/#get-in-touch"
                 className="text-primary underline hover:no-underline"
               >
-                Contact & Support
+                Get In Touch
               </a>{" "}
               section
             </p>

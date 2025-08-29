@@ -33,6 +33,7 @@ import { NicknameEditDialog } from '@/components/NicknameEditDialog';
 import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
+import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -850,6 +851,24 @@ const Profile = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Stay Updated Section */}
+      {isOwnProfile && (
+        <section className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">Stay Updated</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center">
+                <div className="w-full max-w-2xl">
+                  <NewsletterSubscribe />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Edit Dialogs */}
       {isOwnProfile && (

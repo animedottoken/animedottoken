@@ -23,8 +23,6 @@ import { LiveStatsCounter } from "@/components/LiveStatsCounter";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { NewsletterSubscribe } from "@/components/NewsletterSubscribe";
-import { SupportHelpCard } from "@/components/SupportHelpCard";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
 import { ChevronDown, Copy, Share } from "lucide-react";
@@ -631,19 +629,22 @@ const Index = () => {
         <NFTPreviewSection />
       </div>
 
-      <section id="contact-support-section" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+      {/* Hidden anchor for backward compatibility */}
+      <div id="contact-support-section" className="invisible absolute -mt-20"></div>
+      
+      <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-bold">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
-          Contact & Support
+          Get In Touch
         </h2>
-        <p className="mt-3 text-muted-foreground">Get help, ask questions, and connect with our community and support team.</p>
+        <p className="mt-3 text-muted-foreground">Connect with ANIME.TOKEN to mint and trade on Solana's first community-owned ecosystem. This is the Ownership Economy. Don't just be a user—be an owner.</p>
         <div className="mt-6 space-y-4">
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <Button asChild variant="glass"><a href="https://x.com/AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiX className="h-4 w-4" aria-hidden="true" />X (Twitter)</a></Button>
-              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
               <Button asChild variant="glass"><a href="https://www.instagram.com/animedottoken/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiInstagram className="h-4 w-4" aria-hidden="true" />Instagram</a></Button>
+              <Button asChild variant="glass"><a href="https://www.tiktok.com/@animedottoken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTiktok className="h-4 w-4" aria-hidden="true" />TikTok</a></Button>
               <Button asChild variant="glass"><a href="https://www.youtube.com/@AnimeDotToken" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiYoutube className="h-4 w-4" aria-hidden="true" />YouTube</a></Button>
               <Button asChild variant="glass"><a href="https://www.facebook.com/anime.token/" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiFacebook className="h-4 w-4" aria-hidden="true" />Facebook</a></Button>
             </div>
@@ -651,26 +652,13 @@ const Index = () => {
           <div aria-labelledby="join-community">
             <h3 id="join-community" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Community</h3>
             <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
               <Button asChild variant="glass"><a href="https://discord.com/invite/HmSJdT5MRX" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiDiscord className="h-4 w-4" aria-hidden="true" />Discord</a></Button>
+              <Button asChild variant="glass"><a href="https://t.me/AnimeDotTokenCommunity" target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2"><SiTelegram className="h-4 w-4" aria-hidden="true" />Telegram</a></Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Newsletter Subscription Section */}
-      <section className="mx-auto mt-16 max-w-5xl px-6">
-        <div className="space-y-8">
-          <div className="flex justify-center">
-            <SupportHelpCard />
-          </div>
-          <div className="flex justify-center">
-            <div className="w-full max-w-2xl">
-              <NewsletterSubscribe />
-            </div>
-          </div>
-        </div>
-      </section>
 
       <footer className="mx-auto mt-16 max-w-5xl border-t pt-6 text-center text-sm text-muted-foreground">
         <p>© 2025 ANIME.TOKEN | All Rights Reserved</p>

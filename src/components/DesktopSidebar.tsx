@@ -38,7 +38,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Create NFTs", icon: Coins, hash: "create-nfts" },
-  { type: "section", title: "Contact & Support", icon: LifeBuoy, hash: "contact-support-section" },
+  { type: "section", title: "Get In Touch", icon: LifeBuoy, hash: "get-in-touch" },
 ];
 
 interface DesktopSidebarProps {
