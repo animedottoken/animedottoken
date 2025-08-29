@@ -1,8 +1,9 @@
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, connect, disconnect } = useSolanaWallet();
+  const { connected, connecting, publicKey, balance, walletName, connect, disconnect } = useSolanaWallet();
 
   if (connected && publicKey) {
     return (
@@ -15,6 +16,11 @@ export const SolanaWalletButton = () => {
             {balance.toFixed(3)} SOL
           </div>
         </div>
+        {walletName && (
+          <Badge variant="secondary" className="text-xs">
+            {walletName}
+          </Badge>
+        )}
         <Button onClick={disconnect} variant="outline" size="sm">
           Disconnect
         </Button>

@@ -22,6 +22,8 @@ interface SolanaWalletContextType {
   publicKey: string | null;
   balance: number;
   network: string;
+  walletName: string | null;
+  walletIcon: string | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   listProviders: () => any[];
@@ -34,6 +36,8 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   publicKey: null,
   balance: 0,
   network: 'devnet',
+  walletName: null,
+  walletIcon: null,
   connect: async () => {},
   disconnect: () => {},
   listProviders: () => [],
@@ -162,6 +166,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     publicKey: publicKey?.toBase58() || null,
     balance,
     network,
+    walletName: wallet?.adapter.name || null,
+    walletIcon: wallet?.adapter.icon || null,
     connect,
     disconnect,
     listProviders,
