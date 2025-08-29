@@ -132,7 +132,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             <Alert className="bg-blue-50 border-blue-200 text-blue-700">
               <Info className="h-4 w-4" />
               <AlertDescription>
-                <strong>Recommended:</strong> 1200x300px (4:1 ratio) for best quality. This banner will be visible on your profile and marketplace listings.
+                <strong>Recommended:</strong> 1200x300px (4:1 ratio) for best quality. This banner will be visible on your profile and marketplace.
               </AlertDescription>
             </Alert>
 
