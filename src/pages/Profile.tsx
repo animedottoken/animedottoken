@@ -551,10 +551,11 @@ const Profile = () => {
                         </Badge>
                       )}
                       <Button
-                        variant={hasWallet ? "destructive" : "default"}
+                        variant="outline"
                         size="sm"
                         onClick={hasWallet ? disconnect : connect}
                         disabled={connecting}
+                        className={hasWallet ? "hover:bg-primary hover:text-primary-foreground" : ""}
                       >
                         {connecting ? 'Connecting...' : hasWallet ? 'Disconnect Wallet' : 'Connect Wallet'}
                       </Button>
