@@ -97,19 +97,32 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 
                 {/* Upload overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <FileUpload
-                    onFileSelect={handleFileSelect}
-                    accept="image/*"
-                    currentFile={selectedFile}
-                    previewUrl={previewUrl}
-                    placeholder=""
-                    className="absolute inset-0 cursor-pointer opacity-0"
-                  />
-                  <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
-                      Click to change banner
+                  {connected ? (
+                    <>
+                      <FileUpload
+                        onFileSelect={handleFileSelect}
+                        accept="image/*"
+                        currentFile={selectedFile}
+                        previewUrl={previewUrl}
+                        placeholder=""
+                        className="absolute inset-0 cursor-pointer opacity-0"
+                      />
+                      <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                          Click to change banner
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div 
+                      className="absolute inset-0 cursor-pointer flex items-center justify-center"
+                      onClick={() => connect()}
+                    >
+                      <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        Connect Wallet to Upload Banner
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Current file indicator */}
