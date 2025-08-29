@@ -61,7 +61,7 @@ const Profile = () => {
     loading: profileLoading
   } = useGamifiedProfile();
 
-  const targetWallet = wallet || (connected ? publicKey : null);
+  const targetWallet = wallet || null;
   const hasWallet = connected && publicKey;
 
   // Data hooks
@@ -246,7 +246,7 @@ const Profile = () => {
       setLoading(true);
       try {
         if (targetWallet) {
-          // Fetch profile from wallet address
+          // Fetch profile for other users by wallet address
           const { data, error } = await supabase.functions.invoke('get-profile', {
             body: { wallet_address: targetWallet }
           });
@@ -259,19 +259,18 @@ const Profile = () => {
           
           setProfile(data || null);
         } else if (user && !wallet) {
-          // No wallet specified, show profile based on auth user metadata
-          const authProfile = {
-            wallet_address: '',
-            nickname: user.user_metadata?.nickname || user.email?.split('@')[0] || 'User',
-            bio: user.user_metadata?.bio || '',
-            trade_count: 0,
-            profile_rank: 'DEFAULT' as const,
-            pfp_unlock_status: false,
-            bio_unlock_status: false,
-            profile_image_url: user.user_metadata?.avatar_url,
-            banner_image_url: user.user_metadata?.banner_url
-          };
-          setProfile(authProfile);
+          // Fetch own profile using auth JWT (no wallet parameter)
+          const { data, error } = await supabase.functions.invoke('get-profile', {
+            body: {}
+          });
+          
+          if (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('Failed to load profile');
+            return;
+          }
+          
+          setProfile(data || null);
         } else {
           setProfile(null);
         }
@@ -419,7 +418,7 @@ const Profile = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted-foreground/20 text-3xl font-bold text-foreground">
-                  {targetWallet ? targetWallet.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || 'US')}
+                  {profile?.wallet_address ? profile.wallet_address.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || 'US')}
                 </div>
               )}
             </div>
@@ -442,7 +441,7 @@ const Profile = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
-                    {profile?.display_name || profile?.nickname || (targetWallet ? `${targetWallet.slice(0, 4)}...${targetWallet.slice(-4)}` : user?.email?.split('@')[0] || 'User')}
+                    {profile?.display_name || profile?.nickname || (user?.email?.split('@')[0] || 'User')}
                   </h1>
                   {isOwnProfile && (
                     <Button

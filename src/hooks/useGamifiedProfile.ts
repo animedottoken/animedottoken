@@ -41,9 +41,7 @@ export function useGamifiedProfile() {
     try {
       setLoading(true);
       const { data, error } = await supabase.functions.invoke('get-profile', {
-        body: { 
-          wallet_address: publicKey?.toString() || null
-        }
+        body: {}
       });
 
       if (error) throw error;
