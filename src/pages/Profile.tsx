@@ -527,8 +527,8 @@ const Profile = () => {
                   {/* Wallet connection for own profile */}
                   {isOwnProfile && (
                     <div className="flex items-center gap-2">
-                      <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
-                        {hasWallet ? `${publicKey?.toString().slice(0, 4)}...${publicKey?.toString().slice(-4)}` : 'No wallet connected'}
+                      <Badge variant={profile?.wallet_address ? "secondary" : "outline"} className="text-xs">
+                        {profile?.wallet_address ? `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}` : 'No wallet connected'}
                       </Badge>
                       <Button
                         variant="outline"
@@ -551,7 +551,7 @@ const Profile = () => {
                   </p>
                 ) : isOwnProfile ? (
                   <p className="text-muted-foreground/60 text-sm italic flex-1">
-                    Add a bio to tell others about yourself
+                    Add a bio to tell others about yourself. This will also be visible on the ANIME.TOKEN marketplace.
                   </p>
                 ) : null}
                 {isOwnProfile && (
