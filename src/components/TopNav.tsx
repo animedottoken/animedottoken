@@ -156,12 +156,14 @@ export const TopNav = () => {
                   <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                   <span>My Profile</span>
                 </div>
-                <div 
-                  className="p-1 hover:bg-accent rounded-sm"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-destructive/10"
                   onClick={user ? handleSignOut : handleSignIn}
                 >
-                  {user ? <LogOut className="h-3 w-3 text-red-500" /> : <LogIn className="h-3 w-3 text-red-500" />}
-                </div>
+                  {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-destructive" />}
+                </Button>
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -298,12 +300,14 @@ export const TopNav = () => {
                 <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span>My Profile</span>
               </div>
-              <div 
-                className="p-1 hover:bg-accent rounded-sm"
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-destructive/10"
                 onClick={user ? handleSignOut : handleSignIn}
               >
-                {user ? <LogOut className="h-3 w-3 text-red-500" /> : <LogIn className="h-3 w-3 text-red-500" />}
-              </div>
+                {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-destructive" />}
+              </Button>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
