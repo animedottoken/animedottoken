@@ -850,6 +850,10 @@ export type Database = {
           tx_signature: string
         }[]
       }
+      get_collection_creator_wallet: {
+        Args: { collection_id: string }
+        Returns: string
+      }
       get_collection_details: {
         Args: { collection_id: string }
         Returns: {

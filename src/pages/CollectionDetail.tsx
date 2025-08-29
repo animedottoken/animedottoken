@@ -131,28 +131,28 @@ export default function CollectionDetail() {
   // Navigation context for moving between collections
   const navigation = useNavigationContext(collectionId!, 'collection');
 
-  // Fetch real creator wallet address for profile linking
+  // Fetch real creator wallet address for profile linking (unmasked)
   useEffect(() => {
     const fetchCreatorWallet = async () => {
       if (!collectionId) return;
-      
       try {
-        const { data, error } = await supabase
-          .rpc('get_collections_public_masked');
-
+        const { data, error } = await supabase.rpc('get_collection_creator_wallet', {
+          collection_id: collectionId,
+        });
         if (!error && data) {
-          const col = (data || []).find((c: any) => c.id === collectionId);
-          if (col?.creator_address_masked) {
-            setCreatorWallet(col.creator_address_masked);
-          }
+          setCreatorWallet(data as string);
+          return;
+        }
+        // Fallback to owned (unmasked) collection if available
+        if (ownedCollection?.creator_address) {
+          setCreatorWallet(ownedCollection.creator_address);
         }
       } catch (err) {
         console.error('Error fetching creator wallet:', err);
       }
     };
-
     fetchCreatorWallet();
-  }, [collectionId]);
+  }, [collectionId, ownedCollection?.creator_address]);
 
   // Auto-scroll to editor when ?edit=1 is present (no blocking/error messaging)
   useEffect(() => {
