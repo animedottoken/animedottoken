@@ -34,7 +34,6 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
-import AuthModal from '@/components/AuthModal';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -51,7 +50,6 @@ const Profile = () => {
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showPfpPicker, setShowPfpPicker] = useState(false);
   const [showBannerPicker, setShowBannerPicker] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   
   // Use gamified profile hook for editing functionality
   const { 
@@ -378,38 +376,7 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <>
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-3xl mx-auto">
-            <CardContent className="py-10 text-center">
-              <div className="text-6xl mb-4">🔐</div>
-              <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
-              <p className="text-muted-foreground mb-6">
-                Please sign in to view and customize your profile.
-              </p>
-              <Button onClick={() => setShowAuthModal(true)} size="lg">
-                Sign In
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <AuthModal 
-          open={showAuthModal} 
-          onOpenChange={setShowAuthModal}
-          onSuccess={() => {
-            setShowAuthModal(false);
-            // Profile will re-render when user is authenticated
-          }}
-        />
-      </>
-    );
-  }
-
-  // Always show profile for authenticated users
-
+  // Profile is now always authenticated due to RequireAuth wrapper
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Profile Header */}

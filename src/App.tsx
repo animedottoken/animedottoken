@@ -12,6 +12,7 @@ import { BackToTop } from "@/components/BackToTop";
 import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
 import { SolanaWalletProvider } from "@/contexts/MockSolanaWalletContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { RequireAuth } from "@/components/RequireAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -66,7 +67,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />
@@ -101,7 +102,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />
