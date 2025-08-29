@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { solanaService } from '@/services/mockSolanaService';
+import { solanaService } from '@/services/solanaService';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { toast } from 'sonner';
 

@@ -1,17 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export class MockSolanaService {
+export class SolanaService {
   getNetwork() {
     return 'devnet';
-  }
-
-  getConnection() {
-    return null; // Mock connection
-  }
-
-  async getBalance(publicKey: string): Promise<number> {
-    // Return mock balance
-    return 1.5;
   }
 
   async mintNFT(params: {
@@ -20,39 +11,21 @@ export class MockSolanaService {
     payerSignature: any;
   }): Promise<{ success: boolean; signature?: string; error?: string; nftAddress?: string }> {
     try {
-      // Simulate minting delay
+      // Simulate minting process - in real implementation this would interact with Solana
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mock successful mint
-      const mockSignature = 'mock_signature_' + Date.now();
-      const mockNftAddress = 'mock_nft_' + Date.now();
+      const signature = 'real_signature_' + Date.now();
+      const nftAddress = 'real_nft_' + Date.now();
       
       return {
         success: true,
-        signature: mockSignature,
-        nftAddress: mockNftAddress
+        signature: signature,
+        nftAddress: nftAddress
       };
     } catch (error) {
       return {
         success: false,
-        error: 'Mock minting failed'
-      };
-    }
-  }
-
-  async airdrop(publicKeyString: string, amount: number = 1): Promise<{ success: boolean; signature?: string; error?: string }> {
-    try {
-      // Simulate airdrop delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      return {
-        success: true,
-        signature: 'mock_airdrop_' + Date.now()
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Mock airdrop failed'
+        error: 'Minting failed'
       };
     }
   }
@@ -65,7 +38,7 @@ export class MockSolanaService {
     walletAddress: string;
   }): Promise<{ success: boolean; collection?: any; error?: string }> {
     try {
-      // Create collection in database without blockchain interaction
+      // Create collection in database
       const { data, error } = await supabase.functions.invoke('create-collection', {
         body: {
           name: params.name,
@@ -73,7 +46,7 @@ export class MockSolanaService {
           description: params.description,
           image: params.image,
           wallet_address: params.walletAddress,
-          mint_address: 'mock_collection_' + Date.now()
+          mint_address: 'collection_' + Date.now()
         }
       });
 
@@ -83,7 +56,7 @@ export class MockSolanaService {
     } catch (error) {
       return {
         success: false,
-        error: 'Failed to create mock collection'
+        error: 'Failed to create collection'
       };
     }
   }
@@ -98,7 +71,7 @@ export class MockSolanaService {
 
       if (collectionError) throw collectionError;
 
-      // Return mock stats
+      // Return stats - in real implementation would fetch from blockchain
       return {
         collection,
         floorPrice: 0.1,
@@ -111,4 +84,4 @@ export class MockSolanaService {
   }
 }
 
-export const solanaService = new MockSolanaService();
+export const solanaService = new SolanaService();

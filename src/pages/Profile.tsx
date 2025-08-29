@@ -231,19 +231,32 @@ const Profile = () => {
   };
 
   const fetchProfile = async () => {
-    if (!targetWallet) return;
-    
     try {
-      const { data, error } = await supabase.functions.invoke('get-profile', {
-        body: { wallet_address: targetWallet }
-      });
-      
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
+      if (targetWallet) {
+        // Fetch profile for other users by wallet address
+        const { data, error } = await supabase.functions.invoke('get-profile', {
+          body: { wallet_address: targetWallet }
+        });
+        
+        if (error) {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+        
+        setProfile(data || null);
+      } else if (user) {
+        // Fetch own profile using auth JWT (no wallet parameter)
+        const { data, error } = await supabase.functions.invoke('get-profile', {
+          body: {}
+        });
+        
+        if (error) {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+        
+        setProfile(data || null);
       }
-      
-      setProfile(data || null);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
