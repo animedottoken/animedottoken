@@ -194,9 +194,11 @@ export default function CreatorProfile() {
       try {
         setLoading(true);
         
-        // Fetch creator profile using secure RPC function
-        const { data: profiles } = await supabase.rpc('get_profiles_public');
-        const profile = (profiles || []).find((p: any) => p.wallet_address === wallet);
+        // Fetch creator profile using edge function
+        const { data: profileResponse } = await supabase.functions.invoke('get-profile', {
+          body: { wallet_address: wallet }
+        });
+        const profile = profileResponse?.profile;
 
         // Use RPC function for creator stats
         const { data: stats } = await supabase.rpc('get_creators_public_stats');
@@ -277,13 +279,13 @@ export default function CreatorProfile() {
         if (profile) {
           setCreator({
             wallet_address: profile.wallet_address,
-            nickname: profile.display_name,
+            nickname: profile.nickname,
             bio: profile.bio,
             profile_image_url: profile.profile_image_url,
             banner_image_url: profile.banner_image_url,
             trade_count: profile.trade_count || 0,
             profile_rank: profile.profile_rank || 'DEFAULT',
-            verified: profile.verified,
+            verified: profile.verified || false,
             follower_count: creatorStats?.follower_count || 0,
             nft_likes_count: creatorStats?.nft_likes_count || 0,
             created_nfts: nfts?.length || 0,
