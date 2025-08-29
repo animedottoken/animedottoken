@@ -81,7 +81,7 @@ export const TopNav = () => {
     if (user) {
       await signOut();
     } else {
-      navigate('/auth?redirect=' + encodeURIComponent(location.pathname));
+      navigate('/auth?redirect=/profile');
     }
   };
 
@@ -92,7 +92,7 @@ export const TopNav = () => {
 
   const handleSignIn = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate('/auth?redirect=' + encodeURIComponent(location.pathname));
+    navigate('/auth?redirect=/profile');
   };
   const isActive = (item: NavigationItem) => {
     if (item.type === "route") {

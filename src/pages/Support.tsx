@@ -28,7 +28,7 @@ export default function Support() {
               Back
             </Button>
             <div className="text-sm text-muted-foreground">
-              <span className="hover:text-foreground cursor-pointer" onClick={() => navigate('/auth')}>Sign In</span>
+              <span className="hover:text-foreground cursor-pointer" onClick={() => navigate('/auth?redirect=/profile')}>Sign In</span>
               <span className="mx-2">/</span>
               <span>Contact & Support</span>
             </div>
