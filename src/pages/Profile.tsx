@@ -37,7 +37,7 @@ import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 
 const Profile = () => {
   const { wallet } = useParams();
-  const { publicKey, connected } = useSolanaWallet();
+  const { publicKey, connected, connect, disconnect, connecting } = useSolanaWallet();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
@@ -487,34 +487,42 @@ const Profile = () => {
                 </div>
               </div>
 
-               {/* Wallet and Rank */}
-               <div className="flex items-center gap-4 flex-wrap">
-                 {/* Wallet with copy */}
-                 {targetWallet && (
-                   <div className="flex items-center gap-2">
-                     <Badge variant="secondary" className="text-xs">
-                       {targetWallet.slice(0, 4)}...{targetWallet.slice(-4)}
-                     </Badge>
-                     <Button
-                       variant="ghost"
-                       size="icon"
-                       className="h-5 w-5 p-0"
-                       onClick={() => copyToClipboard(targetWallet)}
-                       aria-label="Copy wallet address"
-                     >
-                       <Copy className="h-3 w-3" />
-                     </Button>
-                   </div>
-                 )}
-                 
-                 {!hasWallet && (
-                   <div className="flex items-center gap-2">
-                     <Badge variant="outline" className="text-xs">
-                       No wallet connected
-                     </Badge>
-                     <SolanaWalletButton />
-                   </div>
-                 )}
+                {/* Wallet and Rank */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  {/* Wallet with copy (for other users) */}
+                  {targetWallet && !isOwnProfile && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {targetWallet.slice(0, 4)}...{targetWallet.slice(-4)}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 p-0"
+                        onClick={() => copyToClipboard(targetWallet)}
+                        aria-label="Copy wallet address"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Wallet connection for own profile */}
+                  {isOwnProfile && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
+                        {hasWallet ? `${publicKey?.toString().slice(0, 4)}...${publicKey?.toString().slice(-4)}` : 'No wallet connected'}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={hasWallet ? disconnect : connect}
+                        disabled={connecting}
+                      >
+                        {connecting ? 'Connecting...' : hasWallet ? 'Disconnect Wallet' : 'Connect Wallet'}
+                      </Button>
+                    </div>
+                  )}
 
               </div>
 
