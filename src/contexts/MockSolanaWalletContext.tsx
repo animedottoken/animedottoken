@@ -51,7 +51,8 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       // Mock connection
       setTimeout(() => {
         setConnected(true);
-        setPublicKey('MockWallet123...456');
+        // Use a valid-looking Solana address (base58, no masking) for dev
+        setPublicKey('9xQeWvG816bUx9EPK9f5sG3wFyaD1VhXhHn3QpD5sGhR');
         setBalance(1.5);
         setConnecting(false);
         toast.success('Mock wallet connected successfully!');
