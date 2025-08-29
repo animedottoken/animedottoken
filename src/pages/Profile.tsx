@@ -548,58 +548,61 @@ const Profile = () => {
                    </div>
                  )}
 
-                {/* Rank Badge with Micro Progress */}
-                <div className="flex items-center gap-2">
-                  <div className="space-y-1">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge variant="secondary" className="flex items-center gap-1">
-                            <Star className="h-3 w-3 text-yellow-500" />
-                            {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
-                              ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
-                              : 'Starter'}
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Learn about ranks</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    {/* Micro Progress Line */}
-                    {profile && (() => {
-                      const { progress } = getRankProgress(profile.trade_count || 0);
-                      const rankColors = {
-                        'DEFAULT': 'bg-primary',
-                        'BRONZE': 'bg-amber-600', 
-                        'SILVER': 'bg-slate-400',
-                        'GOLD': 'bg-yellow-500',
-                        'DIAMOND': 'bg-cyan-400'
-                      };
-                      const currentRank = profile.profile_rank || 'DEFAULT';
-                      const colorClass = rankColors[currentRank as keyof typeof rankColors] || 'bg-primary';
-                      
-                      return (
-                        <div className="w-16 h-0.5 bg-muted/40 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${colorClass} transition-all duration-300`}
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      );
-                    })()}
-                  </div>
-                  
+              </div>
+
+              {/* Bio */}
+              <div className="flex items-start gap-2">
+                {profile?.bio ? (
+                  <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem] flex-1" data-testid="profile-bio">
+                    {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
+                  </p>
+                ) : isOwnProfile ? (
+                  <p className="text-muted-foreground/60 text-sm italic flex-1">
+                    Add a bio to tell others about yourself
+                  </p>
+                ) : null}
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowBioEdit(true)}
+                    className="h-6 w-6 p-0 flex-shrink-0"
+                    aria-label="Edit bio"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+
+               {/* Compact Stats Row with Icons */}
+              <div className="flex flex-wrap items-center gap-4 text-xs">
+                {/* Rank Badge */}
+                <div className="flex items-center gap-1">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                          <Star className="h-3 w-3 text-yellow-500" />
+                          {profile?.profile_rank && profile.profile_rank !== 'DEFAULT' 
+                            ? profile.profile_rank.charAt(0) + profile.profile_rank.slice(1).toLowerCase()
+                            : 'Starter'}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Learn about ranks</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <Dialog open={showRankInfo} onOpenChange={setShowRankInfo}>
                     <DialogTrigger asChild>
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-6 w-6 p-0"
+                        className="h-5 w-5 p-0"
                         aria-label="About ranks"
                         data-testid="rank-info-button"
                       >
-                        <Info className="h-3.5 w-3.5" />
+                        <Info className="h-3 w-3" />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
@@ -671,34 +674,6 @@ const Profile = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-              </div>
-
-              {/* Bio */}
-              <div className="flex items-start gap-2">
-                {profile?.bio ? (
-                  <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem] flex-1" data-testid="profile-bio">
-                    {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
-                  </p>
-                ) : isOwnProfile ? (
-                  <p className="text-muted-foreground/60 text-sm italic flex-1">
-                    Add a bio to tell others about yourself
-                  </p>
-                ) : null}
-                {isOwnProfile && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowBioEdit(true)}
-                    className="h-6 w-6 p-0 flex-shrink-0"
-                    aria-label="Edit bio"
-                  >
-                    <Edit2 className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
-
-              {/* Compact Stats Row with Icons */}
-              <div className="flex flex-wrap items-center gap-4 text-xs">
                 <div className="flex items-center gap-1">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="font-medium">{getCreatorFollowerCount(targetWallet || '')}</span>
