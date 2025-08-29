@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogIn, LogOut } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -145,30 +145,21 @@ export const TopNav = () => {
                 <span>Marketplace</span>
               </DropdownMenuItem>
               
-              {/* Unified Profile/Auth Row */}
-              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer py-3 px-3">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>My Profile</span>
-                  <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-                </div>
-                {user ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    <LogOut className="h-3 w-3 mr-1" />
-                    Sign out
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <LogIn className="h-3 w-3" />
-                    Sign in
-                  </div>
-                )}
+              {/* Profile Row */}
+              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
+                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
+                <User className="h-4 w-4" />
+                <span>My Profile</span>
+                <span className="text-xs text-muted-foreground ml-auto">{user ? 'in' : 'out'}</span>
               </DropdownMenuItem>
+              
+              {/* Sign out option when logged in */}
+              {user && (
+                <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer py-3 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground">
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              )}
               
               <DropdownMenuSeparator />
               
@@ -298,30 +289,21 @@ export const TopNav = () => {
               <span>Marketplace</span>
             </DropdownMenuItem>
             
-            {/* Unified Profile/Auth Row */}
-            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center justify-between cursor-pointer py-3 px-3">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>My Profile</span>
-                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-              </div>
-              {user ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="h-6 px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                >
-                  <LogOut className="h-3 w-3 mr-1" />
-                  Sign out
-                </Button>
-              ) : (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <LogIn className="h-3 w-3" />
-                  Sign in
-                </div>
-              )}
+            {/* Profile Row */}
+            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3">
+              <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
+              <User className="h-4 w-4" />
+              <span>My Profile</span>
+              <span className="text-xs text-muted-foreground ml-auto">{user ? 'in' : 'out'}</span>
             </DropdownMenuItem>
+            
+            {/* Sign out option when logged in */}
+            {user && (
+              <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer py-3 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground">
+                <LogOut className="h-4 w-4" />
+                <span>Sign out</span>
+              </DropdownMenuItem>
+            )}
 
             <DropdownMenuSeparator />
 
