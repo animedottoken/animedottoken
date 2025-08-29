@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { ImageIcon, DollarSign, Coins, Info, Wallet } from 'lucide-react';
+import { ImageIcon, DollarSign, Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
@@ -157,14 +157,6 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
               </AlertDescription>
             </Alert>
 
-            {!connected && (
-              <Alert className="bg-destructive/10 border-destructive/30 text-destructive">
-                <Wallet className="h-4 w-4" />
-                <AlertDescription>
-                  Please connect your wallet to set a custom banner.
-                </AlertDescription>
-              </Alert>
-            )}
           </div>
         </div>
 
