@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -205,7 +206,7 @@ export default function AuthModal({
                 <DialogTrigger asChild>
                   <button 
                     type="button" 
-                    className="inline-flex items-center justify-center rounded-full w-4 h-4 bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 hover:text-violet-300 transition-colors"
+                    className="inline-flex items-center justify-center rounded-full w-4 h-4 bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
                     aria-label="Email delivery information"
                   >
                     <Info className="w-3 h-3" />
@@ -221,12 +222,13 @@ export default function AuthModal({
           <div className="mt-4">
             <p className="text-xs text-muted-foreground text-center">
               Need help? Visit our{" "}
-              <a 
-                href="/#get-in-touch"
+              <Link 
+                to="/support"
+                state={{ from: '/auth' }}
                 className="text-primary underline hover:no-underline"
               >
-                Get In Touch
-              </a>{" "}
+                Contact & Support
+              </Link>{" "}
               section
             </p>
           </div>

@@ -1,10 +1,16 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mail, MessageCircle, FileText, HelpCircle } from 'lucide-react';
 
 export default function Support() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromAuth = (location.state as any)?.from === '/auth' || new URLSearchParams(location.search).get('from') === 'auth';
+  const goBack = () => {
+    if (fromAuth) navigate('/auth');
+    else navigate(-1);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
@@ -15,7 +21,7 @@ export default function Support() {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate(-1)}
+              onClick={goBack}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -160,7 +166,7 @@ export default function Support() {
 
         {/* Bottom Navigation */}
         <div className="flex justify-center mt-8">
-          <Button variant="outline" onClick={() => navigate(-1)}>
+          <Button variant="outline" onClick={goBack}>
             ← Go Back
           </Button>
         </div>
