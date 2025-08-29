@@ -313,7 +313,7 @@ export default function Auth() {
             <p className="text-xs text-muted-foreground text-center">
               Need help? Visit our{" "}
             <a 
-              href="/#contact-support-section"
+              href="/support"
               className="text-primary underline hover:no-underline"
             >
                 Contact & Support
