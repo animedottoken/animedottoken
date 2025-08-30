@@ -92,14 +92,17 @@ serve(async (req) => {
 
     // Verify signature
     try {
-      // Import bs58 inside the function
-      const bs58 = await import("https://esm.sh/bs58@5.0.0");
+      // Import both bs58 and tweetnacl dynamically
+      const [bs58Module, naclModule] = await Promise.all([
+        import("https://esm.sh/bs58@5.0.0"),
+        import("https://esm.sh/tweetnacl@1.0.3")
+      ]);
       
       const messageBytes = new TextEncoder().encode(message);
-      const signatureBytes = bs58.default.decode(signature);
-      const publicKeyBytes = bs58.default.decode(wallet_address);
+      const signatureBytes = bs58Module.default.decode(signature);
+      const publicKeyBytes = bs58Module.default.decode(wallet_address);
       
-      const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
+      const isValid = naclModule.default.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
       
       if (!isValid) {
         return new Response(
