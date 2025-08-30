@@ -28,7 +28,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
-  const { connected, openWalletSelector } = useSolanaWallet();
+  const { connected, connect } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
   useEffect(() => {
@@ -120,13 +120,16 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 </>
               ) : (
                 /* Wallet connection overlay when not connected */
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                  <div className="text-center space-y-3">
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
+                  <div className="text-center space-y-3 max-w-xs">
                     <div className="text-white text-sm font-medium">
                       Connect your wallet to upload a banner
                     </div>
+                    <p className="text-white/90 text-xs">
+                      First upload is free. Future changes are a friendly, optional service (~2 USDT) at the live ANIME rate.
+                    </p>
                     <Button 
-                      onClick={openWalletSelector}
+                      onClick={connect}
                       variant="secondary"
                       size="sm"
                     >
@@ -157,7 +160,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
           <Alert className="bg-primary/10 border-primary/30 text-primary">
             <Coins className="h-4 w-4" />
             <AlertDescription>
-              Your first banner upload is free. Future changes are a small, friendly service (~2 USDT) paid in ANIME at the live rate.
+              Live pricing: we calculate the ANIME amount for ~2 USDT using the current rate from DexScreener.
             </AlertDescription>
           </Alert>
         </div>
