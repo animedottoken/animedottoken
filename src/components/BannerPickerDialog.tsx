@@ -92,33 +92,53 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 className="w-full h-full object-cover"
               />
               
-              {/* Upload overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                <FileUpload
-                  onFileSelect={handleFileSelect}
-                  accept="image/*"
-                  currentFile={selectedFile}
-                  previewUrl={previewUrl}
-                  placeholder=""
-                  className="absolute inset-0 cursor-pointer opacity-0"
-                />
-                <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
-                    Click to change banner
+              {connected ? (
+                <>
+                  {/* Upload overlay when connected */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <FileUpload
+                      onFileSelect={handleFileSelect}
+                      accept="image/*"
+                      currentFile={selectedFile}
+                      previewUrl={previewUrl}
+                      placeholder=""
+                      className="absolute inset-0 cursor-pointer opacity-0"
+                    />
+                    <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                        Click to change banner
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Current file indicator */}
-              {selectedFile && (
-                <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                  New image selected
+                  {/* Current file indicator */}
+                  {selectedFile && (
+                    <div className="absolute top-2 right-2 bg-success text-success-foreground px-2 py-1 rounded text-xs font-medium">
+                      New image selected
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* Wallet connection overlay when not connected */
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+                  <div className="text-center space-y-3">
+                    <div className="text-white text-sm font-medium">
+                      Connect your wallet to upload a banner
+                    </div>
+                    <Button 
+                      onClick={openWalletSelector}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Connect Wallet
+                    </Button>
+                  </div>
                 </div>
               )}
             </AspectRatio>
           
             {/* File info */}
-            {selectedFile && (
+            {selectedFile && connected && (
               <div className="mt-2 text-sm text-muted-foreground">
                 Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
               </div>

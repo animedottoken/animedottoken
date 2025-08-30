@@ -181,4 +181,13 @@ All colors MUST be HSL. */
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  /* Solana wallet modal z-index fix */
+  .wallet-adapter-modal-wrapper {
+    z-index: 9999 !important;
+  }
+  
+  .wallet-adapter-modal {
+    z-index: 10000 !important;
+  }
 }
