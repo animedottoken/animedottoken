@@ -76,7 +76,23 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         }
       }
     }}>
-      <DialogContent className="sm:max-w-[720px] p-0 overflow-hidden">
+      <DialogContent 
+        className="sm:max-w-[720px] p-0 overflow-hidden"
+        onPointerDownOutside={(e) => {
+          // Prevent closing when clicking outside if wallet selector might be open
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          // Prevent closing on outside interactions
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          // Allow escape to close, but only when not loading
+          if (loading) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader className="p-6 pb-3">
           <DialogTitle>Update Your Profile Banner</DialogTitle>
         </DialogHeader>
@@ -130,8 +146,9 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                     </p>
                     <Button 
                       onClick={connect}
-                      variant="secondary"
+                      variant="default"
                       size="sm"
+                      className="bg-violet-600 hover:bg-violet-700 text-white border-violet-600"
                     >
                       Connect Wallet
                     </Button>
