@@ -36,6 +36,7 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 import { StatusDots } from '@/components/StatusDots';
 import { IdentityWalletSection } from '@/components/IdentityWalletSection';
+import { MultiWalletSection } from '@/components/MultiWalletSection';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -855,7 +856,7 @@ const Profile = () => {
         {isOwnProfile && (
           <TabsContent value="settings" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <IdentityWalletSection />
+              <MultiWalletSection />
               
               <Card>
                 <CardHeader>

@@ -28,6 +28,7 @@ interface SolanaWalletContextType {
   connectPaymentWallet: () => Promise<void>;
   openWalletSelector: () => void;
   linkIdentityWallet: (walletAddress: string) => Promise<boolean>;
+  signMessage: (message: string) => Promise<string>;
   disconnect: () => void;
   listProviders: () => any[];
   connectWith: (providerName: string) => Promise<void>;
@@ -45,6 +46,7 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   connectPaymentWallet: async () => {},
   openWalletSelector: () => {},
   linkIdentityWallet: async () => false,
+  signMessage: async () => '',
   disconnect: () => {},
   listProviders: () => [],
   connectWith: async () => {},
@@ -59,7 +61,7 @@ export const useSolanaWallet = () => {
 };
 
 const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets, select, wallet } = useWallet();
+  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets, select, wallet, signMessage } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
   const { user } = useAuth();
@@ -211,6 +213,26 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [wallets, select, walletConnect, setVisible]);
 
+  const handleSignMessage = useCallback(async (message: string): Promise<string> => {
+    if (!publicKey || !signMessage) {
+      throw new Error('Wallet not connected or signing not supported');
+    }
+
+    try {
+      const encodedMessage = new TextEncoder().encode(message);
+      const signature = await signMessage(encodedMessage);
+      
+      // Convert signature to base58 string (required by our backend)
+      // We need to use bs58 to encode the signature bytes
+      const bs58 = await import('bs58');
+      const base58Signature = bs58.default.encode(signature);
+      return base58Signature;
+    } catch (error) {
+      console.error('Message signing error:', error);
+      throw new Error('Failed to sign message');
+    }
+  }, [publicKey, signMessage]);
+
   const value = {
     connected,
     connecting,
@@ -223,6 +245,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     connectPaymentWallet,
     openWalletSelector,
     linkIdentityWallet,
+    signMessage: handleSignMessage,
     disconnect,
     listProviders,
     connectWith,

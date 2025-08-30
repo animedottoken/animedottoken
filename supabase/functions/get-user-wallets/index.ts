@@ -1,0 +1,101 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // Initialize Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: req.headers.get('Authorization')! },
+        },
+      }
+    );
+
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.error('Authentication error:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: corsHeaders }
+      );
+    }
+
+    if (req.method !== 'GET') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: corsHeaders }
+      );
+    }
+
+    console.log('get-user-wallets request:', { user_id: user.id });
+
+    // Get all user wallets using the database function
+    const { data: wallets, error: walletsError } = await supabaseClient
+      .rpc('get_user_wallets', { p_user_id: user.id });
+
+    if (walletsError) {
+      console.error('Database query error:', walletsError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch wallets' }),
+        { status: 500, headers: corsHeaders }
+      );
+    }
+
+    // Also get wallet counts
+    const { data: walletCounts, error: countsError } = await supabaseClient
+      .from('user_wallets')
+      .select('wallet_type')
+      .eq('user_id', user.id)
+      .eq('is_verified', true);
+
+    if (countsError) {
+      console.error('Wallet counts error:', countsError);
+    }
+
+    const primaryCount = walletCounts?.filter(w => w.wallet_type === 'primary').length || 0;
+    const secondaryCount = walletCounts?.filter(w => w.wallet_type === 'secondary').length || 0;
+
+    console.log('get-user-wallets success:', { 
+      user_id: user.id,
+      total_wallets: wallets?.length || 0,
+      primary_wallets: primaryCount,
+      secondary_wallets: secondaryCount
+    });
+
+    return new Response(
+      JSON.stringify({ 
+        success: true,
+        wallets: wallets || [],
+        summary: {
+          total: wallets?.length || 0,
+          primary: primaryCount,
+          secondary: secondaryCount,
+          remaining_secondary_slots: Math.max(0, 10 - secondaryCount)
+        }
+      }),
+      { status: 200, headers: corsHeaders }
+    );
+
+  } catch (error) {
+    console.error('get-user-wallets error:', error);
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { status: 500, headers: corsHeaders }
+    );
+  }
+});
