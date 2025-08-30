@@ -54,10 +54,13 @@ export function useUserWallets() {
         throw new Error(`Failed to invoke function: ${fetchError.message}`);
       }
 
+      console.log('Raw response data:', data);
+      
       if (data?.success) {
         setWallets(data.wallets || []);
         setSummary(data.summary || { total: 0, primary: 0, secondary: 0, remaining_secondary_slots: 10 });
       } else {
+        console.error('Function returned error:', data);
         throw new Error(data?.error || 'Failed to fetch wallets');
       }
     } catch (err) {

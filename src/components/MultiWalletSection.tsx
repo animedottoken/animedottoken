@@ -153,20 +153,30 @@ export const MultiWalletSection = () => {
 
           {/* No Primary Wallet Warning */}
           {!primaryWallet && (
-            <Alert className="border-orange-200 bg-orange-50 text-orange-700">
+            <Alert className="border-warning/20 bg-warning/10">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
-                  <div className="mt-2">
+                <div className="mt-3 space-y-2">
+                  <Button
+                    onClick={() => setLinkWalletOpen(true)}
+                    variant="default" 
+                    size="sm"
+                    className="w-full sm:w-auto"
+                  >
+                    Link Primary Wallet Now
+                  </Button>
+                  {summary.total > 0 && (
                     <Button
                       variant="outline" 
                       size="sm"
                       onClick={() => setShowCleanupDialog(true)}
-                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      className="w-full sm:w-auto ml-0 sm:ml-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                     >
-                      Reset Primary Wallets
+                      Clear All Wallets
                     </Button>
-                  </div>
+                  )}
+                </div>
               </AlertDescription>
             </Alert>
           )}
