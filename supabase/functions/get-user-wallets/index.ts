@@ -13,14 +13,15 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client
+    // Initialize Supabase client with proper auth context
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
       }
     );
 
@@ -49,9 +50,14 @@ serve(async (req) => {
 
     console.log('get-user-wallets request:', { user_id: user.id });
 
-    // Get all user wallets using the database function
+    // Get all user wallets directly from table with proper RLS context
     const { data: wallets, error: walletsError } = await supabaseClient
-      .rpc('get_user_wallets', { p_user_id: user.id });
+      .from('user_wallets')
+      .select('id, wallet_address, wallet_type, is_verified, linked_at')
+      .eq('user_id', user.id)
+      .eq('is_verified', true)
+      .order('wallet_type') // primary first, then secondary
+      .order('linked_at');
 
     if (walletsError) {
       console.error('Database query error:', walletsError);

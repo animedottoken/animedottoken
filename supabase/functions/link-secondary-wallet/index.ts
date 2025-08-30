@@ -21,24 +21,30 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client
+    // Initialize Supabase client with service role for database operations
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
       }
     );
 
-    // Get the authenticated user (extract JWT from header explicitly)
+    // Get the authenticated user (using separate client for auth verification)
+    const authClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
+
     const authHeader = req.headers.get('Authorization') || '';
     const jwt = authHeader.startsWith('Bearer ')
       ? authHeader.substring('Bearer '.length)
       : authHeader;
 
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    const { data: { user }, error: authError } = await authClient.auth.getUser(jwt);
     
     if (authError || !user) {
       console.error('Authentication error:', authError);
