@@ -139,7 +139,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                   <div className="text-center space-y-3 max-w-xs">
                     <div className="text-white text-sm font-medium">
-                      Connect your wallet to upload a banner
+                      Please connect your wallet to upload your banner
                     </div>
                     <Button 
                       onClick={connect}
