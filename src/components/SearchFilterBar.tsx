@@ -96,7 +96,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     localFilters.source !== 'all' || 
     localFilters.sortBy !== 'newest' || 
     localFilters.includeExplicit || 
-    localFilters.category || 
+    (localFilters.category && localFilters.category !== 'all') || 
     localFilters.minPrice || 
     localFilters.maxPrice || 
     localFilters.minRoyalty || 
@@ -253,20 +253,6 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           />
           <Label htmlFor="explicit" className="text-sm">Include Explicit</Label>
         </div>
-
-        {hasActiveFilters && (
-          <div className="flex items-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearFilters}
-              className="text-xs"
-            >
-              <X className="h-3 w-3 mr-1" />
-              Clear All
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Price & Royalty Filters - Only show if not collapsible or expanded */}
@@ -281,6 +267,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="0.0"
                   value={localFilters.minPrice}
                   onChange={(e) => updateFilter('minPrice', e.target.value)}
+                  className="w-28"
                 />
               </div>
               <div className="space-y-2">
@@ -290,6 +277,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="1000.0"
                   value={localFilters.maxPrice}
                   onChange={(e) => updateFilter('maxPrice', e.target.value)}
+                  className="w-28"
                 />
               </div>
             </>
@@ -304,6 +292,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="0"
                   value={localFilters.minRoyalty}
                   onChange={(e) => updateFilter('minRoyalty', e.target.value)}
+                  className="w-20"
                 />
               </div>
               <div className="space-y-2">
@@ -313,6 +302,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="50"
                   value={localFilters.maxRoyalty}
                   onChange={(e) => updateFilter('maxRoyalty', e.target.value)}
+                  className="w-20"
                 />
               </div>
             </>
@@ -320,10 +310,24 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       )}
 
-      {/* Active Filters Display - Always mounted to prevent height jumps */}
-      <div className="flex flex-wrap gap-2 min-h-[24px]">
-        {hasActiveFilters && (
-          <>
+      {/* Clear All Button - Bottom Right */}
+      {hasActiveFilters && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearFilters}
+            className="text-xs"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear All
+          </Button>
+        </div>
+      )}
+
+      {/* Active Filters Display - Only show when expanded or has active filters */}
+      {((!collapsible || isExpanded) || hasActiveFilters) && hasActiveFilters && (
+        <div className="flex flex-wrap gap-2">
           {localFilters.searchQuery && (
             <Badge variant="secondary" className="text-xs">
               Search: {localFilters.searchQuery}
@@ -334,7 +338,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
               Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
             </Badge>
           )}
-          {localFilters.category && (
+          {localFilters.category && localFilters.category !== 'all' && (
             <Badge variant="secondary" className="text-xs">
               Category: {localFilters.category}
             </Badge>
@@ -353,10 +357,9 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             <Badge variant="secondary" className="text-xs">
               Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
             </Badge>
-           )}
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
