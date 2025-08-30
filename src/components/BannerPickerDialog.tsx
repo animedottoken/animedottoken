@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
-import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface ProfileLike {
   wallet_address: string;
@@ -27,7 +27,6 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
-  const { connected, connecting, connect } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
   useEffect(() => {
@@ -93,32 +92,19 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 
                 {/* Upload overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  {connected ? (
-                    <>
-                      <FileUpload
-                        onFileSelect={handleFileSelect}
-                        accept="image/*"
-                        currentFile={selectedFile}
-                        previewUrl={previewUrl}
-                        placeholder=""
-                        className="absolute inset-0 cursor-pointer opacity-0"
-                      />
-                      <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
-                          Click to change banner
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div 
-                      className="absolute inset-0 cursor-pointer flex items-center justify-center"
-                      onClick={() => connect()}
-                    >
-                      <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                        Connect Wallet to Upload Banner
-                      </div>
+                  <FileUpload
+                    onFileSelect={handleFileSelect}
+                    accept="image/*"
+                    currentFile={selectedFile}
+                    previewUrl={previewUrl}
+                    placeholder=""
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  />
+                  <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                      Click to change banner
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Current file indicator */}
@@ -149,7 +135,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                Banner change requires payment in ANIME. You can use any wallet for payment - this won't change your linked identity wallet.
               </AlertDescription>
             </Alert>
 
@@ -157,25 +143,20 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          {connected ? (
-            <Button
-              className="w-full"
-              disabled={!selectedFile || loading || pricingLoading}
-              onClick={handleConfirm}
-            >
-              {loading ? 'Updating...' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME (~$2.00 USDT)`}
-            </Button>
-          ) : (
-            <Button 
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
-              onClick={() => connect()} 
-              disabled={connecting}
-            >
-              {connecting ? 'Connecting...' : selectedFile ? 'Connect Wallet to Continue' : 'Connect Wallet'}
-            </Button>
-          )}
+          <PaymentWalletButton
+            onPaymentComplete={async (txSignature) => {
+              if (selectedFile) {
+                await handleConfirm();
+              }
+            }}
+            disabled={!selectedFile || loading || pricingLoading}
+            amount={animeAmount}
+            currency="ANIME"
+          >
+            {loading ? 'Updating...' : 
+             pricingLoading ? 'Calculating Price...' :
+             `Pay ${animeAmount.toLocaleString()} ANIME & Update Banner`}
+          </PaymentWalletButton>
         </div>
       </DialogContent>
     </Dialog>

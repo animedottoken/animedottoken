@@ -25,6 +25,8 @@ interface SolanaWalletContextType {
   walletName: string | null;
   walletIcon: string | null;
   connect: () => Promise<void>;
+  connectPaymentWallet: () => Promise<void>;
+  linkIdentityWallet: (walletAddress: string) => Promise<boolean>;
   disconnect: () => void;
   listProviders: () => any[];
   connectWith: (providerName: string) => Promise<void>;
@@ -39,6 +41,8 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   walletName: null,
   walletIcon: null,
   connect: async () => {},
+  connectPaymentWallet: async () => {},
+  linkIdentityWallet: async () => false,
   disconnect: () => {},
   listProviders: () => [],
   connectWith: async () => {},
@@ -78,25 +82,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     fetchBalance();
   }, [publicKey, connected, connection]);
 
-  // Update profile with wallet address when wallet connects
-  useEffect(() => {
-    const updateProfile = async () => {
-      if (publicKey && connected && user) {
-        try {
-          await supabase.functions.invoke('upsert-profile', {
-            body: {
-              wallet_address: publicKey.toBase58()
-            }
-          });
-          toast.success('Wallet connected successfully!');
-        } catch (error) {
-          console.error('Error updating profile:', error);
-        }
-      }
-    };
-
-    updateProfile();
-  }, [publicKey, connected, user]);
+  // Note: We no longer auto-link wallets on connect
+  // Wallets are now connected temporarily for payments or explicitly linked for identity
 
   const connect = useCallback(async () => {
     try {
@@ -129,6 +116,64 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       url: wallet.adapter.url
     }));
   }, [wallets]);
+
+  const connectPaymentWallet = useCallback(async () => {
+    try {
+      if (!wallet) {
+        // No wallet selected, open the selection modal
+        setVisible(true);
+        return;
+      }
+      await walletConnect();
+      toast.success('Payment wallet connected');
+    } catch (error) {
+      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        setVisible(true);
+      } else {
+        console.error('Payment wallet connection error:', error);
+        toast.error('Failed to connect payment wallet');
+      }
+    }
+  }, [walletConnect, wallet, setVisible]);
+
+  const linkIdentityWallet = useCallback(async (walletAddress: string): Promise<boolean> => {
+    if (!user) {
+      toast.error("Please log in first");
+      return false;
+    }
+
+    try {
+      const signatureMessage = `Link identity wallet to ANIME.TOKEN account: ${user.email}`;
+      
+      // TODO: In Phase 2, actually request signature from wallet
+      // For demo mode, we'll simulate signature
+      const demoSignature = `demo_signature_${Date.now()}`;
+
+      const { data, error } = await supabase.functions.invoke('link-identity-wallet', {
+        body: {
+          wallet_address: walletAddress,
+          signature_message: signatureMessage,
+          wallet_signature: demoSignature
+        }
+      });
+
+      if (error) {
+        if (error.code === 'WALLET_ALREADY_LINKED') {
+          toast.error(error.message);
+        } else {
+          toast.error('Failed to link identity wallet');
+        }
+        return false;
+      }
+
+      toast.success('Identity wallet linked successfully!');
+      return true;
+    } catch (error) {
+      console.error('Identity wallet linking error:', error);
+      toast.error('Failed to link identity wallet');
+      return false;
+    }
+  }, [user]);
 
   const connectWith = useCallback(async (providerName: string) => {
     try {
@@ -169,6 +214,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     walletName: wallet?.adapter.name || null,
     walletIcon: wallet?.adapter.icon || null,
     connect,
+    connectPaymentWallet,
+    linkIdentityWallet,
     disconnect,
     listProviders,
     connectWith,

@@ -71,12 +71,12 @@ serve(async (req) => {
     // Use service role for upsert
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Check if profile exists
+    // Check if profile exists by user_id only (no wallet auto-linking)
     const { data: existingProfile } = await supabase
       .from("user_profiles")
       .select("*")
-      .or(`user_id.eq.${user.id},wallet_address.eq.${wallet_address}`)
-      .single();
+      .eq("user_id", user.id)
+      .maybeSingle();
 
     let result;
     
@@ -92,14 +92,9 @@ serve(async (req) => {
       if (profile_image_url !== undefined) updateData.profile_image_url = profile_image_url;
       if (banner_image_url !== undefined) updateData.banner_image_url = banner_image_url;
       
-      // Link wallet if provided and not already linked
-      if (wallet_address && !existingProfile.wallet_address) {
+      // Only link wallet_address if explicitly provided via link-identity-wallet function
+      if (wallet_address !== undefined) {
         updateData.wallet_address = wallet_address;
-      }
-
-      // Ensure user_id is set for Web2 identity
-      if (!existingProfile.user_id) {
-        updateData.user_id = user.id;
       }
 
       const { data: updatedProfile, error: updateError } = await supabase

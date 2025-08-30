@@ -74,7 +74,7 @@ export function useGamifiedProfile() {
     }
   };
 
-  const setNickname = async (nickname: string, transactionSignature?: string): Promise<boolean> => {
+  const setNickname = async (nickname: string, paymentTxSignature?: string): Promise<boolean> => {
     if (!user) {
       toast.error("Please log in first");
       return false;
@@ -83,8 +83,7 @@ export function useGamifiedProfile() {
     try {
       const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          nickname: nickname,
-          wallet_address: publicKey?.toString() || null
+          nickname: nickname
         }
       });
 
@@ -143,7 +142,7 @@ export function useGamifiedProfile() {
     }
   };
 
-  const setBio = async (bio: string, transactionSignature?: string): Promise<boolean> => {
+  const setBio = async (bio: string, paymentTxSignature?: string): Promise<boolean> => {
     if (!user) {
       toast.error("Please log in first");
       return false;
@@ -152,8 +151,7 @@ export function useGamifiedProfile() {
     try {
       const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          bio: bio,
-          wallet_address: publicKey?.toString() || null
+          bio: bio
         }
       });
 
@@ -172,7 +170,7 @@ export function useGamifiedProfile() {
     }
   };
 
-  const setBanner = async (bannerFile: File): Promise<boolean> => {
+  const setBanner = async (bannerFile: File, paymentTxSignature?: string): Promise<boolean> => {
     if (!user) {
       toast.error("Please log in first");
       return false;
@@ -198,11 +196,10 @@ export function useGamifiedProfile() {
         .from('profile-banners')
         .getPublicUrl(uploadData.path);
 
-      // Update profile with new banner URL
+      // Update profile with new banner URL (no wallet_address needed)
       const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          banner_image_url: publicUrl,
-          wallet_address: publicKey?.toString() || null
+          banner_image_url: publicUrl
         }
       });
 
@@ -243,7 +240,7 @@ export function useGamifiedProfile() {
   }, []);
 
   // Add setAvatar function for file upload
-  const setAvatar = async (avatarFile: File): Promise<boolean> => {
+  const setAvatar = async (avatarFile: File, paymentTxSignature?: string): Promise<boolean> => {
     if (!user) {
       toast.error("Please log in first");
       return false;
@@ -269,11 +266,10 @@ export function useGamifiedProfile() {
         .from('profile-avatars')
         .getPublicUrl(uploadData.path);
 
-      // Update profile with new avatar URL
+      // Update profile with new avatar URL (no wallet_address needed)
       const { data, error } = await supabase.functions.invoke('upsert-profile', {
         body: { 
-          profile_image_url: publicUrl,
-          wallet_address: publicKey?.toString() || null
+          profile_image_url: publicUrl
         }
       });
 
@@ -329,6 +325,7 @@ export function useGamifiedProfile() {
     profile,
     userNFTs,
     loading,
+    fetchProfile,
     setNickname,
     unlockPFP,
     setPFP,

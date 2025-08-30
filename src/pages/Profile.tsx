@@ -3,11 +3,11 @@ import defaultBanner from '@/assets/default-profile-banner.jpg';
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2 } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -35,6 +35,7 @@ import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 import { StatusDots } from '@/components/StatusDots';
+import { IdentityWalletSection } from '@/components/IdentityWalletSection';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -706,13 +707,18 @@ const Profile = () => {
 
       {/* Profile Content */}
       <Tabs defaultValue="collections" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
           <TabsTrigger value="collections">
             My Collections ({userCollections.length})
           </TabsTrigger>
           <TabsTrigger value="nfts">
             My NFTs ({nfts.length})
           </TabsTrigger>
+          {isOwnProfile && (
+            <TabsTrigger value="settings">
+              Account Settings
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="collections" className="space-y-6">
@@ -847,6 +853,61 @@ const Profile = () => {
             </Card>
           )}
         </TabsContent>
+
+        {isOwnProfile && (
+          <TabsContent value="settings" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <IdentityWalletSection />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Customization</CardTitle>
+                  <CardDescription>
+                    Personalize your profile with custom images and information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowBannerPicker(true)}
+                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
+                    >
+                      <Camera className="h-5 w-5" />
+                      <span className="text-sm">Change Banner</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowPfpPicker(true)}
+                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
+                    >
+                      <User className="h-5 w-5" />
+                      <span className="text-sm">Change Avatar</span>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowNicknameEdit(true)}
+                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
+                    >
+                      <Edit2 className="h-5 w-5" />
+                      <span className="text-sm">Edit Name</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowBioEdit(true)}
+                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
+                    >
+                      <Edit2 className="h-5 w-5" />
+                      <span className="text-sm">Edit Bio</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Stay Updated Section */}
