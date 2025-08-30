@@ -56,12 +56,23 @@ export function useUserWallets() {
 
       console.log('Raw response data:', data);
       
-      if (data?.success) {
-        setWallets(data.wallets || []);
-        setSummary(data.summary || { total: 0, primary: 0, secondary: 0, remaining_secondary_slots: 10 });
+      // Defensive parsing: if data comes back as string, parse it
+      let parsedData = data;
+      if (typeof data === 'string') {
+        try {
+          parsedData = JSON.parse(data);
+        } catch (parseError) {
+          console.error('Failed to parse response data:', parseError);
+          throw new Error('Invalid response format');
+        }
+      }
+      
+      if (parsedData?.success) {
+        setWallets(parsedData.wallets || []);
+        setSummary(parsedData.summary || { total: 0, primary: 0, secondary: 0, remaining_secondary_slots: 10 });
       } else {
-        console.error('Function returned error:', data);
-        throw new Error(data?.error || 'Failed to fetch wallets');
+        console.error('Function returned error:', parsedData);
+        throw new Error(parsedData?.error || 'Failed to fetch wallets');
       }
     } catch (err) {
       console.error('Error fetching user wallets:', err);
@@ -86,13 +97,15 @@ export function useUserWallets() {
       }
 
       const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
-      const { data, error } = await supabase.functions.invoke('link-secondary-wallet', {
-        body: {
-          wallet_address: walletAddress,
-          signature,
-          message,
-          wallet_type: walletType
-        },
+      
+      // Use different functions for primary vs secondary wallets
+      const functionName = walletType === 'primary' ? 'link-identity-wallet' : 'link-secondary-wallet';
+      const body = walletType === 'primary' 
+        ? { wallet_address: walletAddress, signature_message: message, wallet_signature: signature }
+        : { wallet_address: walletAddress, signature, message, wallet_type: walletType };
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
+        body,
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         }

@@ -88,5 +88,8 @@ verify_jwt = false  # Public email confirmation via link
 [functions.newsletter-unsubscribe]
 verify_jwt = false  # Public unsubscribe via link
 
+[functions.get-user-wallets]
+verify_jwt = true  # Requires authenticated user
+
 [functions.cleanup-primary-wallets]
 verify_jwt = true  # Requires authenticated user
