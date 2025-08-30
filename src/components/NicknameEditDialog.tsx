@@ -71,13 +71,33 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
         </DialogHeader>
         
         <div className="space-y-4">
-          <div>
+          <div className="relative">
             <Input
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="Enter your nickname"
               maxLength={20}
+              disabled={!isFirstChange && !connected}
             />
+            
+            {/* Overlay for paid changes when not connected */}
+            {!isFirstChange && !connected && (
+              <div className="absolute inset-0 bg-black/80 rounded-md flex items-center justify-center">
+                <div className="text-center space-y-2 p-4">
+                  <p className="text-white text-sm font-medium">
+                    Connect wallet to change nickname
+                  </p>
+                  <Button
+                    onClick={openWalletSelector}
+                    variant="default"
+                    size="sm"
+                  >
+                    Connect Wallet
+                  </Button>
+                </div>
+              </div>
+            )}
+            
             <p className="text-xs text-muted-foreground mt-1">
               2-20 characters. Letters, numbers, spaces, hyphens, underscores, and periods allowed.
             </p>
