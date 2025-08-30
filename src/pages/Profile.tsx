@@ -720,6 +720,7 @@ const Profile = () => {
             showRoyaltyFilters={true}
             placeholder="Search collections and NFTs..."
             categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
+            collapsible={true}
           />
 
           {collectionsLoading || nftsLoading ? (
@@ -820,27 +821,25 @@ const Profile = () => {
         {isOwnProfile && (
           <TabsContent value="settings" className="space-y-6">
             <MultiWalletSection />
+            
+            {/* Stay Updated Section */}
+            <section>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-center">Stay Updated</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-2xl">
+                      <NewsletterSubscribe />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
           </TabsContent>
         )}
       </Tabs>
-
-      {/* Stay Updated Section */}
-      {isOwnProfile && (
-        <section className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center">Stay Updated</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-center">
-                <div className="w-full max-w-2xl">
-                  <NewsletterSubscribe />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      )}
 
       {/* Edit Dialogs */}
       {isOwnProfile && (

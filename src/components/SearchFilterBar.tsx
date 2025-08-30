@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, X } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 // Simple debounce function
 const debounce = <T extends (...args: any[]) => any>(func: T, delay: number) => {
@@ -41,6 +41,7 @@ interface SearchFilterBarProps {
   showTypeFilter?: boolean;
   placeholder?: string;
   categories?: string[];
+  collapsible?: boolean;
 }
 
 export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
@@ -52,9 +53,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showSourceFilter = true,
   showTypeFilter = false,
   placeholder = "Search NFTs and collections...",
-  categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']
+  categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other'],
+  collapsible = false
 }) => {
   const [localFilters, setLocalFilters] = useState(filters);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Debounced update to parent
   const debouncedUpdate = useCallback(
@@ -103,18 +106,42 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   return (
     <div className="bg-card p-4 rounded-lg border space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          placeholder={placeholder}
-          value={localFilters.searchQuery}
-          onChange={(e) => updateFilter('searchQuery', e.target.value)}
-          className="pl-10"
-        />
-      </div>
+      {collapsible && (
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Search & Filter</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2"
+          >
+            {isExpanded ? (
+              <>
+                Hide <ChevronUp className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Show <ChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+      
+      {/* Search Bar - Show if not collapsible or if expanded */}
+      {(!collapsible || isExpanded) && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder={placeholder}
+            value={localFilters.searchQuery}
+            onChange={(e) => updateFilter('searchQuery', e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      )}
 
-      {/* Primary Filters Row */}
+      {/* Primary Filters Row - Always visible */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         {showTypeFilter && (
           <div className="space-y-2">
@@ -242,8 +269,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         )}
       </div>
 
-      {/* Price & Royalty Filters */}
-      {(showPriceFilters || showRoyaltyFilters) && (
+      {/* Price & Royalty Filters - Only show if not collapsible or expanded */}
+      {(!collapsible || isExpanded) && (showPriceFilters || showRoyaltyFilters) && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {showPriceFilters && (
             <>
