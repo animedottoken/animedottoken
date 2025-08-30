@@ -76,6 +76,12 @@ export function useUserWallets() {
     walletType: 'primary' | 'secondary' = 'secondary'
   ): Promise<boolean> => {
     try {
+      // Prevent attempting to link a second primary wallet
+      if (walletType === 'primary' && (summary?.primary ?? 0) > 0) {
+        toast.error('You already have a primary wallet linked. Unlink it first or add this as a secondary wallet.');
+        return false;
+      }
+
       const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
       const { data, error } = await supabase.functions.invoke('link-secondary-wallet', {
         body: {
@@ -89,14 +95,20 @@ export function useUserWallets() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        const serverMsg = (error as any)?.context?.body?.error || (error as any)?.context?.error || (error as any)?.message || 'Failed to link wallet';
+        toast.error(serverMsg);
+        return false;
+      }
 
       if (data?.success) {
         toast.success(`${walletType === 'primary' ? 'Primary' : 'Secondary'} wallet linked successfully!`);
         await fetchWallets(); // Refresh the list
         return true;
       } else {
-        throw new Error(data?.error || 'Failed to link wallet');
+        const msg = data?.error || 'Failed to link wallet';
+        toast.error(msg);
+        return false;
       }
     } catch (err) {
       console.error('Error linking wallet:', err);
