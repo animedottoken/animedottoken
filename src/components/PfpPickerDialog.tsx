@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileUpload } from '@/components/ui/file-upload';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Checkbox } from '@/components/ui/checkbox';
 import { PaymentWalletButton } from '@/components/PaymentWalletButton';
-import { Image as ImageIcon, DollarSign, Coins, Info } from 'lucide-react';
+import { DollarSign, Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
@@ -106,23 +103,10 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         </DialogHeader>
 
         <div className="px-6 pb-4">
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            <div className="relative">
-              <Avatar className="w-40 h-40 sm:w-44 sm:h-44 border-4 border-border shadow">
-                <AvatarImage src={previewUrl || profile?.profile_image_url || undefined} alt="Preview" />
-                <AvatarFallback className="text-lg">
-                  {profile?.nickname?.slice(0,2).toUpperCase() || profile?.wallet_address?.slice(0,2).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow">
-                <ImageIcon className="w-4 h-4" />
-              </div>
-            </div>
-          
-            <div className="flex-1 space-y-4">
-              {/* Upload Area */}
-              <div>
-                <h3 className="text-sm font-medium mb-2">Select Image</h3>
+          <div className="space-y-4">
+            {/* Upload Area */}
+            <div>
+              <h3 className="text-sm font-medium mb-2">Avatar Preview</h3>
                 <div className="w-40 h-40 sm:w-44 sm:h-44 bg-muted rounded-lg overflow-hidden border relative group">
                   <img 
                     src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
@@ -196,23 +180,22 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                 </AlertDescription>
               </Alert>
 
-              {/* Pricing Alert */}
-              {isFirstChange ? (
-                <Alert className="border-green-200 bg-green-50 text-green-700">
-                  <DollarSign className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    Your first profile picture change is <strong>FREE</strong>
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert className="bg-primary/10 border-primary/30 text-primary">
-                  <Coins className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    Your first profile picture was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
+            {/* Pricing Alert */}
+            {isFirstChange ? (
+              <Alert className="border-green-200 bg-green-50 text-green-700">
+                <DollarSign className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  Your first profile picture change is <strong>FREE</strong>
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert className="bg-primary/10 border-primary/30 text-primary">
+                <Coins className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  Your first profile picture was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </div>
 
