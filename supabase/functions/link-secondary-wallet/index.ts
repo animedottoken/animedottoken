@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import * as base58 from "https://esm.sh/bs58@5.0.0";
+import base58 from "https://esm.sh/bs58@5.0.0";
 import * as nacl from "https://esm.sh/tweetnacl@1.0.3";
 
 const corsHeaders = {
