@@ -111,19 +111,28 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
             </div>
           )}
           
-          <PaymentWalletButton
-            onPaymentComplete={async (txSignature) => {
-              await handleConfirm();
-            }}
-            disabled={!nickname.trim() || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
-            amount={animeAmount}
-            currency="ANIME"
-          >
-            {loading ? 'Updating...' : 
-             isFirstChange ? 'Set Nickname (FREE)' : 
-             pricingLoading ? 'Calculating Price...' :
-             `Pay ${animeAmount.toLocaleString()} ANIME & Set Nickname`}
-          </PaymentWalletButton>
+          {isFirstChange ? (
+            <Button
+              onClick={handleConfirm}
+              disabled={!nickname.trim() || loading}
+              className="w-full"
+            >
+              {loading ? 'Setting...' : 'Set Nickname (FREE)'}
+            </Button>
+          ) : (
+            <PaymentWalletButton
+              onPaymentComplete={async (txSignature) => {
+                await handleConfirm();
+              }}
+              disabled={!nickname.trim() || loading || !paymentConfirmed || pricingLoading}
+              amount={animeAmount}
+              currency="ANIME"
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Pay ${animeAmount.toLocaleString()} ANIME & Set Nickname`}
+            </PaymentWalletButton>
+          )}
         </div>
       </DialogContent>
     </Dialog>
