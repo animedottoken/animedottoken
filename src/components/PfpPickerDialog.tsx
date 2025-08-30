@@ -95,7 +95,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         <div className="px-6 pb-4">
           <div className="flex items-start gap-4">
             <div className="relative">
-              <Avatar className="w-24 h-24 border-4 border-border shadow">
+              <Avatar className="w-40 h-40 sm:w-44 sm:h-44 border-4 border-border shadow">
                 <AvatarImage src={previewUrl || profile?.profile_image_url || undefined} alt="Preview" />
                 <AvatarFallback className="text-lg">
                   {profile?.nickname?.slice(0,2).toUpperCase() || profile?.wallet_address?.slice(0,2).toUpperCase() || 'U'}
@@ -110,7 +110,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
               {/* Upload Area */}
               <div>
                 <h3 className="text-sm font-medium mb-2">Select Image</h3>
-                <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden border relative group">
+                <div className="w-40 h-40 sm:w-44 sm:h-44 bg-muted rounded-lg overflow-hidden border relative group">
                   <img 
                     src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
                     alt="Avatar preview" 
