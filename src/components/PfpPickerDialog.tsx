@@ -117,33 +117,58 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Upload overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                    <FileUpload
-                      onFileSelect={handleFileSelect}
-                      accept="image/*"
-                      currentFile={selectedFile}
-                      previewUrl={previewUrl}
-                      placeholder=""
-                      className="absolute inset-0 cursor-pointer opacity-0"
-                    />
-                    <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-white/90 rounded-lg px-3 py-2 text-xs font-medium text-gray-900">
-                        Click to change
+                  {/* Upload overlay when connected OR first change */}
+                  {(connected || isFirstChange) ? (
+                    <>
+                      {/* Upload overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <FileUpload
+                          onFileSelect={handleFileSelect}
+                          accept="image/*"
+                          currentFile={selectedFile}
+                          previewUrl={previewUrl}
+                          placeholder=""
+                          className="absolute inset-0 cursor-pointer opacity-0"
+                        />
+                        <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="bg-white/90 rounded-lg px-3 py-2 text-xs font-medium text-gray-900">
+                            Click to change
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Current file indicator */}
-                  {selectedFile && (
-                    <div className="absolute top-1 right-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                      New
+                      {/* Current file indicator */}
+                      {selectedFile && (
+                        <div className="absolute top-1 right-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                          New
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    /* Wallet connection overlay when not connected AND not first change */
+                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2">
+                      <div className="text-center space-y-2 max-w-[160px]">
+                        <p className="text-white text-xs font-medium">
+                          Avatar updates require payment in ANIME (~2 USDT) at live rates.
+                        </p>
+                        <div className="text-white/90 text-xs">
+                          Please connect your wallet to upload
+                        </div>
+                        <Button
+                          onClick={openWalletSelector}
+                          variant="default"
+                          size="sm"
+                          className="text-xs px-2 py-1 h-auto"
+                        >
+                          Connect Wallet
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </AspectRatio>
                 
                 {/* File info */}
-                {selectedFile && (
+                {selectedFile && (connected || isFirstChange) && (
                   <div className="mt-2 text-xs text-muted-foreground">
                     Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
                   </div>
@@ -198,9 +223,9 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
               amount={animeAmount}
               currency="ANIME"
             >
-              {loading ? 'Updating...' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Pay ${animeAmount.toLocaleString()} ANIME & Update Picture`}
+               {loading ? 'Updating...' : 
+                pricingLoading ? 'Calculating Price...' :
+                `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Picture`}
             </PaymentWalletButton>
           )}
         </div>

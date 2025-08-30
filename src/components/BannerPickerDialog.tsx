@@ -211,9 +211,9 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
               amount={animeAmount}
               currency="ANIME"
             >
-              {loading ? 'Updating...' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Pay ${animeAmount.toLocaleString()} ANIME & Update Banner`}
+               {loading ? 'Updating...' : 
+                pricingLoading ? 'Calculating Price...' :
+                `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Banner`}
             </PaymentWalletButton>
           )}
         </div>

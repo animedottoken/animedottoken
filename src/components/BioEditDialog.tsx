@@ -118,9 +118,9 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
               amount={animeAmount}
               currency="ANIME"
             >
-              {loading ? 'Updating...' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Pay ${animeAmount.toLocaleString()} ANIME & Update Bio`}
+               {loading ? 'Updating...' : 
+                pricingLoading ? 'Calculating Price...' :
+                `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Bio`}
             </PaymentWalletButton>
           )}
         </div>
