@@ -780,6 +780,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_wallets: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean
+          linked_at: string
+          updated_at: string
+          user_id: string
+          verification_message: string | null
+          verification_signature: string | null
+          wallet_address: string
+          wallet_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          linked_at?: string
+          updated_at?: string
+          user_id: string
+          verification_message?: string | null
+          verification_signature?: string | null
+          wallet_address: string
+          wallet_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          linked_at?: string
+          updated_at?: string
+          user_id?: string
+          verification_message?: string | null
+          verification_signature?: string | null
+          wallet_address?: string
+          wallet_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1201,6 +1240,20 @@ export type Database = {
           trade_count: number
           verified: boolean
           wallet_address: string
+        }[]
+      }
+      get_user_primary_wallet: {
+        Args: { p_user_id: string }
+        Returns: string
+      }
+      get_user_wallets: {
+        Args: { p_user_id: string }
+        Returns: {
+          id: string
+          is_verified: boolean
+          linked_at: string
+          wallet_address: string
+          wallet_type: string
         }[]
       }
       increment_user_trade_count: {
