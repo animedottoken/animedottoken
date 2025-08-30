@@ -174,8 +174,6 @@ serve(async (req) => {
         wallet_address,
         wallet_type,
         is_verified: true,
-        verification_signature: signature,
-        verification_message: message,
         linked_at: new Date().toISOString()
       })
       .select()
