@@ -43,7 +43,10 @@ export function useUserWallets() {
       setError(null);
 
       const { data, error: fetchError } = await supabase.functions.invoke('get-user-wallets', {
-        body: {}
+        body: {},
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        }
       });
 
       if (fetchError) {
