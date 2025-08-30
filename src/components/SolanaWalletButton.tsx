@@ -23,7 +23,7 @@ export const SolanaWalletButton = () => {
           </Badge>
         )}
         <Button onClick={disconnect} variant="outline" size="sm" className="flex items-center gap-2">
-          <LogOut className="h-4 w-4 text-red-500" />
+          <LogOut className="h-4 w-4 text-destructive" />
           Disconnect
         </Button>
       </div>
@@ -38,7 +38,7 @@ export const SolanaWalletButton = () => {
     >
       {connecting ? 'Connecting...' : (
         <>
-          <LogIn className="h-4 w-4 text-green-500" />
+          <LogIn className="h-4 w-4 text-success" />
           Connect Wallet
         </>
       )}
