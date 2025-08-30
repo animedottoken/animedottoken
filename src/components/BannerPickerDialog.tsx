@@ -7,6 +7,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface ProfileLike {
   wallet_address: string;
@@ -27,6 +28,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+  const { connected, connectPaymentWallet } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
   useEffect(() => {
@@ -79,41 +81,52 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
         </DialogHeader>
         
         <div className="px-6 pb-4">
-          <div className="space-y-4">
-            {/* Single Banner Preview/Upload Area */}
-            <div>
-              <h3 className="text-sm font-medium mb-2">Banner Preview</h3>
-              <AspectRatio ratio={4 / 1} className="bg-muted rounded-lg overflow-hidden border relative group">
-                <img 
-                  src={previewUrl || profile?.banner_image_url || '/placeholder.svg'} 
-                  alt="Banner preview" 
-                  className="w-full h-full object-cover"
-                />
-                
-                {/* Upload overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <FileUpload
-                    onFileSelect={handleFileSelect}
-                    accept="image/*"
-                    currentFile={selectedFile}
-                    previewUrl={previewUrl}
-                    placeholder=""
-                    className="absolute inset-0 cursor-pointer opacity-0"
+          {!connected ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-medium">Connect Wallet to Continue</h3>
+                <p className="text-sm text-muted-foreground">You need to connect a wallet to change your banner</p>
+              </div>
+              <Button onClick={connectPaymentWallet} className="px-6">
+                Connect Wallet
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Single Banner Preview/Upload Area */}
+              <div>
+                <h3 className="text-sm font-medium mb-2">Banner Preview</h3>
+                <AspectRatio ratio={4 / 1} className="bg-muted rounded-lg overflow-hidden border relative group">
+                  <img 
+                    src={previewUrl || profile?.banner_image_url || '/placeholder.svg'} 
+                    alt="Banner preview" 
+                    className="w-full h-full object-cover"
                   />
-                  <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
-                      Click to change banner
+                  
+                  {/* Upload overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <FileUpload
+                      onFileSelect={handleFileSelect}
+                      accept="image/*"
+                      currentFile={selectedFile}
+                      previewUrl={previewUrl}
+                      placeholder=""
+                      className="absolute inset-0 cursor-pointer opacity-0"
+                    />
+                    <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-white/90 rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                        Click to change banner
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Current file indicator */}
-                {selectedFile && (
-                  <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                    New image selected
-                  </div>
-                )}
-              </AspectRatio>
+                  {/* Current file indicator */}
+                  {selectedFile && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      New image selected
+                    </div>
+                  )}
+                </AspectRatio>
               
               {/* File info */}
               {selectedFile && (
@@ -131,33 +144,35 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
               </AlertDescription>
             </Alert>
 
-            {/* Pricing Alert */}
-            <Alert className="bg-primary/10 border-primary/30 text-primary">
-              <Coins className="h-4 w-4" />
-              <AlertDescription>
-                Banner change requires payment in ANIME. You can use any wallet for payment - this won't change your linked identity wallet.
-              </AlertDescription>
-            </Alert>
+              {/* Pricing Alert */}
+              <Alert className="bg-primary/10 border-primary/30 text-primary">
+                <Coins className="h-4 w-4" />
+                <AlertDescription>
+                  Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+        </div>
 
+        {connected && (
+          <div className="p-6 pt-0 space-y-4">
+            <PaymentWalletButton
+              onPaymentComplete={async (txSignature) => {
+                if (selectedFile) {
+                  await handleConfirm();
+                }
+              }}
+              disabled={!selectedFile || loading || pricingLoading}
+              amount={animeAmount}
+              currency="ANIME"
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Pay ${animeAmount.toLocaleString()} ANIME & Update Banner`}
+            </PaymentWalletButton>
           </div>
-        </div>
-
-        <div className="p-6 pt-0 space-y-4">
-          <PaymentWalletButton
-            onPaymentComplete={async (txSignature) => {
-              if (selectedFile) {
-                await handleConfirm();
-              }
-            }}
-            disabled={!selectedFile || loading || pricingLoading}
-            amount={animeAmount}
-            currency="ANIME"
-          >
-            {loading ? 'Updating...' : 
-             pricingLoading ? 'Calculating Price...' :
-             `Pay ${animeAmount.toLocaleString()} ANIME & Update Banner`}
-          </PaymentWalletButton>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );
