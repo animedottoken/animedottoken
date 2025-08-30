@@ -42,9 +42,14 @@ export function useUserWallets() {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase.functions.invoke('get-user-wallets');
+      const { data, error: fetchError } = await supabase.functions.invoke('get-user-wallets', {
+        body: {}
+      });
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('Supabase function invoke error:', fetchError);
+        throw new Error(`Failed to invoke function: ${fetchError.message}`);
+      }
 
       if (data?.success) {
         setWallets(data.wallets || []);
@@ -54,7 +59,8 @@ export function useUserWallets() {
       }
     } catch (err) {
       console.error('Error fetching user wallets:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch wallets');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch wallets';
+      setError(`Error loading wallets: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

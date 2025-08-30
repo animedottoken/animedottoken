@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { LinkWalletDialog } from '@/components/LinkWalletDialog';
-import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link } from 'lucide-react';
+import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUserWallets, UserWallet } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
 import { toast } from 'sonner';
@@ -13,7 +13,15 @@ import { toast } from 'sonner';
 export const MultiWalletSection = () => {
   const [linkWalletOpen, setLinkWalletOpen] = useState(false);
   const [unlinkWalletId, setUnlinkWalletId] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('multiWalletSectionExpanded');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
   const { wallets, summary, loading, error, unlinkWallet } = useUserWallets();
+
+  useEffect(() => {
+    localStorage.setItem('multiWalletSectionExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
 
   const handleUnlinkWallet = async () => {
     if (!unlinkWalletId) return;
@@ -58,15 +66,28 @@ export const MultiWalletSection = () => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5" />
-            Multi-Wallet Profile
-          </CardTitle>
-          <CardDescription>
-            Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="h-5 w-5" />
+                Multi-Wallet Profile
+              </CardTitle>
+              <CardDescription>
+                Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="h-8 w-8 p-0"
+            >
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        {isExpanded && (
+          <CardContent className="space-y-6">
           {error && (
             <Alert className="border-red-200 bg-red-50 text-red-700">
               <AlertTriangle className="h-4 w-4" />
@@ -197,7 +218,8 @@ export const MultiWalletSection = () => {
               <strong>How it works:</strong> Your primary wallet is your main identity. Secondary wallets let you view NFTs from multiple wallets in one unified profile. For transactions, you'll need to connect the specific wallet that owns the NFT.
             </AlertDescription>
           </Alert>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
 
       {/* Link Wallet Dialog */}

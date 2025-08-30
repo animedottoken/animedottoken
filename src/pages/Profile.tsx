@@ -36,6 +36,8 @@ import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 import { StatusDots } from '@/components/StatusDots';
 import { MultiWalletSection } from '@/components/MultiWalletSection';
+import { AutoPrimaryWalletPrompt } from '@/components/AutoPrimaryWalletPrompt';
+import { useAutoPrimaryWallet } from '@/hooks/useAutoPrimaryWallet';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -46,6 +48,9 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
+  
+  // Auto primary wallet functionality
+  const { showPrimaryPrompt, handleSetAsPrimary, handleDismiss, connectedWallet } = useAutoPrimaryWallet();
   
   // Edit dialog states
   const [showBioEdit, setShowBioEdit] = useState(false);
@@ -695,6 +700,15 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Auto Primary Wallet Prompt - Show only on own profile */}
+      {isOwnProfile && showPrimaryPrompt && connectedWallet && (
+        <AutoPrimaryWalletPrompt
+          walletAddress={connectedWallet}
+          onSetAsPrimary={handleSetAsPrimary}
+          onDismiss={handleDismiss}
+        />
+      )}
 
       {/* Profile Content */}
       <Tabs defaultValue="collections-nfts" className="space-y-6">
