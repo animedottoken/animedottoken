@@ -203,16 +203,11 @@ const Profile = () => {
       return false;
     }
     
-    try {
-      await setBanner(bannerFile);
+    const result = await setBanner(bannerFile);
+    if (result) {
       await fetchProfile();
-      toast.success('Banner updated successfully!');
-      return true;
-    } catch (error) {
-      console.error('Error updating banner:', error);
-      toast.error('Failed to update banner');
-      return false;
     }
+    return result;
   };
 
   const handleAvatarConfirm = async (file: File) => {
