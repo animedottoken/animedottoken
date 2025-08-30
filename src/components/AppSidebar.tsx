@@ -115,11 +115,6 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  React.useEffect(() => {
-    if (!isMobile && isCollapsed) {
-      setOpen(true);
-    }
-  }, [isMobile, isCollapsed, setOpen]);
 
   const handleNavigation = (item: typeof navigationItems[0], e?: React.MouseEvent) => {
     if (item.type === "route") {
@@ -165,9 +160,8 @@ export function AppSidebar() {
                     className={`cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground ${
                       isActive(item) ? "bg-muted text-primary font-medium" : ""
                     }`}
-                    tooltip={!showLabel ? item.title : undefined}
                   >
-                    <Link to={item.path!}>
+                    <Link to={item.path!} aria-label={item.title} title={item.title}>
                       <item.icon className="h-4 w-4 shrink-0" />
                       {showLabel && <span className="ml-2">{item.title}</span>}
                     </Link>
@@ -190,7 +184,7 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild
                     className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-all"
-                    tooltip={!showLabel ? item.title : undefined}
+                    
                   >
                     <div 
                       onClick={(e) => {
@@ -200,6 +194,8 @@ export function AppSidebar() {
                         }
                       }}
                       data-testid={item.hash === 'create-nfts' ? 'sidebar-create-nfts' : undefined}
+                      aria-label={item.title}
+                      title={item.title}
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
                       {showLabel && <span className="ml-2">{item.title}</span>}

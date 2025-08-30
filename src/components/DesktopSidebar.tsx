@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, User, ShoppingCart, Coins, FileText, Star, Target, LifeBuoy, Trophy, Users, Shield, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -95,7 +95,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const sections = navigationItems.filter((item): item is SectionItem => item.type === "section");
 
   return (
-    <TooltipProvider>
+    
       <aside className={cn(
         "flex flex-col border-r bg-sidebar-background text-sidebar-foreground transition-[width] duration-300",
         collapsed ? "w-16" : "w-64",
@@ -148,37 +148,29 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
           <div>
             <div className="space-y-1">
               {sections.map((item) => (
-                <Tooltip key={item.hash} delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
-                        collapsed && "justify-center px-2"
-                      )}
-                      asChild
-                    >
-                      <div 
-                        onClick={(e) => {
-                          // Only handle smooth scroll for unmodified left clicks
-                          if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                            handleNavigation(item, e);
-                          }
-                        }}
-                        data-testid={item.hash === 'create-nfts' ? 'sidebar-create-nfts' : undefined}
-                      >
-                        <item.icon className="h-5 w-5 shrink-0" />
-                        {!collapsed && <span className="font-medium">{item.title}</span>}
-                      </div>
-                    </Button>
-                  </TooltipTrigger>
-                  {collapsed && <TooltipContent side="right">{item.title}</TooltipContent>}
-                </Tooltip>
+                <Button
+                  key={item.hash}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
+                    collapsed && "justify-center px-2"
+                  )}
+                  onClick={(e) => {
+                    if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                      handleNavigation(item, e);
+                    }
+                  }}
+                  aria-label={item.title}
+                  title={item.title}
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {!collapsed && <span className="font-medium">{item.title}</span>}
+                </Button>
               ))}
             </div>
           </div>
         </nav>
       </aside>
-    </TooltipProvider>
+    
   );
 };
