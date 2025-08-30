@@ -55,9 +55,12 @@ serve(async (req) => {
 
     console.log('cleanup-primary-wallets request:', { user_id: user.id });
 
-    // Call the database function to cleanup primary wallets for this user
+    // Delete all primary wallets for this user directly
     const { error: cleanupError } = await supabaseClient
-      .rpc('cleanup_user_primary_wallets');
+      .from('user_wallets')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('wallet_type', 'primary');
 
     if (cleanupError) {
       console.error('Database cleanup error:', cleanupError);

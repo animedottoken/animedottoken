@@ -172,7 +172,7 @@ export const MultiWalletSection = () => {
                     onClick={() => setShowCleanupDialog(true)}
                     className="w-full sm:w-auto ml-0 sm:ml-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                   >
-                    Clear All Wallets
+                    Reset Primary Wallet
                   </Button>
                 </div>
               </AlertDescription>
@@ -267,15 +267,15 @@ export const MultiWalletSection = () => {
       />
 
       {/* Cleanup Primary Wallets Dialog */}
-      <ConfirmDialog
-        open={showCleanupDialog}
-        onOpenChange={setShowCleanupDialog}
-        onConfirm={handleCleanupPrimary}
-        title="Reset Primary Wallets"
-        description="This will remove all primary wallets from your account so you can start fresh. This action cannot be undone, but you can re-link wallets afterwards."
-        confirmText="Reset Primary Wallets"
-        variant="destructive"
-      />
+        <ConfirmDialog
+          open={showCleanupDialog}
+          onOpenChange={setShowCleanupDialog}
+          title="Reset Primary Wallet"
+          description="This removes your primary wallet record (if any) so you can start fresh. You can then link a new primary wallet. This action cannot be undone."
+          confirmText="Reset"
+          variant="destructive"
+          onConfirm={handleCleanupPrimary}
+        />
     </>
   );
 };
