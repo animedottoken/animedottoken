@@ -110,7 +110,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
               {/* Upload Area */}
               <div>
                 <h3 className="text-sm font-medium mb-2">Select Image</h3>
-                <AspectRatio ratio={1} className="bg-muted rounded-lg overflow-hidden border relative group max-w-[200px]">
+                <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden border relative group">
                   <img 
                     src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
                     alt="Avatar preview" 
@@ -165,7 +165,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                       </div>
                     </div>
                   )}
-                </AspectRatio>
+                </div>
                 
                 {/* File info */}
                 {selectedFile && (connected || isFirstChange) && (

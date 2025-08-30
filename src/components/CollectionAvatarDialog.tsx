@@ -103,15 +103,33 @@ export const CollectionAvatarDialog = ({
         </DialogHeader>
         
         <div className="py-4">
-          <FileUpload
-            onFileSelect={setSelectedFile}
-            previewUrl={currentUrl}
-            currentFile={selectedFile}
-            placeholder="Click to upload avatar"
-            aspectRatio={1}
-            maxSizeText="Maximum file size: 10MB"
-            allowRemove={false}
-          />
+          <div className="w-48 h-48 bg-muted rounded-lg overflow-hidden border relative group mx-auto">
+            <img 
+              src={currentUrl || '/placeholder.svg'} 
+              alt="Collection avatar preview" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+              <FileUpload
+                onFileSelect={setSelectedFile}
+                accept="image/*"
+                currentFile={selectedFile}
+                previewUrl={currentUrl}
+                placeholder=""
+                className="absolute inset-0 cursor-pointer opacity-0"
+              />
+              <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-white/90 rounded-lg px-3 py-2 text-sm font-medium text-gray-900">
+                  Click to upload avatar
+                </div>
+              </div>
+            </div>
+            {selectedFile && (
+              <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                New
+              </div>
+            )}
+          </div>
         </div>
 
         <DialogFooter>

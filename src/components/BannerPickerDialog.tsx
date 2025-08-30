@@ -101,7 +101,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
           {/* Single Banner Preview/Upload Area */}
           <div>
             <h3 className="text-sm font-medium mb-2">Banner Preview</h3>
-            <AspectRatio ratio={4 / 1} className="bg-muted rounded-lg overflow-hidden border relative group">
+            <AspectRatio ratio={4 / 1} className="bg-muted rounded-lg overflow-hidden border relative group max-h-[180px]">
               <img 
                 src={previewUrl || profile?.banner_image_url || '/placeholder.svg'} 
                 alt="Banner preview" 
