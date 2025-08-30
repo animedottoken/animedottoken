@@ -1,6 +1,7 @@
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LogIn, LogOut } from 'lucide-react';
 
 export const SolanaWalletButton = () => {
   const { connected, connecting, publicKey, balance, walletName, connect, disconnect } = useSolanaWallet();
@@ -21,7 +22,8 @@ export const SolanaWalletButton = () => {
             {walletName}
           </Badge>
         )}
-        <Button onClick={disconnect} variant="outline" size="sm">
+        <Button onClick={disconnect} variant="outline" size="sm" className="flex items-center gap-2">
+          <LogOut className="h-4 w-4 text-red-500" />
           Disconnect
         </Button>
       </div>
@@ -32,9 +34,14 @@ export const SolanaWalletButton = () => {
     <Button 
       onClick={() => connect()} 
       disabled={connecting}
-      className="bg-primary text-primary-foreground hover:bg-primary/90"
+      className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
     >
-      {connecting ? 'Connecting...' : 'Connect Wallet'}
+      {connecting ? 'Connecting...' : (
+        <>
+          <LogIn className="h-4 w-4 text-green-500" />
+          Connect Wallet
+        </>
+      )}
     </Button>
   );
 };
