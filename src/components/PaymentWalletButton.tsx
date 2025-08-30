@@ -74,9 +74,6 @@ export const PaymentWalletButton = ({
           )}
         </Button>
         
-        <p className="text-xs text-muted-foreground text-center">
-          This payment won't change your linked identity wallet
-        </p>
       </div>
     );
   }
