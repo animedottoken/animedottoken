@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -551,9 +551,21 @@ const Profile = () => {
                         size="sm"
                         onClick={hasWallet ? disconnect : connect}
                         disabled={connecting}
-                        className={hasWallet ? "hover:bg-primary hover:text-primary-foreground" : ""}
+                        className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
                       >
-                        {connecting ? 'Connecting...' : hasWallet ? 'Disconnect Wallet' : 'Connect Wallet'}
+                        {connecting ? (
+                          'Connecting...'
+                        ) : hasWallet ? (
+                          <>
+                            <LogOut className="h-4 w-4 text-destructive" />
+                            Disconnect Wallet
+                          </>
+                        ) : (
+                          <>
+                            <LogIn className="h-4 w-4 text-success" />
+                            Connect Wallet
+                          </>
+                        )}
                       </Button>
                     </div>
                   )}

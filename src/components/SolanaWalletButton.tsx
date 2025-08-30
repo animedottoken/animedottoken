@@ -6,8 +6,6 @@ import { LogIn, LogOut } from 'lucide-react';
 export const SolanaWalletButton = () => {
   const { connected, connecting, publicKey, balance, walletName, connect, disconnect } = useSolanaWallet();
 
-  console.log('SolanaWalletButton rendering:', { connected, connecting });
-
   if (connected && publicKey) {
     return (
       <div className="flex items-center gap-3">
@@ -25,7 +23,7 @@ export const SolanaWalletButton = () => {
           </Badge>
         )}
         <Button onClick={disconnect} variant="outline" size="sm" className="flex items-center gap-2">
-          <LogOut className="h-4 w-4 !text-red-500" />
+          <LogOut className="h-4 w-4 text-destructive" />
           Disconnect
         </Button>
       </div>
@@ -42,7 +40,7 @@ export const SolanaWalletButton = () => {
         'Connecting...'
       ) : (
         <>
-          <LogIn className="h-4 w-4 !text-green-500" />
+          <LogIn className="h-4 w-4 text-success" />
           Connect Wallet
         </>
       )}
