@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { decode as bs58decode } from "https://esm.sh/bs58@5.0.0";
 import * as nacl from "https://esm.sh/tweetnacl@1.0.3";
 
 const corsHeaders = {
@@ -93,9 +92,12 @@ serve(async (req) => {
 
     // Verify signature
     try {
+      // Import bs58 inside the function
+      const bs58 = await import("https://esm.sh/bs58@5.0.0");
+      
       const messageBytes = new TextEncoder().encode(message);
-      const signatureBytes = bs58decode(signature);
-      const publicKeyBytes = bs58decode(wallet_address);
+      const signatureBytes = bs58.default.decode(signature);
+      const publicKeyBytes = bs58.default.decode(wallet_address);
       
       const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
       
@@ -135,7 +137,7 @@ serve(async (req) => {
         .select('id')
         .eq('user_id', user.id)
         .eq('wallet_type', 'primary')
-        .single();
+        .maybeSingle();
       
       if (existingPrimary) {
         return new Response(
@@ -150,7 +152,7 @@ serve(async (req) => {
       .from('user_wallets')
       .select('user_id, wallet_type')
       .eq('wallet_address', wallet_address)
-      .single();
+      .maybeSingle();
     
     if (existingWallet) {
       if (existingWallet.user_id === user.id) {
@@ -174,6 +176,8 @@ serve(async (req) => {
         wallet_address,
         wallet_type,
         is_verified: true,
+        verification_signature: signature,
+        verification_message: message,
         linked_at: new Date().toISOString()
       })
       .select()
