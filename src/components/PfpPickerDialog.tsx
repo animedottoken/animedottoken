@@ -29,7 +29,6 @@ interface PfpPickerDialogProps {
 export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, loading, isFirstChange = true }: PfpPickerDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
   const { connected, openWalletSelector } = useSolanaWallet();
 
@@ -71,7 +70,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
 
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { 
+    <Dialog open={open} modal={false} onOpenChange={(o) => { 
       if (!loading) {
         onOpenChange(o);
         if (!o) {
@@ -80,7 +79,15 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         }
       }
     }}>
-      <DialogContent className="sm:max-w-[720px] p-0 overflow-hidden">
+      <DialogContent 
+        className="sm:max-w-[720px] p-0 overflow-hidden"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="p-6 pb-3">
           <DialogTitle>Update Your Profile Picture</DialogTitle>
         </DialogHeader>
@@ -163,7 +170,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                 <Alert className="bg-primary/10 border-primary/30 text-primary">
                   <Coins className="h-4 w-4" />
                   <AlertDescription className="text-sm">
-                    Profile picture change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                    Your first profile picture was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
                   </AlertDescription>
                 </Alert>
               )}
@@ -172,37 +179,30 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          {!isFirstChange && (
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="payment-confirmation"
-                checked={paymentConfirmed}
-                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-              />
-              <label 
-                htmlFor="payment-confirmation" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I understand I will be charged the amount shown for this profile picture change
-              </label>
-            </div>
+          {isFirstChange ? (
+            <Button
+              onClick={handleConfirm}
+              disabled={!selectedFile || loading}
+              className="w-full"
+            >
+              {loading ? 'Setting...' : 'Set Profile Picture (FREE)'}
+            </Button>
+          ) : (
+            <PaymentWalletButton
+              onPaymentComplete={async (txSignature) => {
+                if (selectedFile) {
+                  await handleConfirm();
+                }
+              }}
+              disabled={!selectedFile || loading || (connected && pricingLoading)}
+              amount={animeAmount}
+              currency="ANIME"
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Pay ${animeAmount.toLocaleString()} ANIME & Update Picture`}
+            </PaymentWalletButton>
           )}
-          
-          <PaymentWalletButton
-            onPaymentComplete={async (txSignature) => {
-              if (selectedFile) {
-                await handleConfirm();
-              }
-            }}
-            disabled={!selectedFile || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
-            amount={animeAmount}
-            currency="ANIME"
-          >
-            {loading ? 'Updating...' : 
-             isFirstChange ? 'Set Profile Picture (FREE)' : 
-             pricingLoading ? 'Calculating Price...' :
-             `Pay ${animeAmount.toLocaleString()} ANIME & Update Picture`}
-          </PaymentWalletButton>
         </div>
       </DialogContent>
     </Dialog>

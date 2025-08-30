@@ -185,28 +185,37 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Live pricing: we calculate the ANIME amount for ~2 USDT using the current rate from DexScreener.
+                Your first banner was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
               </AlertDescription>
             </Alert>
           )}
         </div>
 
         <div className="p-6 pt-0 space-y-4">
-          <PaymentWalletButton
-            onPaymentComplete={async (txSignature) => {
-              if (selectedFile) {
-                await handleConfirm();
-              }
-            }}
-            disabled={!selectedFile || loading || pricingLoading}
-            amount={animeAmount}
-            currency="ANIME"
-          >
-             {loading ? 'Updating...' : 
-              isFirstChange ? 'Set Banner (FREE)' : 
-              pricingLoading ? 'Calculating Price...' :
-              `Pay ${animeAmount.toLocaleString()} ANIME (~2 USDT) & Update Banner`}
-          </PaymentWalletButton>
+          {isFirstChange ? (
+            <Button
+              onClick={handleConfirm}
+              disabled={!selectedFile || loading}
+              className="w-full"
+            >
+              {loading ? 'Setting...' : 'Set Banner (FREE)'}
+            </Button>
+          ) : (
+            <PaymentWalletButton
+              onPaymentComplete={async (txSignature) => {
+                if (selectedFile) {
+                  await handleConfirm();
+                }
+              }}
+              disabled={!selectedFile || loading || (connected && pricingLoading)}
+              amount={animeAmount}
+              currency="ANIME"
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Pay ${animeAmount.toLocaleString()} ANIME & Update Banner`}
+            </PaymentWalletButton>
+          )}
         </div>
       </DialogContent>
     </Dialog>

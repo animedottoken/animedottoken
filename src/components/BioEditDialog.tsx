@@ -25,7 +25,6 @@ interface BioEditDialogProps {
 
 export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentBio }: BioEditDialogProps) {
   const [bio, setBio] = useState('');
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00); // 2 USDT for bio
   const { connected, openWalletSelector } = useSolanaWallet();
   
@@ -44,21 +43,27 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
     if (success) {
       onOpenChange(false);
       setBio('');
-      setPaymentConfirmed(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { 
+    <Dialog open={open} modal={false} onOpenChange={(o) => { 
       if (!loading) {
         onOpenChange(o);
         if (!o) {
           setBio(currentBio || '');
-          setPaymentConfirmed(false);
         }
       }
     }}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent 
+        className="sm:max-w-[500px]"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {isFirstChange ? 'Add Your Bio' : 'Update Bio'}
@@ -87,31 +92,15 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
                 Your first bio is <strong>FREE</strong>
               </AlertDescription>
             </Alert>
-          ) : (
+           ) : (
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Bio change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                Your first bio was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
               </AlertDescription>
             </Alert>
           )}
 
-          {!isFirstChange && (
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="bio-payment-confirmation"
-                checked={paymentConfirmed}
-                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-              />
-              <label 
-                htmlFor="bio-payment-confirmation" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I understand I will be charged the amount shown for this bio change
-              </label>
-            </div>
-          )}
-          
           {isFirstChange ? (
             <Button
               onClick={handleConfirm}
@@ -125,7 +114,7 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
               onPaymentComplete={async (txSignature) => {
                 await handleConfirm();
               }}
-              disabled={!bio.trim() || loading || !paymentConfirmed || pricingLoading}
+              disabled={!bio.trim() || loading || (connected && pricingLoading)}
               amount={animeAmount}
               currency="ANIME"
             >

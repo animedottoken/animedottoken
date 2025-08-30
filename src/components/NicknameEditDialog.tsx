@@ -25,7 +25,6 @@ interface NicknameEditDialogProps {
 
 export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentNickname }: NicknameEditDialogProps) {
   const [nickname, setNickname] = useState('');
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(1.00); // 1 USDT for nickname
   const { connected, openWalletSelector } = useSolanaWallet();
   
@@ -44,21 +43,27 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
     if (success) {
       onOpenChange(false);
       setNickname('');
-      setPaymentConfirmed(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { 
+    <Dialog open={open} modal={false} onOpenChange={(o) => { 
       if (!loading) {
         onOpenChange(o);
         if (!o) {
           setNickname(currentNickname || '');
-          setPaymentConfirmed(false);
         }
       }
     }}>
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent 
+        className="sm:max-w-[400px]"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>
             {isFirstChange ? 'Set Your Nickname' : 'Change Nickname'}
@@ -86,31 +91,15 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
                 Your first nickname is <strong>FREE</strong>
               </AlertDescription>
             </Alert>
-          ) : (
+           ) : (
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Nickname change requires payment in ANIME. Price updates live from DexScreener (~1.00 USDT).
+                Your first nickname was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~1.00 USDT). Connect your wallet to continue.
               </AlertDescription>
             </Alert>
           )}
 
-          {!isFirstChange && (
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="nickname-payment-confirmation"
-                checked={paymentConfirmed}
-                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-              />
-              <label 
-                htmlFor="nickname-payment-confirmation" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I understand I will be charged the amount shown for this nickname change
-              </label>
-            </div>
-          )}
-          
           {isFirstChange ? (
             <Button
               onClick={handleConfirm}
@@ -124,7 +113,7 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
               onPaymentComplete={async (txSignature) => {
                 await handleConfirm();
               }}
-              disabled={!nickname.trim() || loading || !paymentConfirmed || pricingLoading}
+              disabled={!nickname.trim() || loading || (connected && pricingLoading)}
               amount={animeAmount}
               currency="ANIME"
             >
