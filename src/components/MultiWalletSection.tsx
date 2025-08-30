@@ -157,7 +157,6 @@ export const MultiWalletSection = () => {
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
-                {summary.primary > 0 && (
                   <div className="mt-2">
                     <Button
                       variant="outline" 
@@ -168,7 +167,6 @@ export const MultiWalletSection = () => {
                       Reset Primary Wallets
                     </Button>
                   </div>
-                )}
               </AlertDescription>
             </Alert>
           )}
