@@ -104,28 +104,42 @@ export const GamifiedProfileCard = () => {
       return;
     }
 
+    // Check if this is first time (free) or requires payment
+    const isFirstTime = !profile?.nickname;
+    
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
-    // TEST MODE: Simulate payment without real transaction
-    const testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    let testTransactionSignature = '';
     
-    // Show payment simulation
-    toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-    toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ ${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
-      duration: 3000
-    });
-    
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!isFirstTime) {
+      // TEST MODE: Simulate payment without real transaction
+      testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Show payment simulation
+      toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
+      toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ ${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
+        duration: 3000
+      });
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } else {
+      testTransactionSignature = `free_first_time_${Date.now()}`;
+      toast.success('🎉 First nickname is free!');
+    }
     
     const success = await setNickname(nicknameInput.trim(), testTransactionSignature);
     if (success) {
       setNicknameDialogOpen(false);
       setNicknameInput('');
-      toast.success('✅ Nickname set successfully! (Test mode - no real payment)');
+      if (isFirstTime) {
+        toast.success('✅ Nickname set successfully! (First time free)');
+      } else {
+        toast.success('✅ Nickname set successfully! (Test mode - no real payment)');
+      }
     }
   };
 
@@ -137,29 +151,43 @@ export const GamifiedProfileCard = () => {
   const handleConfirmPFP = async () => {
     if (!selectedNftForPfp) return;
     
+    // Check if this is first time (free) or requires payment
+    const isFirstTime = !profile?.pfp_unlock_status && !profile?.profile_image_url;
+    
     // Format large numbers with spaces
     const formatTokenAmount = (amount: number) => {
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     };
 
-    // TEST MODE: Simulate payment without real transaction
-    const testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    let testTransactionSignature = '';
     
-    // Show payment simulation
-    toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-    toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT`, {
-      duration: 3000
-    });
-    
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!isFirstTime) {
+      // TEST MODE: Simulate payment without real transaction
+      testTransactionSignature = `test_tx_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Show payment simulation
+      toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
+      toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT`, {
+        duration: 3000
+      });
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } else {
+      testTransactionSignature = `free_first_time_${Date.now()}`;
+      toast.success('🎉 First profile picture is free!');
+    }
     
     const success = await setPFP(selectedNftForPfp, testTransactionSignature);
     if (success) {
       setPfpDialogOpen(false);
       setPfpConfirmDialogOpen(false);
       setSelectedNftForPfp(null);
-      toast.success('✅ Profile picture updated successfully! (Test mode - no real payment)');
+      if (isFirstTime) {
+        toast.success('✅ Profile picture set successfully! (First time free)');
+      } else {
+        toast.success('✅ Profile picture updated successfully! (Test mode - no real payment)');
+      }
     }
   };
 
@@ -391,25 +419,37 @@ export const GamifiedProfileCard = () => {
                   <DialogDescription>Enter a nickname and confirm payment to save.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
-                  <div className="p-4 bg-muted/50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">Payment Required</span>
-                      <DollarSign className="w-4 h-4 text-primary" />
-                    </div>
-                    {nicknamePricing.loading ? (
-                      <div className="animate-pulse">Loading pricing...</div>
-                    ) : (
-                      <div>
-                        <div className="text-lg font-bold">{formatTokenAmount(nicknamePricing.animeAmount)} $ANIME</div>
-                        <div className="text-sm text-muted-foreground">
-                          ≈ {nicknamePricing.usdPrice.toFixed(2)} USDT
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Price updated every 30 seconds
-                        </div>
+                  {!profile.nickname ? (
+                    <div className="p-4 bg-success/10 rounded-lg border border-success/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-success">First Nickname - FREE!</span>
+                        <span className="text-2xl">🎉</span>
                       </div>
-                    )}
-                  </div>
+                      <div className="text-sm text-muted-foreground">
+                        Your first nickname is completely free. Future changes will cost 1 USDT.
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium">Payment Required</span>
+                        <DollarSign className="w-4 h-4 text-primary" />
+                      </div>
+                      {nicknamePricing.loading ? (
+                        <div className="animate-pulse">Loading pricing...</div>
+                      ) : (
+                        <div>
+                          <div className="text-lg font-bold">{formatTokenAmount(nicknamePricing.animeAmount)} $ANIME</div>
+                          <div className="text-sm text-muted-foreground">
+                            ≈ {nicknamePricing.usdPrice.toFixed(2)} USDT
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Price updated every 30 seconds
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <Separator />
                   <div>
                     <Label htmlFor="nickname">Nickname (3-15 characters, alphanumeric only)</Label>
@@ -421,15 +461,17 @@ export const GamifiedProfileCard = () => {
                       maxLength={15}
                     />
                     <div className="text-xs text-muted-foreground mt-1">
-                      Each nickname change requires payment
+                      {!profile.nickname ? 'First nickname is free!' : 'Each nickname change requires payment'}
                     </div>
                   </div>
                   <Button 
                     onClick={handleSetNickname} 
                     className="w-full"
-                    disabled={loading || nicknamePricing.loading}
+                    disabled={loading || (!profile.nickname ? false : nicknamePricing.loading)}
                   >
-                    {loading ? 'Processing Payment...' : `Pay ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME`}
+                    {loading ? 'Processing...' : 
+                     !profile.nickname ? 'Set Nickname (FREE)' : 
+                     `Pay ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME`}
                   </Button>
                 </div>
               </DialogContent>
@@ -474,7 +516,7 @@ export const GamifiedProfileCard = () => {
                       </p>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      <p>Cost: {formatTokenAmount(pfpPricing.animeAmount)} ANIME (${pfpPricing.usdPrice})</p>
+                      <p>Cost: {(!profile.pfp_unlock_status && !profile.profile_image_url) ? 'FREE for first time!' : `${formatTokenAmount(pfpPricing.animeAmount)} ANIME ($${pfpPricing.usdPrice})`}</p>
                       <p className="mt-1">Select an NFT from your collection below</p>
                     </div>
                   </div>
@@ -534,7 +576,9 @@ export const GamifiedProfileCard = () => {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Price:</span>
                       <span className="font-medium">
-                        {formatTokenAmount(pfpPricing.animeAmount)} ANIME (${pfpPricing.usdPrice.toFixed(2)})
+                        {(!profile.pfp_unlock_status && !profile.profile_image_url) ? 'FREE' : 
+                         `${formatTokenAmount(pfpPricing.animeAmount)} ANIME ($${pfpPricing.usdPrice.toFixed(2)})`
+                        }
                       </span>
                     </div>
                     <Button 
@@ -542,7 +586,10 @@ export const GamifiedProfileCard = () => {
                       disabled={loading}
                       className="w-full"
                     >
-                      {loading ? 'Processing Payment...' : 'Confirm & Pay'}
+                      {loading ? 'Processing...' : 
+                        (!profile.pfp_unlock_status && !profile.profile_image_url) ? 'Set Profile Picture (FREE)' : 
+                        'Confirm & Pay'
+                      }
                     </Button>
                   </div>
                 ) : (

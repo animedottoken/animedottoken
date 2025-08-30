@@ -112,19 +112,28 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
             </div>
           )}
           
-          <PaymentWalletButton
-            onPaymentComplete={async (txSignature) => {
-              await handleConfirm();
-            }}
-            disabled={!bio.trim() || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
-            amount={animeAmount}
-            currency="ANIME"
-          >
-            {loading ? 'Updating...' : 
-             isFirstChange ? 'Set Bio (FREE)' : 
-             pricingLoading ? 'Calculating Price...' :
-             `Pay ${animeAmount.toLocaleString()} ANIME & Update Bio`}
-          </PaymentWalletButton>
+          {isFirstChange ? (
+            <Button
+              onClick={handleConfirm}
+              disabled={!bio.trim() || loading}
+              className="w-full"
+            >
+              {loading ? 'Setting...' : 'Set Bio (FREE)'}
+            </Button>
+          ) : (
+            <PaymentWalletButton
+              onPaymentComplete={async (txSignature) => {
+                await handleConfirm();
+              }}
+              disabled={!bio.trim() || loading || !paymentConfirmed || pricingLoading}
+              amount={animeAmount}
+              currency="ANIME"
+            >
+              {loading ? 'Updating...' : 
+               pricingLoading ? 'Calculating Price...' :
+               `Pay ${animeAmount.toLocaleString()} ANIME & Update Bio`}
+            </PaymentWalletButton>
+          )}
         </div>
       </DialogContent>
     </Dialog>
