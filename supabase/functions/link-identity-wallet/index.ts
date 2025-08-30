@@ -116,8 +116,16 @@ serve(async (req) => {
       .single();
 
     if (updateError) {
-      console.error('Profile update error:', updateError);
-      return new Response(JSON.stringify({ error: "Failed to link wallet" }), {
+      console.error('Profile update error:', updateError, {
+        user_id: user.id,
+        wallet_address,
+        error_code: updateError.code,
+        error_details: updateError.details
+      });
+      return new Response(JSON.stringify({ 
+        error: "Failed to link wallet", 
+        details: updateError.message 
+      }), {
         status: 400,
         headers: corsHeaders,
       });

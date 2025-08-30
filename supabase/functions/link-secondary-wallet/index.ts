@@ -5,6 +5,7 @@ import * as nacl from "https://esm.sh/tweetnacl@1.0.3";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Content-Type': 'application/json',
 };
 
 interface LinkWalletRequest {
@@ -124,16 +125,22 @@ serve(async (req) => {
       );
     }
 
-    // Check timestamp (should be within last 10 minutes)
+    // Check timestamp (should be within last 60 minutes for secondary wallets)
     const timestampMatch = message.match(/Timestamp: (\d+)$/);
     if (timestampMatch) {
       const messageTimestamp = parseInt(timestampMatch[1]);
       const now = Date.now();
-      const tenMinutes = 10 * 60 * 1000;
+      const sixtyMinutes = 60 * 60 * 1000;
       
-      if (Math.abs(now - messageTimestamp) > tenMinutes) {
+      if (Math.abs(now - messageTimestamp) > sixtyMinutes) {
+        console.error('Timestamp validation failed:', {
+          messageTimestamp,
+          currentTime: now,
+          difference: Math.abs(now - messageTimestamp),
+          maxAllowed: sixtyMinutes
+        });
         return new Response(
-          JSON.stringify({ error: 'Message timestamp is too old or too far in the future' }),
+          JSON.stringify({ error: 'Message timestamp is too old or too far in the future. Please generate a new message.' }),
           { status: 400, headers: corsHeaders }
         );
       }
@@ -193,7 +200,13 @@ serve(async (req) => {
       .single();
 
     if (insertError) {
-      console.error('Database insert error:', insertError);
+      console.error('Database insert error:', insertError, {
+        user_id: user.id,
+        wallet_address,
+        wallet_type,
+        error_code: insertError.code,
+        error_details: insertError.details
+      });
       
       // Handle specific error cases
       if (insertError.message.includes('more than 10 secondary wallets')) {
@@ -204,7 +217,7 @@ serve(async (req) => {
       }
       
       return new Response(
-        JSON.stringify({ error: 'Failed to link wallet' }),
+        JSON.stringify({ error: 'Failed to link wallet', details: insertError.message }),
         { status: 500, headers: corsHeaders }
       );
     }

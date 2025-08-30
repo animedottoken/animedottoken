@@ -143,9 +143,19 @@ export const MultiWalletSection = () => {
                       </div>
                     </div>
                   </div>
-                  <Badge variant={getWalletBadgeVariant(primaryWallet.wallet_type)} className="text-xs">
-                    Primary
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={getWalletBadgeVariant(primaryWallet.wallet_type)} className="text-xs">
+                      Primary
+                    </Badge>
+                    <Button
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowCleanupDialog(true)}
+                      className="h-8 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      Reset
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
