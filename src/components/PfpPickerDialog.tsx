@@ -105,9 +105,9 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         <div className="px-6 pb-4">
           <div className="space-y-4">
             {/* Upload Area */}
-            <div>
+            <div className="flex flex-col items-center">
               <h3 className="text-sm font-medium mb-2">Avatar Preview</h3>
-                <div className="w-40 h-40 sm:w-44 sm:h-44 bg-muted rounded-lg overflow-hidden border relative group">
+              <div className="w-40 h-40 sm:w-44 sm:h-44 bg-muted rounded-lg overflow-hidden border relative group">
                   <img 
                     src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
                     alt="Avatar preview" 
