@@ -293,9 +293,10 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       )}
 
-      {/* Active Filters Display */}
-      {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2">
+      {/* Active Filters Display - Always mounted to prevent height jumps */}
+      <div className="flex flex-wrap gap-2 min-h-[24px]">
+        {hasActiveFilters && (
+          <>
           {localFilters.searchQuery && (
             <Badge variant="secondary" className="text-xs">
               Search: {localFilters.searchQuery}
@@ -325,9 +326,10 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             <Badge variant="secondary" className="text-xs">
               Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
             </Badge>
-          )}
-        </div>
-      )}
+           )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
