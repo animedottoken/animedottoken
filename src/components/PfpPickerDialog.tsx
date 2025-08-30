@@ -31,7 +31,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
-  const { connected, openWalletSelector } = useSolanaWallet();
+  const { connected, connect } = useSolanaWallet();
 
   // Set current avatar as preview when dialog opens
   useEffect(() => {
@@ -92,9 +92,12 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
       <DialogContent 
         className="sm:max-w-[720px] p-0 overflow-hidden"
         onPointerDownOutside={(e) => {
-          if (loading || submitting) e.preventDefault();
+          e.preventDefault();
         }}
         onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
           if (loading || submitting) e.preventDefault();
         }}
       >
@@ -103,7 +106,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         </DialogHeader>
 
         <div className="px-6 pb-4">
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="relative">
               <Avatar className="w-40 h-40 sm:w-44 sm:h-44 border-4 border-border shadow">
                 <AvatarImage src={previewUrl || profile?.profile_image_url || undefined} alt="Preview" />
@@ -156,19 +159,19 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                     </>
                   ) : (
                     /* Wallet connection overlay when not connected AND not first change */
-                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2">
-                      <div className="text-center space-y-2 max-w-[160px]">
-                        <p className="text-white text-xs font-medium">
+                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
+                      <div className="text-center space-y-3 max-w-[240px]">
+                        <p className="text-white text-sm font-medium leading-snug">
                           Avatar updates require payment in ANIME (~2 USDT) at live rates.
                         </p>
-                        <div className="text-white/90 text-xs">
+                        <div className="text-white/90 text-sm leading-snug">
                           Please connect your wallet to upload
                         </div>
                         <Button
-                          onClick={openWalletSelector}
+                          onClick={connect}
                           variant="default"
                           size="sm"
-                          className="text-xs px-2 py-1 h-auto"
+                          className="text-sm px-3 py-2 h-auto"
                         >
                           Connect Wallet
                         </Button>
