@@ -166,16 +166,14 @@ export const MultiWalletSection = () => {
                   >
                     Link Primary Wallet Now
                   </Button>
-                  {summary.total > 0 && (
-                    <Button
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowCleanupDialog(true)}
-                      className="w-full sm:w-auto ml-0 sm:ml-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                    >
-                      Clear All Wallets
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowCleanupDialog(true)}
+                    className="w-full sm:w-auto ml-0 sm:ml-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    Clear All Wallets
+                  </Button>
                 </div>
               </AlertDescription>
             </Alert>
