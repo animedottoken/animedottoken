@@ -25,6 +25,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Always redirect to profile on successful sign-in
+        if (event === 'SIGNED_IN' && session) {
+          navigate('/profile');
+        }
       }
     );
 

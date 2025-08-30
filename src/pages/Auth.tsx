@@ -18,8 +18,7 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const rawRedirectTo = searchParams.get('redirect') || '/profile';
-  const redirectTo = rawRedirectTo.startsWith('/auth') ? '/profile' : rawRedirectTo;
+  const redirectTo = '/profile';
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -55,9 +54,9 @@ export default function Auth() {
               description: "You've been signed in successfully.",
             });
             
-            // Clean URL and redirect
-            window.history.replaceState({}, document.title, `/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`);
-            navigate(redirectTo);
+            // Clean URL and redirect to profile
+            window.history.replaceState({}, document.title, '/auth');
+            navigate('/profile');
             return;
           }
         } catch (error: any) {
@@ -69,7 +68,7 @@ export default function Auth() {
           });
           
           // Clean URL but stay on auth page
-          window.history.replaceState({}, document.title, `/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`);
+          window.history.replaceState({}, document.title, '/auth');
         } finally {
           setCompleting(false);
         }
@@ -83,8 +82,8 @@ export default function Auth() {
       console.log('Current session:', session);
       
       if (session) {
-        console.log('User already logged in, redirecting to:', redirectTo);
-        navigate(redirectTo);
+        console.log('User already logged in, redirecting to profile');
+        navigate('/profile');
         return;
       }
       
@@ -101,7 +100,7 @@ export default function Auth() {
           title: "Welcome!",
           description: "You've been signed in successfully.",
         });
-        navigate(redirectTo);
+        navigate('/profile');
       }
     });
 
@@ -119,7 +118,7 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
+      const redirectUrl = `${window.location.origin}/auth`;
       
       console.log('Google OAuth redirect URL:', redirectUrl);
       
@@ -163,7 +162,7 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
+      const redirectUrl = `${window.location.origin}/auth`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
