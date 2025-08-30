@@ -310,54 +310,50 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       )}
 
-      {/* Clear All Button - Bottom Right */}
-      {hasActiveFilters && (
-        <div className="flex justify-end">
+      {/* Active Filters and Clear All - Combined Row */}
+      {((!collapsible || isExpanded) || hasActiveFilters) && hasActiveFilters && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {localFilters.searchQuery && (
+              <Badge variant="secondary" className="text-xs">
+                Search: {localFilters.searchQuery}
+              </Badge>
+            )}
+            {localFilters.source !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
+              </Badge>
+            )}
+            {localFilters.category && localFilters.category !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Category: {localFilters.category}
+              </Badge>
+            )}
+            {localFilters.includeExplicit && (
+              <Badge variant="secondary" className="text-xs">
+                Explicit Content
+              </Badge>
+            )}
+            {showListingFilter && localFilters.listing !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
+              </Badge>
+            )}
+            {showTypeFilter && localFilters.type !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
+              </Badge>
+            )}
+          </div>
           <Button
             variant="outline"
             size="sm"
             onClick={clearFilters}
-            className="text-xs"
+            className="text-xs self-start sm:self-center"
           >
             <X className="h-3 w-3 mr-1" />
             Clear All
           </Button>
-        </div>
-      )}
-
-      {/* Active Filters Display - Only show when expanded or has active filters */}
-      {((!collapsible || isExpanded) || hasActiveFilters) && hasActiveFilters && (
-        <div className="flex flex-wrap gap-2">
-          {localFilters.searchQuery && (
-            <Badge variant="secondary" className="text-xs">
-              Search: {localFilters.searchQuery}
-            </Badge>
-          )}
-          {localFilters.source !== 'all' && (
-            <Badge variant="secondary" className="text-xs">
-              Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
-            </Badge>
-          )}
-          {localFilters.category && localFilters.category !== 'all' && (
-            <Badge variant="secondary" className="text-xs">
-              Category: {localFilters.category}
-            </Badge>
-          )}
-          {localFilters.includeExplicit && (
-            <Badge variant="secondary" className="text-xs">
-              Explicit Content
-            </Badge>
-          )}
-          {showListingFilter && localFilters.listing !== 'all' && (
-            <Badge variant="secondary" className="text-xs">
-              {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
-            </Badge>
-          )}
-          {showTypeFilter && localFilters.type !== 'all' && (
-            <Badge variant="secondary" className="text-xs">
-              Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
-            </Badge>
-          )}
         </div>
       )}
     </div>
