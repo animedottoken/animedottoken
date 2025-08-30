@@ -127,10 +127,15 @@ All colors MUST be HSL. */
     padding-left: env(safe-area-inset-left);
   }
 
-  /* Prevent layout shift from dropdowns */
+  /* Prevent layout shift from dropdowns and scroll-lock utilities */
   [data-radix-popper-content-wrapper] {
     will-change: transform;
     contain: layout;
+  }
+
+  /* Compensate for scrollbar removal when body gets overflow:hidden from scroll-lock */
+  body[style*="overflow: hidden"] {
+    padding-right: var(--removed-body-scroll-bar-size, 15px) !important;
   }
 
   /* Hide number input spinners globally */
