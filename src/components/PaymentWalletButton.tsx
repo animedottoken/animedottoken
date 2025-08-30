@@ -21,6 +21,7 @@ export const PaymentWalletButton = ({
 }: PaymentWalletButtonProps) => {
   const { connected, publicKey, connectPaymentWallet } = useSolanaWallet();
   const [processing, setProcessing] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
 
   const handlePayment = async () => {
     if (!connected) {
@@ -36,10 +37,10 @@ export const PaymentWalletButton = ({
       // Simulate transaction time
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      setPaymentCompleted(true);
       onPaymentComplete?.(demoTxSignature);
     } catch (error) {
       console.error('Payment error:', error);
-    } finally {
       setProcessing(false);
     }
   };
@@ -64,11 +65,13 @@ export const PaymentWalletButton = ({
         
         <Button 
           onClick={handlePayment}
-          disabled={disabled || processing}
+          disabled={disabled || processing || paymentCompleted}
           className="w-full"
         >
           {processing ? (
             'Processing Payment...'
+          ) : paymentCompleted ? (
+            'Payment Confirmed ✓'
           ) : (
             children || `Pay ${amount ? `${amount} ${currency}` : ''}`
           )}
