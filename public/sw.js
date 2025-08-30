@@ -1,5 +1,5 @@
 // Simple service worker for caching static assets
-const CACHE_NAME = 'anime-token-v1';
+const CACHE_NAME = 'anime-token-v2-multi-wallet';
 const urlsToCache = [
   '/',
   '/src/index.css',

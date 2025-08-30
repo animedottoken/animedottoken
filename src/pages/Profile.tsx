@@ -35,7 +35,6 @@ import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 import { StatusDots } from '@/components/StatusDots';
-import { IdentityWalletSection } from '@/components/IdentityWalletSection';
 import { MultiWalletSection } from '@/components/MultiWalletSection';
 
 const Profile = () => {
