@@ -837,6 +837,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_user_primary_wallets: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       generate_collection_slug: {
         Args: { collection_name: string }
         Returns: string

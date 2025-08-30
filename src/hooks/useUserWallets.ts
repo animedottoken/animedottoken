@@ -153,6 +153,39 @@ export function useUserWallets() {
     return wallets.filter(w => w.wallet_type === 'secondary');
   };
 
+  const cleanupPrimaryWallets = async (): Promise<boolean> => {
+    try {
+      const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
+      const { data, error } = await supabase.functions.invoke('cleanup-primary-wallets', {
+        body: {},
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        }
+      });
+
+      if (error) {
+        const serverMsg = (error as any)?.context?.body?.error || (error as any)?.context?.error || (error as any)?.message || 'Failed to cleanup primary wallets';
+        toast.error(serverMsg);
+        return false;
+      }
+
+      if (data?.success) {
+        toast.success('Primary wallets cleaned up successfully!');
+        await fetchWallets(); // Refresh the list
+        return true;
+      } else {
+        const msg = data?.error || 'Failed to cleanup primary wallets';
+        toast.error(msg);
+        return false;
+      }
+    } catch (err) {
+      console.error('Error cleaning up primary wallets:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to cleanup primary wallets';
+      toast.error(errorMessage);
+      return false;
+    }
+  };
+
   const generateLinkingMessage = (walletAddress: string): string => {
     const timestamp = Date.now();
     return `I am linking this wallet ${walletAddress} to my ANIME.TOKEN account.\n\nTimestamp: ${timestamp}`;
@@ -170,8 +203,9 @@ export function useUserWallets() {
     fetchWallets,
     linkWallet,
     unlinkWallet,
+    cleanupPrimaryWallets,
     getPrimaryWallet,
     getSecondaryWallets,
-    generateLinkingMessage
+    generateLinkingMessage,
   };
 }

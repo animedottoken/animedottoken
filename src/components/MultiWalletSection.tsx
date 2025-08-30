@@ -13,11 +13,12 @@ import { toast } from 'sonner';
 export const MultiWalletSection = () => {
   const [linkWalletOpen, setLinkWalletOpen] = useState(false);
   const [unlinkWalletId, setUnlinkWalletId] = useState<string | null>(null);
+  const [showCleanupDialog, setShowCleanupDialog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(() => {
     const saved = localStorage.getItem('multiWalletSectionExpanded');
     return saved !== null ? JSON.parse(saved) : false;
   });
-  const { wallets, summary, loading, error, unlinkWallet } = useUserWallets();
+  const { wallets, summary, loading, error, unlinkWallet, cleanupPrimaryWallets } = useUserWallets();
 
   useEffect(() => {
     localStorage.setItem('multiWalletSectionExpanded', JSON.stringify(isExpanded));
@@ -29,6 +30,13 @@ export const MultiWalletSection = () => {
     const success = await unlinkWallet(unlinkWalletId);
     if (success) {
       setUnlinkWalletId(null);
+    }
+  };
+
+  const handleCleanupPrimary = async () => {
+    const success = await cleanupPrimaryWallets();
+    if (success) {
+      setShowCleanupDialog(false);
     }
   };
 
@@ -149,6 +157,18 @@ export const MultiWalletSection = () => {
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
+                {summary.primary > 0 && (
+                  <div className="mt-2">
+                    <Button
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowCleanupDialog(true)}
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                    >
+                      Reset Primary Wallets
+                    </Button>
+                  </div>
+                )}
               </AlertDescription>
             </Alert>
           )}
@@ -237,6 +257,17 @@ export const MultiWalletSection = () => {
         title="Unlink Wallet"
         description="Are you sure you want to unlink this secondary wallet? You can re-link it later if needed."
         confirmText="Unlink Wallet"
+        variant="destructive"
+      />
+
+      {/* Cleanup Primary Wallets Dialog */}
+      <ConfirmDialog
+        open={showCleanupDialog}
+        onOpenChange={setShowCleanupDialog}
+        onConfirm={handleCleanupPrimary}
+        title="Reset Primary Wallets"
+        description="This will remove all primary wallets from your account so you can start fresh. This action cannot be undone, but you can re-link wallets afterwards."
+        confirmText="Reset Primary Wallets"
         variant="destructive"
       />
     </>
