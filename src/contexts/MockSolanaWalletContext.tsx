@@ -26,6 +26,7 @@ interface SolanaWalletContextType {
   walletIcon: string | null;
   connect: () => Promise<void>;
   connectPaymentWallet: () => Promise<void>;
+  openWalletSelector: () => void;
   linkIdentityWallet: (walletAddress: string) => Promise<boolean>;
   disconnect: () => void;
   listProviders: () => any[];
@@ -42,6 +43,7 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   walletIcon: null,
   connect: async () => {},
   connectPaymentWallet: async () => {},
+  openWalletSelector: () => {},
   linkIdentityWallet: async () => false,
   disconnect: () => {},
   listProviders: () => [],
@@ -175,6 +177,10 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [user]);
 
+  const openWalletSelector = useCallback(() => {
+    setVisible(true);
+  }, [setVisible]);
+
   const connectWith = useCallback(async (providerName: string) => {
     try {
       // Find the specific wallet adapter by name
@@ -215,6 +221,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     walletIcon: wallet?.adapter.icon || null,
     connect,
     connectPaymentWallet,
+    openWalletSelector,
     linkIdentityWallet,
     disconnect,
     listProviders,

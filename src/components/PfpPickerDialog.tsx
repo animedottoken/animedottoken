@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { Image as ImageIcon, DollarSign, Coins, Info } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
@@ -30,7 +31,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
-  const { connected, connectPaymentWallet } = useSolanaWallet();
+  const { connected, openWalletSelector } = useSolanaWallet();
 
   // Set current avatar as preview when dialog opens
   useEffect(() => {
@@ -39,13 +40,14 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
     }
   }, [open, profile?.profile_image_url, selectedFile]);
 
-  // Preserve selected file when wallet connects
+  // Create preview URL for selected file
   useEffect(() => {
-    if (selectedFile && !previewUrl) {
+    if (selectedFile) {
       const url = URL.createObjectURL(selectedFile);
       setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
     }
-  }, [selectedFile, previewUrl]);
+  }, [selectedFile]);
 
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);
@@ -67,8 +69,6 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
     }
   };
 
-  // Always require wallet connection for consistency
-  const canProceed = connected;
 
   return (
     <Dialog open={open} onOpenChange={(o) => { 
@@ -86,137 +86,124 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
         </DialogHeader>
 
         <div className="px-6 pb-4">
-          {!connected ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-medium">Connect Wallet to Continue</h3>
-                <p className="text-sm text-muted-foreground">You need to connect a wallet to change your profile picture</p>
+          <div className="flex items-start gap-4">
+            <div className="relative">
+              <Avatar className="w-24 h-24 border-4 border-border shadow">
+                <AvatarImage src={previewUrl || profile?.profile_image_url || undefined} alt="Preview" />
+                <AvatarFallback className="text-lg">
+                  {profile?.nickname?.slice(0,2).toUpperCase() || profile?.wallet_address?.slice(0,2).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow">
+                <ImageIcon className="w-4 h-4" />
               </div>
-              <Button onClick={connectPaymentWallet} className="px-6">
-                Connect Wallet
-              </Button>
             </div>
-          ) : (
-            <div className="flex items-start gap-4">
-              <div className="relative">
-                <Avatar className="w-24 h-24 border-4 border-border shadow">
-                  <AvatarImage src={previewUrl || profile?.profile_image_url || undefined} alt="Preview" />
-                  <AvatarFallback className="text-lg">
-                    {profile?.nickname?.slice(0,2).toUpperCase() || profile?.wallet_address?.slice(0,2).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow">
-                  <ImageIcon className="w-4 h-4" />
-                </div>
-              </div>
-            
-              <div className="flex-1 space-y-4">
-                {/* Upload Area */}
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Select Image</h3>
-                  <AspectRatio ratio={1} className="bg-muted rounded-lg overflow-hidden border relative group max-w-[200px]">
-                    <img 
-                      src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
-                      alt="Avatar preview" 
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {/* Upload overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                      {canProceed && (
-                        <>
-                          <FileUpload
-                            onFileSelect={handleFileSelect}
-                            accept="image/*"
-                            currentFile={selectedFile}
-                            previewUrl={previewUrl}
-                            placeholder=""
-                            className="absolute inset-0 cursor-pointer opacity-0"
-                          />
-                          <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="bg-white/90 rounded-lg px-3 py-2 text-xs font-medium text-gray-900">
-                              Click to change
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Current file indicator */}
-                    {selectedFile && (
-                      <div className="absolute top-1 right-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                        New
-                      </div>
-                    )}
-                  </AspectRatio>
+          
+            <div className="flex-1 space-y-4">
+              {/* Upload Area */}
+              <div>
+                <h3 className="text-sm font-medium mb-2">Select Image</h3>
+                <AspectRatio ratio={1} className="bg-muted rounded-lg overflow-hidden border relative group max-w-[200px]">
+                  <img 
+                    src={previewUrl || profile?.profile_image_url || '/placeholder.svg'} 
+                    alt="Avatar preview" 
+                    className="w-full h-full object-cover"
+                  />
                   
-                  {/* File info */}
+                  {/* Upload overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <FileUpload
+                      onFileSelect={handleFileSelect}
+                      accept="image/*"
+                      currentFile={selectedFile}
+                      previewUrl={previewUrl}
+                      placeholder=""
+                      className="absolute inset-0 cursor-pointer opacity-0"
+                    />
+                    <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-white/90 rounded-lg px-3 py-2 text-xs font-medium text-gray-900">
+                        Click to change
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Current file indicator */}
                   {selectedFile && (
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
+                    <div className="absolute top-1 right-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      New
                     </div>
                   )}
-                </div>
-
-                {/* Guidelines */}
-                <Alert className="bg-blue-50 border-blue-200 text-blue-700">
-                  <Info className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    <strong>Recommended:</strong> 512x512px (1:1 ratio) for best quality. This avatar will be visible on your profile and marketplace.
-                  </AlertDescription>
-                </Alert>
-
-                {/* Pricing Alert */}
-                {isFirstChange ? (
-                  <Alert className="border-green-200 bg-green-50 text-green-700">
-                    <DollarSign className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
-                      Your first profile picture change is <strong>FREE</strong>
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <Alert className="bg-primary/10 border-primary/30 text-primary">
-                    <Coins className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
-                      Profile picture change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
-                    </AlertDescription>
-                  </Alert>
+                </AspectRatio>
+                
+                {/* File info */}
+                {selectedFile && (
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
+                  </div>
                 )}
               </div>
+
+              {/* Guidelines */}
+              <Alert className="bg-blue-50 border-blue-200 text-blue-700">
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  <strong>Recommended:</strong> 512x512px (1:1 ratio) for best quality. This avatar will be visible on your profile and marketplace.
+                </AlertDescription>
+              </Alert>
+
+              {/* Pricing Alert */}
+              {isFirstChange ? (
+                <Alert className="border-green-200 bg-green-50 text-green-700">
+                  <DollarSign className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    Your first profile picture change is <strong>FREE</strong>
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert className="bg-primary/10 border-primary/30 text-primary">
+                  <Coins className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    Profile picture change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
-        {connected && (
-          <div className="p-6 pt-0 space-y-4">
-            {!isFirstChange && (
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="payment-confirmation"
-                  checked={paymentConfirmed}
-                  onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-                />
-                <label 
-                  htmlFor="payment-confirmation" 
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  I understand I will be charged the amount shown for this profile picture change
-                </label>
-              </div>
-            )}
-            
-            <Button
-              className="w-full"
-              disabled={!selectedFile || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
-              onClick={handleConfirm}
-            >
-              {loading ? 'Updating...' : 
-               isFirstChange ? 'Set Profile Picture (FREE)' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME (~$2.00 USDT)`}
-            </Button>
-          </div>
-        )}
+        <div className="p-6 pt-0 space-y-4">
+          {!isFirstChange && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="payment-confirmation"
+                checked={paymentConfirmed}
+                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
+              />
+              <label 
+                htmlFor="payment-confirmation" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I understand I will be charged the amount shown for this profile picture change
+              </label>
+            </div>
+          )}
+          
+          <PaymentWalletButton
+            onPaymentComplete={async (txSignature) => {
+              if (selectedFile) {
+                await handleConfirm();
+              }
+            }}
+            disabled={!selectedFile || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
+            amount={animeAmount}
+            currency="ANIME"
+          >
+            {loading ? 'Updating...' : 
+             isFirstChange ? 'Set Profile Picture (FREE)' : 
+             pricingLoading ? 'Calculating Price...' :
+             `Pay ${animeAmount.toLocaleString()} ANIME & Update Picture`}
+          </PaymentWalletButton>
+        </div>
       </DialogContent>
     </Dialog>
   );

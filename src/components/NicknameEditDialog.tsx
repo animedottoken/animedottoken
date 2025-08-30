@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { DollarSign, Coins } from 'lucide-react';
 import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
@@ -26,7 +27,7 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
   const [nickname, setNickname] = useState('');
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(1.00); // 1 USDT for nickname
-  const { connected, connectPaymentWallet } = useSolanaWallet();
+  const { connected, openWalletSelector } = useSolanaWallet();
   
   const isFirstChange = !profile?.nickname;
 
@@ -64,75 +65,66 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
           </DialogTitle>
         </DialogHeader>
         
-        {!connected ? (
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <div className="text-center space-y-2">
-              <h3 className="text-lg font-medium">Connect Wallet to Continue</h3>
-              <p className="text-sm text-muted-foreground">You need to connect a wallet to set your nickname</p>
-            </div>
-            <Button onClick={connectPaymentWallet} className="px-6">
-              Connect Wallet
-            </Button>
+        <div className="space-y-4">
+          <div>
+            <Input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Enter your nickname"
+              maxLength={20}
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              2-20 characters. Letters, numbers, spaces, hyphens, underscores, and periods allowed.
+            </p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <Input
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="Enter your nickname"
-                maxLength={20}
+
+          {/* Pricing Alert */}
+          {isFirstChange ? (
+            <Alert className="border-green-200 bg-green-50 text-green-700">
+              <DollarSign className="h-4 w-4" />
+              <AlertDescription>
+                Your first nickname is <strong>FREE</strong>
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="bg-primary/10 border-primary/30 text-primary">
+              <Coins className="h-4 w-4" />
+              <AlertDescription>
+                Nickname change requires payment in ANIME. Price updates live from DexScreener (~1.00 USDT).
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {!isFirstChange && (
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="nickname-payment-confirmation"
+                checked={paymentConfirmed}
+                onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                2-20 characters. Letters, numbers, spaces, hyphens, underscores, and periods allowed.
-              </p>
+              <label 
+                htmlFor="nickname-payment-confirmation" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I understand I will be charged the amount shown for this nickname change
+              </label>
             </div>
-
-            {/* Pricing Alert */}
-            {isFirstChange ? (
-              <Alert className="border-green-200 bg-green-50 text-green-700">
-                <DollarSign className="h-4 w-4" />
-                <AlertDescription>
-                  Your first nickname is <strong>FREE</strong>
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert className="bg-primary/10 border-primary/30 text-primary">
-                <Coins className="h-4 w-4" />
-                <AlertDescription>
-                  Nickname change requires payment in ANIME. Price updates live from DexScreener (~1.00 USDT).
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {!isFirstChange && (
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="nickname-payment-confirmation"
-                  checked={paymentConfirmed}
-                  onCheckedChange={(checked) => setPaymentConfirmed(checked === true)}
-                />
-                <label 
-                  htmlFor="nickname-payment-confirmation" 
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  I understand I will be charged the amount shown for this nickname change
-                </label>
-              </div>
-            )}
-            
-            <Button
-              className="w-full"
-              disabled={!nickname.trim() || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
-              onClick={handleConfirm}
-            >
-              {loading ? 'Updating...' : 
-               isFirstChange ? 'Set Nickname (FREE)' : 
-               pricingLoading ? 'Calculating Price...' :
-               `Confirm & Pay ${animeAmount.toLocaleString()} ANIME`}
-            </Button>
-          </div>
-        )}
+          )}
+          
+          <PaymentWalletButton
+            onPaymentComplete={async (txSignature) => {
+              await handleConfirm();
+            }}
+            disabled={!nickname.trim() || loading || (!isFirstChange && !paymentConfirmed) || pricingLoading}
+            amount={animeAmount}
+            currency="ANIME"
+          >
+            {loading ? 'Updating...' : 
+             isFirstChange ? 'Set Nickname (FREE)' : 
+             pricingLoading ? 'Calculating Price...' :
+             `Pay ${animeAmount.toLocaleString()} ANIME & Set Nickname`}
+          </PaymentWalletButton>
+        </div>
       </DialogContent>
     </Dialog>
   );
