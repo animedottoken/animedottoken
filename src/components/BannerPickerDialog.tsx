@@ -138,12 +138,12 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 /* Wallet connection overlay when not connected */
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                   <div className="text-center space-y-3 max-w-xs">
-                    <div className="text-white text-sm font-medium">
-                      Please connect your wallet to upload your banner
-                    </div>
                     <p className="text-white/90 text-xs">
                       First upload is free. Future changes are a friendly, optional service (~2 USDT) at the live ANIME rate.
                     </p>
+                    <div className="text-white text-sm font-medium">
+                      Please connect your wallet to upload your banner
+                    </div>
                     <Button
                       onClick={connect}
                       variant="default"
