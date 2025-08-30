@@ -132,18 +132,14 @@ const Profile = () => {
 
   const handleNicknameConfirm = async (nickname: string) => {
     try {
-      if (!hasWallet) {
-        toast.error('Please connect your wallet to change your nickname');
-        return false;
-      }
-
+      const isFirstChange = !profile?.nickname;
       const success = await setNickname(nickname);
       if (!success) {
         toast.error('Failed to update nickname');
         return false;
       }
       await fetchProfile();
-      toast.success('Nickname updated successfully!');
+      toast.success(isFirstChange ? 'Nickname set successfully!' : 'Nickname updated successfully!');
       return true;
     } catch (error) {
       console.error('Error updating nickname:', error);
@@ -181,11 +177,6 @@ const Profile = () => {
   };
 
   const handlePfpConfirm = async (nftMintAddress: string) => {
-    if (!hasWallet) {
-      toast.error('Please connect your wallet to set an NFT as your profile picture');
-      return false;
-    }
-    
     try {
       await setPFP(nftMintAddress, 'dummy-tx-signature');
       await fetchProfile();
@@ -199,11 +190,6 @@ const Profile = () => {
   };
 
   const handleBannerConfirm = async (bannerFile: File) => {
-    if (!hasWallet) {
-      toast.error('Please connect your wallet to set a custom banner');
-      return false;
-    }
-    
     const result = await setBanner(bannerFile);
     if (result) {
       await fetchProfile();
@@ -967,7 +953,7 @@ const Profile = () => {
             profile={profile}
             onConfirmUpload={handleAvatarConfirm}
             loading={profileLoading}
-            isFirstChange={!profile?.pfp_unlock_status}
+            isFirstChange={!profile?.profile_image_url}
           />
           
           <BannerPickerDialog
@@ -976,7 +962,7 @@ const Profile = () => {
             profile={profile}
             onConfirm={handleBannerConfirm}
             loading={profileLoading}
-            isFirstChange={true}
+            isFirstChange={!profile?.banner_image_url}
           />
         </>
       )}

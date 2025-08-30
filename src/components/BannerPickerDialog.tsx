@@ -108,9 +108,10 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 className="w-full h-full object-cover"
               />
               
-              {connected ? (
+              {/* Upload overlay when connected OR first change */}
+              {(connected || isFirstChange) ? (
                 <>
-                  {/* Upload overlay when connected */}
+                  {/* Upload overlay */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                     <FileUpload
                       onFileSelect={handleFileSelect}
@@ -135,11 +136,11 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                   )}
                 </>
               ) : (
-                /* Wallet connection overlay when not connected */
+                /* Wallet connection overlay when not connected AND not first change */
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                   <div className="text-center space-y-3 max-w-xs">
                     <p className="text-white text-sm font-medium">
-                      First upload is free. Future changes are a friendly, optional service (~2 USDT) at the live ANIME rate.
+                      Banner updates require payment in ANIME (~2 USDT) at live rates.
                     </p>
                     <div className="text-white/90 text-xs">
                       Please connect your wallet to upload your banner
@@ -157,7 +158,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             </AspectRatio>
           
             {/* File info */}
-            {selectedFile && connected && (
+            {selectedFile && (connected || isFirstChange) && (
               <div className="mt-2 text-sm text-muted-foreground">
                 Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
               </div>
@@ -173,12 +174,21 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
           </Alert>
 
           {/* Pricing Alert */}
-          <Alert className="bg-primary/10 border-primary/30 text-primary">
-            <Coins className="h-4 w-4" />
-            <AlertDescription>
-              Live pricing: we calculate the ANIME amount for ~2 USDT using the current rate from DexScreener.
-            </AlertDescription>
-          </Alert>
+          {isFirstChange ? (
+            <Alert className="border-green-200 bg-green-50 text-green-700">
+              <Coins className="h-4 w-4" />
+              <AlertDescription>
+                Your first banner change is <strong>FREE</strong>
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert className="bg-primary/10 border-primary/30 text-primary">
+              <Coins className="h-4 w-4" />
+              <AlertDescription>
+                Live pricing: we calculate the ANIME amount for ~2 USDT using the current rate from DexScreener.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
 
         <div className="p-6 pt-0 space-y-4">
@@ -193,6 +203,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             currency="ANIME"
           >
              {loading ? 'Updating...' : 
+              isFirstChange ? 'Set Banner (FREE)' : 
               pricingLoading ? 'Calculating Price...' :
               `Pay ${animeAmount.toLocaleString()} ANIME (~2 USDT) & Update Banner`}
           </PaymentWalletButton>
