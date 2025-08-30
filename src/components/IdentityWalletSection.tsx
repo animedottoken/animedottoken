@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Wallet, LinkIcon, AlertTriangle } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
+import { truncateAddress } from '@/utils/addressUtils';
 
 export const IdentityWalletSection = () => {
   const { connected, publicKey, connectPaymentWallet, linkIdentityWallet } = useSolanaWallet();
@@ -51,7 +52,7 @@ export const IdentityWalletSection = () => {
                 <Wallet className="h-4 w-4 text-primary" />
                 <div>
                   <div className="font-mono text-sm">
-                    {profile.wallet_address?.slice(0, 8)}...{profile.wallet_address?.slice(-8)}
+                    {truncateAddress(profile.wallet_address || '')}
                   </div>
                   <div className="text-xs text-muted-foreground">Identity Wallet</div>
                 </div>
@@ -65,7 +66,7 @@ export const IdentityWalletSection = () => {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  You have a different wallet connected. Your identity wallet remains {profile.wallet_address?.slice(0, 8)}...{profile.wallet_address?.slice(-8)}.
+                  You have a different wallet connected. Your identity wallet remains {truncateAddress(profile.wallet_address || '')}.
                 </AlertDescription>
               </Alert>
             )}
@@ -87,7 +88,7 @@ export const IdentityWalletSection = () => {
               {linking ? (
                 'Linking...'
               ) : connected ? (
-                `Link Current Wallet (${publicKey?.slice(0, 8)}...${publicKey?.slice(-8)})`
+                `Link Current Wallet (${truncateAddress(publicKey || '')})`
               ) : (
                 'Connect & Link Wallet'
               )}
