@@ -78,8 +78,12 @@ export default function Auth() {
 
     // Check if user is already logged in
     const checkUser = async () => {
+      console.log('Checking user session...');
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('Current session:', session);
+      
       if (session) {
+        console.log('User already logged in, redirecting to:', redirectTo);
         navigate(redirectTo);
         return;
       }
