@@ -29,6 +29,7 @@ interface PfpPickerDialogProps {
 export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, loading, isFirstChange = true }: PfpPickerDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [submitting, setSubmitting] = useState(false);
   const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
   const { connected, openWalletSelector } = useSolanaWallet();
 
@@ -59,19 +60,28 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
   };
 
   const handleConfirm = async () => {
-    if (!selectedFile) return;
-    const success = await onConfirmUpload(selectedFile);
-    if (success) {
-      onOpenChange(false);
-      setSelectedFile(null);
-      setPreviewUrl('');
+    if (!selectedFile || submitting) return;
+    
+    setSubmitting(true);
+    try {
+      const success = await onConfirmUpload(selectedFile);
+      if (success) {
+        onOpenChange(false);
+        setSelectedFile(null);
+        setPreviewUrl('');
+        // Don't reset submitting here - component will unmount
+      } else {
+        setSubmitting(false);
+      }
+    } catch (error) {
+      setSubmitting(false);
     }
   };
 
 
   return (
     <Dialog open={open} modal={false} onOpenChange={(o) => { 
-      if (!loading) {
+      if (!loading && !submitting) {
         onOpenChange(o);
         if (!o) {
           setSelectedFile(null);
@@ -82,10 +92,10 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
       <DialogContent 
         className="sm:max-w-[720px] p-0 overflow-hidden"
         onPointerDownOutside={(e) => {
-          e.preventDefault();
+          if (loading || submitting) e.preventDefault();
         }}
         onInteractOutside={(e) => {
-          e.preventDefault();
+          if (loading || submitting) e.preventDefault();
         }}
       >
         <DialogHeader className="p-6 pb-3">
@@ -128,7 +138,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                           currentFile={selectedFile}
                           previewUrl={previewUrl}
                           placeholder=""
-                          className="absolute inset-0 cursor-pointer opacity-0"
+                          className={`absolute inset-0 cursor-pointer opacity-0 ${(loading || submitting) ? 'pointer-events-none' : ''}`}
                         />
                         <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                           <div className="bg-white/90 rounded-lg px-3 py-2 text-xs font-medium text-gray-900">
@@ -207,10 +217,10 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
           {isFirstChange ? (
             <Button
               onClick={handleConfirm}
-              disabled={!selectedFile || loading}
+              disabled={!selectedFile || loading || submitting}
               className="w-full"
             >
-              {loading ? 'Setting...' : 'Set Profile Picture (FREE)'}
+              {(loading || submitting) ? 'Setting...' : 'Set Profile Picture (FREE)'}
             </Button>
           ) : (
             <PaymentWalletButton
@@ -219,11 +229,11 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                   await handleConfirm();
                 }
               }}
-              disabled={!selectedFile || loading || (connected && pricingLoading)}
+              disabled={!selectedFile || loading || submitting || (connected && pricingLoading)}
               amount={animeAmount}
               currency="ANIME"
             >
-               {loading ? 'Updating...' : 
+               {(loading || submitting) ? 'Updating...' : 
                 pricingLoading ? 'Calculating Price...' :
                 `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Picture`}
             </PaymentWalletButton>
