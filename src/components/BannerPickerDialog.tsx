@@ -67,7 +67,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { 
+    <Dialog open={open} modal={false} onOpenChange={(o) => { 
       if (!loading) {
         onOpenChange(o);
         if (!o) {
@@ -157,7 +157,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
           <Alert className="bg-primary/10 border-primary/30 text-primary">
             <Coins className="h-4 w-4" />
             <AlertDescription>
-              Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
+              Your first banner upload is free. Future changes are a small, friendly service (~2 USDT) paid in ANIME at the live rate.
             </AlertDescription>
           </Alert>
         </div>
