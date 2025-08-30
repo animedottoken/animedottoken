@@ -139,7 +139,7 @@ export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loa
             >
               {loading ? 'Updating...' : 
                pricingLoading ? 'Calculating Price...' :
-               `Pay ${animeAmount.toLocaleString()} ANIME & Set Nickname`}
+               `Pay ${animeAmount.toLocaleString()} ANIME (~1.00 USDT) & Set Nickname`}
             </PaymentWalletButton>
           )}
         </div>
