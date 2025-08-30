@@ -557,13 +557,13 @@ const Profile = () => {
                           'Connecting...'
                         ) : hasWallet ? (
                           <>
-                            <LogOut className="h-4 w-4 text-destructive" />
                             Disconnect Wallet
+                            <LogOut className="h-4 w-4 text-destructive" />
                           </>
                         ) : (
                           <>
-                            <LogIn className="h-4 w-4 text-success" />
                             Connect Wallet
+                            <LogIn className="h-4 w-4 text-success" />
                           </>
                         )}
                       </Button>
