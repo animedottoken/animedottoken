@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 export const useAutoPrimaryWallet = () => {
   const [showPrimaryPrompt, setShowPrimaryPrompt] = useState(false);
-  const { connected, publicKey } = useSolanaWallet();
+  const { connected, publicKey, signMessage } = useSolanaWallet();
   const { getPrimaryWallet, linkWallet, generateLinkingMessage } = useUserWallets();
 
   useEffect(() => {
@@ -35,11 +35,14 @@ export const useAutoPrimaryWallet = () => {
 
     try {
       const message = generateLinkingMessage(publicKey);
-      // In a real app, we'd need to sign this message
-      // For now, we'll simulate a successful signing
-      const mockSignature = `mock-signature-${Date.now()}`;
+      // Sign with the connected wallet
+      const signedMessage = await signMessage(message);
+      if (!signedMessage) {
+        toast.error('Message signing was cancelled');
+        return false;
+      }
       
-      const success = await linkWallet(publicKey, mockSignature, message, 'primary');
+      const success = await linkWallet(publicKey, signedMessage, message, 'primary');
       if (success) {
         setShowPrimaryPrompt(false);
         toast.success('Primary wallet set successfully!');

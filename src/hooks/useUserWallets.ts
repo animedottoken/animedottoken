@@ -76,12 +76,16 @@ export function useUserWallets() {
     walletType: 'primary' | 'secondary' = 'secondary'
   ): Promise<boolean> => {
     try {
+      const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
       const { data, error } = await supabase.functions.invoke('link-secondary-wallet', {
         body: {
           wallet_address: walletAddress,
           signature,
           message,
           wallet_type: walletType
+        },
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
         }
       });
 
@@ -104,8 +108,12 @@ export function useUserWallets() {
 
   const unlinkWallet = async (walletId: string): Promise<boolean> => {
     try {
+      const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
       const { data, error } = await supabase.functions.invoke('unlink-wallet', {
-        body: { wallet_id: walletId }
+        body: { wallet_id: walletId },
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        }
       });
 
       if (error) throw error;
