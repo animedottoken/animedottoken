@@ -28,6 +28,7 @@ export interface FilterState {
   minRoyalty: string;
   maxRoyalty: string;
   listing?: 'all' | 'listed' | 'not-listed'; // Only for profile NFTs
+  type?: 'all' | 'collections' | 'nfts'; // New type filter for combined tab
 }
 
 interface SearchFilterBarProps {
@@ -37,6 +38,7 @@ interface SearchFilterBarProps {
   showPriceFilters?: boolean;
   showRoyaltyFilters?: boolean;
   showSourceFilter?: boolean;
+  showTypeFilter?: boolean;
   placeholder?: string;
   categories?: string[];
 }
@@ -48,6 +50,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showPriceFilters = true,
   showRoyaltyFilters = true,
   showSourceFilter = true,
+  showTypeFilter = false,
   placeholder = "Search NFTs and collections...",
   categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']
 }) => {
@@ -80,7 +83,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       maxPrice: '',
       minRoyalty: '',
       maxRoyalty: '',
-      ...(showListingFilter && { listing: 'all' })
+      ...(showListingFilter && { listing: 'all' }),
+      ...(showTypeFilter && { type: 'all' })
     };
     setLocalFilters(clearedFilters);
   };
@@ -94,7 +98,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     localFilters.maxPrice || 
     localFilters.minRoyalty || 
     localFilters.maxRoyalty ||
-    (showListingFilter && localFilters.listing !== 'all');
+    (showListingFilter && localFilters.listing !== 'all') ||
+    (showTypeFilter && localFilters.type !== 'all');
 
   return (
     <div className="bg-card p-4 rounded-lg border space-y-4">
@@ -111,6 +116,25 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
       {/* Primary Filters Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        {showTypeFilter && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Type</Label>
+            <Select
+              value={localFilters.type || 'all'}
+              onValueChange={(value) => updateFilter('type', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="collections">Collections</SelectItem>
+                <SelectItem value="nfts">NFTs</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {showSourceFilter && (
           <div className="space-y-2">
             <Label className="text-sm font-medium">Source</Label>
@@ -295,6 +319,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           {showListingFilter && localFilters.listing !== 'all' && (
             <Badge variant="secondary" className="text-xs">
               {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
+            </Badge>
+          )}
+          {showTypeFilter && localFilters.type !== 'all' && (
+            <Badge variant="secondary" className="text-xs">
+              Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
             </Badge>
           )}
         </div>

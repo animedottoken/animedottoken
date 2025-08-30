@@ -81,8 +81,8 @@ const Profile = () => {
     targetWallet ? [targetWallet] : []
   );
 
-  // Filter states
-  const [nftFilters, setNftFilters] = useState<FilterState>({
+  // Filter states - combine into one for the merged tab
+  const [combinedFilters, setCombinedFilters] = useState<FilterState>({
     searchQuery: '',
     source: 'all',
     sortBy: 'newest',
@@ -92,19 +92,8 @@ const Profile = () => {
     maxPrice: '',
     minRoyalty: '',
     maxRoyalty: '',
-    listing: 'all'
-  });
-
-  const [collectionFilters, setCollectionFilters] = useState<FilterState>({
-    searchQuery: '',
-    source: 'all',
-    sortBy: 'newest',
-    includeExplicit: false,
-    category: 'all',
-    minPrice: '',
-    maxPrice: '',
-    minRoyalty: '',
-    maxRoyalty: ''
+    listing: 'all',
+    type: 'all'
   });
 
   useEffect(() => {
@@ -353,7 +342,7 @@ const Profile = () => {
     likedNFTsForFiltering,
     nftsFromLikedCreatorsForFiltering,
     followedCreators,
-    nftFilters,
+    combinedFilters,
     getNFTLikeCount
   );
 
@@ -373,9 +362,13 @@ const Profile = () => {
     likedCollectionsForFiltering,
     collectionsFromLikedCreators,
     followedCreators,
-    collectionFilters,
+    combinedFilters,
     getCollectionLikeCount
   );
+
+  // Filter by type for the combined view
+  const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
+  const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
 
   if (loading) {
     return (
@@ -704,13 +697,10 @@ const Profile = () => {
       </div>
 
       {/* Profile Content */}
-      <Tabs defaultValue="collections" className="space-y-6">
-        <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
-          <TabsTrigger value="collections">
-            My Collections ({userCollections.length})
-          </TabsTrigger>
-          <TabsTrigger value="nfts">
-            My NFTs ({nfts.length})
+      <Tabs defaultValue="collections-nfts" className="space-y-6">
+        <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          <TabsTrigger value="collections-nfts">
+            My Collections & NFTs ({userCollections.length + nfts.length})
           </TabsTrigger>
           {isOwnProfile && (
             <TabsTrigger value="settings">
@@ -719,83 +709,20 @@ const Profile = () => {
           )}
         </TabsList>
 
-        <TabsContent value="collections" className="space-y-6">
+        <TabsContent value="collections-nfts" className="space-y-6">
           <SearchFilterBar
-            filters={collectionFilters}
-            onFiltersChange={setCollectionFilters}
-            showListingFilter={false}
-            showSourceFilter={isOwnProfile}
-            showPriceFilters={true}
-            showRoyaltyFilters={true}
-            placeholder="Search collections..."
-            categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
-          />
-
-          {collectionsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-square bg-muted rounded-lg mb-4"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : filteredCollections.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredCollections.map((collection) => (
-                 <CollectionCard
-                   key={collection.id}
-                   collection={{
-                     id: collection.id,
-                     name: collection.name,
-                     image_url: '/placeholder.svg',
-                     creator_address_masked: collection.creator_address || '',
-                     mint_price: collection.mint_price,
-                     items_redeemed: 0,
-                     verified: false,
-                     description: collection.description
-                   }}
-                   onNavigate={() => setNavContext({ 
-                     type: 'collection', 
-                     items: filteredCollections.map(c => c.id), 
-                     source: 'profile',
-                     tab: 'collections'
-                   })}
-                 />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">
-                  {collectionFilters.searchQuery || collectionFilters.source !== 'all'
-                    ? 'No collections match your filters'
-                    : isOwnProfile
-                    ? 'You haven\'t created any collections yet'
-                    : 'This user hasn\'t created any collections yet'
-                  }
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="nfts" className="space-y-6">
-          <SearchFilterBar
-            filters={nftFilters}
-            onFiltersChange={setNftFilters}
+            filters={combinedFilters}
+            onFiltersChange={setCombinedFilters}
             showListingFilter={isOwnProfile}
             showSourceFilter={isOwnProfile}
+            showTypeFilter={true}
             showPriceFilters={true}
-            showRoyaltyFilters={false}
-            placeholder="Search NFTs..."
+            showRoyaltyFilters={true}
+            placeholder="Search collections and NFTs..."
             categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
           />
 
-          {nftsLoading ? (
+          {collectionsLoading || nftsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -807,44 +734,82 @@ const Profile = () => {
                 </div>
               ))}
             </div>
-          ) : filteredNFTs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredNFTs.map((nft) => (
-                 <NFTCard
-                   key={nft.id}
-                   nft={{
-                     id: nft.id,
-                     name: nft.name,
-                     image_url: '/placeholder.svg',
-                     owner_address: targetWallet || '',
-                     mint_address: nft.id,
-                     creator_address: targetWallet || '',
-                     price: nft.price,
-                     is_listed: nft.is_listed || false,
-                     collection_id: undefined,
-                     description: nft.description,
-                     attributes: undefined,
-                     collections: undefined
-                   }}
-                   showOwnerInfo={false}
-                   onNavigate={() => setNavContext({ 
-                     type: 'nft', 
-                     items: filteredNFTs.map(n => n.id), 
-                     source: 'profile',
-                     tab: 'nfts'
-                   })}
-                 />
-              ))}
+          ) : (filteredCombinedCollections.length > 0 || filteredCombinedNFTs.length > 0) ? (
+            <div className="space-y-6">
+              {/* Collections Section */}
+              {filteredCombinedCollections.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Collections ({filteredCombinedCollections.length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredCombinedCollections.map((collection) => (
+                       <CollectionCard
+                         key={collection.id}
+                         collection={{
+                           id: collection.id,
+                           name: collection.name,
+                           image_url: '/placeholder.svg',
+                           creator_address_masked: collection.creator_address || '',
+                           mint_price: collection.mint_price,
+                           items_redeemed: 0,
+                           verified: false,
+                           description: collection.description
+                         }}
+                         onNavigate={() => setNavContext({ 
+                           type: 'collection', 
+                           items: filteredCombinedCollections.map(c => c.id), 
+                           source: 'profile',
+                           tab: 'collections-nfts'
+                         })}
+                       />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* NFTs Section */}
+              {filteredCombinedNFTs.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">NFTs ({filteredCombinedNFTs.length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredCombinedNFTs.map((nft) => (
+                       <NFTCard
+                         key={nft.id}
+                         nft={{
+                           id: nft.id,
+                           name: nft.name,
+                           image_url: '/placeholder.svg',
+                           owner_address: targetWallet || '',
+                           mint_address: nft.id,
+                           creator_address: targetWallet || '',
+                           price: nft.price,
+                           is_listed: nft.is_listed || false,
+                           collection_id: undefined,
+                           description: nft.description,
+                           attributes: undefined,
+                           collections: undefined
+                         }}
+                         showOwnerInfo={false}
+                         onNavigate={() => setNavContext({ 
+                           type: 'nft', 
+                           items: filteredCombinedNFTs.map(n => n.id), 
+                           source: 'profile',
+                           tab: 'collections-nfts'
+                         })}
+                       />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  {nftFilters.searchQuery || nftFilters.source !== 'all' || nftFilters.listing !== 'all'
-                    ? 'No NFTs match your filters'
+                  {combinedFilters.searchQuery || combinedFilters.source !== 'all' || combinedFilters.type !== 'all' || combinedFilters.listing !== 'all'
+                    ? 'No items match your filters'
                     : isOwnProfile
-                    ? 'You don\'t own any NFTs yet'
-                    : 'This user doesn\'t own any NFTs yet'
+                    ? 'You don\'t have any collections or NFTs yet'
+                    : 'This user doesn\'t have any collections or NFTs yet'
                   }
                 </p>
               </CardContent>
@@ -854,56 +819,7 @@ const Profile = () => {
 
         {isOwnProfile && (
           <TabsContent value="settings" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <MultiWalletSection />
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profile Customization</CardTitle>
-                  <CardDescription>
-                    Personalize your profile with custom images and information
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowBannerPicker(true)}
-                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span className="text-sm">Change Banner</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowPfpPicker(true)}
-                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
-                    >
-                      <User className="h-5 w-5" />
-                      <span className="text-sm">Change Avatar</span>
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowNicknameEdit(true)}
-                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                      <span className="text-sm">Edit Name</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowBioEdit(true)}
-                      className="h-auto py-3 px-4 flex flex-col items-center gap-2"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                      <span className="text-sm">Edit Bio</span>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <MultiWalletSection />
           </TabsContent>
         )}
       </Tabs>
