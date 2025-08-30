@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import base58 from "https://esm.sh/bs58@5.0.0";
+import { decode as bs58decode } from "https://esm.sh/bs58@5.0.0";
 import * as nacl from "https://esm.sh/tweetnacl@1.0.3";
 
 const corsHeaders = {
@@ -94,8 +94,8 @@ serve(async (req) => {
     // Verify signature
     try {
       const messageBytes = new TextEncoder().encode(message);
-      const signatureBytes = base58.decode(signature);
-      const publicKeyBytes = base58.decode(wallet_address);
+      const signatureBytes = bs58decode(signature);
+      const publicKeyBytes = bs58decode(wallet_address);
       
       const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
       
