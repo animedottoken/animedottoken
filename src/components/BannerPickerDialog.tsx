@@ -140,7 +140,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                   <div className="text-center space-y-3 max-w-xs">
                     <p className="text-white text-sm font-medium">
-                      Banner updates require payment in $ANIME (~2 USDT) at live rates.
+                      Banner updates require payment in ANIME (~2 USDT) at live rates.
                     </p>
                     <div className="text-white/90 text-xs">
                       Please connect your wallet to upload your banner
@@ -185,7 +185,7 @@ export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loa
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Your first banner was <strong>FREE</strong>. Further changes require payment in $ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
+                Your first banner was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
               </AlertDescription>
             </Alert>
           )}

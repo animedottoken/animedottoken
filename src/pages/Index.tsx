@@ -25,7 +25,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircle, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircle } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
@@ -156,7 +156,6 @@ const Index = () => {
 
   // Removed custom hashchange handler to rely on native anchor behavior
 
-  const [showFullPage, setShowFullPage] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
   const [step1Open, setStep1Open] = useState(false);
@@ -203,20 +202,20 @@ const Index = () => {
 
       {/* Ownership Economy Banner */}
       <div className="mb-6 mx-auto max-w-5xl">
-        <div className="bg-gradient-to-r from-primary/10 to-violet-600/10 border border-primary/20 rounded-lg p-4 text-center animate-pulse">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm md:text-base font-medium text-primary">
-              🎌 Ownership Economy Platform • Built on Solana • 
-              <span className="ml-2 text-xs bg-primary/20 px-2 py-1 rounded">Don't just be a user. Be an owner.</span>
-            </p>
-            <Button
-              onClick={() => setShowFullPage(!showFullPage)}
-              variant="outline"
-              size="sm"
-              className="gap-2 border-primary/20 hover:border-primary/40 whitespace-nowrap"
-            >
-              {showFullPage ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {showFullPage ? "Show Basics" : "Show Full Page"}
+        <div
+          className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
+          onClick={() => scrollToHash('create-nfts')}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">💎</span>
+              <div>
+                <h3 className="font-semibold text-foreground">Ownership Economy Platform</h3>
+                <p className="text-sm text-muted-foreground">Don't just be a user. Be an owner.</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm">
+              Explore Platform
             </Button>
           </div>
         </div>
@@ -311,15 +310,15 @@ const Index = () => {
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
       </div>
 
-      {/* 5. COMMUNITY SECTION - ANIME.TOKEN ARMY */}
+      {/* 5. COMMUNITY SECTION - ANIME ARMY */}
       <div id="nft-supporter-section" className="scroll-mt-20">
-        <NFTSupporterSection globalOpen={showFullPage} />
+        <NFTSupporterSection />
       </div>
 
       {/* 6. SOCIAL PROOF & FINAL CTA */}
       <div id="featured-community-content" className="featured-community-content scroll-mt-20">
         <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg min-h-[420px]"></div>}>
-          <FeaturedCommunityContent globalOpen={showFullPage} />
+          <FeaturedCommunityContent />
         </Suspense>
       </div>
 
@@ -337,210 +336,20 @@ const Index = () => {
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-center text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <ShoppingCart className="w-8 h-8 text-violet-400" />
-          How to buy $ANIME
+          How to Join the Ownership Economy: Buying $ANIME
         </h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
-          {/* Step 1: Create a Wallet */}
-          <Collapsible open={showFullPage} onOpenChange={() => {}} className="group">
-            <CollapsibleTrigger asChild>
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-                <CardHeader className="text-center pb-3">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
-                    <span className="text-2xl">🔑</span>
-                  </div>
-                  <CardTitle className="text-lg md:text-xl font-bold text-center flex items-center justify-center gap-2">
-                    1. CREATE A WALLET
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Download Phantom or Solflare wallet to store your $ANIME tokens securely on the Solana blockchain.
-                </p>
-                <Button 
-                  className="w-full" 
-                  onClick={() => window.open('https://phantom.app/', '_blank')}
-                >
-                  Get Phantom Wallet
-                </Button>
-              </CardContent>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Step 2: Get Some SOL */}
-          <Collapsible open={showFullPage} onOpenChange={() => {}} className="group">
-            <CollapsibleTrigger asChild>
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-                <CardHeader className="text-center pb-3">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg">
-                    <span className="text-2xl">💰</span>
-                  </div>
-                  <CardTitle className="text-lg md:text-xl font-bold text-center flex items-center justify-center gap-2">
-                    2. GET SOME SOL
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Purchase SOL from a centralized exchange like Coinbase, Binance, or directly in your wallet.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => window.open('https://www.coinbase.com/price/solana', '_blank')}
-                >
-                  Buy SOL on Coinbase
-                </Button>
-              </CardContent>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Step 3: Go to Raydium or Jupiter */}
-          <Collapsible open={showFullPage} onOpenChange={() => {}} className="group">
-            <CollapsibleTrigger asChild>
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-                <CardHeader className="text-center pb-3">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 shadow-lg">
-                    <span className="text-2xl">🔄</span>
-                  </div>
-                  <CardTitle className="text-lg md:text-xl font-bold text-center flex items-center justify-center gap-2">
-                    3. GO TO RAYDIUM OR JUPITER
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Connect your wallet to Raydium or Jupiter - Solana's leading decentralized exchanges.
-                </p>
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => window.open('https://raydium.io/swap/', '_blank')}
-                  >
-                    Raydium
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => window.open('https://jup.ag/', '_blank')}
-                  >
-                    Jupiter
-                  </Button>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Step 4: Swap SOL for $ANIME */}
-          <Collapsible open={showFullPage} onOpenChange={() => {}} className="group">
-            <CollapsibleTrigger asChild>
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-                <CardHeader className="text-center pb-3">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-600 shadow-lg">
-                    <span className="text-2xl">🎌</span>
-                  </div>
-                  <CardTitle className="text-lg md:text-xl font-bold text-center flex items-center justify-center gap-2">
-                    4. SWAP SOL FOR $ANIME
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Paste the $ANIME contract address and swap your SOL for $ANIME tokens. Welcome to the ownership economy!
-                </p>
-                <div className="space-y-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-xs"
-                    onClick={copyContract}
-                  >
-                    <Copy className="w-3 h-3 mr-1" />
-                    Copy Contract
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => window.open(`https://jup.ag/swap/SOL-${CONTRACT}`, '_blank')}
-                  >
-                    Buy on Jupiter
-                  </Button>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
-      </section>
-
-      {/* Large Text Block - ANIME.TOKEN — A NEW INTERNET MONEY ERA */}
-      <section className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <div className="bg-card border rounded-lg p-8 md:p-12">
-          <h2 className="text-2xl md:text-4xl font-bold mb-6 text-center">
-            ANIME.TOKEN — A NEW INTERNET MONEY ERA
-          </h2>
-          <div className="prose prose-lg max-w-none text-muted-foreground">
-            <p className="mb-6 text-lg leading-relaxed">
-              The internet changed everything. Web 2.0 gave us social media, streaming, and the creator economy. But there's a problem: you don't own anything. Your followers, your content, your data – it all belongs to the platforms.
-            </p>
-            
-            <Collapsible open={showFullPage} onOpenChange={() => {}}>
-              <CollapsibleTrigger asChild>
-                <Button variant="link" className="px-0 text-primary mb-4" disabled={showFullPage}>
-                  {showFullPage ? "Show less" : "Read more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${showFullPage ? "rotate-180" : ""}`} />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <p className="mb-6 leading-relaxed">
-                  Web3 changes that. For the first time in internet history, you can truly own your digital assets. $ANIME represents this new paradigm – an ownership economy where communities, not corporations, hold the power.
-                </p>
-                
-                <h3 className="text-xl font-semibold mb-4 text-foreground">Why $ANIME Matters</h3>
-                <ul className="list-disc list-inside space-y-2 mb-6">
-                  <li>Community-owned and operated</li>
-                  <li>Built on Solana's fast, low-cost infrastructure</li>
-                  <li>Represents the cultural shift toward digital ownership</li>
-                  <li>Connects anime fans worldwide through shared ownership</li>
-                </ul>
-                
-                <h3 className="text-xl font-semibold mb-4 text-foreground">The Vision</h3>
-                <p className="mb-6 leading-relaxed">
-                  We're building more than a token – we're creating a movement. A place where anime culture meets cutting-edge technology. Where fans become owners, and ownership creates value.
-                </p>
-                
-                <p className="leading-relaxed">
-                  This is your chance to be part of internet history. To own a piece of the new digital economy. To help build the future of online communities.
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </div>
-      </section>
-
-      <section id="how-to-buy-old" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" style={{ display: 'none' }}>
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
-                <Button variant="link" size="sm" className="px-0 mt-1" disabled>Legacy content hidden</Button>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step1Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} /></Button>
+                </CollapsibleTrigger>
               </div>
-              <div style={{ display: 'none' }}>
+              <CollapsibleContent>
                 <div className="mt-2 flex items-center gap-3">
                   <img
                     src="/lovable-uploads/504c8ec2-905a-47f0-8aba-359f7b9907c6.png"
@@ -554,14 +363,16 @@ const Index = () => {
                 <p className="mt-1 text-muted-foreground">Install Phantom — our recommended Solana wallet for $ANIME.</p>
                 <p className="mt-1 text-muted-foreground text-sm">If you need assistance or help, the complete guide is on the <a href="https://help.phantom.com/hc/en-us" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">Phantom Help Center</a>.</p>
                 <p className="mt-2 text-muted-foreground">Phantom is an app that serves as a secure and user-friendly cryptocurrency wallet. It allows you to create and manage digital wallets across multiple blockchains like Solana, Ethereum, and Polygon, all in one place. Designed to be intuitive for beginners and powerful for experienced users, Phantom makes it easy to explore and engage with the decentralized ecosystem while keeping your assets safe.</p>
-              </div>
+              </CollapsibleContent>
             </Collapsible>
           </li>
           <li>
             <Collapsible open={step2Open} onOpenChange={setStep2Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
-                <Button variant="link" size="sm" className="px-0 mt-1" disabled>Legacy content hidden</Button>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0 mt-1">{step2Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} /></Button>
+                </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
                 <p className="mt-1 text-muted-foreground">
@@ -770,9 +581,9 @@ const Index = () => {
             </li>
           </ul>
 
-          <Collapsible className="mt-2" open={showFullPage || faqOpen} onOpenChange={showFullPage ? () => {} : setFaqOpen}>
+          <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary" disabled={showFullPage}>{showFullPage || faqOpen ? "See less FAQs (Frequented Answers & Questions)" : "See more FAQs (Frequented Answers & Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${showFullPage || faqOpen ? "rotate-180" : ""}`} /></Button>
+              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See less FAQs (Frequented Answers & Questions)" : "See more FAQs (Frequented Answers & Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">

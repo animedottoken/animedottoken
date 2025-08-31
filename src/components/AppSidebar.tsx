@@ -78,7 +78,7 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "ANIME.TOKEN ARMY", 
+    title: "ANIME ARMY", 
     icon: Trophy,
     hash: "nft-supporter-section",
     type: "section" as const
@@ -90,7 +90,7 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "How to Buy $ANIME", 
+    title: "Join the Economy", 
     icon: ShoppingCart,
     hash: "how-to-buy",
     type: "section" as const

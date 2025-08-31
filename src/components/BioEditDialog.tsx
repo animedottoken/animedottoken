@@ -96,7 +96,7 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
               <AlertDescription>
-                Your first bio was <strong>FREE</strong>. Further changes require payment in $ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
+                Your first bio was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
               </AlertDescription>
             </Alert>
           )}

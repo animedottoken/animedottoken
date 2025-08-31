@@ -17,7 +17,7 @@ const nftTypes = [
     supply: "100",
     image: foundersNFT,
     role: "",
-    description: "The strategic commanders of the ANIME.TOKEN ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
+    description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
     howToEarn: [
       "This role is the highest honor and is awarded directly for exceptional contributions that fundamentally advance the project. To be considered, a candidate must proactively contact the team and provide evidence of meeting one of the following measurable targets:",
       "Partnership|Secure a formal, announced partnership with another established project, influencer, or platform.",
@@ -65,11 +65,7 @@ const nftTypes = [
   }
 ];
 
-interface NFTSupporterSectionProps {
-  globalOpen?: boolean;
-}
-
-export function NFTSupporterSection({ globalOpen = false }: NFTSupporterSectionProps) {
+export function NFTSupporterSection() {
   const [openDetails, setOpenDetails] = useState<string[]>([]);
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
@@ -82,10 +78,10 @@ export function NFTSupporterSection({ globalOpen = false }: NFTSupporterSectionP
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground flex items-center justify-center gap-3">
             <Crown className="w-12 h-12 text-violet-400" />
-            Join the ANIME.TOKEN ARMY
+            Join the ANIME ARMY
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            The ANIME.TOKEN ARMY is the heart of our ecosystem—a dedicated group of supporters driving our mission forward. The ARMY is composed of three vital roles: Founders, Ambassadors, and Hodlers. This is not a status you can buy; it is a rank you must earn through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your contribution.
+            The ANIME ARMY is the heart of our ecosystem—a dedicated group of supporters driving our mission forward. The ARMY is composed of three vital roles: Founders, Ambassadors, and Hodlers. This is not a status you can buy; it is a rank you must earn through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your contribution.
           </p>
         </div>
 
@@ -123,20 +119,18 @@ export function NFTSupporterSection({ globalOpen = false }: NFTSupporterSectionP
                   
                   {/* Expandable Details */}
                   <Collapsible 
-                    open={globalOpen || openDetails.includes(nft.id)} 
+                    open={openDetails.includes(nft.id)} 
                     onOpenChange={(open) => {
-                      if (!globalOpen) {
-                        if (open) {
-                          setOpenDetails(prev => [...prev, nft.id]);
-                        } else {
-                          setOpenDetails(prev => prev.filter(id => id !== nft.id));
-                        }
+                      if (open) {
+                        setOpenDetails(prev => [...prev, nft.id]);
+                      } else {
+                        setOpenDetails(prev => prev.filter(id => id !== nft.id));
                       }
                     }}
                   >
                     <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-sm text-primary mb-2" disabled={globalOpen}>
-                        {(globalOpen || openDetails.includes(nft.id)) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${(globalOpen || openDetails.includes(nft.id)) ? "rotate-180" : ""}`} />
+                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
+                        {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-2">
