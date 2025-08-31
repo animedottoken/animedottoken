@@ -26,8 +26,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Always redirect to profile on successful sign-in
-        if (event === 'SIGNED_IN' && session) {
+        // Only redirect to profile on actual sign-in, not session restoration
+        if (event === 'SIGNED_IN' && session && !user) {
           navigate('/profile');
         }
       }
