@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
-import heroOptimized from "@/assets/hero-optimized.webp";
+
 
 // Lazy load heavy components with higher priority for desktop
 const MarketCapChart = lazy(() => 
@@ -189,7 +189,7 @@ const Index = () => {
         <link
           rel="preload"
           as="image"
-          href="/lovable-uploads/c42207d9-b33e-45c0-96e2-f954f6b20f32.png"
+          href="/lovable-uploads/20f9a9fd-6c9c-4f96-99f6-ca6d9519d9b5.png"
         />
       </Helmet>
 
@@ -218,8 +218,8 @@ const Index = () => {
         <AspectRatio ratio={3 / 2}>
           <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/5 to-background animate-pulse">
             <ImageLazyLoad
-              src={heroOptimized}
-              alt="ANIME Token 3:2 hero banner with anime characters and logo"
+              src="/lovable-uploads/20f9a9fd-6c9c-4f96-99f6-ca6d9519d9b5.png"
+              alt="ANIME Token hero banner with chart silhouette (3:2)"
               className="w-full h-full object-cover block"
               loading="eager"
               decoding="async"
