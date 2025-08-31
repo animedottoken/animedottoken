@@ -52,20 +52,15 @@ const navigationItems = [
     path: "/marketplace",
     type: "route" as const
   },
+  // Sections ordered by new strategic flow:
   { 
-    title: "Community Showcase", 
-    icon: Users,
-    hash: "featured-community-content",
+    title: "Create NFTs", 
+    icon: Coins,
+    hash: "create-nfts",
     type: "section" as const
   },
   { 
-    title: "Trust & Security", 
-    icon: Shield,
-    hash: "trust-security-section",
-    type: "section" as const
-  },
-  { 
-    title: "Ownership Calculator", 
+    title: "Ownership Economy", 
     icon: Calculator,
     hash: "ownership-calculator",
     type: "section" as const
@@ -77,15 +72,9 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "How to Buy ANIME", 
-    icon: ShoppingCart,
-    hash: "how-to-buy",
-    type: "section" as const
-  },
-  { 
-    title: "FAQ", 
-    icon: HelpCircle,
-    hash: "faq-section",
+    title: "Trust & Security", 
+    icon: Shield,
+    hash: "trust-security-section",
     type: "section" as const
   },
   { 
@@ -95,9 +84,21 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "Create NFTs", 
-    icon: Coins,
-    hash: "create-nfts",
+    title: "Community Showcase", 
+    icon: Users,
+    hash: "featured-community-content",
+    type: "section" as const
+  },
+  { 
+    title: "Join the Economy", 
+    icon: ShoppingCart,
+    hash: "how-to-buy",
+    type: "section" as const
+  },
+  { 
+    title: "FAQ", 
+    icon: HelpCircle,
+    hash: "faq-section",
     type: "section" as const
   },
   { 
