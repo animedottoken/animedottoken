@@ -25,131 +25,117 @@ export function NFTPreviewSection() {
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Mint NFTs Card */}
-        <Link 
-          to="/mint" 
-          className="block"
+        <Card 
+          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
         >
-          <Card 
-            className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            role="button"
-            tabIndex={0}
-          >
-          <CardHeader className="text-center pb-4">
-            <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Coins className="h-10 w-10 text-primary" />
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <Coins className="h-10 w-10 text-primary" />
+          </div>
+          <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
+          <Collapsible open={box1Open} onOpenChange={setBox1Open}>
+            <CollapsibleTrigger asChild>
+              <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                {box1Open ? "Hide details" : "Show details"} 
+                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardDescription className="text-base mt-2">
+                Our guided tool helps you turn your creation into a unique, verifiable digital collectible on the Solana blockchain. Features include free creation (pay only network fees), automatic royalty settings, and custom traits.
+              </CardDescription>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Zap className="h-5 w-5 text-green-500" />
+              <span className="text-sm">Free to Create (you only pay network fees)</span>
             </div>
-            <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
-            <Collapsible open={box1Open} onOpenChange={setBox1Open}>
-              <CollapsibleTrigger asChild>
-                <Button variant="link" size="sm" className="px-0 mt-2">
-                  {box1Open ? "Hide details" : "Show details"} 
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardDescription className="text-base mt-2">
-                  Our guided tool helps you turn your creation into a unique, verifiable digital collectible on the Solana blockchain. Features include free creation (pay only network fees), automatic royalty settings, and custom traits.
-                </CardDescription>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Zap className="h-5 w-5 text-green-500" />
-                <span className="text-sm">Free to Create (you only pay network fees)</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">Earn Royalties on Future Sales</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Palette className="h-5 w-5 text-purple-500" />
-                <span className="text-sm">Add Custom Traits & Rarity</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-blue-500" />
+              <span className="text-sm">Earn Royalties on Future Sales</span>
             </div>
-            
-            <div className="pt-2">
-              <Badge variant="secondary" className="mb-4">
-                🔥 Live Now
-              </Badge>
-              <Button 
-                className="w-full group-hover:scale-105 transition-transform"
-                asChild
-              >
-                <Link to="/mint">
-                  Start Creating
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+            <div className="flex items-center gap-3">
+              <Palette className="h-5 w-5 text-purple-500" />
+              <span className="text-sm">Add Custom Traits & Rarity</span>
             </div>
-          </CardContent>
-          </Card>
-        </Link>
+          </div>
+          
+          <div className="pt-2">
+            <Badge variant="secondary" className="mb-4">
+              🔥 Live Now
+            </Badge>
+            <Button 
+              className="w-full group-hover:scale-105 transition-transform"
+              asChild
+            >
+              <Link to="/mint">
+                Start Creating
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+        </Card>
 
         {/* Marketplace Card */}
-        <Link 
-          to="/marketplace" 
-          className="block"
+        <Card 
+          className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
         >
-          <Card 
-            className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            role="button"
-            tabIndex={0}
-          >
-          <CardHeader className="text-center pb-4">
-            <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <ShoppingBag className="h-10 w-10 text-primary" />
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <ShoppingBag className="h-10 w-10 text-primary" />
+          </div>
+          <CardTitle className="text-2xl">The Marketplace</CardTitle>
+          <Collapsible open={box2Open} onOpenChange={setBox2Open}>
+            <CollapsibleTrigger asChild>
+              <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                {box2Open ? "Hide details" : "Show details"} 
+                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardDescription className="text-base mt-2">
+                Discover and collect unique digital assets from talented creators in our ecosystem. Every piece is verified on-chain for authenticity, with instant, secure transactions.
+              </CardDescription>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Zap className="h-5 w-5 text-green-500" />
+              <span className="text-sm">Instant & Secure Transactions</span>
             </div>
-            <CardTitle className="text-2xl">The Marketplace</CardTitle>
-            <Collapsible open={box2Open} onOpenChange={setBox2Open}>
-              <CollapsibleTrigger asChild>
-                <Button variant="link" size="sm" className="px-0 mt-2">
-                  {box2Open ? "Hide details" : "Show details"} 
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardDescription className="text-base mt-2">
-                  Discover and collect unique digital assets from talented creators in our ecosystem. Every piece is verified on-chain for authenticity, with instant, secure transactions.
-                </CardDescription>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Zap className="h-5 w-5 text-green-500" />
-                <span className="text-sm">Instant & Secure Transactions</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Palette className="h-5 w-5 text-purple-500" />
-                <span className="text-sm">Curated & Verified Artists</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-blue-500" />
-                <span className="text-sm">A Community of Fans & Collectors</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Palette className="h-5 w-5 text-purple-500" />
+              <span className="text-sm">Curated & Verified Artists</span>
             </div>
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-blue-500" />
+              <span className="text-sm">A Community of Fans & Collectors</span>
+            </div>
+          </div>
 
-            <div className="pt-2">
-              <Badge variant="outline" className="mb-4">
-                🛍️ Explore Now
-              </Badge>
-              <Button 
-                variant="outline" 
-                className="w-full group-hover:scale-105 transition-transform"
-                asChild
-              >
-                <Link to="/marketplace">
-                  Explore Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-          </Card>
-        </Link>
+          <div className="pt-2">
+            <Badge variant="outline" className="mb-4">
+              🛍️ Explore Now
+            </Badge>
+            <Button 
+              variant="outline" 
+              className="w-full group-hover:scale-105 transition-transform"
+              asChild
+            >
+              <Link to="/marketplace">
+                Explore Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+        </Card>
       </div>
 
       {/* Quick Stats */}
