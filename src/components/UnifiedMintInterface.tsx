@@ -4,6 +4,8 @@ import { CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useCircuitBreaker } from '@/hooks/useCircuitBreaker';
+import { useSecurityLogger } from '@/hooks/useSecurityLogger';
 import { CollectionBasicsStep } from './CollectionBasicsStep';
 import { CollectionSettingsStep } from './CollectionSettingsStep';
 import { CollectionReviewStep } from './CollectionReviewStep';
@@ -45,6 +47,8 @@ export const UnifiedMintInterface = () => {
   const [mintNow, setMintNow] = useState(true);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey, connect, connecting } = useSolanaWallet();
+  const { checkAccess, guardedAction } = useCircuitBreaker();
+  const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when step changes
@@ -144,6 +148,11 @@ export const UnifiedMintInterface = () => {
   }, [formData.image_file, formData.banner_file, formData.image_preview_url, formData.banner_preview_url]);
 
   const handleSubmit = async () => {
+    // Circuit breaker check
+    if (!checkAccess("create collections")) {
+      return;
+    }
+
     if (!publicKey) {
       await connect();
       return;
@@ -160,6 +169,14 @@ export const UnifiedMintInterface = () => {
       return;
     }
 
+    // Security: Log large supply attempts
+    if (formData.max_supply > 10000) {
+      logSuspiciousActivity('large_supply_attempt', {
+        max_supply: formData.max_supply,
+        collection_name: formData.name
+      });
+    }
+
     // Enforce 1-hour buffer if end time is set
     if (formData.mint_end_at) {
       const end = new Date(formData.mint_end_at);
@@ -172,85 +189,87 @@ export const UnifiedMintInterface = () => {
       }
     }
 
-    setIsMinting(true);
-    setMintingError(null);
-    try {
-      // Create collection
-      const result = await createCollection({
-        ...formData,
-        name: formData.name,
-        symbol: formData.symbol,
-        site_description: formData.site_description,
-        onchain_description: formData.onchain_description,
-        image_file: formData.image_file,
-        banner_file: formData.banner_file,
-        external_links: formData.external_links,
-        category: formData.category,
-        explicit_content: formData.explicit_content,
-        enable_primary_sales: formData.enable_primary_sales,
-        mint_price: formData.mint_price,
-        max_supply: formData.max_supply,
-        royalty_percentage: formData.royalty_percentage,
-        treasury_wallet: formData.treasury_wallet || publicKey,
-        whitelist_enabled: formData.whitelist_enabled,
-        go_live_date: formData.go_live_date,
-        mint_end_at: formData.mint_end_at,
-        supply_mode: formData.supply_mode,
-        locked_fields: formData.locked_fields,
-        attributes: formData.attributes,
-      });
+    await guardedAction(async () => {
+      setIsMinting(true);
+      setMintingError(null);
+      try {
+        // Create collection
+        const result = await createCollection({
+          ...formData,
+          name: formData.name,
+          symbol: formData.symbol,
+          site_description: formData.site_description,
+          onchain_description: formData.onchain_description,
+          image_file: formData.image_file,
+          banner_file: formData.banner_file,
+          external_links: formData.external_links,
+          category: formData.category,
+          explicit_content: formData.explicit_content,
+          enable_primary_sales: formData.enable_primary_sales,
+          mint_price: formData.mint_price,
+          max_supply: formData.max_supply,
+          royalty_percentage: formData.royalty_percentage,
+          treasury_wallet: formData.treasury_wallet || publicKey,
+          whitelist_enabled: formData.whitelist_enabled,
+          go_live_date: formData.go_live_date,
+          mint_end_at: formData.mint_end_at,
+          supply_mode: formData.supply_mode,
+          locked_fields: formData.locked_fields,
+          attributes: formData.attributes,
+        });
 
-      if (result.success && result.collection) {
-        if (mintNow) {
-          // Mint the Collection NFT on-chain
-          toast.success('Collection created! Now minting on-chain...');
-          
-          const { supabase } = await import('@/integrations/supabase/client');
-          const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
-            body: {
-              collectionId: result.collection.id,
-              creatorAddress: publicKey
+        if (result.success && result.collection) {
+          if (mintNow) {
+            // Mint the Collection NFT on-chain
+            toast.success('Collection created! Now minting on-chain...');
+            
+            const { supabase } = await import('@/integrations/supabase/client');
+            const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+              body: {
+                collectionId: result.collection.id,
+                creatorAddress: publicKey
+              }
+            });
+
+            if (mintError || !mintResult?.success) {
+              console.error('Minting error:', mintError || mintResult);
+              setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
+              toast.error('Collection created but failed to mint on-chain');
+            } else {
+              toast.success('Collection minted successfully on-chain! 🎉');
+              result.collection.collection_mint_address = mintResult.collectionMintAddress;
+              result.collection.verified = true;
             }
-          });
-
-          if (mintError || !mintResult?.success) {
-            console.error('Minting error:', mintError || mintResult);
-            setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
-            toast.error('Collection created but failed to mint on-chain');
           } else {
-            toast.success('Collection minted successfully on-chain! 🎉');
-            result.collection.collection_mint_address = mintResult.collectionMintAddress;
-            result.collection.verified = true;
+            toast.success('Collection created off-chain! You can mint it later.');
           }
-        } else {
-          toast.success('Collection created off-chain! You can mint it later.');
-        }
 
-        setStep3Collection(result.collection);
-        setActiveStep(4);
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      let errorMessage = 'Unexpected error occurred';
-      
-      // Surface exact Edge Function errors
-      if (error && typeof error === 'object') {
-        if ('message' in error && error.message) {
-          errorMessage = error.message;
-        } else if ('error' in error && error.error) {
-          errorMessage = error.error;
-        } else if ('details' in error && error.details) {
-          errorMessage = error.details;
+          setStep3Collection(result.collection);
+          setActiveStep(4);
         }
-      } else if (typeof error === 'string') {
-        errorMessage = error;
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        let errorMessage = 'Unexpected error occurred';
+        
+        // Surface exact Edge Function errors
+        if (error && typeof error === 'object') {
+          if ('message' in error && error.message) {
+            errorMessage = error.message;
+          } else if ('error' in error && error.error) {
+            errorMessage = error.error;
+          } else if ('details' in error && error.details) {
+            errorMessage = error.details;
+          }
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
+        setMintingError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setIsMinting(false);
       }
-      
-      setMintingError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsMinting(false);
-    }
+    }, "create collection")();
   };
 
   const handleCreateAnother = () => {

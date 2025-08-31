@@ -29,7 +29,9 @@ import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
+import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
+import { SecurityBanner } from "@/components/SecurityBanner";
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -55,6 +57,7 @@ const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col w-full">
+        <SecurityBanner />
         <div className="sticky top-0 z-20 bg-background border-b">
           <TopNav />
         </div>
@@ -74,6 +77,7 @@ const AppLayout = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/trust" element={<Trust />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -85,6 +89,7 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen w-full">
+      <SecurityBanner />
       <DesktopSidebar 
         className="fixed left-0 top-0 h-screen z-30" 
         onCollapseChange={setSidebarCollapsed}
@@ -109,6 +114,7 @@ const AppLayout = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/trust" element={<Trust />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

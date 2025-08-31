@@ -7,6 +7,10 @@ interface MarketplaceSettings {
   platform_wallet_address: string;
   created_at: string;
   updated_at: string;
+  // Circuit breaker flags for security
+  is_paused?: boolean;
+  allowlist_only?: boolean;
+  pause_message?: string;
 }
 
 export const useMarketplaceSettings = () => {
@@ -27,6 +31,9 @@ export const useMarketplaceSettings = () => {
           platform_wallet_address: row.platform_wallet_address,
           created_at: row.created_at,
           updated_at: row.updated_at,
+          is_paused: row.is_paused || false,
+          allowlist_only: row.allowlist_only || false,
+          pause_message: row.pause_message || null,
         });
         return;
       }
@@ -43,6 +50,9 @@ export const useMarketplaceSettings = () => {
           platform_wallet_address: 'hidden',
           created_at: new Date().toISOString(),
           updated_at: row.updated_at || new Date().toISOString(),
+          is_paused: row.is_paused || false,
+          allowlist_only: row.allowlist_only || false,
+          pause_message: row.pause_message || null,
         });
         return;
       }
@@ -54,6 +64,9 @@ export const useMarketplaceSettings = () => {
         platform_wallet_address: 'hidden',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        is_paused: false,
+        allowlist_only: false,
+        pause_message: null,
       });
     } catch (error) {
       console.error('Error fetching marketplace settings:', error);
@@ -64,6 +77,9 @@ export const useMarketplaceSettings = () => {
         platform_wallet_address: 'hidden',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        is_paused: false,
+        allowlist_only: false,
+        pause_message: null,
       });
     } finally {
       setLoading(false);
