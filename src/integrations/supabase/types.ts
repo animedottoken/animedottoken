@@ -322,22 +322,31 @@ export type Database = {
       }
       marketplace_settings: {
         Row: {
+          allowlist_only: boolean | null
           created_at: string
           id: string
+          is_paused: boolean | null
+          pause_message: string | null
           platform_fee_percentage: number
           platform_wallet_address: string
           updated_at: string
         }
         Insert: {
+          allowlist_only?: boolean | null
           created_at?: string
           id?: string
+          is_paused?: boolean | null
+          pause_message?: string | null
           platform_fee_percentage?: number
           platform_wallet_address?: string
           updated_at?: string
         }
         Update: {
+          allowlist_only?: boolean | null
           created_at?: string
           id?: string
+          is_paused?: boolean | null
+          pause_message?: string | null
           platform_fee_percentage?: number
           platform_wallet_address?: string
           updated_at?: string
@@ -705,6 +714,42 @@ export type Database = {
           operation?: string
           table_name?: string
           user_wallet?: string | null
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          user_id: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          user_id?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          user_id?: string | null
+          wallet_address?: string | null
         }
         Relationships: []
       }
@@ -1127,6 +1172,9 @@ export type Database = {
       get_marketplace_info_public: {
         Args: Record<PropertyKey, never>
         Returns: {
+          allowlist_only: boolean
+          is_paused: boolean
+          pause_message: string
           platform_fee_percentage: number
           updated_at: string
         }[]
@@ -1134,8 +1182,11 @@ export type Database = {
       get_marketplace_settings_authenticated: {
         Args: Record<PropertyKey, never>
         Returns: {
+          allowlist_only: boolean
           created_at: string
           id: string
+          is_paused: boolean
+          pause_message: string
           platform_fee_percentage: number
           platform_wallet_address: string
           updated_at: string
