@@ -190,6 +190,13 @@ const Index = () => {
           rel="preload"
           as="image"
           href="/lovable-uploads/35f96dc8-741f-4cfa-8d07-d0019a55a758.png"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png"
+          fetchPriority="high"
         />
       </Helmet>
 
@@ -217,17 +224,22 @@ const Index = () => {
       <header className="relative mx-auto max-w-5xl overflow-hidden rounded-xl border bg-card shadow-glow">
         <AspectRatio ratio={3 / 2}>
           <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/5 to-background animate-pulse">
-            <ImageLazyLoad
+            <img
               src="/lovable-uploads/35f96dc8-741f-4cfa-8d07-d0019a55a758.png"
-              alt="ANIME.TOKEN hero banner (3:2)"
-              className="w-full h-full object-cover block"
+              alt="ANIME.TOKEN hero banner showcasing the ownership economy platform on Solana"
+              className="w-full h-full object-cover block transition-opacity duration-500"
               loading="eager"
-              decoding="async"
-              fallbackSrc="/images/og-anime.jpg"
+              decoding="sync"
+              fetchPriority="high"
               onLoad={(e) => {
                 const container = e.currentTarget.parentElement?.parentElement;
                 if (container) container.classList.remove('animate-pulse');
+                e.currentTarget.style.opacity = '1';
               }}
+              onError={(e) => {
+                e.currentTarget.src = '/images/og-anime.jpg';
+              }}
+              style={{ opacity: 0 }}
             />
           </div>
         </AspectRatio>
@@ -235,7 +247,14 @@ const Index = () => {
       <div className="mx-auto max-w-5xl px-6 mt-6 md:mt-8">
         <div className="text-center animate-in fade-in-50 slide-in-from-bottom-4 duration-700">
           <div className="flex items-center justify-center gap-3">
-            <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-16 w-16 md:h-20 md:w-20" loading="eager" />
+            <img 
+              src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" 
+              alt="ANIME Token hexagon logo" 
+              className="h-16 w-16 md:h-20 md:w-20" 
+              loading="eager" 
+              decoding="sync"
+              fetchPriority="high"
+            />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
               Welcome to the Ownership Economy
             </h1>
