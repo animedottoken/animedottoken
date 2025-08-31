@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, ExternalLink, Users, Tv } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Upload, ExternalLink, Users, Tv, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
@@ -46,7 +47,11 @@ const emptySlots = [
   }
 ];
 
-export function FeaturedCommunityContent() {
+interface FeaturedCommunityContentProps {
+  globalOpen?: boolean;
+}
+
+export function FeaturedCommunityContent({ globalOpen = false }: FeaturedCommunityContentProps) {
   const [selectedItem, setSelectedItem] = useState<typeof emptySlots[0] | null>(null);
   const [isItemOverlayOpen, setIsItemOverlayOpen] = useState(false);
 
@@ -83,8 +88,17 @@ export function FeaturedCommunityContent() {
       </div>
 
       {/* Static placeholders only (no backend) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {emptySlots.map((emptySlot, index) => (
+      <Collapsible open={globalOpen} onOpenChange={() => {}}>
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" className="mx-auto mb-6 gap-2" disabled={globalOpen}>
+            <Users className="w-4 h-4" />
+            {globalOpen ? "Community Grid Visible" : "View Community Grid"}
+            <ChevronDown className={`w-4 h-4 transition-transform ${globalOpen ? "rotate-180" : ""}`} />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {emptySlots.map((emptySlot, index) => (
             <div 
               key={`empty-${index}`} 
               className={`group relative overflow-hidden rounded-lg border bg-card/50 border-dashed ${emptySlot.sample ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}`}
@@ -127,8 +141,10 @@ export function FeaturedCommunityContent() {
               </p>
             </div>
             </div>
-        ))}
-      </div>
+            ))}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Community Item Details Modal */}
       <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>

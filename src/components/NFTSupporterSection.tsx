@@ -65,7 +65,11 @@ const nftTypes = [
   }
 ];
 
-export function NFTSupporterSection() {
+interface NFTSupporterSectionProps {
+  globalOpen?: boolean;
+}
+
+export function NFTSupporterSection({ globalOpen = false }: NFTSupporterSectionProps) {
   const [openDetails, setOpenDetails] = useState<string[]>([]);
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
@@ -119,18 +123,20 @@ export function NFTSupporterSection() {
                   
                   {/* Expandable Details */}
                   <Collapsible 
-                    open={openDetails.includes(nft.id)} 
+                    open={globalOpen || openDetails.includes(nft.id)} 
                     onOpenChange={(open) => {
-                      if (open) {
-                        setOpenDetails(prev => [...prev, nft.id]);
-                      } else {
-                        setOpenDetails(prev => prev.filter(id => id !== nft.id));
+                      if (!globalOpen) {
+                        if (open) {
+                          setOpenDetails(prev => [...prev, nft.id]);
+                        } else {
+                          setOpenDetails(prev => prev.filter(id => id !== nft.id));
+                        }
                       }
                     }}
                   >
                     <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                        {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
+                      <Button variant="link" className="px-0 text-sm text-primary mb-2" disabled={globalOpen}>
+                        {(globalOpen || openDetails.includes(nft.id)) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${(globalOpen || openDetails.includes(nft.id)) ? "rotate-180" : ""}`} />
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-2">
