@@ -416,7 +416,7 @@ const Index = () => {
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
-              src="/lovable-uploads/109182e0-77ad-44e0-bf14-f3ffd956a57a.png"
+              src="/lovable-uploads/200d1789-179d-4077-9b63-356f00243e4c.png"
               alt="ANIME Token — Stakeholder ownership artwork"
               loading="lazy"
               decoding="async"
