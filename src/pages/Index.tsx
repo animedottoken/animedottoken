@@ -25,7 +25,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy, Share, Handshake } from "lucide-react";
+import { ChevronDown, Copy, Share, Handshake, BarChart3 } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
@@ -271,8 +271,8 @@ const Index = () => {
 
       <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">
-            <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">📊</span>
+          <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
+            <BarChart3 className="w-8 h-8 text-violet-400" />
             The Power of Community: A Decentralized Future
           </h2>
           <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">

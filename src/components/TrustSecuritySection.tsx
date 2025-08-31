@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
-import { ExternalLink, ChevronDown, Copy } from "lucide-react";
+import { ExternalLink, ChevronDown, Copy, Shield } from "lucide-react";
 import { useState } from "react";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { toast } from "sonner";
@@ -25,8 +25,8 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
   return (
     <section className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <header className="mb-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🛡️</span>
+        <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
+          <Shield className="w-8 h-8 text-violet-400" />
           Fully Audited, Secure, and Transparent
         </h2>
         <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
