@@ -27,10 +27,10 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
       <header className="mb-6 text-center">
         <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <Shield className="w-8 h-8 text-violet-400" />
-          Fully Audited, Secure, and Transparent
+          Built on Battle-Tested Protocols
         </h2>
         <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
-          $ANIME smart contract is audited, verified, and has no hidden functions. 100% LP burned. Revival Wallet supports only ecosystem growth. View everything on-chain for full transparency.
+          $ANIME leverages the publicly audited, battle-tested Metaplex protocol used by thousands of Solana projects. 100% LP burned, creator holds zero tokens. Everything is verifiable on-chain through radical transparency.
         </p>
       </header>
 
@@ -75,22 +75,22 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           </CardContent>
         </Card>
 
-        {/* Combined: Audits & Contract Safety */}
+        {/* Combined: Protocol Security */}
         <Card className="h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <span aria-hidden className="text-2xl">🔎</span>
-              Fully Audited & Secure
+              Metaplex Protocol Security
             </CardTitle>
             <CardDescription>
-              Our contract is verified and permanently secured. Independent audits have confirmed:
+              Built on the public, battle-tested Metaplex Auction House protocol. No custom contract risks.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>Honeypot tests passed.</li>
-              <li>LP lock/burn is verified.</li>
-              <li>No malicious functions: The contract cannot mint new tokens, freeze trading, or change taxes.</li>
+              <li>Uses proven Metaplex protocol trusted by thousands of projects</li>
+              <li>LP burn verified and permanent</li>
+              <li>Standard SPL token with no hidden functions or backdoors</li>
             </ul>
             <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
               <CollapsibleTrigger asChild>

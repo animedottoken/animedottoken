@@ -47,7 +47,7 @@ const Index = () => {
   const pageUrl = shareBase;
   const sharePageUrl = `${shareBase}/share-army.html?v=12`;
   const shareImage = `${shareBase}/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png`;
-  const shareText = "I just joined the @AnimeDotToken movement on #Solana. A community-revived project building the #1 global hub for #anime culture. Check out the vision and get involved! #ANIMEtoken $ANIME";
+  const shareText = "I just joined the @AnimeDotToken Ownership Economy on #Solana. A community-owned ecosystem where users become stakeholders. Don't just be a user. Be an owner! #ANIMEtoken $ANIME";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePageUrl)}`;
   const shareUrlTelegram = `https://t.me/share/url?url=${encodeURIComponent(sharePageUrl)}&text=${encodeURIComponent(shareText)}`;
 
@@ -167,11 +167,11 @@ const Index = () => {
   return (
     <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-6xl overflow-x-hidden">
       <Helmet>
-        <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
-        <meta name="description" content="Join the ANIME token community on Solana! Learn how to earn with our live NFT marketplace. How to join Discord, Telegram, X, TikTok. 100% LP burned." />
+        <title>ANIME.TOKEN | Ownership Economy Platform | A New Internet Money Era on Solana</title>
+        <meta name="description" content="Join the Ownership Economy with ANIME.TOKEN on Solana. Don't just be a user. Be an owner. NFT marketplace, community governance, and stakeholder benefits." />
         <link rel="canonical" href={pageUrl} />
-        <meta property="og:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More" />
-        <meta property="og:description" content="$ANIME is a truly community-driven project on Solana." />
+        <meta property="og:title" content="ANIME.TOKEN | Ownership Economy Platform | A New Internet Money Era on Solana" />
+        <meta property="og:description" content="$ANIME powers the Ownership Economy - a community-owned ecosystem where users become stakeholders." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:image" content={shareImage} />
@@ -181,8 +181,8 @@ const Index = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@AnimeDotToken" />
         <meta name="twitter:creator" content="@AnimeDotToken" />
-        <meta name="twitter:title" content="ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More" />
-        <meta name="twitter:description" content="$ANIME is a truly community-driven project on Solana." />
+        <meta name="twitter:title" content="ANIME.TOKEN | Ownership Economy Platform | A New Internet Money Era on Solana" />
+        <meta name="twitter:description" content="$ANIME powers the Ownership Economy - a community-owned ecosystem where users become stakeholders." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
         <link rel="preconnect" href="https://073d74a6-99d5-42cc-8d2e-4144164f2d85.lovableproject.com" crossOrigin="" />
@@ -193,22 +193,22 @@ const Index = () => {
         />
       </Helmet>
 
-      {/* NFT Program Banner */}
+      {/* Ownership Economy Banner */}
       <div className="mb-6 mx-auto max-w-5xl">
         <div
           className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
-          onClick={() => scrollToHash('nft-supporter-section')}
+          onClick={() => scrollToHash('create-nfts')}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🎖</span>
+              <span className="text-2xl">💎</span>
               <div>
-                <h3 className="font-semibold text-foreground">Join the ANIME ARMY</h3>
-                <p className="text-sm text-muted-foreground">Earn your rank on-chain</p>
+                <h3 className="font-semibold text-foreground">Ownership Economy Platform</h3>
+                <p className="text-sm text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
             <Button variant="outline" size="sm">
-              Learn More
+              Explore Platform
             </Button>
           </div>
         </div>
@@ -237,46 +237,31 @@ const Index = () => {
           <div className="flex items-center justify-center gap-3">
             <img src="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png" alt="ANIME Token hexagon logo" className="h-16 w-16 md:h-20 md:w-20" loading="eager" />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              ANIME.TOKEN – Community-Driven Anime Crypto Token on Solana.
+              Welcome to the Ownership Economy
             </h1>
           </div>
           <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg max-w-4xl mx-auto">
-            Join the #1 Solana anime project. Earn NFT supporter roles and be part of a transparent, community-owned token movement.
+            ANIME.TOKEN powers A New Internet Money Era on Solana. Don't just be a user. Be an owner in a community-owned ecosystem where stakeholders shape the future.
           </p>
           
           <LiveStatsCounter />
         </div>
       </div>
 
-      <div id="featured-community-content" className="featured-community-content scroll-mt-20">
-        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg min-h-[420px]"></div>}>
-          <FeaturedCommunityContent />
-        </Suspense>
+      {/* 2. PRODUCT SECTION - NFT Minting & Marketplace */}
+      <div className="scroll-mt-20">
+        <NFTPreviewSection />
       </div>
 
-      {/* Prominent How to Buy Button */}
-      <section className="mx-auto mt-12 mb-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <Button 
-          size="lg"
-          className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold text-lg px-8 py-6 h-auto shadow-elevated hover:shadow-glow transition-all duration-300 transform hover:scale-105"
-          onClick={() => scrollToHash('how-to-buy')}
-        >
-          How to Buy $ANIME
-        </Button>
-      </section>
-
-      <div id="trust-security-section" className="trust-security-section scroll-mt-20">
-        <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
-      </div>
-
+      {/* 3. PHILOSOPHY SECTION - Ownership Economy + Live Calculator */}
       <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
             <BarChart3 className="w-8 h-8 text-violet-400" />
-            The Power of Community: A Decentralized Future
+            The Ownership Economy: Where Users Become Owners
           </h2>
           <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
-            Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how support translates into a real share of the network.
+            In the Ownership Economy, communities control their destiny. With a decentralized token distribution, even modest participation translates to meaningful ownership. Use the live calculator below to see how your contribution translates into real ownership of the ecosystem.
           </p>
         </div>
         
@@ -290,7 +275,7 @@ const Index = () => {
             <span className="font-bold text-foreground">
               {holders ? `${holders.toLocaleString()}` : "1,300"}
             </span>{" "}
-            holders and become a key member of our movement. Your contribution, no matter the size, helps us build the #1 global hub for anime culture.
+            holders and become a key stakeholder in our Ownership Economy. Your contribution, no matter the size, helps us build a community-owned ecosystem where users become owners.
           </p>
         </div>
         
@@ -301,12 +286,40 @@ const Index = () => {
         </div>
       </section>
 
+      {/* 4. PROOF SECTION - Trust & Security */}
+      <div id="trust-security-section" className="trust-security-section scroll-mt-20">
+        <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
+      </div>
+
+      {/* 5. COMMUNITY SECTION - ANIME ARMY */}
+      <div id="nft-supporter-section" className="scroll-mt-20">
+        <NFTSupporterSection />
+      </div>
+
+      {/* 6. SOCIAL PROOF & FINAL CTA */}
+      <div id="featured-community-content" className="featured-community-content scroll-mt-20">
+        <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg min-h-[420px]"></div>}>
+          <FeaturedCommunityContent />
+        </Suspense>
+      </div>
+
+      {/* Prominent How to Buy Button */}
+      <section className="mx-auto mt-12 mb-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <Button 
+          size="lg"
+          className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold text-lg px-8 py-6 h-auto shadow-elevated hover:shadow-glow transition-all duration-300 transform hover:scale-105"
+          onClick={() => scrollToHash('how-to-buy')}
+        >
+          Join the Ownership Economy
+        </Button>
+      </section>
+
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-center text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <ShoppingCart className="w-8 h-8 text-violet-400" />
-          How to Join the Era: Buying $ANIME
+          How to Join the Ownership Economy: Buying $ANIME
         </h2>
-        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a part of this great movement is easier than ever. Follow these 4 simple steps:</p>
+        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
@@ -425,7 +438,7 @@ const Index = () => {
             />
           </picture>
           </div>
-          <p className="mt-3 text-muted-foreground mb-2">You are now an owner, not just a holder. Welcome to the ANIME.TOKEN Ownership Economy. By joining us, you help build a transparent, community-driven ecosystem on Solana.</p>
+          <p className="mt-3 text-muted-foreground mb-2">You are now an owner, not just a holder. Welcome to the ANIME.TOKEN Ownership Economy. By joining us, you help build a transparent, community-owned ecosystem where stakeholders shape the future.</p>
           <p className="text-sm text-muted-foreground/80">Share your new role as a stakeholder and invite others to join the movement.</p>
           <div className="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center items-center px-4">
             {/* Main platforms */}
@@ -618,17 +631,7 @@ const Index = () => {
           }}
         />
 
-      </section>
-
-      {/* NFT Supporter Program Section */}
-      <div id="nft-supporter-section" className="scroll-mt-20">
-        <NFTSupporterSection />
-      </div>
-
-      {/* NFT Preview Section */}
-      <div className="scroll-mt-20">
-        <NFTPreviewSection />
-      </div>
+        </section>
 
       {/* Hidden anchor for backward compatibility */}
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
@@ -636,9 +639,9 @@ const Index = () => {
       <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-bold">
           <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
-          Get In Touch
+          Join the Movement
         </h2>
-        <p className="mt-3 text-muted-foreground">Connect with ANIME.TOKEN to mint and trade on Solana's first community-owned ecosystem. This is the Ownership Economy. Don't just be a user—be an owner.</p>
+        <p className="mt-3 text-muted-foreground">Connect with the ANIME.TOKEN Ownership Economy. Don't just be a user—be an owner in the future of decentralized communities.</p>
         <div className="mt-6 space-y-4">
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
