@@ -256,11 +256,11 @@ const Index = () => {
               fetchPriority="high"
             />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              Welcome to the Ownership Economy
+              The Ownership Economy on Solana.
             </h1>
           </div>
           <p className="mt-3 md:mt-4 text-muted-foreground md:text-lg max-w-4xl mx-auto">
-            ANIME.TOKEN powers A New Internet Money Era on Solana. Don't just be a user. Be an owner in a community-owned ecosystem where stakeholders shape the future.
+            Mint, trade, and collect on a transparent, community-owned ecosystem. Don't just be a user—be an owner.
           </p>
           
           <LiveStatsCounter />
