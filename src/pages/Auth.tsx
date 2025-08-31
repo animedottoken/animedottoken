@@ -35,16 +35,21 @@ export default function Auth() {
         try {
           // Handle error in URL
           const errorDescription = urlParams.get('error_description');
-          if (errorDescription) {
-            throw new Error(decodeURIComponent(errorDescription));
+          const error = urlParams.get('error');
+          
+          if (errorDescription || error) {
+            console.log('Auth callback error detected:', { error, errorDescription });
+            const errorMsg = errorDescription ? decodeURIComponent(errorDescription) : error;
+            throw new Error(errorMsg || 'Authentication failed');
           }
           
           // Exchange code/token for session
-          const { data, error } = await supabase.auth.exchangeCodeForSession(url);
+          console.log('Attempting session exchange...');
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(url);
           
-          if (error) {
-            console.error('Session exchange error:', error);
-            throw error;
+          if (exchangeError) {
+            console.error('Session exchange error:', exchangeError);
+            throw exchangeError;
           }
           
           if (data.session) {
@@ -61,11 +66,31 @@ export default function Auth() {
           }
         } catch (error: any) {
           console.error('Auth callback failed:', error);
+          
+          // Handle specific error types for better UX
+          let title = "Sign in failed";
+          let description = error.message || "Authentication failed. Please try again.";
+          
+          if (error.message?.includes('One-time token not found') || 
+              error.message?.includes('invalid_request') ||
+              error.message?.includes('token_not_found')) {
+            title = "Invalid or expired link";
+            description = "This magic link has expired or already been used. Please request a new one.";
+          }
+          
           toast({
-            title: "Sign in failed",
-            description: error.message || "Authentication failed. Please try again.",
+            title,
+            description,
             variant: "destructive",
           });
+          
+          // Focus email input for easy retry if it's a token error
+          if (error.message?.includes('token')) {
+            setTimeout(() => {
+              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+              if (emailInput) emailInput.focus();
+            }, 100);
+          }
           
           // Clean URL but stay on auth page
           window.history.replaceState({}, document.title, '/auth');
