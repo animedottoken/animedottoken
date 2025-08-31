@@ -18,7 +18,8 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const redirectTo = '/profile';
+  const rawRedirect = searchParams.get('redirect');
+  const safeRedirect = rawRedirect && rawRedirect.startsWith('/') ? rawRedirect : '/';
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -59,9 +60,9 @@ export default function Auth() {
               description: "You've been signed in successfully.",
             });
             
-            // Clean URL and redirect to profile
+            // Clean URL and redirect to target
             window.history.replaceState({}, document.title, '/auth');
-            navigate('/profile');
+            navigate(safeRedirect, { replace: true });
             return;
           }
         } catch (error: any) {
@@ -107,8 +108,8 @@ export default function Auth() {
       console.log('Current session:', session);
       
       if (session) {
-        console.log('User already logged in, redirecting to profile');
-        navigate('/profile');
+        console.log('User already logged in, redirecting to', safeRedirect);
+        navigate(safeRedirect, { replace: true });
         return;
       }
       
@@ -125,12 +126,12 @@ export default function Auth() {
           title: "Welcome!",
           description: "You've been signed in successfully.",
         });
-        navigate('/profile');
+        navigate(safeRedirect, { replace: true });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, redirectTo, completing]);
+  }, [navigate, safeRedirect, completing]);
 
   // Countdown timer for rate limit
   useEffect(() => {
@@ -143,7 +144,7 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth`;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(safeRedirect)}`;
       
       console.log('Google OAuth redirect URL:', redirectUrl);
       
@@ -187,7 +188,7 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth`;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(safeRedirect)}`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,

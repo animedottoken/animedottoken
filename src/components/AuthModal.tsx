@@ -40,8 +40,8 @@ export default function AuthModal({
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const currentPath = window.location.pathname + window.location.search;
-      const redirectUrl = `${window.location.origin}/profile`;
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -83,8 +83,8 @@ export default function AuthModal({
 
     setLoading(true);
     try {
-      const currentPath = window.location.pathname + window.location.search;
-      const redirectUrl = `${window.location.origin}/profile`;
+      const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(currentPath)}`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,

@@ -13,8 +13,9 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
 
   useEffect(() => {
     if (!loading && !user) {
-      // Redirect to auth - user will land on profile after signing in
-      navigate('/auth');
+      // Redirect to auth with return path
+      const returnTo = encodeURIComponent(location.pathname + location.search + location.hash);
+      navigate(`/auth?redirect=${returnTo}`);
     }
   }, [user, loading, navigate, location]);
 
