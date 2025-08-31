@@ -311,7 +311,7 @@ const Index = () => {
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
       </div>
 
-      {/* 5. COMMUNITY SECTION - ANIME ARMY */}
+      {/* 5. COMMUNITY SECTION - ANIME.TOKEN ARMY */}
       <div id="nft-supporter-section" className="scroll-mt-20">
         <NFTSupporterSection globalOpen={showFullPage} />
       </div>

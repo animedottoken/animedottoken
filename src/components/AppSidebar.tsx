@@ -78,7 +78,7 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "ANIME ARMY", 
+    title: "ANIME.TOKEN ARMY", 
     icon: Trophy,
     hash: "nft-supporter-section",
     type: "section" as const
