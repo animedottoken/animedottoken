@@ -411,7 +411,7 @@ const Index = () => {
         <div className="mt-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold">
             <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎉</span>
-            Congratulations!
+            Congratulations, Stakeholder!
           </h2>
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
@@ -425,7 +425,8 @@ const Index = () => {
             />
           </picture>
           </div>
-          <p className="mt-3 text-muted-foreground">You are now not just a holder, but a key member of our community. By sharing it in your social circle, you help grow our movement and build the #1 global hub for anime culture.</p>
+          <p className="mt-3 text-muted-foreground mb-2">You are now an owner, not just a holder. Welcome to the ANIME.TOKEN Ownership Economy. By joining us, you help build a transparent, community-driven ecosystem on Solana.</p>
+          <p className="text-sm text-muted-foreground/80">Share your new role as a stakeholder and invite others to join the movement.</p>
           <div className="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center items-center px-4">
             {/* Main platforms */}
             <Button asChild variant="glass" size="lg">
