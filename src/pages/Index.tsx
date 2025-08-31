@@ -189,7 +189,7 @@ const Index = () => {
         <link
           rel="preload"
           as="image"
-          href="/lovable-uploads/98084839-2928-46c7-9778-53b01e51480a.png"
+          href="/lovable-uploads/35f96dc8-741f-4cfa-8d07-d0019a55a758.png"
         />
       </Helmet>
 
@@ -218,7 +218,7 @@ const Index = () => {
         <AspectRatio ratio={3 / 2}>
           <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/5 to-background animate-pulse">
             <ImageLazyLoad
-              src="/lovable-uploads/98084839-2928-46c7-9778-53b01e51480a.png"
+              src="/lovable-uploads/35f96dc8-741f-4cfa-8d07-d0019a55a758.png"
               alt="ANIME.TOKEN hero banner (3:2)"
               className="w-full h-full object-cover block"
               loading="eager"
