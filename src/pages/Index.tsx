@@ -416,8 +416,8 @@ const Index = () => {
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
-              src="/lovable-uploads/dfb2ccf3-2099-427d-9e4e-b38bfd2a4a9e.png"
-              alt="Congratulations — Proud Anime Society Member poster"
+              src="/lovable-uploads/d54f33b2-028c-448c-847b-5ac1f2ac9105.png"
+              alt="ANIME Token — Stakeholder ownership artwork"
               loading="lazy"
               decoding="async"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
