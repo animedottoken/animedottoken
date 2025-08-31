@@ -25,7 +25,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy, Share } from "lucide-react";
+import { ChevronDown, Copy, Share, Handshake } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
@@ -409,8 +409,8 @@ const Index = () => {
         </ul>
 
         <div className="mt-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold">
-            <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">🎉</span>
+          <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
+            <Handshake className="w-8 h-8 text-primary" />
             Congratulations, Stakeholder!
           </h2>
           <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
