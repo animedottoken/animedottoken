@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Crown } from "lucide-react";
 import { useState } from "react";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -76,8 +76,8 @@ export function NFTSupporterSection() {
       <div>
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
-            <span className="mr-2 align-middle">🎖</span>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground flex items-center justify-center gap-3">
+            <Crown className="w-12 h-12 text-violet-400" />
             Join the ANIME ARMY
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
