@@ -30,7 +30,7 @@ const navigationItems: NavigationItem[] = [
   { type: "route", title: "Profile", icon: User, path: "/profile" },
   
   // Home sections - ordered to match actual homepage flow
-  { type: "section", title: "Create NFTs", icon: Coins, hash: "create-nfts" },
+  { type: "section", title: "Minting NFT & Marketplace", icon: Coins, hash: "create-nfts" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
   { type: "section", title: "Market Chart", icon: Target, hash: "market-cap-chart" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },

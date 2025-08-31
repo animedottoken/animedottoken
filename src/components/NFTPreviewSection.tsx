@@ -1,21 +1,25 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users, ChevronDown } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 
 export function NFTPreviewSection() {
   const navigate = useNavigate();
+  const [box1Open, setBox1Open] = useState(false);
+  const [box2Open, setBox2Open] = useState(false);
 
   return (
     <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center justify-center gap-3">
           <Palette className="w-10 h-10 text-violet-400" />
-          The Easiest Way to Create & Collect Anime Art NFTs
+          A Community-Owned NFT Ecosystem
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Finally, a safe and simple platform for anime fans to turn their art into digital collectibles. No crypto experience needed—we guide you through every step.
+          Mint and trade on a platform built for creators and collectors who value transparency and true ownership.
         </p>
       </div>
 
@@ -35,9 +39,19 @@ export function NFTPreviewSection() {
               <Coins className="h-10 w-10 text-primary" />
             </div>
             <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
-            <CardDescription className="text-base">
-              Have an original character or fan art you're proud of? Our guided tool helps you turn your creation into a unique, verifiable digital collectible.
-            </CardDescription>
+            <Collapsible open={box1Open} onOpenChange={setBox1Open}>
+              <CollapsibleTrigger asChild>
+                <Button variant="link" size="sm" className="px-0 mt-2">
+                  {box1Open ? "Hide details" : "Show details"} 
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardDescription className="text-base mt-2">
+                  Our guided tool helps you turn your creation into a unique, verifiable digital collectible on the Solana blockchain. Features include free creation (pay only network fees), automatic royalty settings, and custom traits.
+                </CardDescription>
+              </CollapsibleContent>
+            </Collapsible>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
@@ -87,10 +101,20 @@ export function NFTPreviewSection() {
             <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <ShoppingBag className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="text-2xl">The Anime Art Marketplace</CardTitle>
-            <CardDescription className="text-base">
-              Discover and collect unique digital art from talented creators in the ANIME community. Every piece is verified on blockchain for authenticity.
-            </CardDescription>
+            <CardTitle className="text-2xl">The Marketplace</CardTitle>
+            <Collapsible open={box2Open} onOpenChange={setBox2Open}>
+              <CollapsibleTrigger asChild>
+                <Button variant="link" size="sm" className="px-0 mt-2">
+                  {box2Open ? "Hide details" : "Show details"} 
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardDescription className="text-base mt-2">
+                  Discover and collect unique digital assets from talented creators in our ecosystem. Every piece is verified on-chain for authenticity, with instant, secure transactions.
+                </CardDescription>
+              </CollapsibleContent>
+            </Collapsible>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
@@ -118,7 +142,7 @@ export function NFTPreviewSection() {
                 asChild
               >
                 <Link to="/marketplace">
-                  Explore the Marketplace
+                  Explore Now
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
