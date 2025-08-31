@@ -96,7 +96,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
       console.log('Creating sample collection...');
       const sampleCollection = {
         id: collectionId,
-        name: 'ANIME ARMY Genesis',
+        name: 'ANIME.TOKEN ARMY Genesis',
         symbol: 'AAGEN',
         description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
         image_url: '/images/og-anime.jpg',
@@ -136,7 +136,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
       // Set fallback collection for demo purposes
       setCollection({
         id: 'fallback-collection',
-        name: 'ANIME ARMY Genesis',
+        name: 'ANIME.TOKEN ARMY Genesis',
         symbol: 'AAGEN',
         description: 'The first collection of ANIME ARMY NFTs featuring unique anime-style characters with special powers and abilities.',
         image_url: '/images/og-anime.jpg',
