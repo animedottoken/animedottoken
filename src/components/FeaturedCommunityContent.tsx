@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, ExternalLink, Users } from "lucide-react";
+import { Upload, ExternalLink, Users, Tv } from "lucide-react";
 import { useState } from "react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
@@ -53,8 +53,8 @@ export function FeaturedCommunityContent() {
   return (
     <section className="mx-auto mt-16 max-w-5xl px-4 featured-community-content">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4 text-white">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">👥</span>
+        <h2 className="text-3xl font-bold mb-4 text-white flex items-center justify-center gap-3">
+          <Tv className="w-8 h-8 text-violet-400" />
           Community Showcase
         </h2>
         <p className="text-muted-foreground text-lg mb-6">
