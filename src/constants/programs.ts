@@ -8,8 +8,8 @@ export const SYSTEM_PROGRAM_ID = "11111111111111111111111111111112";
 export const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 export const ASSOCIATED_TOKEN_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
 
-// Current commit hash for transparency (updated in CI/CD)
-export const COMMIT_HASH = process.env.VITE_COMMIT_HASH || "development";
+// Current commit hash for transparency (to be updated manually or via build process)
+export const COMMIT_HASH = "development-build";
 
 // Program validation helper
 export const validateProgramId = (programId: string, expectedId: string, programName: string) => {
