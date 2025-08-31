@@ -337,7 +337,7 @@ const Index = () => {
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-center text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <ShoppingCart className="w-8 h-8 text-violet-400" />
-          How to buy ANIME A
+          How to buy $ANIME
         </h2>
         <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
@@ -444,7 +444,7 @@ const Index = () => {
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Step 4: Swap SOL for ANIME A */}
+          {/* Step 4: Swap SOL for $ANIME */}
           <Collapsible open={showFullPage} onOpenChange={() => {}} className="group">
             <CollapsibleTrigger asChild>
               <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
@@ -453,7 +453,7 @@ const Index = () => {
                     <span className="text-2xl">🎌</span>
                   </div>
                   <CardTitle className="text-lg md:text-xl font-bold text-center flex items-center justify-center gap-2">
-                    4. SWAP SOL FOR ANIME A
+                    4. SWAP SOL FOR $ANIME
                     <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                   </CardTitle>
                 </CardHeader>
@@ -488,11 +488,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Large Text Block - ANIME A - A NEW INTERNET MONEY ERA */}
+      {/* Large Text Block - ANIME.TOKEN — A NEW INTERNET MONEY ERA */}
       <section className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
         <div className="bg-card border rounded-lg p-8 md:p-12">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-center">
-            ANIME A - A NEW INTERNET MONEY ERA
+            ANIME.TOKEN — A NEW INTERNET MONEY ERA
           </h2>
           <div className="prose prose-lg max-w-none text-muted-foreground">
             <p className="mb-6 text-lg leading-relaxed">

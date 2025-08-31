@@ -36,7 +36,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "ANIME ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
-  { type: "section", title: "How to Buy ANIME", icon: ShoppingCart, hash: "how-to-buy" },
+  { type: "section", title: "How to Buy $ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "Get In Touch", icon: LifeBuoy, hash: "get-in-touch" },
 ];

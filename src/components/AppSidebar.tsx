@@ -90,7 +90,7 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "Join the Economy", 
+    title: "How to Buy $ANIME", 
     icon: ShoppingCart,
     hash: "how-to-buy",
     type: "section" as const
