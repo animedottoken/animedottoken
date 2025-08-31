@@ -52,7 +52,7 @@ const navigationItems = [
     path: "/marketplace",
     type: "route" as const
   },
-  // Sections in correct webpage order (updated):
+  // CORRECTED ORDER TO MATCH WEBPAGE FLOW:
   { 
     title: "Create NFTs", 
     icon: Coins,
