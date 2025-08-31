@@ -46,37 +46,19 @@ export function NFTPreviewSection() {
     </CollapsibleContent>
   </Collapsible>
 </CardHeader>
-<CardContent className="space-y-4">
-  <div className="space-y-3">
-    <div className="flex items-center gap-3">
-      <Zap className="h-5 w-5 text-green-500" />
-      <span className="text-sm">Free to Create (you only pay network fees)</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Users className="h-5 w-5 text-blue-500" />
-      <span className="text-sm">Earn Royalties on Future Sales</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Palette className="h-5 w-5 text-purple-500" />
-      <span className="text-sm">Add Custom Traits & Rarity</span>
-    </div>
-  </div>
-  
-  <div className="pt-2">
-    <Badge variant="secondary" className="mb-4">
-      🔥 Live Now
-    </Badge>
-    <Button 
-      className="w-full group-hover:scale-105 transition-transform"
-      asChild
-    >
-      <Link to="/mint">
-        Start Creating
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Link>
-    </Button>
-  </div>
-</CardContent>
+        <CardContent className="space-y-4">
+          <div className="pt-2">
+            <Button 
+              className="w-full group-hover:scale-105 transition-transform"
+              asChild
+            >
+              <Link to="/mint">
+                Start Creating
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
         </Card>
 
         {/* Marketplace Card */}
@@ -102,38 +84,20 @@ export function NFTPreviewSection() {
     </CollapsibleContent>
   </Collapsible>
 </CardHeader>
-<CardContent className="space-y-4">
-  <div className="space-y-3">
-    <div className="flex items-center gap-3">
-      <Zap className="h-5 w-5 text-green-500" />
-      <span className="text-sm">Instant & Secure Transactions</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Palette className="h-5 w-5 text-purple-500" />
-      <span className="text-sm">Curated & Verified Artists</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Users className="h-5 w-5 text-blue-500" />
-      <span className="text-sm">A Community of Fans & Collectors</span>
-    </div>
-  </div>
-
-  <div className="pt-2">
-    <Badge variant="outline" className="mb-4">
-      🛍️ Explore Now
-    </Badge>
-    <Button 
-      variant="outline" 
-      className="w-full group-hover:scale-105 transition-transform"
-      asChild
-    >
-      <Link to="/marketplace">
-        Explore Now
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Link>
-    </Button>
-  </div>
-</CardContent>
+        <CardContent className="space-y-4">
+          <div className="pt-2">
+            <Button 
+              variant="outline" 
+              className="w-full group-hover:scale-105 transition-transform"
+              asChild
+            >
+              <Link to="/marketplace">
+                Explore Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
         </Card>
       </div>
 
