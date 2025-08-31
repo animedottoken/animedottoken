@@ -54,7 +54,12 @@ export function MarketCapChart({ pairAddress = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7
           `
         }} />
         <div id="dexscreener-embed">
-          <iframe src={dexScreenerEmbedUrl} />
+          <iframe 
+            src={dexScreenerEmbedUrl}
+            title="ANIME Token Price Chart"
+            allow="fullscreen"
+            loading="lazy"
+          />
         </div>
         <div className="mt-4 text-xs text-muted-foreground text-center">
           Live data provided by{" "}
