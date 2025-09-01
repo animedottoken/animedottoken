@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,35 @@ import {
 } from "@/constants/programs";
 
 export default function Trust() {
+  const [repoStatus, setRepoStatus] = useState<'loading' | 'public' | 'private'>('loading');
+
+  useEffect(() => {
+    const checkRepoStatus = async () => {
+      const repoUrl = import.meta.env.VITE_GITHUB_REPO_URL;
+      if (!repoUrl) {
+        setRepoStatus('private');
+        return;
+      }
+
+      // Extract owner/repo from URL
+      const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+      if (!match) {
+        setRepoStatus('private');
+        return;
+      }
+
+      const [, owner, repo] = match;
+      try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+        setRepoStatus(response.ok ? 'public' : 'private');
+      } catch {
+        setRepoStatus('private');
+      }
+    };
+
+    checkRepoStatus();
+  }, []);
+
   const handleReportRisk = () => {
     window.open('https://discord.gg/jqxCbvZvn7', '_blank');
   };
@@ -73,18 +103,34 @@ export default function Trust() {
                   </code>
                 </div>
                 {import.meta.env.VITE_GITHUB_REPO_URL && (
-                  <Button asChild variant="outline" size="sm">
-                    <a 
-                      href={import.meta.env.VITE_GITHUB_REPO_URL} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
-                    >
-                      <Code className="h-4 w-4" />
-                      View Source
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </Button>
+                  <>
+                    {repoStatus === 'loading' ? (
+                      <Button variant="outline" size="sm" disabled>
+                        <Code className="h-4 w-4" />
+                        Checking repository...
+                      </Button>
+                    ) : repoStatus === 'public' ? (
+                      <Button asChild variant="outline" size="sm">
+                        <a 
+                          href={import.meta.env.VITE_GITHUB_REPO_URL} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2"
+                        >
+                          <Code className="h-4 w-4" />
+                          View Source
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </Button>
+                    ) : (
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground mb-1">Repository Status</p>
+                        <Badge variant="secondary" className="text-xs">
+                          Private or Coming Soon
+                        </Badge>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
