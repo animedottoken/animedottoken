@@ -1,73 +1,119 @@
-# Welcome to your Lovable project
+# ANIME.TOKEN - Decentralized NFT Marketplace
 
-## Project info
+ANIME.TOKEN is a revolutionary Web3 marketplace that brings transparency, security, and community-driven governance to the world of anime NFTs and digital collectibles.
 
-**URL**: https://lovable.dev/projects/073d74a6-99d5-42cc-8d2e-4144164f2d85
+## 🌟 Key Features
 
-## How can I edit this code?
+- **100% Transparent**: Built on Solana with Metaplex protocols for maximum security
+- **Non-Custodial**: You always maintain full control of your assets
+- **Community-Driven**: Decentralized governance with token holders
+- **Creator-Friendly**: Fair revenue sharing and easy minting tools
+- **Mobile-First**: Progressive Web App (PWA) optimized for all devices
 
-There are several ways of editing your application.
+## 🔧 Technology Stack
 
-**Use Lovable**
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Blockchain**: Solana network with Metaplex protocols
+- **Backend**: Supabase for user data and authentication
+- **Database**: PostgreSQL with Row Level Security (RLS)
+- **Deployment**: Lovable platform with custom domain support
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/073d74a6-99d5-42cc-8d2e-4144164f2d85) and start prompting.
+## 🌐 Live Application
 
-Changes made via Lovable will be committed automatically to this repo.
+**Website**: [https://anime.token](https://anime.token)  
+**Repository**: [https://github.com/animedottoken/animedottoken](https://github.com/animedottoken/animedottoken)
 
-**Use your preferred IDE**
+## 🔐 Security & Transparency
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+This project practices **radical transparency** as part of our commitment to security:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Open Source**: All frontend code is publicly available
+- **Auditable**: Smart contracts use established Metaplex protocols
+- **Non-Custodial**: Your wallet, your keys, your assets
+- **Reproducible Builds**: Verify deployed code matches source code
 
-Follow these steps:
+For security reports and responsible disclosure, see [SECURITY.md](./SECURITY.md).
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 💼 Environment Variables
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+This application requires the following environment variables:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```env
+VITE_SUPABASE_PROJECT_ID=your_supabase_project_id
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_GITHUB_REPO_URL=https://github.com/animedottoken/animedottoken
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🚀 Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/animedottoken/animedottoken.git
+cd animedottoken
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 📦 Building for Production
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Build the application
+npm run build
 
-**Use GitHub Codespaces**
+# Preview the build locally
+npm run preview
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🔍 Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/         # Reusable UI components
+├── pages/             # Main application pages
+├── hooks/             # Custom React hooks
+├── contexts/          # React context providers
+├── lib/               # Utility functions and helpers
+├── types/             # TypeScript type definitions
+├── assets/            # Static assets (images, etc.)
+└── integrations/      # Third-party service integrations
+```
 
-This project is built with:
+## 🤝 Contributing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+We welcome contributions from the community! Please:
 
-## How can I deploy this project?
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Simply open [Lovable](https://lovable.dev/projects/073d74a6-99d5-42cc-8d2e-4144164f2d85) and click on Share -> Publish.
+## 📄 License
 
-## Can I connect a custom domain to my Lovable project?
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-Yes, you can!
+## 🛡️ Security
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+For security concerns or responsible disclosure of vulnerabilities, please see our [Security Policy](./SECURITY.md).
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📞 Contact & Community
+
+- **Discord**: [Join our community](https://discord.gg/anime-token)
+- **Twitter**: [@animetoken](https://twitter.com/animetoken)
+- **Website**: [https://anime.token](https://anime.token)
+
+---
+
+**Built with ❤️ by the ANIME.TOKEN community**
+
+*This project demonstrates the power of decentralized, transparent, and community-driven development in the Web3 space.*

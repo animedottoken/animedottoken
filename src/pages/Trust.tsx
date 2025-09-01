@@ -72,18 +72,20 @@ export default function Trust() {
                     {COMMIT_HASH}
                   </code>
                 </div>
-                <Button asChild variant="outline" size="sm">
-                  <a 
-                    href="https://github.com/your-org/anime-token" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <Code className="h-4 w-4" />
-                    View Source
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </Button>
+                {import.meta.env.VITE_GITHUB_REPO_URL && (
+                  <Button asChild variant="outline" size="sm">
+                    <a 
+                      href={import.meta.env.VITE_GITHUB_REPO_URL} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2"
+                    >
+                      <Code className="h-4 w-4" />
+                      View Source
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
