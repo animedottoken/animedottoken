@@ -644,13 +644,20 @@ const Index = () => {
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What is the utility of the $ANIME token?</span>
-                  <p className="mt-2 text-muted-foreground">$ANIME is the official utility token of our community-owned ecosystem. Its primary function is to unlock value and provide tangible benefits to our stakeholders. Key utilities include:</p>
-                  <ul className="mt-2 ml-4 list-disc text-muted-foreground space-y-1">
-                    <li><strong>Staking for Fee Discounts:</strong> Stake $ANIME to receive significant reductions on the 2% marketplace transaction fee.</li>
-                    <li><strong>Creator Verification:</strong> Stake $ANIME to achieve "Staked Creator" status, signaling the highest level of trust and commitment on the platform.</li>
-                    <li><strong>Listing Promotion (Boost System):</strong> Use your $ANIME tokens to boost your NFT listings for greater visibility.</li>
-                    <li><strong>Future Governance:</strong> As the ecosystem matures, the token will be used to vote on key project decisions, giving you a real voice.</li>
-                  </ul>
+                  <p className="mt-2 text-muted-foreground">$ANIME is the official utility token of our community-owned ecosystem, designed to unlock value and empower our stakeholders. The token's utility will expand as the project grows.</p>
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <p className="font-semibold text-foreground">Utility at Launch:</p>
+                      <p className="mt-1 text-muted-foreground">The primary utility at launch is for our Listing Promotion (Boost System). You can use your $ANIME tokens to boost your NFT listings, giving them greater visibility on the marketplace.</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Future Utility (On the Roadmap):</p>
+                      <ul className="mt-1 ml-4 list-disc text-muted-foreground space-y-1">
+                        <li><strong>Staking for Rewards & Benefits:</strong> We are developing a staking system that will allow you to earn significant discounts on marketplace fees and achieve "Staked Creator" status.</li>
+                        <li><strong>Community Governance:</strong> As the ecosystem matures, the token will grant you the right to vote on key project decisions, giving you a real voice in the platform's future.</li>
+                      </ul>
+                    </div>
+                  </div>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What are the fees for selling on the ANIME Marketplace?</span>
