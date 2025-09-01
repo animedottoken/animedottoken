@@ -239,6 +239,29 @@ const Index = () => {
   const [step4Open, setStep4Open] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   
+  const { viewMode } = useViewMode();
+  
+  // Set all collapsible states based on view mode
+  useEffect(() => {
+    if (viewMode === 'full') {
+      setBuyOpen(true);
+      setPromoOpen(true);
+      setStep1Open(true);
+      setStep2Open(true);
+      setStep3Open(true);
+      setStep4Open(true);
+      setFaqOpen(true);
+    } else {
+      setBuyOpen(false);
+      setPromoOpen(false);
+      setStep1Open(false);
+      setStep2Open(false);
+      setStep3Open(false);
+      setStep4Open(false);
+      setFaqOpen(false);
+    }
+  }, [viewMode]);
+  
 
   return (
     <ViewModeProvider>
@@ -374,10 +397,12 @@ const Index = () => {
         <p className="mt-3 text-left text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
         <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
-            <span>{buyOpen ? "Hide details" : "Show details"}</span>
-            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-          </CollapsibleTrigger>
+          {viewMode === "overview" && (
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+              <span>{buyOpen ? "Hide details" : "Show details"}</span>
+              <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+          )}
 
           <CollapsibleContent className="mt-6">
             <ul className="space-y-5 list-none pl-0">
@@ -385,10 +410,12 @@ const Index = () => {
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
-                  {step1Open ? "Hide details" : "Show details"}
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} />
-                </CollapsibleTrigger>
+                {viewMode === "overview" && (
+                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                    {step1Open ? "Hide details" : "Show details"}
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} />
+                  </CollapsibleTrigger>
+                )}
               </div>
               <CollapsibleContent>
                 <div className="mt-2 flex items-center gap-3">
@@ -411,10 +438,12 @@ const Index = () => {
             <Collapsible open={step2Open} onOpenChange={setStep2Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
-                  {step2Open ? "Hide details" : "Show details"}
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} />
-                </CollapsibleTrigger>
+                {viewMode === "overview" && (
+                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                    {step2Open ? "Hide details" : "Show details"}
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} />
+                  </CollapsibleTrigger>
+                )}
               </div>
               <CollapsibleContent>
                 <p className="mt-1 text-muted-foreground">
@@ -432,10 +461,12 @@ const Index = () => {
             <Collapsible open={step3Open} onOpenChange={setStep3Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 3: Fund Your Wallet</span>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
-                  {step3Open ? "Hide details" : "Show details"}
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step3Open ? "rotate-180" : ""}`} />
-                </CollapsibleTrigger>
+                {viewMode === "overview" && (
+                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                    {step3Open ? "Hide details" : "Show details"}
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step3Open ? "rotate-180" : ""}`} />
+                  </CollapsibleTrigger>
+                )}
               </div>
               <CollapsibleContent>
                 <p className="mt-1 text-muted-foreground">To start using Phantom, add cryptocurrency to your wallet.</p>
@@ -455,10 +486,12 @@ const Index = () => {
             <Collapsible open={step4Open} onOpenChange={setStep4Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 4: Swap for $ANIME</span>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
-                  {step4Open ? "Hide details" : "Show details"}
-                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step4Open ? "rotate-180" : ""}`} />
-                </CollapsibleTrigger>
+                {viewMode === "overview" && (
+                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                    {step4Open ? "Hide details" : "Show details"}
+                    <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step4Open ? "rotate-180" : ""}`} />
+                  </CollapsibleTrigger>
+                )}
               </div>
               <CollapsibleContent>
                 <p className="mt-1 text-muted-foreground">Swap to $ANIME directly in Phantom on Solana.</p>
@@ -545,9 +578,11 @@ const Index = () => {
             <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
               {/* minimal link only */}
               <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
-                </CollapsibleTrigger>
+                {viewMode === "overview" && (
+                  <CollapsibleTrigger asChild>
+                    <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
+                  </CollapsibleTrigger>
+                )}
                 <CollapsibleContent>
                   <p className="mt-2 text-xs text-muted-foreground">1) Download an image or all 2) Copy text 3) Post on X or Telegram (attach the image).</p>
                   <div className="mt-3 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -619,10 +654,12 @@ const Index = () => {
         <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
         
         <Collapsible open={faqOpen} onOpenChange={setFaqOpen}>
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
-            <span>{faqOpen ? "Hide details" : "Show details"}</span>
-            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-          </CollapsibleTrigger>
+          {viewMode === "overview" && (
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+              <span>{faqOpen ? "Hide details" : "Show details"}</span>
+              <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+          )}
 
           <CollapsibleContent className="mt-6">
             <ul className="space-y-4 list-none pl-0">
