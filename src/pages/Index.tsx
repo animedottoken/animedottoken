@@ -618,7 +618,9 @@ const Index = () => {
           <HelpCircle className="w-10 h-10 text-violet-400" />
           FAQs (Frequented Answers & Questions)
         </h2>
-        <ul className="mt-3 space-y-4">
+        <p className="mt-3 text-left text-muted-foreground">Common questions about $ANIME and our ecosystem:</p>
+        
+        <ul className="mt-6 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
