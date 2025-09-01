@@ -30,7 +30,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircle } from "lucide-react";
+import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircle, Users } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
@@ -704,12 +704,12 @@ const Index = () => {
       {/* Hidden anchor for backward compatibility */}
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
       
-      <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <h2 className="text-2xl md:text-3xl font-bold">
-          <span className="text-4xl mr-3 leading-[1.2] align-middle pb-1">💬</span>
+      <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+        <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
+          <Users className="w-10 h-10 text-violet-400" />
           Join the Movement
         </h2>
-        <p className="mt-3 text-muted-foreground">Connect with the ANIME.TOKEN Ownership Economy. Don't just be a user—be an owner in the future of decentralized communities.</p>
+        <p className="mt-3 text-left text-muted-foreground">Connect with the ANIME.TOKEN Ownership Economy. Don't just be a user—be an owner in the future of decentralized communities.</p>
         <div className="mt-6 space-y-4">
           <div aria-labelledby="join-social">
             <h3 id="join-social" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social</h3>
