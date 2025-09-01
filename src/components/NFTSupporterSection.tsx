@@ -157,7 +157,7 @@ const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupporters
                 </div>
                 
                 <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Awarded exclusively to the first 100 active supporters who join and engage in our X (Twitter) and Discord communities. This NFT marks your legacy as a pioneer of the $ANIME community.
+                  Awarded to the first 100 active supporters in our X (Twitter) and Discord communities. To qualify, you must actively contribute to the conversation about the Ownership Economy and the ANIME.TOKEN ecosystem.
                 </p>
                 
                 {/* Real-time Counter */}
