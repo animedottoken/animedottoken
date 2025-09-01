@@ -2,7 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Shield, Code, FileText, AlertTriangle, Copy } from "lucide-react";
+import { ExternalLink, Shield, Code, FileText, AlertTriangle, Copy, ArrowLeft, Globe } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
@@ -14,9 +15,14 @@ import {
 } from "@/constants/programs";
 
 export default function Trust() {
+  const navigate = useNavigate();
 
   const handleReportRisk = () => {
     window.open('https://discord.gg/jqxCbvZvn7', '_blank');
+  };
+
+  const handleBackToSecurity = () => {
+    navigate('/#security');
   };
 
   return (
@@ -28,6 +34,18 @@ export default function Trust() {
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={handleBackToSecurity}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Security Section
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
@@ -73,20 +91,34 @@ export default function Trust() {
                     {COMMIT_HASH}
                   </code>
                 </div>
-                {import.meta.env.VITE_GITHUB_REPO_URL && (
+                <div className="flex gap-2">
+                  {import.meta.env.VITE_GITHUB_REPO_URL && (
+                    <Button asChild variant="outline" size="sm">
+                      <a 
+                        href={import.meta.env.VITE_GITHUB_REPO_URL} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <Code className="h-4 w-4" />
+                        View Source
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </Button>
+                  )}
                   <Button asChild variant="outline" size="sm">
                     <a 
-                      href={import.meta.env.VITE_GITHUB_REPO_URL} 
+                      href="https://www.anime.fund" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"
                     >
-                      <Code className="h-4 w-4" />
-                      View Source
+                      <Globe className="h-4 w-4" />
+                      View Ecosystem Fund
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   </Button>
-                )}
+                </div>
               </div>
             </div>
           </CardContent>
