@@ -613,7 +613,7 @@ const Index = () => {
           </CollapsibleContent>
         </Collapsible>
 
-      <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+      <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
