@@ -324,10 +324,7 @@ const Index = () => {
                     <h4 className="text-sm font-semibold">View Modes</h4>
                     <div className="space-y-2 text-xs">
                       <div>
-                        <strong>Overview:</strong> Shows only headlines and subheadlines. Click "Read more" to expand sections.
-                      </div>
-                      <div>
-                        <strong>Summary:</strong> Includes key details with expandable sections for full content.
+                        <strong>Overview:</strong> Shows only headlines and subheadlines. Click "Show details" to expand sections.
                       </div>
                       <div>
                         <strong>Full Details:</strong> Expands all sections to show complete information.

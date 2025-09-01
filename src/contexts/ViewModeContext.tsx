@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type ViewMode = 'overview' | 'summary' | 'full';
+export type ViewMode = 'overview' | 'full';
 
 interface ViewModeContextType {
   viewMode: ViewMode;

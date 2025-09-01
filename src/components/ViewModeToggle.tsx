@@ -1,14 +1,13 @@
 import React from 'react';
 import { Toggle } from '@/components/ui/toggle';
 import { useViewMode, ViewMode } from '@/contexts/ViewModeContext';
-import { Eye, FileText, Expand } from 'lucide-react';
+import { Eye, Expand } from 'lucide-react';
 
 const ViewModeToggle: React.FC = () => {
   const { viewMode, setViewMode } = useViewMode();
 
   const modes: { key: ViewMode; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { key: 'overview', label: 'Overview', icon: Eye },
-    { key: 'summary', label: 'Summary', icon: FileText },
     { key: 'full', label: 'Full Details', icon: Expand },
   ];
 
@@ -25,7 +24,6 @@ const ViewModeToggle: React.FC = () => {
           aria-label={`Switch to ${label} view mode`}
           title={`${label}: ${
             key === 'overview' ? 'Shows only headlines and subheadlines' :
-            key === 'summary' ? 'Includes key details with expandable sections' :
             'Expands all sections to show complete information'
           }`}
         >
