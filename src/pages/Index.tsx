@@ -370,14 +370,14 @@ const Index = () => {
 
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <h2 className="text-left text-4xl font-bold grid grid-cols-[40px_1fr] items-center gap-3 mb-4">
+        <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
         </h2>
-        <p className="mt-3 text-left text-muted-foreground pl-[52px]">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
+        <p className="mt-3 text-left text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
         <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium pl-[52px]">
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
             <span>{buyOpen ? "Hide details" : "Show details"}</span>
             <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
@@ -614,11 +614,11 @@ const Index = () => {
         </Collapsible>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <h2 className="text-left text-4xl font-bold grid grid-cols-[40px_1fr] items-center gap-3 mb-4">
+        <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
-          FAQs (Frequented Answers & Questions)
+          FAQs (Frequently Asked Questions)
         </h2>
-        <p className="mt-3 text-left text-muted-foreground pl-[52px]">Common questions about $ANIME and our ecosystem:</p>
+        <p className="mt-3 text-left text-muted-foreground">Common questions about $ANIME and our ecosystem:</p>
         
         <ul className="mt-6 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
@@ -634,7 +634,7 @@ const Index = () => {
 
           <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See less FAQs (Frequented Answers & Questions)" : "See more FAQs (Frequented Answers & Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
+              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See fewer FAQs (Frequently Asked Questions)" : "See more FAQs (Frequently Asked Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">

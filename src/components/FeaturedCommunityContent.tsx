@@ -54,17 +54,17 @@ export function FeaturedCommunityContent() {
   return (
     <section className="mx-auto mt-12 max-w-5xl px-6 featured-community-content">
       <div className="text-left mb-12">
-        <h2 className="text-4xl font-bold mb-4 text-foreground grid grid-cols-[40px_1fr] items-center gap-3">
+        <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
           <Sparkles className="w-10 h-10 text-violet-400" />
           Community Showcase
         </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl pl-[52px]">
+        <p className="text-lg text-muted-foreground max-w-3xl">
           See what our stakeholders are building. We feature content that educates, entertains, and grows our ecosystem—from viral memes to in-depth analysis. To get your work featured, submit it on Discord or tag us on X.
         </p>
         
         {/* Show details trigger */}
         <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium pl-[52px]">
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
             <span>{detailsOpen ? "Hide details" : "Show details"}</span>
             <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
