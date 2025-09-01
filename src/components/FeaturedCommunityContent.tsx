@@ -70,22 +70,7 @@ export function FeaturedCommunityContent() {
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
             <div className="text-muted-foreground space-y-4 max-w-3xl">
-              <p>
-                Our Community Showcase is where the best ANIME.TOKEN content gets the spotlight it deserves. We're looking for content that educates, entertains, and grows our ecosystem.
-              </p>
-              <div className="space-y-2">
-                <p><strong>What we feature:</strong></p>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Viral memes that spread ANIME.TOKEN awareness</li>
-                  <li>Educational content about the Ownership Economy</li>
-                  <li>Technical analysis and market insights</li>
-                  <li>Community art and creative projects</li>
-                  <li>Social media posts with high engagement</li>
-                </ul>
-              </div>
-              <p>
-                <strong>How to get featured:</strong> Create quality content, share it on social media with ANIME.TOKEN tags, then submit it through Discord or tag us on X. Our team reviews submissions weekly.
-              </p>
+              {/* Content removed per user request */}
             </div>
           </CollapsibleContent>
         </Collapsible>
