@@ -36,7 +36,7 @@ const nftTypes = [
     supply: "1,000",
     image: ambassadorsNFT,
     role: "Role: Content Creator",
-    description: "The external special forces who support the ARMY's mission. Ambassadors are the dedicated content creators and community builders who amplify our message and grow our community's reach across the digital world.",
+    description: "The key evangelists and content creators who support our mission. Ambassadors are the dedicated community builders who amplify our message about the Ownership Economy and grow our ecosystem's reach across the digital world.",
     howToEarn: [
       "This NFT is awarded to creators who proactively contact us with proof of meeting the following measurable content targets:",
       "On X (Twitter)|Achieve 250,000+ impressions on ANIME-related content within a 3-month period OR create a single thread that receives over 1,000 likes.",
