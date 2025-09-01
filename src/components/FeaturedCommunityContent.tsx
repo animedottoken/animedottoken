@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, ExternalLink, Users, Tv } from "lucide-react";
+import { Upload, ExternalLink, Users, Crown } from "lucide-react";
 import { useState } from "react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
@@ -52,12 +52,15 @@ export function FeaturedCommunityContent() {
 
   return (
     <section className="mx-auto mt-16 max-w-5xl px-4 featured-community-content">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4 text-white flex items-center justify-center gap-3">
-          <Tv className="w-8 h-8 text-violet-400" />
-          Community Showcase
-        </h2>
-        <p className="text-muted-foreground text-lg mb-6">
+      <div className="text-center mb-12">
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <Crown className="w-10 h-10 text-violet-400" />
+          <h2 className="text-4xl font-bold text-gradient-primary">
+            Community Showcase
+          </h2>
+          <Crown className="w-10 h-10 text-violet-400" />
+        </div>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
           See what our community is creating! Submit your ANIME-inspired memes, art, or posts to be featured.
         </p>
         
