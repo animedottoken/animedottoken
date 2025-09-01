@@ -59,15 +59,15 @@ function Section3({ holders }: { holders: number | null | undefined }) {
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
-      <div className={`mb-8 ${viewMode === "overview" ? "text-left" : "text-center"}`}>
-        <h2 className={`text-2xl md:text-3xl font-bold flex items-center gap-3 ${viewMode === "overview" ? "justify-start" : "justify-center"}`}>
+      <header className="mb-6 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <BarChart3 className="w-8 h-8 text-violet-400" />
           The Power of Community: A Decentralized Future
         </h2>
-        <p className={`mt-3 text-muted-foreground max-w-4xl ${viewMode === "overview" ? "" : "mx-auto"}`}>
+        <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
           Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
         </p>
-      </div>
+      </header>
 
       <Collapsible open={section3DetailsOpen} onOpenChange={setSection3DetailsOpen}>
         {viewMode === "overview" && (
