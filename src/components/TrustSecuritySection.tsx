@@ -129,6 +129,15 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                      </CardContent>
                   </Card>
                 </div>
+                
+                {/* CTA Button inside collapsible content */}
+                <div className="text-center mt-6">
+                  <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold shadow-elevated hover:shadow-glow transition-all duration-300">
+                    <a href="/trust">
+                      View Full Security Report & Technical Details
+                    </a>
+                  </Button>
+                </div>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -215,15 +224,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           </Card>
         </div>
       )}
-
-      {/* Prominent CTA Button */}
-      <div className="text-center mt-8">
-        <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold shadow-elevated hover:shadow-glow transition-all duration-300">
-          <a href="/trust">
-            View Full Security Report & Technical Details
-          </a>
-        </Button>
-      </div>
     </section>
   );
 }
