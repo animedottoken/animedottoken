@@ -612,6 +612,7 @@ const Index = () => {
             </section>
           </CollapsibleContent>
         </Collapsible>
+      </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
@@ -700,8 +701,6 @@ const Index = () => {
             })
           }}
         />
-
-      </section>
 
       {/* Hidden anchor for backward compatibility */}
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
