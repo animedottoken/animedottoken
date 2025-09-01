@@ -233,9 +233,16 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <ViewModeToggle />
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                    aria-label="View mode help"
+                    title="Learn about different view modes"
+                  >
                     <HelpCircle className="h-4 w-4" />
                   </Button>
                 </HoverCardTrigger>
@@ -256,7 +263,6 @@ const Index = () => {
                   </div>
                 </HoverCardContent>
               </HoverCard>
-              <ViewModeToggle />
             </div>
           </div>
         </div>
