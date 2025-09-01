@@ -374,10 +374,10 @@ const Index = () => {
           <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
         </h2>
-        <p className="mt-3 text-left text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
+        <p className="mt-3 text-left text-muted-foreground pl-[52px]">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
         <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium pl-[52px]">
             <span>{buyOpen ? "Hide details" : "Show details"}</span>
             <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
@@ -618,7 +618,7 @@ const Index = () => {
           <HelpCircle className="w-10 h-10 text-violet-400" />
           FAQs (Frequented Answers & Questions)
         </h2>
-        <p className="mt-3 text-left text-muted-foreground">Common questions about $ANIME and our ecosystem:</p>
+        <p className="mt-3 text-left text-muted-foreground pl-[52px]">Common questions about $ANIME and our ecosystem:</p>
         
         <ul className="mt-6 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
