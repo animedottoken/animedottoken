@@ -15,8 +15,8 @@ const emptySlots = [
     cta: "Made everyone laugh for days!",
     type: "meme",
     sample: true,
-    title: "Viral $ANIME Meme",
-    description: "Created the funniest $ANIME meme that went viral!",
+    title: "Ecosystem Showcase",
+    description: "See what our stakeholders are creating. Submit content that supports our community-owned ecosystem to be featured.",
     createdBy: "@MemeLord_Otaku",
     achievement: "Achieved 2,500 retweets and 15K likes in just 3 days!"
   },
