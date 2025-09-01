@@ -60,7 +60,7 @@ function Section3({ holders }: { holders: number | null | undefined }) {
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
-      <header className={`mb-12 ${isOverview ? 'text-left' : 'text-center'}`}>
+      <header className={`${isOverview ? 'mb-0 text-left' : 'mb-12 text-center'}`}>
         <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isOverview ? 'flex items-center' : 'flex items-center justify-center'} gap-3`}>
           <BarChart3 className="w-10 h-10 text-violet-400" />
           The Power of Community: A Decentralized Future
