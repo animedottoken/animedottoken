@@ -14,7 +14,7 @@ const nftTypes = [
   {
     id: "founders",
     icon: "🥇",
-    title: "Founder",
+    title: "FOUNDER",
     supply: "100",
     image: foundersNFT,
     role: "",
@@ -32,7 +32,7 @@ const nftTypes = [
   {
     id: "ambassadors", 
     icon: "🤝",
-    title: "Ambassador",
+    title: "AMBASSADOR",
     supply: "1,000",
     image: ambassadorsNFT,
     role: "Role: Content Creator",
@@ -50,7 +50,7 @@ const nftTypes = [
   {
     id: "hodlers",
     icon: "🏆",
-    title: "Hodler",
+    title: "HODLER",
     supply: "Unlimited",
     image: hodlersNFT,
     role: "Role: Loyal Supporter",
