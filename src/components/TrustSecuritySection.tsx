@@ -109,16 +109,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                         <li>LP burn verified and permanent</li>
                         <li>Standard SPL token with no hidden functions or backdoors</li>
                       </ul>
-                      <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
-                        <CollapsibleTrigger asChild>
-                          <Button variant="link" className="px-0">{treasuryDetailsOpen ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${treasuryDetailsOpen ? "rotate-180" : ""}`} /></Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="mt-4">
-                            <SecurityReportsDetails tokenAddress={tokenAddress} />
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
+                      <Button asChild variant="link" className="px-0 w-fit">
+                        <a href="/trust" className="text-primary hover:text-primary/80">
+                          View detailed security reports & treasury information →
+                        </a>
+                      </Button>
                     </CardContent>
                   </Card>
 
@@ -132,45 +127,14 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm">
                       <div className="space-y-3 text-muted-foreground">
-                        <p>
-                          To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.</span>
-                        </p>
-                        
-                        <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="link" className="px-0">
-                              {treasuryDetailsOpen ? "Hide details" : "Show details"} 
-                              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${treasuryDetailsOpen ? "rotate-180" : ""}`} />
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <div className="mt-3 space-y-3">
-                              <p>
-                                It holds <span className="font-semibold text-foreground">11.18% (109,000,000 $ANIME)</span> of the current token supply. These funds are the project's "war chest" and will be used exclusively for strategic growth, including marketing, exchange listings, and future development.
-                              </p>
-                              <p className="font-medium text-foreground">
-                                Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
-                              </p>
-                              <div className="bg-muted/50 p-3 rounded-lg">
-                                <div className="flex items-start gap-2 text-xs font-mono bg-background p-2 rounded border">
-                                  <span className="text-muted-foreground break-all flex-1 min-w-0">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-8 w-8 p-0 hover:bg-muted flex-shrink-0"
-                                    onClick={async () => {
-                                      await navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8');
-                                      toast.success("Address copied to clipboard!");
-                                    }}
-                                    aria-label="Copy wallet address to clipboard"
-                                  >
-                                    <Copy className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
+                    </p>
+                    <Button asChild variant="link" className="px-0 w-fit mt-3">
+                      <a href="/trust" className="text-primary hover:text-primary/80">
+                        View detailed treasury information & security reports →
+                      </a>
+                    </Button>
                       </div>
                       <div className="flex flex-col gap-2">
                         <Button asChild variant="hero">
@@ -252,16 +216,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                 <li>LP burn verified and permanent</li>
                 <li>Standard SPL token with no hidden functions or backdoors</li>
               </ul>
-              <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" className="px-0">{treasuryDetailsOpen ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${treasuryDetailsOpen ? "rotate-180" : ""}`} /></Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="mt-4">
-                    <SecurityReportsDetails tokenAddress={tokenAddress} />
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                      <Button asChild variant="link" className="px-0 w-fit">
+                        <a href="/trust" className="text-primary hover:text-primary/80">
+                          View detailed security reports & treasury information →
+                        </a>
+                      </Button>
             </CardContent>
           </Card>
 
@@ -275,45 +234,14 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="space-y-3 text-muted-foreground">
-                <p>
-                  To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.</span>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
                 </p>
-                
-                <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="link" className="px-0">
-                      {treasuryDetailsOpen ? "Hide details" : "Show details"} 
-                      <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${treasuryDetailsOpen ? "rotate-180" : ""}`} />
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="mt-3 space-y-3">
-                      <p>
-                        It holds <span className="font-semibold text-foreground">11.18% (109,000,000 $ANIME)</span> of the current token supply. These funds are the project's "war chest" and will be used exclusively for strategic growth, including marketing, exchange listings, and future development.
-                      </p>
-                      <p className="font-medium text-foreground">
-                        Our Commitment: No tokens from this wallet will be sold on the open market. All major transactions from this fund will be communicated transparently to the community beforehand.
-                      </p>
-                      <div className="bg-muted/50 p-3 rounded-lg">
-                        <div className="flex items-start gap-2 text-xs font-mono bg-background p-2 rounded border">
-                          <span className="text-muted-foreground break-all flex-1 min-w-0">7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-muted flex-shrink-0"
-                            onClick={async () => {
-                              await navigator.clipboard.writeText('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8');
-                              toast.success("Address copied to clipboard!");
-                            }}
-                            aria-label="Copy wallet address to clipboard"
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                <Button asChild variant="link" className="px-0 w-fit mt-3">
+                  <a href="/trust" className="text-primary hover:text-primary/80">
+                    View detailed treasury information & security reports →
+                  </a>
+                </Button>
               </div>
               <div className="flex flex-col gap-2">
                 <Button asChild variant="hero">
@@ -331,6 +259,15 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
           </Card>
         </div>
       )}
+
+      {/* Prominent CTA Button */}
+      <div className="text-center mt-8">
+        <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold shadow-elevated hover:shadow-glow transition-all duration-300">
+          <a href="/trust">
+            View Full Security Report & Technical Details
+          </a>
+        </Button>
+      </div>
     </section>
   );
 }

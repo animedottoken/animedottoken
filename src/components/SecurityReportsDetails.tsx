@@ -14,7 +14,7 @@ export function SecurityReportsDetails({ tokenAddress }: SecurityReportsDetailsP
   return (
     <section className="space-y-5">
       <header>
-        <h3 className="text-xl md:text-2xl font-bold leading-tight">ANIME Token Security Reports</h3>
+        <h3 className="text-xl md:text-2xl font-bold leading-tight">ANIME.TOKEN Security Reports</h3>
         <p className="text-sm text-muted-foreground">Independent analyses confirming contract safety and transparency.</p>
       </header>
 
