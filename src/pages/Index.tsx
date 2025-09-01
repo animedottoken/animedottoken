@@ -233,7 +233,6 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground hidden sm:inline">How to browse this page</span>
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
