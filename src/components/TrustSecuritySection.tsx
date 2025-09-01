@@ -8,6 +8,7 @@ import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { toast } from "sonner";
 import { useViewMode } from "@/contexts/ViewModeContext";
 import { TREASURY_WALLET_ADDRESS } from "@/constants/token";
+import { Link } from "react-router-dom";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
@@ -42,6 +43,16 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
         <p className={`text-lg text-muted-foreground ${isOverview ? '' : 'max-w-3xl mx-auto'}`}>
           $ANIME leverages the publicly audited, battle-tested Metaplex protocol used by thousands of Solana projects. 100% LP burned, creator holds zero tokens. Everything is verifiable on-chain through radical transparency.
         </p>
+        
+        {!isOverview && (
+          <div className="mt-6 text-center">
+            <Button asChild variant="default">
+              <Link to="/trust" aria-label="View full Trust & Security Center">
+                View full Trust & Security Center
+              </Link>
+            </Button>
+          </div>
+        )}
         
         {isOverview && (
           <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
