@@ -369,7 +369,7 @@ const Index = () => {
       </div>
 
 
-      <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+      <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
@@ -480,12 +480,12 @@ const Index = () => {
           </li>
         </ul>
 
-        <div className="mt-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
+        <div className="mt-8 text-left">
+          <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
             <Handshake className="w-8 h-8 text-primary" />
             Congratulations, Stakeholder!
           </h2>
-          <div className="mx-auto mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
+          <div className="mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
           <picture>
             <img
               src="/lovable-uploads/200d1789-179d-4077-9b63-356f00243e4c.png"
