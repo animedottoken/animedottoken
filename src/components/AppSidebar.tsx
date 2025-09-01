@@ -66,7 +66,7 @@ const navigationItems = [
     type: "section" as const
   },
   { 
-    title: "Market Chart", 
+    title: "Live Daily Price Chart", 
     icon: TrendingUp,
     hash: "market-cap-chart",
     type: "section" as const

@@ -32,7 +32,7 @@ const navigationItems: NavigationItem[] = [
   // Home sections - ordered to match actual homepage flow
   { type: "section", title: "Minting NFT & Marketplace", icon: Coins, hash: "create-nfts" },
   { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
-  { type: "section", title: "Market Chart", icon: Target, hash: "market-cap-chart" },
+  { type: "section", title: "Live Daily Price Chart", icon: Target, hash: "market-cap-chart" },
   { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
   { type: "section", title: "ANIME.TOKEN ARMY", icon: Trophy, hash: "nft-supporter-section" },
   { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
