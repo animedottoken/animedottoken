@@ -74,26 +74,6 @@ export function FeaturedCommunityContent() {
             </div>
           </CollapsibleContent>
         </Collapsible>
-        
-        {/* Call to Action Buttons */}
-        <div className="flex flex-wrap gap-4 mt-6">
-          <Button 
-            variant="outline" 
-            className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            onClick={() => window.open('https://discord.com/invite/HmSJdT5MRX', '_blank')}
-          >
-            <Upload className="w-4 h-4 text-purple-400" />
-            Submit on Discord
-          </Button>
-          <Button 
-            variant="outline" 
-            className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            onClick={() => window.open('https://x.com/AnimeDotToken', '_blank')}
-          >
-            <ExternalLink className="w-4 h-4 text-purple-400" />
-            Tag us on X
-          </Button>
-        </div>
       </div>
 
       {/* Static placeholders only (no backend) */}
@@ -142,6 +122,26 @@ export function FeaturedCommunityContent() {
             </div>
             </div>
         ))}
+      </div>
+
+      {/* Call to Action Buttons */}
+      <div className="flex flex-wrap gap-4 justify-center mt-8 mb-8">
+        <Button 
+          variant="outline" 
+          className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
+          onClick={() => window.open('https://discord.com/invite/HmSJdT5MRX', '_blank')}
+        >
+          <Upload className="w-4 h-4 text-purple-400" />
+          Submit on Discord
+        </Button>
+        <Button 
+          variant="outline" 
+          className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
+          onClick={() => window.open('https://x.com/AnimeDotToken', '_blank')}
+        >
+          <ExternalLink className="w-4 h-4 text-purple-400" />
+          Tag us on X
+        </Button>
       </div>
 
       {/* Community Item Details Modal */}
