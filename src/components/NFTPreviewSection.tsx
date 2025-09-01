@@ -44,7 +44,7 @@ export function NFTPreviewSection() {
                 <div className="grid md:grid-cols-2 gap-8 mb-12">
                   {/* Mint NFTs Card */}
                   <Card 
-                    className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
+                    className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 flex flex-col h-full"
                   >
                     <CardHeader className="text-center pb-4">
                       <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -65,7 +65,7 @@ export function NFTPreviewSection() {
                         </CollapsibleContent>
                       </Collapsible>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 flex-1 flex flex-col justify-end">
                       <div className="pt-2">
                         <Button 
                           className="w-full group-hover:scale-105 transition-transform"
@@ -82,7 +82,7 @@ export function NFTPreviewSection() {
 
                   {/* Marketplace Card */}
                   <Card 
-                    className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
+                    className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 flex flex-col h-full"
                   >
                     <CardHeader className="text-center pb-4">
                       <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -103,7 +103,7 @@ export function NFTPreviewSection() {
                         </CollapsibleContent>
                       </Collapsible>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 flex-1 flex flex-col justify-end">
                       <div className="pt-2">
                         <Button 
                           variant="outline" 
@@ -150,7 +150,7 @@ export function NFTPreviewSection() {
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             {/* Mint NFTs Card */}
             <Card 
-              className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
+              className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 flex flex-col h-full"
             >
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -171,7 +171,7 @@ export function NFTPreviewSection() {
                   </CollapsibleContent>
                 </Collapsible>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-1 flex flex-col justify-end">
                 <div className="pt-2">
                   <Button 
                     className="w-full group-hover:scale-105 transition-transform"
@@ -188,7 +188,7 @@ export function NFTPreviewSection() {
 
             {/* Marketplace Card */}
             <Card 
-              className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60"
+              className="group hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 border-2 hover:border-primary/60 flex flex-col h-full"
             >
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -209,7 +209,7 @@ export function NFTPreviewSection() {
                   </CollapsibleContent>
                 </Collapsible>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-1 flex flex-col justify-end">
                 <div className="pt-2">
                   <Button 
                     variant="outline" 
