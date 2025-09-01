@@ -28,13 +28,22 @@ export function SecurityReportsDetails({ tokenAddress }: SecurityReportsDetailsP
             </a>
             <CardDescription>Honeypot tests, LP lock/burn, function safety</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm flex-1 flex flex-col">
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>Honeypot tests passed.</li>
-              <li>LP lock/burn verified.</li>
-              <li>No malicious transfer traps detected.</li>
+          <CardContent className="space-y-4 flex-1">
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>Honeypot tests passed.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>LP lock/burn verified.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>No malicious transfer traps detected.</span>
+              </li>
             </ul>
-            <Button asChild variant="link" className="px-0 mt-auto">
+            <Button asChild variant="link" className="px-0 w-fit mt-4">
               <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="Open QuickIntel report">
                 Open report <ExternalLink className="h-3.5 w-3.5" />
               </a>
@@ -51,13 +60,22 @@ export function SecurityReportsDetails({ tokenAddress }: SecurityReportsDetailsP
             </a>
             <CardDescription>Solana-native risk scoring</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm flex-1 flex flex-col">
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>Good risk score.</li>
-              <li>Creator balance sold.</li>
-              <li>No insider networks detected.</li>
+          <CardContent className="space-y-4 flex-1">
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>Good risk score.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>Creator balance sold.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>No insider networks detected.</span>
+              </li>
             </ul>
-            <Button asChild variant="link" className="px-0 mt-auto">
+            <Button asChild variant="link" className="px-0 w-fit mt-4">
               <a href={rugCheckUrl} target="_blank" rel="noreferrer noopener" aria-label="Open RugCheck report">
                 Open report <ExternalLink className="h-3.5 w-3.5" />
               </a>
@@ -74,13 +92,22 @@ export function SecurityReportsDetails({ tokenAddress }: SecurityReportsDetailsP
             </a>
             <CardDescription>Automated token security checklist</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm flex-1 flex flex-col">
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>0 risky items; 0 attention items.</li>
-              <li>Non-upgradable fees; no mint/freeze functions.</li>
-              <li>Metadata not mutable; program not closable.</li>
+          <CardContent className="space-y-4 flex-1">
+            <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>0 risky items; 0 attention items.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>Non-upgradable fees; no mint/freeze functions.</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-primary mr-2">•</span>
+                <span>Metadata not mutable; program not closable.</span>
+              </li>
             </ul>
-            <Button asChild variant="link" className="px-0 mt-auto">
+            <Button asChild variant="link" className="px-0 w-fit mt-4">
               <a href={goPlusUrl} target="_blank" rel="noreferrer noopener" aria-label="Open GoPlus Labs report">
                 Open report <ExternalLink className="h-3.5 w-3.5" />
               </a>
