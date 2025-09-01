@@ -72,7 +72,7 @@ export function OwnershipCalculator() {
         </div>
 
         <div className="text-center text-muted-foreground">
-          Join over {holders ? holders.toLocaleString('en-US') : "Loading..."} holders and become a key member of our movement. Your contribution, no matter the size, helps us build the #1 global hub for anime culture.
+          Join over {holders ? holders.toLocaleString('en-US') : "1,300"} holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
         </div>
       </CardContent>
     </Card>
