@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calculator } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 
@@ -27,7 +28,10 @@ export function OwnershipCalculator() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Live Ownership Calculator</CardTitle>
+        <CardTitle className="flex items-center gap-3">
+          <Calculator className="w-6 h-6 text-primary" />
+          Live Ownership Calculator
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
