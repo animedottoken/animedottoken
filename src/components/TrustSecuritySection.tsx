@@ -14,9 +14,15 @@ interface TrustSecuritySectionProps {
   tokenAddress: string;
   creatorWalletUrl: string;
   showTreasuryDetails?: boolean;
+  hideTrustLinkCta?: boolean;
 }
 
-export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreasuryDetails = false }: TrustSecuritySectionProps) {
+export function TrustSecuritySection({ 
+  tokenAddress, 
+  creatorWalletUrl, 
+  showTreasuryDetails = false,
+  hideTrustLinkCta = false
+}: TrustSecuritySectionProps) {
   const { viewMode } = useViewMode();
   const isOverview = viewMode === 'overview';
   const quickIntelUrl = `https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=${tokenAddress}`;
@@ -172,13 +178,15 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
                      </CardContent>
                   </Card>
                 </div>
-                <div className="mt-6 text-center">
-                  <Button asChild variant="default">
-                    <Link to="/trust" aria-label="View full Trust & Security Center">
-                      View full Trust & Security Center
-                    </Link>
-                  </Button>
-                </div>
+                {!hideTrustLinkCta && (
+                  <div className="mt-6 text-center">
+                    <Button asChild variant="default">
+                      <Link to="/trust" aria-label="View full Trust & Security Center">
+                        View full Trust & Security Center
+                      </Link>
+                    </Button>
+                  </div>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>

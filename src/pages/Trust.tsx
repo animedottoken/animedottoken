@@ -158,6 +158,7 @@ export default function Trust() {
           tokenAddress={ANIME_MINT_ADDRESS}
           creatorWalletUrl={`https://solscan.io/account/${CREATOR_WALLET_ADDRESS}#portfolio`}
           showTreasuryDetails={true}
+          hideTrustLinkCta={true}
         />
 
         {/* Security Reports */}
