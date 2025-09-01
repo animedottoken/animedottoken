@@ -44,13 +44,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
           $ANIME leverages the publicly audited, battle-tested Metaplex protocol used by thousands of Solana projects. 100% LP burned, creator holds zero tokens. Everything is verifiable on-chain through radical transparency.
         </p>
         
-        <div className="mt-6 text-center">
-          <Button asChild variant="default">
-            <Link to="/trust" aria-label="View full Trust & Security Center">
-              View full Trust & Security Center
-            </Link>
-          </Button>
-        </div>
         
         {isOverview && (
           <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
@@ -178,6 +171,13 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
                        </div>
                      </CardContent>
                   </Card>
+                </div>
+                <div className="mt-6 text-center">
+                  <Button asChild variant="default">
+                    <Link to="/trust" aria-label="View full Trust & Security Center">
+                      View full Trust & Security Center
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </CollapsibleContent>
