@@ -2,6 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
+import { ViewModeProvider } from "@/contexts/ViewModeContext";
+import ViewModeToggle from "@/components/ViewModeToggle";
 
 
 // Lazy load heavy components with higher priority for desktop
@@ -165,7 +167,8 @@ const Index = () => {
   const [faqOpen, setFaqOpen] = useState(false);
 
   return (
-    <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-6xl overflow-x-hidden">
+    <ViewModeProvider>
+      <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-6xl overflow-x-hidden">
       <Helmet>
         <title>ANIME.TOKEN | Ownership Economy Platform | A New Internet Money Era on Solana</title>
         <meta name="description" content="Join the Ownership Economy with ANIME.TOKEN on Solana. Don't just be a user. Be an owner. NFT marketplace, community governance, and stakeholder benefits." />
@@ -202,21 +205,16 @@ const Index = () => {
 
       {/* Ownership Economy Banner */}
       <div className="mb-6 mx-auto max-w-5xl">
-        <div
-          className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-4 cursor-pointer hover:from-primary/15 hover:border-primary/30 transition-all duration-300"
-          onClick={() => scrollToHash('create-nfts')}
-        >
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-3 transition-all duration-300">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">💎</span>
+              <span className="text-xl">💎</span>
               <div>
-                <h3 className="font-semibold text-foreground">Ownership Economy Platform</h3>
-                <p className="text-sm text-muted-foreground">Don't just be a user. Be an owner.</p>
+                <h3 className="font-semibold text-foreground text-sm">Ownership Economy Platform</h3>
+                <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
-              Explore Platform
-            </Button>
+            <ViewModeToggle />
           </div>
         </div>
       </div>
@@ -714,7 +712,8 @@ const Index = () => {
           })
         }}
       />
-    </main>
+     </main>
+    </ViewModeProvider>
   );
 };
 

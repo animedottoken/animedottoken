@@ -4,6 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, Crown } from "lucide-react";
 import { useState } from "react";
+import { useViewMode } from "@/contexts/ViewModeContext";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -66,6 +67,7 @@ const nftTypes = [
 ];
 
 export function NFTSupporterSection() {
+  const { viewMode } = useViewMode();
   const [openDetails, setOpenDetails] = useState<string[]>([]);
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
@@ -81,7 +83,10 @@ export function NFTSupporterSection() {
             Join the ANIME.TOKEN ARMY
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            The ANIME ARMY is the heart of our ecosystem—a dedicated group of supporters driving our mission forward. The ARMY is composed of three vital roles: Founders, Ambassadors, and Hodlers. This is not a status you can buy; it is a rank you must earn through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your contribution.
+            {viewMode === 'overview' 
+              ? 'Join the ANIME ARMY and earn exclusive NFTs through contribution and support.'
+              : 'The ANIME ARMY is the heart of our ecosystem—a dedicated group of supporters driving our mission forward. The ARMY is composed of three vital roles: Founders, Ambassadors, and Hodlers. This is not a status you can buy; it is a rank you must earn through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your contribution.'
+            }
           </p>
         </div>
 
@@ -119,7 +124,7 @@ export function NFTSupporterSection() {
                   
                   {/* Expandable Details */}
                   <Collapsible 
-                    open={openDetails.includes(nft.id)} 
+                    open={viewMode === 'full' || openDetails.includes(nft.id)} 
                     onOpenChange={(open) => {
                       if (open) {
                         setOpenDetails(prev => [...prev, nft.id]);
@@ -128,27 +133,31 @@ export function NFTSupporterSection() {
                       }
                     }}
                   >
-                    <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                        {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-2">
-                      <div className="text-xs text-muted-foreground space-y-2">
-                        <p className="leading-relaxed">{nft.howToEarn[0]}</p>
-                        <div className="space-y-2 mt-3">
-                          {nft.howToEarn.slice(1).map((item, index) => {
-                            const [title, description] = item.split('|');
-                            return (
-                              <div key={index} className="bg-muted/30 p-3 rounded">
-                                <h5 className="font-semibold text-xs mb-1">{title}</h5>
-                                <p className="leading-relaxed text-xs">{description}</p>
-                              </div>
-                            );
-                          })}
+                    {viewMode === 'summary' && (
+                      <CollapsibleTrigger asChild>
+                        <Button variant="link" className="px-0 text-sm text-primary mb-2">
+                          {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
+                        </Button>
+                      </CollapsibleTrigger>
+                    )}
+                    {viewMode !== 'overview' && (
+                      <CollapsibleContent className="space-y-2">
+                        <div className="text-xs text-muted-foreground space-y-2">
+                          <p className="leading-relaxed">{nft.howToEarn[0]}</p>
+                          <div className="space-y-2 mt-3">
+                            {nft.howToEarn.slice(1).map((item, index) => {
+                              const [title, description] = item.split('|');
+                              return (
+                                <div key={index} className="bg-muted/30 p-3 rounded">
+                                  <h5 className="font-semibold text-xs mb-1">{title}</h5>
+                                  <p className="leading-relaxed text-xs">{description}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    </CollapsibleContent>
+                      </CollapsibleContent>
+                    )}
                   </Collapsible>
                 </div>
 
