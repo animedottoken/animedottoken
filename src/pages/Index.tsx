@@ -34,6 +34,7 @@ import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircl
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
+import { CREATOR_WALLET_ADDRESS } from "@/constants/token";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
@@ -352,7 +353,7 @@ const Index = () => {
 
       {/* 4. PROOF SECTION - Trust & Security */}
       <div id="trust-security-section" className="trust-security-section scroll-mt-20">
-        <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl="https://solscan.io/account/CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45#portfolio" />
+        <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl={`https://solscan.io/account/${CREATOR_WALLET_ADDRESS}#portfolio`} />
       </div>
 
       {/* 5. COMMUNITY SECTION - ANIME ARMY */}

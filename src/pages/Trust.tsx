@@ -7,7 +7,7 @@ import { ExternalLink, Shield, Code, FileText, AlertTriangle, Copy } from "lucid
 import { toast } from "sonner";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
-import { ANIME_MINT_ADDRESS } from "@/constants/token";
+import { ANIME_MINT_ADDRESS, CREATOR_WALLET_ADDRESS } from "@/constants/token";
 import { 
   METAPLEX_AUCTION_HOUSE_PROGRAM_ID, 
   METAPLEX_TOKEN_METADATA_PROGRAM_ID,
@@ -181,7 +181,7 @@ export default function Trust() {
         {/* Token Security Section */}
         <TrustSecuritySection 
           tokenAddress={ANIME_MINT_ADDRESS}
-          creatorWalletUrl="https://solscan.io/account/your-creator-wallet"
+          creatorWalletUrl={`https://solscan.io/account/${CREATOR_WALLET_ADDRESS}#portfolio`}
           showTreasuryDetails={true}
         />
 
