@@ -54,7 +54,7 @@ const nftTypes = [
     supply: "Unlimited",
     image: hodlersNFT,
     role: "Role: Loyal Supporter",
-    description: "The silent financial backbone of our project. Hodlers are not part of the active ARMY; they do not fight, but they finance the entire operation. Their long-term conviction provides the foundational stability for our ecosystem.",
+    description: "The financial backbone of our project. Hodlers' long-term conviction and stake in the token provide the foundational economic stability for our community-owned ecosystem.",
     howToEarn: [
       "This NFT is not an automated reward. To claim your rank, you must proactively contact the team and provide your wallet address. We will use a blockchain explorer to verify your holding history.",
       "Gold Hodler|Verifiably held $ANIME for 3+ months without selling.",
