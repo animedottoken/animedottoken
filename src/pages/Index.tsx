@@ -621,24 +621,23 @@ const Index = () => {
         </h2>
         <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
         
-        <ul className="mt-6 space-y-4 list-none pl-0">
-          <li className="rounded-md border bg-card/50 p-4">
-            <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all w-full block">{CONTRACT}</code>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </li>
-          </ul>
+        <Collapsible open={faqOpen} onOpenChange={setFaqOpen}>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+            <span>{faqOpen ? "Hide details" : "Show details"}</span>
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
 
-          <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See fewer FAQs (Frequently Asked Questions)" : "See more FAQs (Frequently Asked Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <ul className="mt-3 space-y-4">
+          <CollapsibleContent className="mt-6">
+            <ul className="space-y-4 list-none pl-0">
+              <li className="rounded-md border bg-card/50 p-4">
+                <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all w-full block">{CONTRACT}</code>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">I can't find $ANIME in my wallet's swap search. What do I do?</span>
                   <p className="mt-2 text-muted-foreground">Some wallet apps may not list new tokens immediately. To find it, simply copy the official contract address above and paste it directly into the token selection field in your wallet's swap interface.</p>
