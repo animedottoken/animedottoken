@@ -618,7 +618,7 @@ const Index = () => {
           <HelpCircle className="w-10 h-10 text-violet-400" />
           <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
         </h3>
-          <ul className="mt-3 space-y-4">
+        <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
