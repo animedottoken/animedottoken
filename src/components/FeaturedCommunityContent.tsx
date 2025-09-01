@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Upload, ExternalLink, Users, Sparkles } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Upload, ExternalLink, Users, Sparkles, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
@@ -49,6 +50,7 @@ const emptySlots = [
 export function FeaturedCommunityContent() {
   const [selectedItem, setSelectedItem] = useState<typeof emptySlots[0] | null>(null);
   const [isItemOverlayOpen, setIsItemOverlayOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   return (
     <section className="mx-auto mt-16 max-w-5xl px-6 featured-community-content">
@@ -60,6 +62,39 @@ export function FeaturedCommunityContent() {
         <p className="text-lg text-muted-foreground max-w-3xl">
           See what our community is building. Submit your content that supports the ANIME.TOKEN ecosystem—from viral memes to in-depth analysis—to be featured.
         </p>
+        
+        {/* Show details trigger */}
+        <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="text-violet-400 hover:text-violet-300 hover:bg-violet-400/10 mt-4 p-0 h-auto font-normal"
+            >
+              Show details
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <div className="text-muted-foreground space-y-4 max-w-3xl">
+              <p>
+                Our Community Showcase is where the best ANIME.TOKEN content gets the spotlight it deserves. We're looking for content that educates, entertains, and grows our ecosystem.
+              </p>
+              <div className="space-y-2">
+                <p><strong>What we feature:</strong></p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Viral memes that spread ANIME.TOKEN awareness</li>
+                  <li>Educational content about the Ownership Economy</li>
+                  <li>Technical analysis and market insights</li>
+                  <li>Community art and creative projects</li>
+                  <li>Social media posts with high engagement</li>
+                </ul>
+              </div>
+              <p>
+                <strong>How to get featured:</strong> Create quality content, share it on social media with ANIME.TOKEN tags, then submit it through Discord or tag us on X. Our team reviews submissions weekly.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
         
         {/* Call to Action Buttons */}
         <div className="flex flex-wrap gap-4 mt-6">
