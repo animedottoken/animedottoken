@@ -23,7 +23,7 @@ export function NFTPreviewSection() {
   }, [viewMode]);
 
   return (
-    <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+    <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
       <div className={`mb-12 ${isOverview ? 'text-left' : 'text-center'}`}>
         <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isOverview ? 'flex items-center' : 'flex items-center justify-center'} gap-3`}>
           <Palette className="w-10 h-10 text-violet-400" />
