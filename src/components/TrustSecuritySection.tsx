@@ -64,9 +64,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                       </CardDescription>
                     </CardHeader>
                      <CardContent className="space-y-3 text-sm">
-                       <p className="text-muted-foreground">
-                         All verification details available on Trust page.
-                       </p>
+                       <Button asChild variant="link" className="px-0">
+                         <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="View LP burn proof on QuickIntel">
+                           View proof <ExternalLink className="h-3.5 w-3.5" />
+                         </a>
+                       </Button>
                      </CardContent>
                   </Card>
 
@@ -82,9 +84,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                       </CardDescription>
                     </CardHeader>
                      <CardContent className="space-y-3 text-sm">
-                       <p className="text-muted-foreground">
-                         Creator wallet verification available on Trust page.
-                       </p>
+                       <Button asChild variant="link" className="px-0">
+                         <a href={creatorWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open creator wallet on Solscan">
+                           View creator wallet <ExternalLink className="h-3.5 w-3.5" />
+                         </a>
+                       </Button>
                      </CardContent>
                   </Card>
 
@@ -145,9 +149,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <p className="text-muted-foreground">
-                All verification details available on Trust page.
-              </p>
+              <Button asChild variant="link" className="px-0">
+                <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="View LP burn proof on QuickIntel">
+                  View proof <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
             </CardContent>
           </Card>
 
@@ -163,9 +169,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <p className="text-muted-foreground">
-                Creator wallet verification available on Trust page.
-              </p>
+              <Button asChild variant="link" className="px-0">
+                <a href={creatorWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open creator wallet on Solscan">
+                  View creator wallet <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
             </CardContent>
           </Card>
 
