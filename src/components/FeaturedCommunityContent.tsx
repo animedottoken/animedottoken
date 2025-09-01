@@ -51,21 +51,18 @@ export function FeaturedCommunityContent() {
   const [isItemOverlayOpen, setIsItemOverlayOpen] = useState(false);
 
   return (
-    <section className="mx-auto mt-16 max-w-5xl px-4 featured-community-content">
-      <div className="text-center mb-12">
-        <div className="flex items-center justify-center gap-4 mb-6">
+    <section className="mx-auto mt-16 max-w-5xl px-6 featured-community-content">
+      <div className="text-left mb-12">
+        <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
           <Crown className="w-10 h-10 text-violet-400" />
-          <h2 className="text-4xl font-bold text-gradient-primary">
-            Community Showcase
-          </h2>
-          <Crown className="w-10 h-10 text-violet-400" />
-        </div>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Community Showcase
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-3xl">
           See what our community is creating! Submit your ANIME-inspired memes, art, or posts to be featured.
         </p>
         
         {/* Call to Action Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
+        <div className="flex flex-wrap gap-4 mt-6">
           <Button 
             variant="outline" 
             className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
@@ -86,9 +83,9 @@ export function FeaturedCommunityContent() {
       </div>
 
       {/* Static placeholders only (no backend) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {emptySlots.map((emptySlot, index) => (
-            <div 
+            <div
               key={`empty-${index}`} 
               className={`group relative overflow-hidden rounded-lg border bg-card/50 border-dashed ${emptySlot.sample ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}`}
               onClick={() => emptySlot.sample && setSelectedItem(emptySlot)}
