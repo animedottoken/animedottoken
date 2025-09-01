@@ -701,7 +701,7 @@ const Index = () => {
           }}
         />
 
-        </section>
+      </section>
 
       {/* Hidden anchor for backward compatibility */}
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
