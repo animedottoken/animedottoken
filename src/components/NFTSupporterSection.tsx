@@ -241,7 +241,7 @@ const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupporters
                         <Button 
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
+                          onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
                           className="flex-1"
                         >
                           Join Discord
@@ -277,7 +277,7 @@ const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupporters
           <Button 
             variant="outline"
             size="lg" 
-            onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
+            onClick={() => window.open('https://discord.gg/HmSJdT5MRX', '_blank')}
           >
             Contact us on Discord
           </Button>
