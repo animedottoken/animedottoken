@@ -56,7 +56,7 @@ export function NFTPreviewSection() {
                       <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
                       <Collapsible open={box1Open} onOpenChange={setBox1Open}>
                         <CollapsibleTrigger asChild>
-                          <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                          <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">
                             {box1Open ? "Hide details" : "Show details"}
                             <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
                           </button>
@@ -94,7 +94,7 @@ export function NFTPreviewSection() {
                       <CardTitle className="text-2xl">The Marketplace</CardTitle>
                       <Collapsible open={box2Open} onOpenChange={setBox2Open}>
                         <CollapsibleTrigger asChild>
-                          <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                          <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">
                             {box2Open ? "Hide details" : "Show details"}
                             <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
                           </button>
@@ -162,7 +162,7 @@ export function NFTPreviewSection() {
                 <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
                 <Collapsible open={box1Open} onOpenChange={setBox1Open}>
                   <CollapsibleTrigger asChild>
-                    <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                    <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">
                       {box1Open ? "Hide details" : "Show details"}
                       <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
                     </button>
@@ -200,7 +200,7 @@ export function NFTPreviewSection() {
                 <CardTitle className="text-2xl">The Marketplace</CardTitle>
                 <Collapsible open={box2Open} onOpenChange={setBox2Open}>
                   <CollapsibleTrigger asChild>
-                    <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+                    <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">
                       {box2Open ? "Hide details" : "Show details"}
                       <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
                     </button>
