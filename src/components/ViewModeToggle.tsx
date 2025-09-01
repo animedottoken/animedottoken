@@ -22,6 +22,12 @@ const ViewModeToggle: React.FC = () => {
           variant="outline"
           size="sm"
           className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground gap-2 text-xs"
+          aria-label={`Switch to ${label} view mode`}
+          title={`${label}: ${
+            key === 'overview' ? 'Shows only headlines and subheadlines' :
+            key === 'summary' ? 'Includes key details with expandable sections' :
+            'Expands all sections to show complete information'
+          }`}
         >
           <Icon className="h-3 w-3" />
           <span className="hidden sm:inline">{label}</span>

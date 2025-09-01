@@ -4,6 +4,7 @@ import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { ViewModeProvider } from "@/contexts/ViewModeContext";
 import ViewModeToggle from "@/components/ViewModeToggle";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 
 // Lazy load heavy components with higher priority for desktop
@@ -214,7 +215,33 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
-            <ViewModeToggle />
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground hidden sm:inline">How to browse this page</span>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold">View Modes</h4>
+                    <div className="space-y-2 text-xs">
+                      <div>
+                        <strong>Overview:</strong> Shows only headlines and subheadlines. Click "Read more" to expand sections.
+                      </div>
+                      <div>
+                        <strong>Summary:</strong> Includes key details with expandable sections for full content.
+                      </div>
+                      <div>
+                        <strong>Full Details:</strong> Expands all sections to show complete information.
+                      </div>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+              <ViewModeToggle />
+            </div>
           </div>
         </div>
       </div>
