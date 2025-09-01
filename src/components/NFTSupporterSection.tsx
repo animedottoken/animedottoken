@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, Crown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useViewMode } from "@/contexts/ViewModeContext";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -68,10 +68,19 @@ const nftTypes = [
 
 export function NFTSupporterSection() {
   const { viewMode } = useViewMode();
-  const [openDetails, setOpenDetails] = useState<string[]>([]);
+  const [openDetails, setOpenDetails] = useState<Set<string>>(new Set());
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
   const earlySupportersTotal = 100;
+
+  // Set default open state based on view mode
+  useEffect(() => {
+    if (viewMode === 'full') {
+      setOpenDetails(new Set(nftTypes.map(nft => nft.id)));
+    } else {
+      setOpenDetails(new Set());
+    }
+  }, [viewMode]);
 
   return (
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
@@ -124,40 +133,40 @@ export function NFTSupporterSection() {
                   
                   {/* Expandable Details */}
                   <Collapsible 
-                    open={viewMode === 'full' || openDetails.includes(nft.id)} 
+                    open={openDetails.has(nft.id)} 
                     onOpenChange={(open) => {
-                      if (open) {
-                        setOpenDetails(prev => [...prev, nft.id]);
-                      } else {
-                        setOpenDetails(prev => prev.filter(id => id !== nft.id));
-                      }
+                      setOpenDetails(prev => {
+                        const newSet = new Set(prev);
+                        if (open) {
+                          newSet.add(nft.id);
+                        } else {
+                          newSet.delete(nft.id);
+                        }
+                        return newSet;
+                      });
                     }}
                   >
-                    {viewMode === 'summary' && (
-                      <CollapsibleTrigger asChild>
-                        <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                          {openDetails.includes(nft.id) ? "Show less" : "Show more"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.includes(nft.id) ? "rotate-180" : ""}`} />
-                        </Button>
-                      </CollapsibleTrigger>
-                    )}
-                    {viewMode !== 'overview' && (
-                      <CollapsibleContent className="space-y-2">
-                        <div className="text-xs text-muted-foreground space-y-2">
-                          <p className="leading-relaxed">{nft.howToEarn[0]}</p>
-                          <div className="space-y-2 mt-3">
-                            {nft.howToEarn.slice(1).map((item, index) => {
-                              const [title, description] = item.split('|');
-                              return (
-                                <div key={index} className="bg-muted/30 p-3 rounded">
-                                  <h5 className="font-semibold text-xs mb-1">{title}</h5>
-                                  <p className="leading-relaxed text-xs">{description}</p>
-                                </div>
-                              );
-                            })}
-                          </div>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
+                        {openDetails.has(nft.id) ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.has(nft.id) ? "rotate-180" : ""}`} />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-2">
+                      <div className="text-xs text-muted-foreground space-y-2">
+                        <p className="leading-relaxed">{nft.howToEarn[0]}</p>
+                        <div className="space-y-2 mt-3">
+                          {nft.howToEarn.slice(1).map((item, index) => {
+                            const [title, description] = item.split('|');
+                            return (
+                              <div key={index} className="bg-muted/30 p-3 rounded">
+                                <h5 className="font-semibold text-xs mb-1">{title}</h5>
+                                <p className="leading-relaxed text-xs">{description}</p>
+                              </div>
+                            );
+                          })}
                         </div>
-                      </CollapsibleContent>
-                    )}
+                      </div>
+                    </CollapsibleContent>
                   </Collapsible>
                 </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,9 +12,11 @@ export function NFTPreviewSection() {
   const [box1Open, setBox1Open] = useState(false);
   const [box2Open, setBox2Open] = useState(false);
 
-  // Auto-expand based on view mode
-  const shouldExpandBox1 = viewMode === 'full' || (viewMode === 'summary' && box1Open);
-  const shouldExpandBox2 = viewMode === 'full' || (viewMode === 'summary' && box2Open);
+  // Set default open state based on view mode
+  useEffect(() => {
+    setBox1Open(viewMode === 'full');
+    setBox2Open(viewMode === 'full');
+  }, [viewMode]);
 
   return (
     <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-6xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
@@ -41,22 +43,18 @@ export function NFTPreviewSection() {
     <Coins className="h-10 w-10 text-primary" />
   </div>
   <CardTitle className="text-2xl">Turn Your Art into an NFT</CardTitle>
-  <Collapsible open={shouldExpandBox1} onOpenChange={setBox1Open}>
-    {viewMode === 'summary' && (
-      <CollapsibleTrigger asChild>
-        <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
-          {box1Open ? "Hide details" : "Show details"}
-          <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
-        </button>
-      </CollapsibleTrigger>
-    )}
-    {viewMode !== 'overview' && (
-      <CollapsibleContent>
-        <CardDescription className="text-base mt-2">
-          Our guided tool helps you turn your creation into a unique, verifiable digital collectible on the Solana blockchain. Features include free creation (pay only network fees), automatic royalty settings, and custom traits.
-        </CardDescription>
-      </CollapsibleContent>
-    )}
+  <Collapsible open={box1Open} onOpenChange={setBox1Open}>
+    <CollapsibleTrigger asChild>
+      <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+        {box1Open ? "Hide details" : "Show details"}
+        <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box1Open ? "rotate-180" : ""}`} />
+      </button>
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+      <CardDescription className="text-base mt-2">
+        Our guided tool helps you turn your creation into a unique, verifiable digital collectible on the Solana blockchain. Features include free creation (pay only network fees), automatic royalty settings, and custom traits.
+      </CardDescription>
+    </CollapsibleContent>
   </Collapsible>
 </CardHeader>
         <CardContent className="space-y-4">
@@ -83,22 +81,18 @@ export function NFTPreviewSection() {
     <ShoppingBag className="h-10 w-10 text-primary" />
   </div>
   <CardTitle className="text-2xl">The Marketplace</CardTitle>
-  <Collapsible open={shouldExpandBox2} onOpenChange={setBox2Open}>
-    {viewMode === 'summary' && (
-      <CollapsibleTrigger asChild>
-        <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
-          {box2Open ? "Hide details" : "Show details"}
-          <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
-        </button>
-      </CollapsibleTrigger>
-    )}
-    {viewMode !== 'overview' && (
-      <CollapsibleContent>
-        <CardDescription className="text-base mt-2">
-          Discover and collect unique digital assets from talented creators in our ecosystem. Every piece is verified on-chain for authenticity, with instant, secure transactions.
-        </CardDescription>
-      </CollapsibleContent>
-    )}
+  <Collapsible open={box2Open} onOpenChange={setBox2Open}>
+    <CollapsibleTrigger asChild>
+      <button className="mt-2 text-sm text-muted-foreground inline-flex items-center hover:text-foreground transition-colors">
+        {box2Open ? "Hide details" : "Show details"}
+        <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${box2Open ? "rotate-180" : ""}`} />
+      </button>
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+      <CardDescription className="text-base mt-2">
+        Discover and collect unique digital assets from talented creators in our ecosystem. Every piece is verified on-chain for authenticity, with instant, secure transactions.
+      </CardDescription>
+    </CollapsibleContent>
   </Collapsible>
 </CardHeader>
         <CardContent className="space-y-4">
