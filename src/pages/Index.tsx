@@ -648,7 +648,7 @@ const Index = () => {
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What are the fees for selling on the ANIME Marketplace?</span>
-                  <p className="mt-2 text-muted-foreground">We believe in transparency. A small, flat fee of 2.5% is applied to every successful sale on the marketplace. This fee is crucial for the project's sustainability and is reinvested directly into funding development, marketing initiatives, and community rewards.</p>
+                  <p className="mt-2 text-muted-foreground">We believe in transparency. A small, flat fee of 2% is applied to every successful sale on the marketplace. This fee is crucial for the project's sustainability and is reinvested directly into funding development, marketing initiatives, and community rewards.</p>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What is the 'Boost System'?</span>
