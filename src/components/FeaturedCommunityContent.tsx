@@ -34,7 +34,7 @@ const emptySlots = [
   },
   { 
     id: 3,
-    placeholder: sampleTwitterPost,
+    placeholder: "/lovable-uploads/0fa080ac-714d-4a06-be2a-7abc5788ba0d.png",
     overlay: "Viral X Post",
     cta: "This post got 10K+ engagements!",
     type: "post",
