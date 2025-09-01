@@ -30,10 +30,7 @@ export function NFTPreviewSection() {
           A Community-Owned NFT Ecosystem
         </h2>
         <p className={`text-lg text-muted-foreground ${isOverview ? '' : 'max-w-3xl mx-auto'}`}>
-          {viewMode === 'overview' 
-            ? 'Mint and trade on a community-owned platform.'
-            : 'Mint and trade on a platform built for creators and collectors who value transparency and true ownership.'
-          }
+          Mint and trade on a platform built for creators and collectors who value transparency and true ownership.
         </p>
         
         {isOverview && (
@@ -91,7 +88,7 @@ export function NFTPreviewSection() {
                       <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <ShoppingBag className="h-10 w-10 text-primary" />
                       </div>
-                      <CardTitle className="text-2xl">The Marketplace</CardTitle>
+                      <CardTitle className="text-2xl">NFT Marketplace</CardTitle>
                       <Collapsible open={box2Open} onOpenChange={setBox2Open}>
                         <CollapsibleTrigger asChild>
                           <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">
@@ -197,7 +194,7 @@ export function NFTPreviewSection() {
                 <div className="mx-auto bg-gradient-to-br from-primary/10 to-accent/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <ShoppingBag className="h-10 w-10 text-primary" />
                 </div>
-                <CardTitle className="text-2xl">The Marketplace</CardTitle>
+                <CardTitle className="text-2xl">NFT Marketplace</CardTitle>
                 <Collapsible open={box2Open} onOpenChange={setBox2Open}>
                   <CollapsibleTrigger asChild>
                     <button className="mt-2 text-sm text-primary hover:text-primary/80 inline-flex items-center transition-colors font-medium">

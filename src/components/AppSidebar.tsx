@@ -54,7 +54,7 @@ const navigationItems = [
   },
   // CORRECTED ORDER TO MATCH WEBPAGE FLOW:
   { 
-    title: "Minting NFT & Marketplace", 
+    title: "NFT Minting & Marketplace", 
     icon: Coins,
     hash: "create-nfts",
     type: "section" as const

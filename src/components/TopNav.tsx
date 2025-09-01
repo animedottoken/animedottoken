@@ -40,7 +40,7 @@ const navigationItems: NavigationItem[] = [
   { type: "section", title: "How to Buy $ANIME", icon: ShoppingCart, hash: "how-to-buy" },
   { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
   { type: "section", title: "ANIME.TOKEN ARMY", icon: Trophy, hash: "nft-supporter-section" },
-  { type: "section", title: "Minting NFT & Marketplace", icon: Coins, hash: "create-nfts" },
+  { type: "section", title: "NFT Minting & Marketplace", icon: Coins, hash: "create-nfts" },
 ];
 
 export const TopNav = () => {

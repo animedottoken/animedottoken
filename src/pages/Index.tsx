@@ -279,13 +279,13 @@ const Index = () => {
       {/* 3. PHILOSOPHY SECTION - Ownership Economy + Live Calculator */}
       <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
-            <BarChart3 className="w-8 h-8 text-violet-400" />
-            The Ownership Economy: Where Users Become Owners
-          </h2>
-          <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
-            In the Ownership Economy, communities control their destiny. With a decentralized token distribution, even modest participation translates to meaningful ownership. Use the live calculator below to see how your contribution translates into real ownership of the ecosystem.
-          </p>
+           <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
+             <BarChart3 className="w-8 h-8 text-violet-400" />
+             The Power of Community: A Decentralized Future
+           </h2>
+           <p className="mt-3 text-muted-foreground max-w-4xl mx-auto">
+             Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
+           </p>
         </div>
         
         <div className="mb-8">
@@ -293,13 +293,13 @@ const Index = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-muted-foreground max-w-3xl mx-auto">
-            Join over{" "}
-            <span className="font-bold text-foreground">
-              {holders ? `${holders.toLocaleString()}` : "1,300"}
-            </span>{" "}
-            holders and become a key stakeholder in our Ownership Economy. Your contribution, no matter the size, helps us build a community-owned ecosystem where users become owners.
-          </p>
+           <p className="text-muted-foreground max-w-3xl mx-auto">
+             Join over{" "}
+             <span className="font-bold text-foreground">
+               {holders ? `${holders.toLocaleString()}` : "1,300"}
+             </span>{" "}
+             holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
+           </p>
         </div>
         
         <div id="market-cap-chart" className="mt-8 market-cap-chart scroll-mt-20">
