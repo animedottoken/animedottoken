@@ -232,7 +232,7 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-auto">
               <ViewModeToggle />
               <HoverCard>
                 <HoverCardTrigger asChild>
