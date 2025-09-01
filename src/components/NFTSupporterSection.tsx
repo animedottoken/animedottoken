@@ -18,7 +18,7 @@ const nftTypes = [
     supply: "100",
     image: foundersNFT,
     role: "",
-    description: "The strategic commanders of the ANIME ARMY. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and strategists shaping the future of the entire project.",
+    description: "The core contributors and strategists of the ANIME.TOKEN ecosystem. Founders are the elite members providing foundational, high-impact value. They are the key advisors, builders, and visionaries shaping the future of the entire project.",
     howToEarn: [
       "This role is the highest honor and is awarded directly for exceptional contributions that fundamentally advance the project. To be considered, a candidate must proactively contact the team and provide evidence of meeting one of the following measurable targets:",
       "Partnership|Secure a formal, announced partnership with another established project, influencer, or platform.",
