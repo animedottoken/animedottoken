@@ -63,13 +63,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                         All liquidity pool tokens are burned forever. Liquidity cannot be withdrawn. $ANIME trading is always safe and permanent.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                      <Button asChild variant="link" className="px-0">
-                        <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="View LP burn proof on QuickIntel">
-                          View proof <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      </Button>
-                    </CardContent>
+                     <CardContent className="space-y-3 text-sm">
+                       <p className="text-muted-foreground">
+                         All verification details available on Trust page.
+                       </p>
+                     </CardContent>
                   </Card>
 
                   {/* Block 2: Creator's Stake */}
@@ -83,13 +81,11 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                         Creator wallet holds zero $ANIME. Project is fully community-owned and verifiable on-chain.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                      <Button asChild variant="link" className="px-0">
-                        <a href={creatorWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open creator wallet on Solscan">
-                          View creator wallet <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      </Button>
-                    </CardContent>
+                     <CardContent className="space-y-3 text-sm">
+                       <p className="text-muted-foreground">
+                         Creator wallet verification available on Trust page.
+                       </p>
+                     </CardContent>
                   </Card>
 
                   {/* Combined: Protocol Security */}
@@ -103,18 +99,13 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                         Built on the public, battle-tested Metaplex Auction House protocol. No custom contract risks.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                      <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                        <li>Uses proven Metaplex protocol trusted by thousands of projects</li>
-                        <li>LP burn verified and permanent</li>
-                        <li>Standard SPL token with no hidden functions or backdoors</li>
-                      </ul>
-                      <Button asChild variant="link" className="px-0 w-fit">
-                        <a href="/trust" className="text-primary hover:text-primary/80">
-                          View detailed security reports & treasury information →
-                        </a>
-                      </Button>
-                    </CardContent>
+                     <CardContent className="space-y-3 text-sm">
+                       <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                         <li>Uses proven Metaplex protocol trusted by thousands of projects</li>
+                         <li>LP burn verified and permanent</li>
+                         <li>Standard SPL token with no hidden functions or backdoors</li>
+                       </ul>
+                     </CardContent>
                   </Card>
 
                   {/* New: Community-Led Revival */}
@@ -125,30 +116,13 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                         A Treasury for the Revival
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                      <div className="space-y-3 text-muted-foreground">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
-                    </p>
-                    <Button asChild variant="link" className="px-0 w-fit mt-3">
-                      <a href="/trust" className="text-primary hover:text-primary/80">
-                        View detailed treasury information & security reports →
-                      </a>
-                    </Button>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Button asChild variant="hero">
-                          <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
-                            View Ecosystem Fund <ExternalLink className="ml-2 h-4 w-4" />
-                          </a>
-                        </Button>
-                        <Button asChild variant="outline">
-                          <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="View all holders on Solscan">
-                            See All Holders <ExternalLink className="ml-2 h-4 w-4" />
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
+                     <CardContent className="space-y-3 text-sm">
+                       <div className="space-y-3 text-muted-foreground">
+                         <p className="text-sm text-muted-foreground leading-relaxed">
+                           To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
+                         </p>
+                       </div>
+                     </CardContent>
                   </Card>
                 </div>
               </div>
@@ -171,11 +145,9 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <Button asChild variant="link" className="px-0">
-                <a href={quickIntelUrl} target="_blank" rel="noreferrer noopener" aria-label="View LP burn proof on QuickIntel">
-                  View proof <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
+              <p className="text-muted-foreground">
+                All verification details available on Trust page.
+              </p>
             </CardContent>
           </Card>
 
@@ -191,11 +163,9 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <Button asChild variant="link" className="px-0">
-                <a href={creatorWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open creator wallet on Solscan">
-                  View creator wallet <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </Button>
+              <p className="text-muted-foreground">
+                Creator wallet verification available on Trust page.
+              </p>
             </CardContent>
           </Card>
 
@@ -216,11 +186,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                 <li>LP burn verified and permanent</li>
                 <li>Standard SPL token with no hidden functions or backdoors</li>
               </ul>
-                      <Button asChild variant="link" className="px-0 w-fit">
-                        <a href="/trust" className="text-primary hover:text-primary/80">
-                          View detailed security reports & treasury information →
-                        </a>
-                      </Button>
             </CardContent>
           </Card>
 
@@ -237,23 +202,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
                 </p>
-                <Button asChild variant="link" className="px-0 w-fit mt-3">
-                  <a href="/trust" className="text-primary hover:text-primary/80">
-                    View detailed treasury information & security reports →
-                  </a>
-                </Button>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Button asChild variant="hero">
-                  <a href={revivalWalletUrl} target="_blank" rel="noreferrer noopener" aria-label="Open the community revival treasury wallet on Solscan">
-                    View Ecosystem Fund <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-                <Button asChild variant="outline">
-                  <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="View all holders on Solscan">
-                    See All Holders <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
               </div>
             </CardContent>
           </Card>
