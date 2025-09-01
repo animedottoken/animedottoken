@@ -22,8 +22,8 @@ const emptySlots = [
   },
   { 
     id: 2,
-    placeholder: communityPlaceholder,
-    overlay: "Your art here",
+    placeholder: "/lovable-uploads/8c60a0e9-5e79-4f24-a044-807c9b476d9d.png",
+    overlay: "Your Submission Here",
     cta: "Submit your work to be featured!",
     type: "art",
     sample: false,
