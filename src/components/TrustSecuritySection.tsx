@@ -7,13 +7,15 @@ import { useState, useEffect } from "react";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { toast } from "sonner";
 import { useViewMode } from "@/contexts/ViewModeContext";
+import { TREASURY_WALLET_ADDRESS } from "@/constants/token";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
   creatorWalletUrl: string;
+  showTreasuryDetails?: boolean;
 }
 
-export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSecuritySectionProps) {
+export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreasuryDetails = false }: TrustSecuritySectionProps) {
   const { viewMode } = useViewMode();
   const isOverview = viewMode === 'overview';
   const quickIntelUrl = `https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=${tokenAddress}`;
@@ -123,8 +125,49 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                      <CardContent className="space-y-3 text-sm">
                        <div className="space-y-3 text-muted-foreground">
                          <p className="text-sm text-muted-foreground leading-relaxed">
-                           To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
+                           {showTreasuryDetails 
+                             ? "It holds 11.18% (109,000,000 $ANIME) of the current token supply. The tokens are vested through a gradual release schedule to fund ongoing development, ecosystem expansion, and community initiatives. A commitment: these tokens will never be sold on the open market, but rather used for strategic collaborations, liquidity provision, and project growth to strengthen the entire ecosystem."
+                             : "To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency."
+                           }
                          </p>
+                         
+                         {showTreasuryDetails && (
+                           <>
+                             <div className="bg-card/50 border rounded-lg p-4">
+                               <h4 className="font-semibold mb-2">Treasury Wallet Address</h4>
+                               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                                 <code className="text-xs font-mono text-muted-foreground flex-1">
+                                   {TREASURY_WALLET_ADDRESS}
+                                 </code>
+                                 <Button 
+                                   variant="ghost" 
+                                   size="sm" 
+                                   className="h-6 w-6 p-0"
+                                   onClick={async () => {
+                                     await navigator.clipboard.writeText(TREASURY_WALLET_ADDRESS);
+                                     toast.success("Treasury wallet address copied!");
+                                   }}
+                                   title="Copy wallet address"
+                                 >
+                                   <Copy className="h-3 w-3" />
+                                 </Button>
+                               </div>
+                             </div>
+                             
+                             <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                               <Button asChild variant="outline" className="flex items-center gap-2">
+                                 <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
+                                   View Ecosystem Fund <ExternalLink className="h-4 w-4" />
+                                 </a>
+                               </Button>
+                               <Button asChild variant="outline" className="flex items-center gap-2">
+                                 <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="See all token holders">
+                                   See All Holders <ExternalLink className="h-4 w-4" />
+                                 </a>
+                               </Button>
+                             </div>
+                           </>
+                         )}
                        </div>
                      </CardContent>
                   </Card>
@@ -217,8 +260,49 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             <CardContent className="space-y-3 text-sm">
               <div className="space-y-3 text-muted-foreground">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.
+                  {showTreasuryDetails 
+                    ? "It holds 11.18% (109,000,000 $ANIME) of the current token supply. The tokens are vested through a gradual release schedule to fund ongoing development, ecosystem expansion, and community initiatives. A commitment: these tokens will never be sold on the open market, but rather used for strategic collaborations, liquidity provision, and project growth to strengthen the entire ecosystem."
+                    : "To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency."
+                  }
                 </p>
+                
+                {showTreasuryDetails && (
+                  <>
+                    <div className="bg-card/50 border rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">Treasury Wallet Address</h4>
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                        <code className="text-xs font-mono text-muted-foreground flex-1">
+                          {TREASURY_WALLET_ADDRESS}
+                        </code>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0"
+                          onClick={async () => {
+                            await navigator.clipboard.writeText(TREASURY_WALLET_ADDRESS);
+                            toast.success("Treasury wallet address copied!");
+                          }}
+                          title="Copy wallet address"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      <Button asChild variant="outline" className="flex items-center gap-2">
+                        <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
+                          View Ecosystem Fund <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                      <Button asChild variant="outline" className="flex items-center gap-2">
+                        <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="See all token holders">
+                          See All Holders <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
