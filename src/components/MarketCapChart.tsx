@@ -13,7 +13,7 @@ export function MarketCapChart({ pairAddress = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7
     <Card className="shadow-elevated">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Live Daily Price Chart
+          $ANIME Live Daily Price Chart
           <Badge variant="outline">Real-time</Badge>
         </CardTitle>
         <CardDescription>
