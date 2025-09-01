@@ -6,13 +6,12 @@ import { Upload, ExternalLink, Users, Sparkles, ChevronDown } from "lucide-react
 import { useState } from "react";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
-import sampleAnimeMeme from "@/assets/sample-anime-meme.jpg";
 
 const emptySlots = [
   { 
     id: 1,
-    placeholder: sampleAnimeMeme,
-    overlay: "Top Community Meme",
+    placeholder: "/lovable-uploads/ba8d6874-124a-462a-a039-fd26686139d0.png",
+    overlay: "VIRAL ANIME MEME",
     cta: "Made everyone laugh for days!",
     type: "meme",
     sample: true,
