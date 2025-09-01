@@ -58,7 +58,7 @@ export function FeaturedCommunityContent() {
           Community Showcase
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl">
-          See what our community is creating! Submit your ANIME-inspired memes, art, or posts to be featured.
+          See what our community is building. Submit your content that supports the ANIME.TOKEN ecosystem—from viral memes to in-depth analysis—to be featured.
         </p>
         
         {/* Call to Action Buttons */}
