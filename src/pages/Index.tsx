@@ -39,6 +39,75 @@ const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
 const TOTAL_SUPPLY = 974338302;
 
+function Section3({ holders }: { holders: number | null | undefined }) {
+  const [section3DetailsOpen, setSection3DetailsOpen] = useState(false);
+  const { viewMode } = useViewMode();
+  const location = useLocation();
+
+  // Auto-open details when navigating to calculator or chart
+  useEffect(() => {
+    const hash = location.hash;
+    if (hash === "#ownership-calculator" || hash === "#live-daily-price-chart" || hash === "#market-cap-chart") {
+      setSection3DetailsOpen(true);
+    }
+  }, [location.hash]);
+
+  // Set initial state based on view mode
+  useEffect(() => {
+    setSection3DetailsOpen(viewMode !== "overview");
+  }, [viewMode]);
+
+  return (
+    <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
+      <div className={`mb-8 ${viewMode === "overview" ? "text-left" : "text-center"}`}>
+        <h2 className={`text-2xl md:text-3xl font-bold flex items-center gap-3 ${viewMode === "overview" ? "justify-start" : "justify-center"}`}>
+          <BarChart3 className="w-8 h-8 text-violet-400" />
+          The Power of Community: A Decentralized Future
+        </h2>
+        <p className={`mt-3 text-muted-foreground max-w-4xl ${viewMode === "overview" ? "" : "mx-auto"}`}>
+          Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
+        </p>
+      </div>
+
+      <Collapsible open={section3DetailsOpen} onOpenChange={setSection3DetailsOpen}>
+        {viewMode === "overview" && (
+          <CollapsibleTrigger asChild>
+            <Button variant="link" size="sm" className="px-0 mb-4">
+              {section3DetailsOpen ? "Hide details" : "Show details"}
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${section3DetailsOpen ? "rotate-180" : ""}`} />
+            </Button>
+          </CollapsibleTrigger>
+        )}
+
+        <CollapsibleContent>
+          <div className="mb-8">
+            <OwnershipCalculator />
+          </div>
+
+          <div id="live-daily-price-chart" className="mt-8 market-cap-chart scroll-mt-20">
+            <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-64"></div>}>
+              <MarketCapChart />
+            </Suspense>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <div className="text-center">
+        <p className="text-muted-foreground max-w-3xl mx-auto">
+          Join over{" "}
+          <span className="font-bold text-foreground">
+            {holders ? `${holders.toLocaleString()}` : "1,300"}
+          </span>{" "}
+          holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
+        </p>
+      </div>
+
+      {/* Backward compatibility for old market-cap-chart hash */}
+      <div id="market-cap-chart" className="scroll-mt-20"></div>
+    </section>
+  );
+}
+
 const Index = () => {
   const { tokenData } = useLivePrice(PAIR_ADDRESS);
   const holders = useTokenHolders(CONTRACT);
@@ -169,28 +238,6 @@ const Index = () => {
   const [step4Open, setStep4Open] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   
-  // Section 3 collapsible state
-  const [section3DetailsOpen, setSection3DetailsOpen] = useState(false);
-  
-  const { viewMode } = useViewMode();
-  const location = useLocation();
-  
-  // Auto-open details when navigating to calculator or chart
-  useEffect(() => {
-    const hash = location.hash;
-    if (hash === "#ownership-calculator" || hash === "#live-daily-price-chart" || hash === "#market-cap-chart") {
-      setSection3DetailsOpen(true);
-    }
-  }, [location.hash]);
-  
-  // Set initial state based on view mode
-  useEffect(() => {
-    if (viewMode === "overview") {
-      setSection3DetailsOpen(false);
-    } else {
-      setSection3DetailsOpen(true);
-    }
-  }, [viewMode]);
 
   return (
     <ViewModeProvider>
@@ -301,53 +348,7 @@ const Index = () => {
       </div>
 
       {/* 3. PHILOSOPHY SECTION - Ownership Economy + Live Calculator */}
-      <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
-        <div className={`mb-8 ${viewMode === "overview" ? "text-left" : "text-center"}`}>
-           <h2 className={`text-2xl md:text-3xl font-bold flex items-center gap-3 ${viewMode === "overview" ? "justify-start" : "justify-center"}`}>
-             <BarChart3 className="w-8 h-8 text-violet-400" />
-             The Power of Community: A Decentralized Future
-           </h2>
-           <p className={`mt-3 text-muted-foreground max-w-4xl ${viewMode === "overview" ? "" : "mx-auto"}`}>
-             Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
-           </p>
-        </div>
-        
-        <Collapsible open={section3DetailsOpen} onOpenChange={setSection3DetailsOpen}>
-          {viewMode === "overview" && (
-            <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 mb-4">
-                {section3DetailsOpen ? "Hide details" : "Show details"} 
-                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${section3DetailsOpen ? "rotate-180" : ""}`} />
-              </Button>
-            </CollapsibleTrigger>
-          )}
-          
-          <CollapsibleContent>
-            <div className="mb-8">
-              <OwnershipCalculator />
-            </div>
-            
-            <div id="live-daily-price-chart" className="mt-8 market-cap-chart scroll-mt-20">
-              <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg h-64"></div>}>
-                <MarketCapChart />
-              </Suspense>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        <div className="text-center">
-           <p className="text-muted-foreground max-w-3xl mx-auto">
-             Join over{" "}
-             <span className="font-bold text-foreground">
-               {holders ? `${holders.toLocaleString()}` : "1,300"}
-             </span>{" "}
-             holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
-           </p>
-        </div>
-        
-        {/* Backward compatibility for old market-cap-chart hash */}
-        <div id="market-cap-chart" className="scroll-mt-20"></div>
-      </section>
+      <Section3 holders={holders} />
 
       {/* 4. PROOF SECTION - Trust & Security */}
       <div id="trust-security-section" className="trust-security-section scroll-mt-20">
