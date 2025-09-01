@@ -21,8 +21,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
   const quickIntelUrl = `https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=${tokenAddress}`;
   const rugCheckUrl = `https://rugcheck.xyz/tokens/${tokenAddress}`;
   const goPlusUrl = `https://gopluslabs.io/token-security/solana/${tokenAddress}`;
-  const revivalWalletAddress = "7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8";
-  const revivalWalletUrl = `https://solscan.io/account/${revivalWalletAddress}#portfolio`;
   const holdersUrl = `https://solscan.io/token/${tokenAddress}#holders`;
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [treasuryDetailsOpen, setTreasuryDetailsOpen] = useState(false);
@@ -154,12 +152,12 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
                                </div>
                              </div>
                              
-                             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                               <Button asChild variant="outline" className="flex items-center gap-2">
-                                 <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
-                                   View Ecosystem Fund <ExternalLink className="h-4 w-4" />
-                                 </a>
-                               </Button>
+                              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                                <Button asChild variant="outline" className="flex items-center gap-2">
+                                  <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}#portfolio`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
+                                    View Ecosystem Fund <ExternalLink className="h-4 w-4" />
+                                  </a>
+                                </Button>
                                <Button asChild variant="outline" className="flex items-center gap-2">
                                  <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="See all token holders">
                                    See All Holders <ExternalLink className="h-4 w-4" />
@@ -171,15 +169,6 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
                        </div>
                      </CardContent>
                   </Card>
-                </div>
-                
-                {/* CTA Button inside collapsible content */}
-                <div className="text-center mt-6">
-                  <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold shadow-elevated hover:shadow-glow transition-all duration-300">
-                    <a href="/trust">
-                      View Full Security Report & Technical Details
-                    </a>
-                  </Button>
                 </div>
               </div>
             </CollapsibleContent>
@@ -289,12 +278,12 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl, showTreas
                       </div>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                      <Button asChild variant="outline" className="flex items-center gap-2">
-                        <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
-                          View Ecosystem Fund <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
+                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                       <Button asChild variant="outline" className="flex items-center gap-2">
+                         <a href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}#portfolio`} target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
+                           View Ecosystem Fund <ExternalLink className="h-4 w-4" />
+                         </a>
+                       </Button>
                       <Button asChild variant="outline" className="flex items-center gap-2">
                         <a href={holdersUrl} target="_blank" rel="noreferrer noopener" aria-label="See all token holders">
                           See All Holders <ExternalLink className="h-4 w-4" />

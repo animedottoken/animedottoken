@@ -1,4 +1,4 @@
 export const ANIME_PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
 export const ANIME_MINT_ADDRESS = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
-export const TREASURY_WALLET_ADDRESS = "2LTYTxVyGHvSUKTEoUhAvvJPKevN9fJb9v9mE7jA1Gk";
+export const TREASURY_WALLET_ADDRESS = "7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8";
 export const CREATOR_WALLET_ADDRESS = "CJgzkuCyhcNXhGH6aKgrNsLwHXFwShTWma9vHN9ECz45";
