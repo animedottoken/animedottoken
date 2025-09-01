@@ -391,8 +391,9 @@ const Index = () => {
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 1: Get a Digital Wallet App</span>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step1Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} /></Button>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                  {step1Open ? "Hide details" : "Show details"}
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step1Open ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -416,8 +417,9 @@ const Index = () => {
             <Collapsible open={step2Open} onOpenChange={setStep2Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 2: Create Your Wallet</span>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step2Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} /></Button>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                  {step2Open ? "Hide details" : "Show details"}
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step2Open ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -436,8 +438,9 @@ const Index = () => {
             <Collapsible open={step3Open} onOpenChange={setStep3Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 3: Fund Your Wallet</span>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step3Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step3Open ? "rotate-180" : ""}`} /></Button>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                  {step3Open ? "Hide details" : "Show details"}
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step3Open ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
@@ -458,8 +461,9 @@ const Index = () => {
             <Collapsible open={step4Open} onOpenChange={setStep4Open}>
               <div className="flex flex-col items-start">
                 <span className="font-semibold">Step 4: Swap for $ANIME</span>
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" size="sm" className="px-0 mt-1">{step4Open ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step4Open ? "rotate-180" : ""}`} /></Button>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                  {step4Open ? "Hide details" : "Show details"}
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${step4Open ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>

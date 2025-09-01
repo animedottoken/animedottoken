@@ -115,10 +115,9 @@ const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupporters
                   });
                 }}
               >
-                <CollapsibleTrigger asChild>
-                  <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                    {openDetails.has(nft.id) ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.has(nft.id) ? "rotate-180" : ""}`} />
-                  </Button>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+                  {openDetails.has(nft.id) ? "Hide details" : "Show details"}
+                  <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.has(nft.id) ? "rotate-180" : ""}`} />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2">
                   <div className="text-xs text-muted-foreground space-y-2">
@@ -363,11 +362,9 @@ export function NFTSupporterSection() {
         {/* Show details trigger for overview mode */}
         {viewMode === 'overview' && (
           <Collapsible open={sectionOpen} onOpenChange={setSectionOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="link" className="px-0 text-primary mb-4">
-                {sectionOpen ? "Hide details" : "Show details"} 
-                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${sectionOpen ? "rotate-180" : ""}`} />
-              </Button>
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+              {sectionOpen ? "Hide details" : "Show details"}
+              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${sectionOpen ? "rotate-180" : ""}`} />
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SectionContent 

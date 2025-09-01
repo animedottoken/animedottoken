@@ -65,14 +65,9 @@ export function FeaturedCommunityContent() {
         
         {/* Show details trigger */}
         <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="text-violet-400 hover:text-violet-300 hover:bg-violet-400/10 mt-4 p-0 h-auto font-normal"
-            >
-              Show details
-              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
-            </Button>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+            Show details
+            <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
             <div className="text-muted-foreground space-y-4 max-w-3xl">
