@@ -52,6 +52,12 @@ const navigationItems = [
     path: "/marketplace",
     type: "route" as const
   },
+  { 
+    title: "Trust & Security", 
+    icon: Shield,
+    path: "/trust",
+    type: "route" as const
+  },
   // CORRECTED ORDER TO MATCH WEBPAGE FLOW:
   { 
     title: "NFT Minting & Marketplace", 

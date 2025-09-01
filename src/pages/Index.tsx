@@ -4,7 +4,7 @@ import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { ViewModeProvider, useViewMode } from "@/contexts/ViewModeContext";
 import ViewModeToggle from "@/components/ViewModeToggle";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import HeroSection from "@/components/HeroSection";
 
@@ -354,6 +354,11 @@ const Index = () => {
       {/* 4. PROOF SECTION - Trust & Security */}
       <div id="trust-security-section" className="trust-security-section scroll-mt-20">
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl={`https://solscan.io/account/${CREATOR_WALLET_ADDRESS}#portfolio`} />
+        <div className="mt-4 text-center">
+          <Button asChild variant="outline">
+            <Link to="/trust" aria-label="View full Trust & Security Center">View full Trust & Security Center</Link>
+          </Button>
+        </div>
       </div>
 
       {/* 5. COMMUNITY SECTION - ANIME ARMY */}

@@ -150,6 +150,10 @@ export const TopNav = () => {
                 <ShoppingCart className="h-4 w-4" />
                 <span>Marketplace</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/trust')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
+                <Shield className="h-4 w-4" />
+                <span>Trust & Security Center</span>
+              </DropdownMenuItem>
               
               {/* Profile Row */}
               <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3 justify-between">
@@ -244,6 +248,14 @@ export const TopNav = () => {
                 >
                   <ShoppingCart className="h-5 w-5" />
                   <span className="font-medium">Marketplace</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12"
+                  onClick={() => navigate('/trust')}
+                >
+                  <Shield className="h-5 w-5" />
+                  <span className="font-medium">Trust & Security Center</span>
                 </Button>
                 
               </div>

@@ -18,11 +18,11 @@ export default function Trust() {
   const navigate = useNavigate();
 
   const handleReportRisk = () => {
-    window.open('https://discord.gg/HmSJdT5MRX', '_blank');
+    window.open('https://discord.gg/jqxCbvZvn7', '_blank');
   };
 
   const handleBackToSecurity = () => {
-    navigate('/#security');
+    navigate('/#trust-security-section');
   };
 
   return (
