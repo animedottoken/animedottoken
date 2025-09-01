@@ -211,6 +211,18 @@ export default function Trust() {
             <ExternalLink className="h-3 w-3" />
           </Button>
         </div>
+
+        {/* Bottom Back Button */}
+        <div className="mt-8 text-center">
+          <Button 
+            variant="ghost" 
+            onClick={handleBackToSecurity}
+            className="flex items-center gap-2 mx-auto"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Security Section
+          </Button>
+        </div>
       </div>
     </div>
   );
