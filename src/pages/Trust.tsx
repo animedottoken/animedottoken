@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Shield, Code, FileText, AlertTriangle, Copy, ArrowLeft, Globe } from "lucide-react";
+import { ExternalLink, Shield, Code, FileText, AlertTriangle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
@@ -106,18 +106,6 @@ export default function Trust() {
                       </a>
                     </Button>
                   )}
-                  <Button asChild variant="outline" size="sm">
-                    <a 
-                      href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}#portfolio`}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
-                    >
-                      <Globe className="h-4 w-4" />
-                      View Ecosystem Fund
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </Button>
                 </div>
               </div>
             </div>
