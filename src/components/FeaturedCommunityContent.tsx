@@ -27,8 +27,8 @@ const emptySlots = [
     cta: "Submit your work to be featured!",
     type: "art",
     sample: false,
-    title: "Your Spot",
-    description: "Submit your amazing anime art or meme here to get featured!",
+    title: "Ownership in Action",
+    description: "Explore creations from our stakeholders. Submit work that embodies the Ownership Economy to be featured.",
     createdBy: "",
     achievement: ""
   },
