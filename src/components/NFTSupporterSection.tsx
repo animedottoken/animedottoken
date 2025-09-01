@@ -83,12 +83,12 @@ export function NFTSupporterSection() {
   }, [viewMode]);
 
   return (
-    <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+    <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div>
         {/* Header */}
         <div className="text-left mb-12">
           <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
-            <Crown className="w-12 h-12 text-violet-400" />
+            <Crown className="w-10 h-10 text-violet-400" />
             Join the ANIME.TOKEN ARMY
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl">
