@@ -376,7 +376,14 @@ const Index = () => {
         </h2>
         <p className="mt-3 text-left text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
-        <ul className="mt-6 space-y-5 list-none pl-0">
+        <Collapsible open={buyOpen} onOpenChange={setBuyOpen}>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+            <span>{buyOpen ? "Hide details" : "Show details"}</span>
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
+
+          <CollapsibleContent className="mt-6">
+            <ul className="space-y-5 list-none pl-0">
           <li>
             <Collapsible open={step1Open} onOpenChange={setStep1Open}>
               <div className="flex flex-col items-start">
@@ -478,65 +485,67 @@ const Index = () => {
               </CollapsibleContent>
             </Collapsible>
           </li>
-        </ul>
+            </ul>
 
-        <div className="mt-8 text-left">
-          <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-            <Handshake className="w-8 h-8 text-primary" />
-            Congratulations, Stakeholder!
-          </h2>
-          <div className="mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
-          <picture>
-            <img
-              src="/lovable-uploads/200d1789-179d-4077-9b63-356f00243e4c.png"
-              alt="ANIME Token — Stakeholder ownership artwork"
-              loading="lazy"
-              decoding="async"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
-              className="w-full h-auto object-cover"
-            />
-          </picture>
-          </div>
-          <p className="mt-3 text-muted-foreground mb-2">You are now an owner, not just a holder. Welcome to the ANIME.TOKEN Ownership Economy. By joining us, you help build a transparent, community-owned ecosystem where stakeholders shape the future.</p>
-          <p className="text-sm text-muted-foreground/80">Share your new role as a stakeholder and invite others to join the movement.</p>
-          <div className="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center items-center px-4">
-            {/* Main platforms */}
-            <Button asChild variant="glass" size="lg">
-              <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
-                <SiX className="h-5 w-5" />
-                Share on X (Twitter)
-              </a>
-            </Button>
-            
-            <Button onClick={copyForDiscord} variant="glass" size="lg" className="inline-flex items-center gap-2">
-              <SiDiscord className="h-5 w-5" />
-              Copy for Discord
-            </Button>
-
-            {/* More options dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="inline-flex items-center gap-2">
-                  <Share className="h-4 w-4" />
-                  More platforms
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="z-50 w-56 bg-card border shadow-lg">
-                <DropdownMenuItem asChild>
-                  <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
-                    <SiTelegram className="h-4 w-4" />
-                    Share on Telegram
+            <div className="mt-8 text-left">
+              <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+                <Handshake className="w-8 h-8 text-primary" />
+                Congratulations, Stakeholder!
+              </h2>
+              <div className="mt-4 max-w-3xl overflow-hidden rounded-xl border bg-card shadow-glow">
+              <picture>
+                <img
+                  src="/lovable-uploads/200d1789-179d-4077-9b63-356f00243e4c.png"
+                  alt="ANIME Token — Stakeholder ownership artwork"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/og-anime.jpg"; }}
+                  className="w-full h-auto object-cover"
+                />
+              </picture>
+              </div>
+              <p className="mt-3 text-muted-foreground mb-2">You are now an owner, not just a holder. Welcome to the ANIME.TOKEN Ownership Economy. By joining us, you help build a transparent, community-owned ecosystem where stakeholders shape the future.</p>
+              <p className="text-sm text-muted-foreground/80">Share your new role as a stakeholder and invite others to join the movement.</p>
+              <div className="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center items-center px-4">
+                {/* Main platforms */}
+                <Button asChild variant="glass" size="lg">
+                  <a href={shareUrls.x} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2">
+                    <SiX className="h-5 w-5" />
+                    Share on X (Twitter)
                   </a>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
-                  <Copy className="h-4 w-4" />
-                  Copy share text
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+                </Button>
+                
+                <Button onClick={copyForDiscord} variant="glass" size="lg" className="inline-flex items-center gap-2">
+                  <SiDiscord className="h-5 w-5" />
+                  Copy for Discord
+                </Button>
+
+                {/* More options dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="inline-flex items-center gap-2">
+                      <Share className="h-4 w-4" />
+                      More platforms
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="z-50 w-56 bg-card border shadow-lg">
+                    <DropdownMenuItem asChild>
+                      <a href={shareUrls.telegram} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 w-full">
+                        <SiTelegram className="h-4 w-4" />
+                        Share on Telegram
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={copyShare} className="inline-flex items-center gap-2">
+                      <Copy className="h-4 w-4" />
+                      Copy share text
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
           {/* minimal link only */}
