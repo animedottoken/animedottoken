@@ -35,7 +35,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
       <header className="mb-6 text-center">
         <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
           <Shield className="w-8 h-8 text-violet-400" />
-          Built on Battle-Tested Protocols
+          Built on a Foundation of Trust & Transparency
         </h2>
         <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
           $ANIME leverages the publicly audited, battle-tested Metaplex protocol used by thousands of Solana projects. 100% LP burned, creator holds zero tokens. Everything is verifiable on-chain through radical transparency.
