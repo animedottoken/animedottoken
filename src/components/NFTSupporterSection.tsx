@@ -86,16 +86,13 @@ export function NFTSupporterSection() {
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div>
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground flex items-center justify-center gap-3">
+        <div className="text-left mb-12">
+          <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
             <Crown className="w-12 h-12 text-violet-400" />
             Join the ANIME.TOKEN ARMY
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            {viewMode === 'overview' 
-              ? 'Join the ANIME ARMY and earn exclusive NFTs through contribution and support.'
-              : 'The ANIME ARMY is the heart of our ecosystem—a dedicated group of supporters driving our mission forward. The ARMY is composed of three vital roles: Founders, Ambassadors, and Hodlers. This is not a status you can buy; it is a rank you must earn through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your contribution.'
-            }
+          <p className="text-lg text-muted-foreground max-w-3xl">
+            The ANIME.TOKEN ARMY is the heart of our ecosystem—a dedicated group of stakeholders driving the growth of our community-owned ecosystem. This is not a status you can buy; it is a rank earned through contribution, conviction, and support. Your rank is certified permanently on-chain with an exclusive NFT—the ultimate proof of your role in building a new economy.
           </p>
         </div>
 
