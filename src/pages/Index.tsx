@@ -42,6 +42,7 @@ const TOTAL_SUPPLY = 974338302;
 function Section3({ holders }: { holders: number | null | undefined }) {
   const [section3DetailsOpen, setSection3DetailsOpen] = useState(false);
   const { viewMode } = useViewMode();
+  const isOverview = viewMode === 'overview';
   const location = useLocation();
 
   // Auto-open details when navigating to calculator or chart
@@ -59,12 +60,12 @@ function Section3({ holders }: { holders: number | null | undefined }) {
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
-      <header className="mb-12 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center justify-center gap-3">
+      <header className={`mb-12 ${isOverview ? 'text-left' : 'text-center'}`}>
+        <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isOverview ? 'flex items-center' : 'flex items-center justify-center'} gap-3`}>
           <BarChart3 className="w-10 h-10 text-violet-400" />
           The Power of Community: A Decentralized Future
         </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <p className={`text-lg text-muted-foreground ${isOverview ? '' : 'max-w-3xl mx-auto'}`}>
           Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
         </p>
       </header>
@@ -87,18 +88,19 @@ function Section3({ holders }: { holders: number | null | undefined }) {
               <MarketCapChart />
             </Suspense>
           </div>
+
+          <div className={`mt-8 ${isOverview ? 'text-left' : 'text-center'}`}>
+            <p className={`text-muted-foreground ${isOverview ? '' : 'max-w-3xl mx-auto'}`}>
+              Join over{" "}
+              <span className="font-bold text-foreground">
+                {holders ? `${holders.toLocaleString()}` : "1,300"}
+              </span>{" "}
+              holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
+            </p>
+          </div>
         </CollapsibleContent>
       </Collapsible>
 
-      <div className="text-center">
-        <p className="text-muted-foreground max-w-3xl mx-auto">
-          Join over{" "}
-          <span className="font-bold text-foreground">
-            {holders ? `${holders.toLocaleString()}` : "1,300"}
-          </span>{" "}
-          holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
-        </p>
-      </div>
 
       {/* Backward compatibility for old market-cap-chart hash */}
       <div id="market-cap-chart" className="scroll-mt-20"></div>
