@@ -66,9 +66,268 @@ const nftTypes = [
   }
 ];
 
+const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupportersClaimed, earlySupportersTotal }: any) => (
+  <>
+    {/* NFT Cards Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      {nftTypes.map((nft, index) => (
+        <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
+          <CardContent className="p-6">
+            {/* NFT Image */}
+            <div className="mb-6 overflow-hidden rounded-lg aspect-square">
+              <img 
+                src={nft.image}
+                alt={nft.title}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            
+            {/* Icon and Title */}
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">{nft.icon}</div>
+              <p className="text-xs text-muted-foreground mb-1">Role</p>
+              <h3 className="text-xl font-bold">{nft.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">Max Members: {nft.supply}</p>
+            </div>
+            
+            
+            {/* Description */}
+            <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
+            
+            {/* How to Earn */}
+            <div className="mb-4">
+              <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
+              
+              {/* Expandable Details */}
+              <Collapsible 
+                open={openDetails.has(nft.id)} 
+                onOpenChange={(open) => {
+                  setOpenDetails((prev: Set<string>) => {
+                    const newSet = new Set(prev);
+                    if (open) {
+                      newSet.add(nft.id);
+                    } else {
+                      newSet.delete(nft.id);
+                    }
+                    return newSet;
+                  });
+                }}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" className="px-0 text-sm text-primary mb-2">
+                    {openDetails.has(nft.id) ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.has(nft.id) ? "rotate-180" : ""}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2">
+                  <div className="text-xs text-muted-foreground space-y-2">
+                    <p className="leading-relaxed">{nft.howToEarn[0]}</p>
+                    <div className="space-y-2 mt-3">
+                      {nft.howToEarn.slice(1).map((item, index) => {
+                        const [title, description] = item.split('|');
+                        return (
+                          <div key={index} className="bg-muted/30 p-3 rounded">
+                            <h5 className="font-semibold text-xs mb-1">{title}</h5>
+                            <p className="leading-relaxed text-xs">{description}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            {/* Early Supporter Campaign for Ambassadors */}
+            {nft.id === "ambassadors" && (
+              <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-yellow-500/10 border-2 border-gradient-to-r border-yellow-500/30">
+                <div className="flex items-start gap-4 mb-4">
+                  <img 
+                    src={earlySupporterBadge}
+                    alt="Early Supporter Badge"
+                    className="w-16 h-16 object-cover rounded-lg shadow-lg"
+                  />
+                  <div className="min-w-0">
+                    <h4 className="text-base md:text-lg font-bold text-yellow-400 mb-1 leading-tight break-words">
+                      First 100 Early Supporter
+                    </h4>
+                    <p className="text-xs text-purple-300 font-semibold">Special Edition NFT</p>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Awarded exclusively to the first 100 active supporters who join and engage in our X (Twitter) and Discord communities. This NFT marks your legacy as a pioneer of the $ANIME community.
+                </p>
+                
+                {/* Real-time Counter */}
+                <div className="text-center mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-purple-500/20 rounded-lg border border-yellow-500/30">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {earlySupportersClaimed === 0 
+                      ? `${earlySupportersTotal} NFTs Available`
+                      : `${earlySupportersTotal - earlySupportersClaimed}/${earlySupportersTotal} Available`
+                    }
+                  </div>
+                  <p className="text-xs text-purple-300">
+                    {earlySupportersClaimed === 0 ? "Ready to Claim" : "Remaining"}
+                  </p>
+                </div>
+                
+                {/* Campaign Criteria */}
+                <div className="mb-4">
+                  <h5 className="font-semibold text-sm mb-2 text-yellow-400">Campaign Criteria:</h5>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Be among the first 100 to follow and join both X (Twitter) and Discord</li>
+                    <li>• Actively post or share anime content</li>
+                    <li>• Remain a member and engaged until September 30, 2025</li>
+                    <li>• Only the most engaged early supporters will receive the NFT</li>
+                  </ul>
+                </div>
+                
+                {/* Timeline */}
+                <div className="mb-4">
+                  <h5 className="font-semibold text-sm mb-2 text-purple-400">Timeline:</h5>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p>• Campaign runs until September 30, 2025</p>
+                    <p>• Winners announced October 1, 2025</p>
+                  </div>
+                </div>
+                
+                {/* Note */}
+                <div className="mb-4 p-2 bg-purple-500/10 rounded border border-purple-500/20">
+                  <p className="text-xs text-purple-300 italic">
+                    Note: Ambassadors may be selected from the most active early supporters after this event.
+                  </p>
+                </div>
+                
+                {/* How to Qualify Button */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-gradient-to-r from-yellow-500 to-purple-500 hover:from-yellow-600 hover:to-purple-600 text-black font-semibold"
+                    >
+                      How to Qualify
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-4">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-lg mb-3">How to Qualify for Early Supporter NFT</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary font-bold">1.</span>
+                          <p className="text-sm">Follow us on X (Twitter) and join our Discord.</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary font-bold">2.</span>
+                          <p className="text-sm">Start posting or sharing anime content in either community.</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary font-bold">3.</span>
+                          <p className="text-sm">Stay active until September 30, 2025.</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary font-bold">4.</span>
+                          <p className="text-sm">The most engaged early supporters will get the NFT.</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <Button 
+                          size="sm"
+                          onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
+                          className="flex-1"
+                        >
+                          Follow on X
+                        </Button>
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
+                          className="flex-1"
+                        >
+                          Join Discord
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+
+    {/* Already Supporting Section */}
+    <div className="text-center mb-12">
+      <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-6 max-w-3xl mx-auto">
+        <h3 className="text-xl md:text-2xl font-semibold mb-4">
+          💬 Ready to Claim Your Role?
+        </h3>
+        <p className="text-muted-foreground mb-6">
+          These NFTs are earned, not sold. If you meet the criteria for a Founder, Ambassador, or Hodler, it's time to make it official. Contact the team on X (Twitter) or Discord with proof of your contributions or holding history to begin the verification process.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+          <Button 
+            size="lg" 
+            onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
+          >
+            Contact us on X (Twitter)
+          </Button>
+          <Button 
+            variant="outline"
+            size="lg" 
+            onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
+          >
+            Contact us on Discord
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    {/* Why These NFTs Matter */}
+    <div className="text-center mb-8">
+      <h3 className="text-xl md:text-2xl font-semibold mb-6">
+        🔍 Why These NFTs Matter
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="text-center">
+          <div className="text-2xl mb-2">🔗</div>
+          <h4 className="font-semibold mb-2">Proof of Contribution</h4>
+          <p className="text-sm text-muted-foreground">Forever linked to your wallet on Solana.</p>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl mb-2">⭐</div>
+          <h4 className="font-semibold mb-2">Exclusive Recognition</h4>
+          <p className="text-sm text-muted-foreground">Different roles mean different perks and roles in the community.</p>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl mb-2">📚</div>
+          <h4 className="font-semibold mb-2">Part of History</h4>
+          <p className="text-sm text-muted-foreground">Early support is rewarded long-term.</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Quick Start */}
+    <div className="text-center">
+      <h3 className="text-xl md:text-2xl font-semibold mb-4">
+        📌 Quick Start
+      </h3>
+      <div className="max-w-2xl mx-auto space-y-3 text-muted-foreground mb-6">
+        <p>1. Pick a role you want to aim for (Founder, Ambassador, or Hodler).</p>
+        <p>2. Follow the "How to Earn" steps for that NFT.</p>
+        <p>3. Stay active, use the hashtags, and let us know when you're ready.</p>
+      </div>
+    </div>
+  </>
+);
+
 export function NFTSupporterSection() {
   const { viewMode } = useViewMode();
   const [openDetails, setOpenDetails] = useState<Set<string>>(new Set());
+  const [sectionOpen, setSectionOpen] = useState<boolean>(viewMode !== 'overview');
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
   const earlySupportersTotal = 100;
@@ -80,6 +339,11 @@ export function NFTSupporterSection() {
     } else {
       setOpenDetails(new Set());
     }
+  }, [viewMode]);
+
+  // Sync section open state with view mode
+  useEffect(() => {
+    setSectionOpen(viewMode !== 'overview');
   }, [viewMode]);
 
   return (
@@ -96,259 +360,37 @@ export function NFTSupporterSection() {
           </p>
         </div>
 
-        {/* NFT Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {nftTypes.map((nft, index) => (
-            <Card key={nft.id} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
-              <CardContent className="p-6">
-                {/* NFT Image */}
-                <div className="mb-6 overflow-hidden rounded-lg aspect-square">
-                  <img 
-                    src={nft.image}
-                    alt={nft.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                {/* Icon and Title */}
-                <div className="text-center mb-4">
-                  <div className="text-4xl mb-2">{nft.icon}</div>
-                  <p className="text-xs text-muted-foreground mb-1">Role</p>
-                  <h3 className="text-xl font-bold">{nft.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Max Members: {nft.supply}</p>
-                </div>
-                
-                
-                {/* Description */}
-                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{nft.description}</p>
-                
-                {/* How to Earn */}
-                <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">How to Earn:</h4>
-                  
-                  {/* Expandable Details */}
-                  <Collapsible 
-                    open={openDetails.has(nft.id)} 
-                    onOpenChange={(open) => {
-                      setOpenDetails(prev => {
-                        const newSet = new Set(prev);
-                        if (open) {
-                          newSet.add(nft.id);
-                        } else {
-                          newSet.delete(nft.id);
-                        }
-                        return newSet;
-                      });
-                    }}
-                  >
-                    <CollapsibleTrigger asChild>
-                      <Button variant="link" className="px-0 text-sm text-primary mb-2">
-                        {openDetails.has(nft.id) ? "Hide details" : "Show details"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${openDetails.has(nft.id) ? "rotate-180" : ""}`} />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-2">
-                      <div className="text-xs text-muted-foreground space-y-2">
-                        <p className="leading-relaxed">{nft.howToEarn[0]}</p>
-                        <div className="space-y-2 mt-3">
-                          {nft.howToEarn.slice(1).map((item, index) => {
-                            const [title, description] = item.split('|');
-                            return (
-                              <div key={index} className="bg-muted/30 p-3 rounded">
-                                <h5 className="font-semibold text-xs mb-1">{title}</h5>
-                                <p className="leading-relaxed text-xs">{description}</p>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-
-                {/* Early Supporter Campaign for Ambassadors */}
-                {nft.id === "ambassadors" && (
-                  <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-yellow-500/10 via-purple-500/10 to-yellow-500/10 border-2 border-gradient-to-r border-yellow-500/30">
-                    <div className="flex items-start gap-4 mb-4">
-                      <img 
-                        src={earlySupporterBadge}
-                        alt="Early Supporter Badge"
-                        className="w-16 h-16 object-cover rounded-lg shadow-lg"
-                      />
-                      <div className="min-w-0">
-                        <h4 className="text-base md:text-lg font-bold text-yellow-400 mb-1 leading-tight break-words">
-                          First 100 Early Supporter
-                        </h4>
-                        <p className="text-xs text-purple-300 font-semibold">Special Edition NFT</p>
-                      </div>
-                    </div>
-                    
-                    <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                      Awarded exclusively to the first 100 active supporters who join and engage in our X (Twitter) and Discord communities. This NFT marks your legacy as a pioneer of the $ANIME community.
-                    </p>
-                    
-                    {/* Real-time Counter */}
-                    <div className="text-center mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-purple-500/20 rounded-lg border border-yellow-500/30">
-                      <div className="text-2xl font-bold text-yellow-400">
-                        {earlySupportersClaimed === 0 
-                          ? `${earlySupportersTotal} NFTs Available`
-                          : `${earlySupportersTotal - earlySupportersClaimed}/${earlySupportersTotal} Available`
-                        }
-                      </div>
-                      <p className="text-xs text-purple-300">
-                        {earlySupportersClaimed === 0 ? "Ready to Claim" : "Remaining"}
-                      </p>
-                    </div>
-                    
-                    {/* Campaign Criteria */}
-                    <div className="mb-4">
-                      <h5 className="font-semibold text-sm mb-2 text-yellow-400">Campaign Criteria:</h5>
-                      <ul className="text-xs text-muted-foreground space-y-1">
-                        <li>• Be among the first 100 to follow and join both X (Twitter) and Discord</li>
-                        <li>• Actively post or share anime content</li>
-                        <li>• Remain a member and engaged until September 30, 2025</li>
-                        <li>• Only the most engaged early supporters will receive the NFT</li>
-                      </ul>
-                    </div>
-                    
-                    {/* Timeline */}
-                    <div className="mb-4">
-                      <h5 className="font-semibold text-sm mb-2 text-purple-400">Timeline:</h5>
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <p>• Campaign runs until September 30, 2025</p>
-                        <p>• Winners announced October 1, 2025</p>
-                      </div>
-                    </div>
-                    
-                    {/* Note */}
-                    <div className="mb-4 p-2 bg-purple-500/10 rounded border border-purple-500/20">
-                      <p className="text-xs text-purple-300 italic">
-                        Note: Ambassadors may be selected from the most active early supporters after this event.
-                      </p>
-                    </div>
-                    
-                    {/* How to Qualify Button */}
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button 
-                          size="sm" 
-                          className="w-full bg-gradient-to-r from-yellow-500 to-purple-500 hover:from-yellow-600 hover:to-purple-600 text-black font-semibold"
-                        >
-                          How to Qualify
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-80 p-4">
-                        <div className="space-y-4">
-                          <h4 className="font-semibold text-lg mb-3">How to Qualify for Early Supporter NFT</h4>
-                          <div className="space-y-3">
-                            <div className="flex items-start gap-2">
-                              <span className="text-primary font-bold">1.</span>
-                              <p className="text-sm">Follow us on X (Twitter) and join our Discord.</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="text-primary font-bold">2.</span>
-                              <p className="text-sm">Start posting or sharing anime content in either community.</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="text-primary font-bold">3.</span>
-                              <p className="text-sm">Stay active until September 30, 2025.</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="text-primary font-bold">4.</span>
-                              <p className="text-sm">The most engaged early supporters will get the NFT.</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 mt-4">
-                            <Button 
-                              size="sm"
-                              onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
-                              className="flex-1"
-                            >
-                              Follow on X
-                            </Button>
-                            <Button 
-                              size="sm"
-                              variant="outline"
-                              onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
-                              className="flex-1"
-                            >
-                              Join Discord
-                            </Button>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                )}
-
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Already Supporting Section */}
-        <div className="text-center mb-12">
-          <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-6 max-w-3xl mx-auto">
-            <h3 className="text-xl md:text-2xl font-semibold mb-4">
-              💬 Ready to Claim Your Role?
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              These NFTs are earned, not sold. If you meet the criteria for a Founder, Ambassador, or Hodler, it's time to make it official. Contact the team on X (Twitter) or Discord with proof of your contributions or holding history to begin the verification process.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <Button 
-                size="lg" 
-                onClick={() => window.open('https://twitter.com/AnimeDotToken', '_blank')}
-              >
-                Contact us on X (Twitter)
+        {/* Show details trigger for overview mode */}
+        {viewMode === 'overview' && (
+          <Collapsible open={sectionOpen} onOpenChange={setSectionOpen}>
+            <CollapsibleTrigger asChild>
+              <Button variant="link" className="px-0 text-primary mb-4">
+                {sectionOpen ? "Hide details" : "Show details"} 
+                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${sectionOpen ? "rotate-180" : ""}`} />
               </Button>
-              <Button 
-                variant="outline"
-                size="lg" 
-                onClick={() => window.open('https://discord.gg/YqzRX2jJNx', '_blank')}
-              >
-                Contact us on Discord
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Why These NFTs Matter */}
-        <div className="text-center mb-8">
-          <h3 className="text-xl md:text-2xl font-semibold mb-6">
-            🔍 Why These NFTs Matter
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-2xl mb-2">🔗</div>
-              <h4 className="font-semibold mb-2">Proof of Contribution</h4>
-              <p className="text-sm text-muted-foreground">Forever linked to your wallet on Solana.</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">⭐</div>
-              <h4 className="font-semibold mb-2">Exclusive Recognition</h4>
-              <p className="text-sm text-muted-foreground">Different roles mean different perks and roles in the community.</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">📚</div>
-              <h4 className="font-semibold mb-2">Part of History</h4>
-              <p className="text-sm text-muted-foreground">Early support is rewarded long-term.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Start */}
-        <div className="text-center">
-          <h3 className="text-xl md:text-2xl font-semibold mb-4">
-            📌 Quick Start
-          </h3>
-          <div className="max-w-2xl mx-auto space-y-3 text-muted-foreground mb-6">
-            <p>1. Pick a role you want to aim for (Founder, Ambassador, or Hodler).</p>
-            <p>2. Follow the "How to Earn" steps for that NFT.</p>
-            <p>3. Stay active, use the hashtags, and let us know when you're ready.</p>
-          </div>
-        </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SectionContent 
+                viewMode={viewMode}
+                openDetails={openDetails}
+                setOpenDetails={setOpenDetails}
+                earlySupportersClaimed={earlySupportersClaimed}
+                earlySupportersTotal={earlySupportersTotal}
+              />
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+        
+        {/* For non-overview modes, show content directly */}
+        {viewMode !== 'overview' && (
+          <SectionContent 
+            viewMode={viewMode}
+            openDetails={openDetails}
+            setOpenDetails={setOpenDetails}
+            earlySupportersClaimed={earlySupportersClaimed}
+            earlySupportersTotal={earlySupportersTotal}
+          />
+        )}
       </div>
     </section>
   );
