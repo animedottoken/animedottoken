@@ -116,6 +116,16 @@ All colors MUST be HSL. */
   * {
     @apply border-border;
   }
+  
+  /* Remove default browser focus outlines globally */
+  *:focus {
+    outline: none;
+  }
+  
+  /* Only show custom focus rings for keyboard navigation */
+  *:focus-visible {
+    outline: none;
+  }
 
   body {
     @apply bg-background text-foreground font-sans;
