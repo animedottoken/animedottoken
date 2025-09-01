@@ -622,7 +622,7 @@ const Index = () => {
         
         <ul className="mt-6 space-y-4">
           <li className="rounded-md border bg-card/50 p-4">
-              <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
+            <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all w-full block">{CONTRACT}</code>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-muted" onClick={copyContract}>
