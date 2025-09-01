@@ -613,9 +613,9 @@ const Index = () => {
           </CollapsibleContent>
         </Collapsible>
 
-      <section id="faq-section" className="mx-auto mt-16 max-w-5xl scroll-mt-20">
-        <h3 className="text-center text-3xl md:text-4xl font-semibold mb-4 flex items-center justify-center gap-3">
-          <HelpCircle className="w-8 h-8 text-violet-400" />
+      <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 scroll-mt-20">
+        <h3 className="text-left text-4xl font-bold mb-4 flex items-center gap-3">
+          <HelpCircle className="w-10 h-10 text-violet-400" />
           <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
         </h3>
           <ul className="mt-3 space-y-4">
