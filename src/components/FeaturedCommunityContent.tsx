@@ -59,7 +59,7 @@ export function FeaturedCommunityContent() {
           Community Showcase
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl">
-          See what our community is building. Submit your content that supports the ANIME.TOKEN ecosystem—from viral memes to in-depth analysis—to be featured.
+          See what our stakeholders are building. We feature content that educates, entertains, and grows our ecosystem—from viral memes to in-depth analysis. To get your work featured, submit it on Discord or tag us on X.
         </p>
         
         {/* Show details trigger */}
