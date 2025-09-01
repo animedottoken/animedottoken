@@ -208,10 +208,27 @@ const Index = () => {
       <div className="mb-6 mx-auto max-w-5xl">
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-3 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div 
+              role="button"
+              tabIndex={0}
+              onClick={() => { 
+                setPromoOpen(true); 
+                scrollToHash('#promo-section'); 
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setPromoOpen(true);
+                  scrollToHash('#promo-section');
+                }
+              }}
+              className="flex items-center gap-3 cursor-pointer select-none hover:bg-primary/10 rounded-md px-2 py-1 transition-colors"
+              aria-label="Open Promo Package"
+              title="Click to open promo package for sharing"
+            >
               <span className="text-xl">💎</span>
               <div>
-                <h3 className="font-semibold text-foreground text-sm">Ownership Economy Platform</h3>
+                <h3 className="font-semibold text-foreground text-sm hover:underline">Ownership Economy Platform</h3>
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
@@ -523,7 +540,7 @@ const Index = () => {
           </div>
         </div>
 
-        <section className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+        <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
           {/* minimal link only */}
           <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
             <CollapsibleTrigger asChild>
