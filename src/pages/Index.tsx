@@ -72,7 +72,7 @@ function Section3({ holders }: { holders: number | null | undefined }) {
 
       <Collapsible open={section3DetailsOpen} onOpenChange={setSection3DetailsOpen}>
         {viewMode === "overview" && (
-          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 mb-3 group font-medium">
             <span>{section3DetailsOpen ? "Hide details" : "Show details"}</span>
             <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
