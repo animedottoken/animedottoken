@@ -61,7 +61,7 @@ const HeroSection: React.FC = () => {
           
           {isOverview ? (
             <Collapsible open={statsOpen} onOpenChange={setStatsOpen}>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-4 group">
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
                 <span>Show details</span>
                 <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
               </CollapsibleTrigger>
