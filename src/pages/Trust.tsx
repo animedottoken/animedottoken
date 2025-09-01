@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
-import { ANIME_MINT_ADDRESS, CREATOR_WALLET_ADDRESS } from "@/constants/token";
+import { ANIME_MINT_ADDRESS, CREATOR_WALLET_ADDRESS, TREASURY_WALLET_ADDRESS } from "@/constants/token";
 import { 
   METAPLEX_AUCTION_HOUSE_PROGRAM_ID, 
   METAPLEX_TOKEN_METADATA_PROGRAM_ID,
@@ -108,7 +108,7 @@ export default function Trust() {
                   )}
                   <Button asChild variant="outline" size="sm">
                     <a 
-                      href="https://www.anime.fund" 
+                      href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"
