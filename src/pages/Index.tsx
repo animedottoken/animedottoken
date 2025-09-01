@@ -93,7 +93,7 @@ function Section3({ holders }: { holders: number | null | undefined }) {
             <p className={`text-muted-foreground ${isOverview ? '' : 'max-w-3xl mx-auto'}`}>
               Join over{" "}
               <span className="font-bold text-foreground">
-                {holders ? `${holders.toLocaleString()}` : "1,300"}
+                {holders ? `${holders.toLocaleString()}` : "1,200"}
               </span>{" "}
               holders and become a key stakeholder in our movement. Your contribution, no matter the size, helps us build a new, decentralized economy on Solana.
             </p>
