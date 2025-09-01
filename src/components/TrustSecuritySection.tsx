@@ -133,7 +133,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
                     <CardContent className="space-y-3 text-sm">
                       <div className="space-y-3 text-muted-foreground">
                         <p>
-                          To fuel the community-led revival and ensure long-term growth, the official ANIME Revival & Ecosystem Fund has been established. This wallet functions as the official ANIME Revival & Ecosystem Fund. To ensure radical transparency, it is a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated exclusively to the project's success.</span>
+                          To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.</span>
                         </p>
                         
                         <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
@@ -276,7 +276,7 @@ export function TrustSecuritySection({ tokenAddress, creatorWalletUrl }: TrustSe
             <CardContent className="space-y-3 text-sm">
               <div className="space-y-3 text-muted-foreground">
                 <p>
-                  To fuel the community-led revival and ensure long-term growth, the official ANIME Revival & Ecosystem Fund has been established. This wallet functions as the official ANIME Revival & Ecosystem Fund. To ensure radical transparency, it is a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated exclusively to the project's success.</span>
+                  To fuel the community-led revival and ensure long-term growth, this wallet functions as the official ANIME.TOKEN Revival & Ecosystem Fund. It operates as a <span className="font-semibold text-foreground">publicly viewable treasury—separate from any private founder wallets—and is dedicated to the project's success with a commitment to radical transparency.</span>
                 </p>
                 
                 <Collapsible open={treasuryDetailsOpen} onOpenChange={setTreasuryDetailsOpen}>
