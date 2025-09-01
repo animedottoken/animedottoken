@@ -58,24 +58,22 @@ function Section3({ holders }: { holders: number | null | undefined }) {
   }, [viewMode]);
 
   return (
-    <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
-      <header className="mb-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
-          <BarChart3 className="w-8 h-8 text-violet-400" />
+    <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
+      <header className="mb-12 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center justify-center gap-3">
+          <BarChart3 className="w-10 h-10 text-violet-400" />
           The Power of Community: A Decentralized Future
         </h2>
-        <p className="mt-2 text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Our ecosystem is owned by its community. With a decentralized distribution, even a small stake can represent a significant voice in the project. Use the live calculator below to see how your support translates into a real share of the network.
         </p>
       </header>
 
       <Collapsible open={section3DetailsOpen} onOpenChange={setSection3DetailsOpen}>
         {viewMode === "overview" && (
-          <CollapsibleTrigger asChild>
-            <Button variant="link" size="sm" className="px-0 mb-4">
-              {section3DetailsOpen ? "Hide details" : "Show details"}
-              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${section3DetailsOpen ? "rotate-180" : ""}`} />
-            </Button>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
+            <span>{section3DetailsOpen ? "Hide details" : "Show details"}</span>
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
         )}
 
