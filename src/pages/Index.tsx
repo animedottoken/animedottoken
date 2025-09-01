@@ -370,11 +370,11 @@ const Index = () => {
 
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <h2 className="text-center text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
-          <ShoppingCart className="w-8 h-8 text-violet-400" />
+        <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
+          <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
         </h2>
-        <p className="mt-3 text-center text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
+        <p className="mt-3 text-left text-muted-foreground">Getting $ANIME and becoming a stakeholder in the Ownership Economy is easier than ever. Follow these 4 simple steps:</p>
         
         <ul className="mt-6 space-y-5 list-none pl-0">
           <li>
