@@ -108,7 +108,7 @@ export default function Trust() {
                   )}
                   <Button asChild variant="outline" size="sm">
                     <a 
-                      href={`https://solscan.io/account/${TREASURY_WALLET_ADDRESS}`}
+                      href="https://solscan.io/account/7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8#portfolio"
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"
