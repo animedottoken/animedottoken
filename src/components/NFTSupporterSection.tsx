@@ -350,7 +350,7 @@ export function NFTSupporterSection() {
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div>
         {/* Header */}
-        <div className={`text-left ${viewMode === 'overview' ? 'mb-6' : 'mb-12'}`}>
+        <div className={`text-left ${viewMode === 'overview' ? 'mb-4' : 'mb-12'}`}>
           <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
             <Crown className="w-10 h-10 text-violet-400" />
             Join the ANIME.TOKEN ARMY
