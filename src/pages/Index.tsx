@@ -616,9 +616,9 @@ const Index = () => {
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
-          FAQs (Frequently Asked Questions)
+          Frequently Asked Questions (FAQ)
         </h2>
-        <p className="mt-3 text-left text-muted-foreground">Common questions about $ANIME and our ecosystem:</p>
+        <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
         
         <ul className="mt-6 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
