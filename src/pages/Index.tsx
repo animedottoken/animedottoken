@@ -368,16 +368,6 @@ const Index = () => {
         </Suspense>
       </div>
 
-      {/* Prominent How to Buy Button */}
-      <section className="mx-auto mt-12 mb-16 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
-        <Button 
-          size="lg"
-          className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-bold text-lg px-8 py-6 h-auto shadow-elevated hover:shadow-glow transition-all duration-300 transform hover:scale-105"
-          onClick={() => scrollToHash('how-to-buy')}
-        >
-          Join the Ownership Economy
-        </Button>
-      </section>
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
         <h2 className="text-center text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
