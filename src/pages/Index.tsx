@@ -618,7 +618,7 @@ const Index = () => {
           <HelpCircle className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
         </h2>
-        <p className="mt-3 text-left text-muted-foreground pl-[52px]">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
+        <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
         
         <ul className="mt-6 space-y-4">
           <li className="rounded-md border bg-card/50 p-4">
@@ -634,7 +634,7 @@ const Index = () => {
 
           <Collapsible className="mt-2" open={faqOpen} onOpenChange={setFaqOpen}>
             <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0 text-primary pl-[52px]">{faqOpen ? "See fewer FAQs (Frequently Asked Questions)" : "See more FAQs (Frequently Asked Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
+              <Button variant="link" size="sm" className="px-0 text-primary">{faqOpen ? "See fewer FAQs (Frequently Asked Questions)" : "See more FAQs (Frequently Asked Questions)"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${faqOpen ? "rotate-180" : ""}`} /></Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ul className="mt-3 space-y-4">
