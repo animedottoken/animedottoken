@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Shield, Code, FileText, AlertTriangle, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { VerificationSection } from "@/components/VerificationSection";
 import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
 import { TrustSecuritySection } from "@/components/TrustSecuritySection";
 import { ANIME_MINT_ADDRESS } from "@/constants/token";
@@ -139,61 +138,6 @@ export default function Trust() {
 
         {/* Security Reports */}
         <SecurityReportsDetails tokenAddress={ANIME_MINT_ADDRESS} />
-
-        {/* Detailed Treasury Information */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
-                <span className="text-lg">🏛️</span>
-              </div>
-              <h3 className="text-xl font-bold">A Treasury for the Revival</h3>
-            </div>
-            
-            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p>
-                It holds 11.18% (109,000,000 $ANIME) of the current token supply. The tokens are vested through a gradual release schedule to fund ongoing development, ecosystem expansion, and community initiatives. A commitment: these tokens will never be sold on the open market, but rather used for strategic collaborations, liquidity provision, and project growth to strengthen the entire ecosystem.
-              </p>
-              
-              <div className="bg-card/50 border rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Treasury Wallet Address</h4>
-                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
-                  <code className="text-xs font-mono text-muted-foreground flex-1">
-                    2LTYTxVyGHvSUKTEoUhAvvJPKevN9fJb9v9mE7jA1Gk
-                  </code>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText('2LTYTxVyGHvSUKTEoUhAvvJPKevN9fJb9v9mE7jA1Gk');
-                      toast.success("Treasury wallet address copied!");
-                    }}
-                    title="Copy wallet address"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button asChild variant="outline" className="flex items-center gap-2">
-                  <a href="https://solscan.io/account/2LTYTxVyGHvSUKTEoUhAvvJPKevN9fJb9v9mE7jA1Gk" target="_blank" rel="noreferrer noopener" aria-label="View ecosystem fund wallet">
-                    View Ecosystem Fund <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-                <Button asChild variant="outline" className="flex items-center gap-2">
-                  <a href="https://solscan.io/token/GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump#holders" target="_blank" rel="noreferrer noopener" aria-label="See all token holders">
-                    See All Holders <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Verification Section */}
-        <VerificationSection onReportRisk={handleReportRisk} />
 
         {/* Risk Disclosure */}
         <Card className="mt-8 border-orange-200 bg-orange-50/50">
