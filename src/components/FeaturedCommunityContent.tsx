@@ -39,8 +39,8 @@ const emptySlots = [
     cta: "This post got 10K+ engagements!",
     type: "post",
     sample: true,
-    title: "Community Growth Post",
-    description: "Shared their $ANIME journey and got massive community love!",
+    title: "Building a New Era",
+    description: "See how our community is building the future. Submit your content that helps define A New Internet Money Era.",
     createdBy: "@CryptoSamurai_",
     achievement: "Generated 10K+ engagements and brought 500+ new holders!"
   }
