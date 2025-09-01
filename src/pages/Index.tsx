@@ -621,7 +621,7 @@ const Index = () => {
         <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
         
         <ul className="mt-6 space-y-4">
-            <li className="rounded-md border bg-card/50 p-4">
+          <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <code className="rounded-md bg-secondary px-2 py-1 text-xs sm:text-sm break-all w-full block">{CONTRACT}</code>
