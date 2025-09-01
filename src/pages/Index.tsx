@@ -644,7 +644,13 @@ const Index = () => {
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What is the utility of the $ANIME token?</span>
-                  <p className="mt-2 text-muted-foreground">$ANIME is the official utility token of our ecosystem. Its primary function is to power exclusive features on the ANIME Marketplace. This includes our Boost System, which allows you to promote your listings for greater visibility. As we grow, the token will be essential for other features like community governance (voting) and accessing special mints. Our goal is to make $ANIME the key that unlocks the best experiences on our platform.</p>
+                  <p className="mt-2 text-muted-foreground">$ANIME is the official utility token of our community-owned ecosystem. Its primary function is to unlock value and provide tangible benefits to our stakeholders. Key utilities include:</p>
+                  <ul className="mt-2 ml-4 list-disc text-muted-foreground space-y-1">
+                    <li><strong>Staking for Fee Discounts:</strong> Stake $ANIME to receive significant reductions on the 2% marketplace transaction fee.</li>
+                    <li><strong>Creator Verification:</strong> Stake $ANIME to achieve "Staked Creator" status, signaling the highest level of trust and commitment on the platform.</li>
+                    <li><strong>Listing Promotion (Boost System):</strong> Use your $ANIME tokens to boost your NFT listings for greater visibility.</li>
+                    <li><strong>Future Governance:</strong> As the ecosystem matures, the token will be used to vote on key project decisions, giving you a real voice.</li>
+                  </ul>
                 </li>
                 <li className="rounded-md border bg-card/50 p-4">
                   <span className="text-base md:text-lg font-semibold">What are the fees for selling on the ANIME Marketplace?</span>
