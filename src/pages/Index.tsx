@@ -613,11 +613,11 @@ const Index = () => {
           </CollapsibleContent>
         </Collapsible>
 
-      <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 scroll-mt-20">
-        <h3 className="text-left text-4xl font-bold mb-4 flex items-center gap-3">
+      <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+        <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
           FAQs (Frequented Answers & Questions)
-        </h3>
+        </h2>
         <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
               <span className="text-base md:text-lg font-semibold">What is the official $ANIME contract address?</span>
