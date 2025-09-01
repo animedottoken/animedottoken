@@ -544,74 +544,74 @@ const Index = () => {
                 </DropdownMenu>
               </div>
             </div>
+
+            <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+              {/* minimal link only */}
+              <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <p className="mt-2 text-xs text-muted-foreground">1) Download an image or all 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+                  <div className="mt-3 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                    <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
+                    <Button 
+                      variant="glass" 
+                      className="inline-flex items-center gap-2"
+                      onClick={async () => { 
+                        await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
+                        toast.success("Text copied to clipboard!"); 
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copy Text
+                    </Button>
+                    <Button asChild variant="glass">
+                      <a 
+                        href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                        target="_blank" 
+                        rel="noreferrer noopener"
+                        className="inline-flex items-center gap-2"
+                      >
+                        <SiX className="h-4 w-4" aria-hidden="true" />
+                        Open Tweet Composer
+                      </a>
+                    </Button>
+                    <Button asChild variant="glass">
+                      <a
+                        href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="inline-flex items-center gap-2"
+                      >
+                        <SiTelegram className="h-4 w-4" aria-hidden="true" />
+                        Open Telegram
+                      </a>
+                    </Button>
+                  </div>
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+                    {memoizedPromoImages.map((img) => (
+                      <article key={img.src} className="rounded-md border bg-card/50 p-3">
+                        <ImageLazyLoad
+                          src={img.src} 
+                          alt={img.alt} 
+                          className="w-full h-auto rounded"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="mt-2 flex justify-center">
+                          <Button asChild variant="hero">
+                            <a href={img.src} download={img.filename} aria-label={`Download ${img.alt}`}>Download Image</a>
+                          </Button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </section>
           </CollapsibleContent>
         </Collapsible>
-
-        <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-          {/* minimal link only */}
-          <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <p className="mt-2 text-xs text-muted-foreground">1) Download an image or all 2) Copy text 3) Post on X or Telegram (attach the image).</p>
-              <div className="mt-3 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
-                <Button 
-                  variant="glass" 
-                  className="inline-flex items-center gap-2"
-                  onClick={async () => { 
-                    await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
-                    toast.success("Text copied to clipboard!"); 
-                  }}
-                >
-                  <Copy className="h-4 w-4" />
-                  Copy Text
-                </Button>
-                <Button asChild variant="glass">
-                  <a 
-                    href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                    target="_blank" 
-                    rel="noreferrer noopener"
-                    className="inline-flex items-center gap-2"
-                  >
-                    <SiX className="h-4 w-4" aria-hidden="true" />
-                    Open Tweet Composer
-                  </a>
-                </Button>
-                <Button asChild variant="glass">
-                  <a
-                    href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="inline-flex items-center gap-2"
-                  >
-                    <SiTelegram className="h-4 w-4" aria-hidden="true" />
-                    Open Telegram
-                  </a>
-                </Button>
-              </div>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
-                {memoizedPromoImages.map((img) => (
-                  <article key={img.src} className="rounded-md border bg-card/50 p-3">
-                    <ImageLazyLoad
-                      src={img.src} 
-                      alt={img.alt} 
-                      className="w-full h-auto rounded"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="mt-2 flex justify-center">
-                      <Button asChild variant="hero">
-                        <a href={img.src} download={img.filename} aria-label={`Download ${img.alt}`}>Download Image</a>
-                      </Button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl scroll-mt-20">
         <h3 className="text-center text-3xl md:text-4xl font-semibold mb-4 flex items-center justify-center gap-3">
