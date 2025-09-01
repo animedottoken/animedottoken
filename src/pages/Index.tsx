@@ -616,7 +616,7 @@ const Index = () => {
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 scroll-mt-20">
         <h3 className="text-left text-4xl font-bold mb-4 flex items-center gap-3">
           <HelpCircle className="w-10 h-10 text-violet-400" />
-          <span className="text-foreground">F</span><span className="text-foreground">A</span><span className="text-foreground">Q</span>s (Frequented Answers & Questions)
+          FAQs (Frequented Answers & Questions)
         </h3>
         <ul className="mt-3 space-y-4">
             <li className="rounded-md border bg-card/50 p-4">
