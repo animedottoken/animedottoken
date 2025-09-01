@@ -69,79 +69,75 @@ export function FeaturedCommunityContent() {
             <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
-            <div className="text-muted-foreground space-y-4 max-w-3xl">
-              {/* Content removed per user request */}
+            {/* Static placeholders only (no backend) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {emptySlots.map((emptySlot, index) => (
+                  <div
+                    key={`empty-${index}`} 
+                    className={`group relative overflow-hidden rounded-lg border bg-card/50 border-dashed ${emptySlot.sample ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}`}
+                    onClick={() => emptySlot.sample && setSelectedItem(emptySlot)}
+                  >
+                    <div className="aspect-square overflow-hidden relative">
+                      {emptySlot.sample && (
+                        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
+                          <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
+                            Sample
+                          </Badge>
+                        </div>
+                      )}
+                      <img
+                        src={emptySlot.placeholder}
+                        alt={emptySlot.sample ? (emptySlot.type === "post" ? "Sample social post" : "Sample anime meme") : "Community submission placeholder"}
+                        className={`w-full h-full object-cover ${emptySlot.sample ? "opacity-100" : "opacity-30"}`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      
+                      {/* Overlay */}
+                      {!emptySlot.sample && (
+                        <div className="absolute inset-0 bg-background/70 flex flex-col items-center justify-center text-center p-4">
+                          <div className="mb-3">
+                            <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-lg font-semibold text-foreground">{emptySlot.overlay}</p>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {emptySlot.cta}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  
+                  <div className="p-4">
+                    <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {emptySlot.description}
+                    </p>
+                  </div>
+                  </div>
+              ))}
+            </div>
+
+            {/* Call to Action Buttons */}
+            <div className="flex flex-wrap gap-4 justify-center mb-8">
+              <Button 
+                variant="outline" 
+                className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
+                onClick={() => window.open('https://discord.com/invite/HmSJdT5MRX', '_blank')}
+              >
+                <Upload className="w-4 h-4 text-purple-400" />
+                Submit on Discord
+              </Button>
+              <Button 
+                variant="outline" 
+                className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
+                onClick={() => window.open('https://x.com/AnimeDotToken', '_blank')}
+              >
+                <ExternalLink className="w-4 h-4 text-purple-400" />
+                Tag us on X
+              </Button>
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </div>
-
-      {/* Static placeholders only (no backend) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {emptySlots.map((emptySlot, index) => (
-            <div
-              key={`empty-${index}`} 
-              className={`group relative overflow-hidden rounded-lg border bg-card/50 border-dashed ${emptySlot.sample ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''}`}
-              onClick={() => emptySlot.sample && setSelectedItem(emptySlot)}
-            >
-              <div className="aspect-square overflow-hidden relative">
-                {emptySlot.sample && (
-                  <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
-                    <Badge variant="destructive" className="bg-red-500/90 text-white border-red-500/50 text-xs">
-                      Sample
-                    </Badge>
-                  </div>
-                )}
-                <img
-                  src={emptySlot.placeholder}
-                  alt={emptySlot.sample ? (emptySlot.type === "post" ? "Sample social post" : "Sample anime meme") : "Community submission placeholder"}
-                  className={`w-full h-full object-cover ${emptySlot.sample ? "opacity-100" : "opacity-30"}`}
-                  loading="lazy"
-                  decoding="async"
-                />
-                
-                {/* Overlay */}
-                {!emptySlot.sample && (
-                  <div className="absolute inset-0 bg-background/70 flex flex-col items-center justify-center text-center p-4">
-                    <div className="mb-3">
-                      <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-lg font-semibold text-foreground">{emptySlot.overlay}</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {emptySlot.cta}
-                    </p>
-                  </div>
-                )}
-              </div>
-            
-            <div className="p-4">
-              <h3 className="font-semibold text-sm mb-1">{emptySlot.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {emptySlot.description}
-              </p>
-            </div>
-            </div>
-        ))}
-      </div>
-
-      {/* Call to Action Buttons */}
-      <div className="flex flex-wrap gap-4 justify-center mt-8 mb-8">
-        <Button 
-          variant="outline" 
-          className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-          onClick={() => window.open('https://discord.com/invite/HmSJdT5MRX', '_blank')}
-        >
-          <Upload className="w-4 h-4 text-purple-400" />
-          Submit on Discord
-        </Button>
-        <Button 
-          variant="outline" 
-          className="gap-2 border-purple-500 text-purple-400 hover:bg-purple-500/10"
-          onClick={() => window.open('https://x.com/AnimeDotToken', '_blank')}
-        >
-          <ExternalLink className="w-4 h-4 text-purple-400" />
-          Tag us on X
-        </Button>
       </div>
 
       {/* Community Item Details Modal */}
