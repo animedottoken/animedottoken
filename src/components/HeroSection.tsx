@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { LiveStatsCounter } from '@/components/LiveStatsCounter';
 import { useViewMode } from '@/contexts/ViewModeContext';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   const { viewMode } = useViewMode();
   const isOverview = viewMode === 'overview';
+  const [statsOpen, setStatsOpen] = useState(false);
+
+  useEffect(() => {
+    setStatsOpen(viewMode === 'full');
+  }, [viewMode]);
 
   return (
     <>
@@ -52,7 +59,19 @@ const HeroSection: React.FC = () => {
             Mint, trade, and collect on a transparent, community-owned ecosystem. Don't just be a user—be an owner.
           </p>
           
-          {!isOverview && <LiveStatsCounter />}
+          {isOverview ? (
+            <Collapsible open={statsOpen} onOpenChange={setStatsOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-4 group">
+                <span>Show details</span>
+                <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4">
+                <LiveStatsCounter />
+              </CollapsibleContent>
+            </Collapsible>
+          ) : (
+            <LiveStatsCounter />
+          )}
         </div>
       </div>
     </>
