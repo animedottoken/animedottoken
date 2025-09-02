@@ -68,12 +68,29 @@ serve(async (req) => {
 
     console.log(`${action} request: Creator ${creator_wallet}, User: ${user.id}`);
 
+    // Get user's wallet address from user_wallets table
+    const { data: userWallet, error: walletError } = await supabase
+      .from('user_wallets')
+      .select('wallet_address')
+      .eq('user_id', user.id)
+      .eq('wallet_type', 'primary')
+      .eq('is_verified', true)
+      .single();
+
+    if (walletError || !userWallet) {
+      return new Response(
+        JSON.stringify({ error: 'User wallet not found. Please connect a wallet first.' }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
     if (action === 'follow') {
       const { error } = await supabase
         .from("creator_follows")
         .insert({ 
           creator_wallet, 
           user_id: user.id,
+          follower_wallet: userWallet.wallet_address,
           created_at: new Date().toISOString()
         });
 
