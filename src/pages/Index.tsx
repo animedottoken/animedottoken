@@ -5,6 +5,9 @@ import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { useViewMode } from "@/contexts/ViewModeContext";
 import ViewModeToggle from "@/components/ViewModeToggle";
 import { Link, useLocation } from "react-router-dom";
+import { SectionIndexNav } from "@/components/SectionIndexNav";
+import { SectionLabel } from "@/components/SectionLabel";
+import { Coins, Shield, Share2 } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import HeroSection from "@/components/HeroSection";
 
@@ -61,6 +64,7 @@ function Section3({ holders }: { holders: number | null | undefined }) {
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
       <header className="mb-0 text-left">
+        <SectionLabel icon={Users} title="Ownership Economy" />
         <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
           <BarChart3 className="w-10 h-10 text-violet-400" />
           The Power of Community: A Decentralized Future
@@ -359,6 +363,9 @@ const Index = () => {
       </div>
 
       <HeroSection />
+
+      {/* Section Index Navigation */}
+      <SectionIndexNav />
 
       {/* 2. PRODUCT SECTION - NFT Minting & Marketplace */}
       <div className="scroll-mt-20">

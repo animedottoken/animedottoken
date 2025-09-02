@@ -5,6 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Upload, ExternalLink, Users, Sparkles, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useViewMode } from "@/contexts/ViewModeContext";
+import { SectionLabel } from "@/components/SectionLabel";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
 
@@ -60,6 +61,7 @@ export function FeaturedCommunityContent() {
   return (
     <section className="mx-auto mt-12 max-w-5xl px-6 featured-community-content">
       <div className="text-left mb-12">
+        <SectionLabel icon={Users} title="Community Showcase" />
         <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
           <Sparkles className="w-10 h-10 text-violet-400" />
           Community Showcase

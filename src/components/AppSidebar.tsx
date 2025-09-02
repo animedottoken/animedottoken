@@ -1,19 +1,13 @@
 import { 
-  Home, 
+  Coins, 
   ShoppingCart, 
-  Shield, 
-  Calculator, 
-  TrendingUp, 
-  ShoppingBag, 
-  HelpCircle,
-  LifeBuoy,
-  Trophy,
   Users,
-  Coins
+  LucideIcon
 } from "lucide-react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
 import React from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { scrollToHash } from "@/lib/scroll";
+import { homeSections } from "@/lib/homeSections";
 
 import {
   Sidebar,
@@ -25,95 +19,51 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"
 
-const navigationItems = [
-  { 
-    title: "Home", 
-    icon: Home,
-    path: "/",
-    type: "route" as const
-  },
-  { 
-    title: "My Profile", 
-    icon: Users,
-    path: "/profile",
-    type: "route" as const
-  },
-  { 
-    title: "Mint NFTs", 
+type NavigationItem = RouteItem | SectionItem;
+
+interface RouteItem {
+  type: "route";
+  title: string;
+  icon: LucideIcon;
+  path: string;
+}
+
+interface SectionItem {
+  type: "section";
+  title: string;
+  icon: LucideIcon;
+  hash: string;
+}
+
+const routes: RouteItem[] = [
+  {
+    type: "route",
+    title: "Mint NFTs",
     icon: Coins,
     path: "/mint",
-    type: "route" as const
   },
-  { 
-    title: "NFT Marketplace", 
-    icon: ShoppingBag,
-    path: "/marketplace",
-    type: "route" as const
-  },
-  { 
-    title: "Trust & Security", 
-    icon: Shield,
-    path: "/trust",
-    type: "route" as const
-  },
-  // CORRECTED ORDER TO MATCH WEBPAGE FLOW:
-  { 
-    title: "NFT Minting & Marketplace", 
-    icon: Coins,
-    hash: "create-nfts",
-    type: "section" as const
-  },
-  { 
-    title: "Ownership Economy", 
-    icon: Calculator,
-    hash: "ownership-calculator",
-    type: "section" as const
-  },
-  { 
-    title: "Live Daily Price Chart", 
-    icon: TrendingUp,
-    hash: "live-daily-price-chart",
-    type: "section" as const
-  },
-  { 
-    title: "Trust & Security", 
-    icon: Shield,
-    hash: "trust-security-section",
-    type: "section" as const
-  },
-  { 
-    title: "ANIME.TOKEN ARMY", 
-    icon: Trophy,
-    hash: "nft-supporter-section",
-    type: "section" as const
-  },
-  { 
-    title: "Community Showcase", 
-    icon: Users,
-    hash: "featured-community-content",
-    type: "section" as const
-  },
-  { 
-    title: "How to Buy $ANIME", 
+  {
+    type: "route", 
+    title: "Marketplace",
     icon: ShoppingCart,
-    hash: "how-to-buy",
-    type: "section" as const
+    path: "/marketplace",
   },
-  { 
-    title: "FAQ", 
-    icon: HelpCircle,
-    hash: "faq-section",
-    type: "section" as const
+  {
+    type: "route",
+    title: "Profile",
+    icon: Users,
+    path: "/profile",
   },
-  { 
-    title: "Get In Touch", 
-    icon: LifeBuoy,
-    hash: "get-in-touch",
-    type: "section" as const
-  }
 ];
+
+const sections: SectionItem[] = homeSections.map(section => ({
+  type: "section" as const,
+  title: section.title,
+  icon: section.icon,
+  hash: section.hash,
+}));
 
 export function AppSidebar() {
   const { state, isMobile, setOpen } = useSidebar();
@@ -122,55 +72,49 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-
-  const handleNavigation = (item: typeof navigationItems[0], e?: React.MouseEvent) => {
+  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
     if (item.type === "route") {
-      navigate(item.path!);
+      navigate(item.path);
       return;
     }
 
     // Navigate to home first if on different page
     if (location.pathname !== '/') {
-      navigate(`/#${item.hash!}`);
+      navigate(`/#${item.hash.replace('#', '')}`);
       return;
     }
 
     // Use robust scroll utility for reliable hash navigation
-    scrollToHash(`#${item.hash!}`);
+    scrollToHash(item.hash);
   };
 
-  const isActive = (item: typeof navigationItems[0]) => {
+  const isActive = (item: NavigationItem) => {
     if (item.type === "route") {
       return location.pathname === item.path;
     }
     return false;
   };
 
-  // Separate routes and sections
-  const routes = navigationItems.filter(item => item.type === "route");
-  const sections = navigationItems.filter(item => item.type === "section");
-
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
-            Main Pages
+            Main Routes
           </SidebarGroupLabel>
-          
           <SidebarGroupContent>
             <SidebarMenu>
               {routes.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
-                    className={`cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground ${
-                      isActive(item) ? "bg-muted text-primary font-medium" : ""
-                    }`}
-                  >
-                    <Link to={item.path!} aria-label={item.title} title={item.title}>
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      {showLabel && <span className="ml-2">{item.title}</span>}
+                <SidebarMenuItem key={item.path}>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      to={item.path}
+                      className={`flex items-center ${
+                        isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {showLabel && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -178,20 +122,18 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
+        
         <SidebarGroup>
           <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
             Home Sections
           </SidebarGroupLabel>
-          
           <SidebarGroupContent>
             <SidebarMenu>
               {sections.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.hash}>
                   <SidebarMenuButton 
                     asChild
                     className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-all"
-                    
                   >
                     <div 
                       onClick={(e) => {
@@ -200,7 +142,6 @@ export function AppSidebar() {
                           handleNavigation(item, e);
                         }
                       }}
-                      data-testid={item.hash === 'create-nfts' ? 'sidebar-create-nfts' : undefined}
                       aria-label={item.title}
                       title={item.title}
                     >

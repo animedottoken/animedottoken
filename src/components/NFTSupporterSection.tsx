@@ -2,9 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown, Crown } from "lucide-react";
+import { ChevronDown, Crown, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useViewMode } from "@/contexts/ViewModeContext";
+import { SectionLabel } from "@/components/SectionLabel";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
 import hodlersNFT from "/lovable-uploads/79b12514-ca3a-49a4-82d7-16f030e3165b.png";
@@ -350,6 +351,7 @@ export function NFTSupporterSection() {
       <div>
         {/* Header */}
         <div className={`text-left ${viewMode === 'overview' ? 'mb-4' : 'mb-12'}`}>
+          <SectionLabel icon={Trophy} title="ANIME.TOKEN ARMY" />
           <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
             <Crown className="w-10 h-10 text-violet-400" />
             Join the ANIME.TOKEN ARMY
