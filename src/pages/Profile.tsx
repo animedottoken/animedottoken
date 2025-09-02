@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -38,6 +38,7 @@ import { StatusDots } from '@/components/StatusDots';
 import { MultiWalletSection } from '@/components/MultiWalletSection';
 import { AutoPrimaryWalletPrompt } from '@/components/AutoPrimaryWalletPrompt';
 import { useAutoPrimaryWallet } from '@/hooks/useAutoPrimaryWallet';
+import { SecuritySettingsDialog } from '@/components/SecuritySettingsDialog';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -834,6 +835,30 @@ const Profile = () => {
 
         {isOwnProfile && (
           <TabsContent value="settings" className="space-y-6">
+            {/* Security Settings */}
+            <section>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Security & Privacy
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your account security, session preferences, and wallet settings.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SecuritySettingsDialog>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      Open Security Settings
+                    </Button>
+                  </SecuritySettingsDialog>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Wallet Management */}
             <MultiWalletSection />
             
             {/* Stay Updated Section */}

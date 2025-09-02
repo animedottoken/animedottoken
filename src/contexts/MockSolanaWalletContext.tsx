@@ -24,12 +24,14 @@ interface SolanaWalletContextType {
   network: string;
   walletName: string | null;
   walletIcon: string | null;
+  rememberWallet: boolean;
   connect: () => Promise<void>;
   connectPaymentWallet: () => Promise<void>;
   openWalletSelector: () => void;
   linkIdentityWallet: (walletAddress: string) => Promise<boolean>;
   signMessage: (message: string) => Promise<string>;
   disconnect: () => void;
+  setRememberWallet: (remember: boolean) => void;
   listProviders: () => any[];
   connectWith: (providerName: string) => Promise<void>;
 }
@@ -42,12 +44,14 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   network: 'devnet',
   walletName: null,
   walletIcon: null,
+  rememberWallet: false,
   connect: async () => {},
   connectPaymentWallet: async () => {},
   openWalletSelector: () => {},
   linkIdentityWallet: async () => false,
   signMessage: async () => '',
   disconnect: () => {},
+  setRememberWallet: () => {},
   listProviders: () => [],
   connectWith: async () => {},
 });
@@ -66,6 +70,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { setVisible } = useWalletModal();
   const { user } = useAuth();
   const [balance, setBalance] = useState(0);
+  const [rememberWallet, setRememberWallet] = useState(() => {
+    return localStorage.getItem('remember-wallet') === 'true';
+  });
   const network = 'devnet';
 
   // Fetch balance when wallet connects
@@ -110,8 +117,20 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const disconnect = useCallback(() => {
     walletDisconnect();
+    // Clear remember preference when manually disconnecting
+    localStorage.removeItem('remember-wallet');
+    setRememberWallet(false);
     toast.info('Wallet disconnected');
   }, [walletDisconnect]);
+
+  const handleSetRememberWallet = useCallback((remember: boolean) => {
+    setRememberWallet(remember);
+    if (remember) {
+      localStorage.setItem('remember-wallet', 'true');
+    } else {
+      localStorage.removeItem('remember-wallet');
+    }
+  }, []);
 
   const listProviders = useCallback(() => {
     return wallets.map(wallet => ({
@@ -140,24 +159,49 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [walletConnect, wallet, setVisible]);
 
+  const handleSignMessage = useCallback(async (message: string): Promise<string> => {
+    if (!publicKey || !signMessage) {
+      throw new Error('Wallet not connected or signing not supported');
+    }
+
+    try {
+      const encodedMessage = new TextEncoder().encode(message);
+      const signature = await signMessage(encodedMessage);
+      
+      // Convert signature to base58 string (required by our backend)
+      // We need to use bs58 to encode the signature bytes
+      const bs58 = await import('bs58');
+      const base58Signature = bs58.default.encode(signature);
+      return base58Signature;
+    } catch (error) {
+      console.error('Message signing error:', error);
+      throw new Error('Failed to sign message');
+    }
+  }, [publicKey, signMessage]);
+
   const linkIdentityWallet = useCallback(async (walletAddress: string): Promise<boolean> => {
     if (!user) {
       toast.error("Please log in first");
       return false;
     }
 
+    if (!publicKey || !signMessage) {
+      toast.error("Please connect your wallet first");
+      return false;
+    }
+
     try {
-      const signatureMessage = `Link identity wallet to ANIME.TOKEN account: ${user.email}`;
+      const timestamp = Date.now();
+      const signatureMessage = `Link identity wallet to ANIME.TOKEN account: ${user.email}\n\nWallet: ${walletAddress}\nTimestamp: ${timestamp}`;
       
-      // TODO: In Phase 2, actually request signature from wallet
-      // For demo mode, we'll simulate signature
-      const demoSignature = `demo_signature_${Date.now()}`;
+      // Request real signature from wallet
+      const signature = await handleSignMessage(signatureMessage);
 
       const { data, error } = await supabase.functions.invoke('link-identity-wallet', {
         body: {
           wallet_address: walletAddress,
           signature_message: signatureMessage,
-          wallet_signature: demoSignature
+          wallet_signature: signature
         }
       });
 
@@ -174,10 +218,10 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return true;
     } catch (error) {
       console.error('Identity wallet linking error:', error);
-      toast.error('Failed to link identity wallet');
+      toast.error('Failed to link identity wallet - signature required');
       return false;
     }
-  }, [user]);
+  }, [user, publicKey, signMessage, handleSignMessage]);
 
   const openWalletSelector = useCallback(() => {
     setVisible(true);
@@ -213,26 +257,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [wallets, select, walletConnect, setVisible]);
 
-  const handleSignMessage = useCallback(async (message: string): Promise<string> => {
-    if (!publicKey || !signMessage) {
-      throw new Error('Wallet not connected or signing not supported');
-    }
-
-    try {
-      const encodedMessage = new TextEncoder().encode(message);
-      const signature = await signMessage(encodedMessage);
-      
-      // Convert signature to base58 string (required by our backend)
-      // We need to use bs58 to encode the signature bytes
-      const bs58 = await import('bs58');
-      const base58Signature = bs58.default.encode(signature);
-      return base58Signature;
-    } catch (error) {
-      console.error('Message signing error:', error);
-      throw new Error('Failed to sign message');
-    }
-  }, [publicKey, signMessage]);
-
   const value = {
     connected,
     connecting,
@@ -241,12 +265,14 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     network,
     walletName: wallet?.adapter.name || null,
     walletIcon: wallet?.adapter.icon || null,
+    rememberWallet,
     connect,
     connectPaymentWallet,
     openWalletSelector,
     linkIdentityWallet,
     signMessage: handleSignMessage,
     disconnect,
+    setRememberWallet: handleSetRememberWallet,
     listProviders,
     connectWith,
   };
@@ -273,7 +299,7 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>
           <SolanaWalletInnerProvider>
             {children}

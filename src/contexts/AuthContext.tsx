@@ -8,6 +8,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  signOutFromAllDevices: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,7 +43,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Clear any remember preferences
+    localStorage.removeItem('remember-session');
+    localStorage.removeItem('remember-wallet');
     navigate('/auth');
+  };
+
+  const signOutFromAllDevices = async () => {
+    try {
+      // Sign out locally first
+      await supabase.auth.signOut();
+      
+      // Clear local storage
+      localStorage.removeItem('remember-session');
+      localStorage.removeItem('remember-wallet');
+      
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out from all devices:', error);
+      throw error;
+    }
   };
 
   const value = {
@@ -50,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     loading,
     signOut,
+    signOutFromAllDevices,
   };
 
   return (
