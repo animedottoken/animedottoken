@@ -35,7 +35,6 @@ import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFaceboo
 import { ChevronDown, Copy, Share, Handshake, BarChart3 } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
-import { scrollToHash } from "@/lib/scroll";
 import { CREATOR_WALLET_ADDRESS } from "@/constants/token";
 
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
@@ -183,7 +182,6 @@ const Index = () => {
   // Removed custom hashchange handler to rely on native anchor behavior
 
   const [buyOpen, setBuyOpen] = useState(false);
-  const [promoOpen, setPromoOpen] = useState(false);
   const [step1Open, setStep1Open] = useState(false);
   const [step2Open, setStep2Open] = useState(false);
   const [step3Open, setStep3Open] = useState(false);
@@ -196,7 +194,6 @@ const Index = () => {
   useEffect(() => {
     if (viewMode === 'full') {
       setBuyOpen(true);
-      setPromoOpen(true);
       setStep1Open(true);
       setStep2Open(true);
       setStep3Open(true);
@@ -204,7 +201,6 @@ const Index = () => {
       setFaqOpen(true);
     } else {
       setBuyOpen(false);
-      setPromoOpen(false);
       setStep1Open(false);
       setStep2Open(false);
       setStep3Open(false);
@@ -255,27 +251,10 @@ const Index = () => {
       <div className="mb-6 mx-auto max-w-5xl">
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-3 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div 
-              role="button"
-              tabIndex={0}
-              onClick={() => { 
-                setPromoOpen(true); 
-                scrollToHash('#promo-section'); 
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setPromoOpen(true);
-                  scrollToHash('#promo-section');
-                }
-              }}
-              className="flex items-center gap-3 cursor-pointer select-none hover:bg-primary/10 rounded-md px-2 py-1 transition-colors"
-              aria-label="Open Promo Package"
-              title="Click to open promo package for sharing"
-            >
+            <div className="flex items-center gap-3">
               <span className="text-xl">💎</span>
               <div>
-                <h3 className="font-semibold text-foreground text-sm hover:underline">Ownership Economy Platform</h3>
+                <h3 className="font-semibold text-foreground text-sm">Ownership Economy Platform</h3>
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
             </div>
@@ -519,52 +498,6 @@ const Index = () => {
               </div>
             </div>
 
-            <section id="promo-section" className="mx-auto mt-4 max-w-5xl text-center animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-              {/* minimal link only */}
-              <Collapsible open={promoOpen} onOpenChange={setPromoOpen}>
-                 <CollapsibleTrigger asChild>
-                   <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
-                 </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <p className="mt-2 text-xs text-muted-foreground">Copy text and post on X or Telegram to share ANIME.TOKEN with your community.</p>
-                  <div className="mt-3 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                    <Button 
-                      variant="glass" 
-                      className="inline-flex items-center gap-2"
-                      onClick={async () => { 
-                        await navigator.clipboard.writeText(`${shareText} @AnimeDotToken`); 
-                        toast.success("Text copied to clipboard!"); 
-                      }}
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copy Text
-                    </Button>
-                    <Button asChild variant="glass">
-                      <a 
-                        href={`https://x.com/intent/post?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                        target="_blank" 
-                        rel="noreferrer noopener"
-                        className="inline-flex items-center gap-2"
-                      >
-                        <SiX className="h-4 w-4" aria-hidden="true" />
-                        Open Tweet Composer
-                      </a>
-                    </Button>
-                    <Button asChild variant="glass">
-                      <a
-                        href={`https://t.me/share/url?text=${encodeURIComponent(shareText + " @AnimeDotToken")}`}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex items-center gap-2"
-                      >
-                        <SiTelegram className="h-4 w-4" aria-hidden="true" />
-                        Open Telegram
-                      </a>
-                    </Button>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </section>
           </CollapsibleContent>
         </Collapsible>
       </section>
