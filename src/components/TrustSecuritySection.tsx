@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
-import { Shield, ChevronDown, Users, AlertTriangle, DollarSign, ChevronsRight, ExternalLink, Copy } from "lucide-react";
+import { SecurityReportsDetails } from "@/components/SecurityReportsDetails";
+import { ExternalLink, ChevronDown, Copy, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
+import { useViewMode } from "@/contexts/ViewModeContext";
 import { SectionLabel } from "@/components/SectionLabel";
 import { TREASURY_WALLET_ADDRESS } from "@/constants/token";
 import { Link } from "react-router-dom";
-import { useTokenHolders } from "@/hooks/useTokenHolders";
 
 interface TrustSecuritySectionProps {
   tokenAddress: string;
@@ -24,7 +24,8 @@ export function TrustSecuritySection({
   showTreasuryDetails = false,
   hideTrustLinkCta = false
 }: TrustSecuritySectionProps) {
-  const isOverview = false;
+  const { viewMode } = useViewMode();
+  const isOverview = viewMode === 'overview';
   const quickIntelUrl = `https://app.quickintel.io/scanner?type=token&chain=solana&contractAddress=${tokenAddress}`;
   const rugCheckUrl = `https://rugcheck.xyz/tokens/${tokenAddress}`;
   const goPlusUrl = `https://gopluslabs.io/token-security/solana/${tokenAddress}`;
@@ -33,14 +34,11 @@ export function TrustSecuritySection({
   const [treasuryDetailsOpen, setTreasuryDetailsOpen] = useState(false);
   const holders = useTokenHolders(tokenAddress);
 
-  // Auto-expand when navigating to specific sections
+  // Set default open state based on view mode
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash === "#trust-security-section") {
-      setDetailsOpen(true);
-      setTreasuryDetailsOpen(true);
-    }
-  }, []);
+    setDetailsOpen(viewMode !== 'overview');
+    setTreasuryDetailsOpen(viewMode === 'full');
+  }, [viewMode]);
 
   return (
     <section className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">

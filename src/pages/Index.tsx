@@ -2,10 +2,13 @@ import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
+import { useViewMode } from "@/contexts/ViewModeContext";
+import ViewModeToggle from "@/components/ViewModeToggle";
 import { Link, useLocation } from "react-router-dom";
 
 import { SectionLabel } from "@/components/SectionLabel";
-import { Coins, Shield, Share2, Users, ShoppingCart } from "lucide-react";
+import { Coins, Shield, Share2, Users, ShoppingCart, HelpCircle } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import HeroSection from "@/components/HeroSection";
 
 
@@ -42,6 +45,7 @@ const TOTAL_SUPPLY = 974338302;
 
 function Section3({ holders }: { holders: number | null | undefined }) {
   const [section3DetailsOpen, setSection3DetailsOpen] = useState(false);
+  const { viewMode } = useViewMode();
   const location = useLocation();
 
   // Auto-open details when navigating to calculator or chart
@@ -51,6 +55,11 @@ function Section3({ holders }: { holders: number | null | undefined }) {
       setSection3DetailsOpen(true);
     }
   }, [location.hash]);
+
+  // Set initial state based on view mode
+  useEffect(() => {
+    setSection3DetailsOpen(viewMode === 'full');
+  }, [viewMode]);
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
@@ -219,14 +228,9 @@ const Index = () => {
     }
   }, []);
 
-  // Clean up view parameter from URL
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('view')) {
-      url.searchParams.delete('view');
-      window.history.replaceState({}, '', url.toString());
-    }
-  }, []);
+  // Native hash navigation will handle deep links to sections
+
+  // Removed custom hashchange handler to rely on native anchor behavior
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
@@ -235,6 +239,29 @@ const Index = () => {
   const [step3Open, setStep3Open] = useState(false);
   const [step4Open, setStep4Open] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
+  
+  const { viewMode } = useViewMode();
+  
+  // Set all collapsible states based on view mode
+  useEffect(() => {
+    if (viewMode === 'full') {
+      setBuyOpen(true);
+      setPromoOpen(true);
+      setStep1Open(true);
+      setStep2Open(true);
+      setStep3Open(true);
+      setStep4Open(true);
+      setFaqOpen(true);
+    } else {
+      setBuyOpen(false);
+      setPromoOpen(false);
+      setStep1Open(false);
+      setStep2Open(false);
+      setStep3Open(false);
+      setStep4Open(false);
+      setFaqOpen(false);
+    }
+  }, [viewMode]);
   
 
   return (
@@ -301,6 +328,35 @@ const Index = () => {
                 <h3 className="font-semibold text-foreground text-sm hover:underline">Ownership Economy Platform</h3>
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
+            </div>
+            <div className="flex items-center gap-3 ml-auto">
+              <ViewModeToggle />
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                    aria-label="View mode help"
+                    title="Learn about different view modes"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold">View Modes</h4>
+                    <div className="space-y-2 text-xs">
+                      <div>
+                        <strong>Overview:</strong> Shows only headlines and subheadlines. Click "Show details" to expand sections.
+                      </div>
+                      <div>
+                        <strong>Full Details:</strong> Expands all sections to show complete information.
+                      </div>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             </div>
           </div>
         </div>
@@ -583,9 +639,9 @@ const Index = () => {
       </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
-        <SectionLabel icon={Shield} title="FAQ" />
+        <SectionLabel icon={HelpCircle} title="FAQ" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
-          <Shield className="w-10 h-10 text-violet-400" />
+          <HelpCircle className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
         </h2>
         <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>

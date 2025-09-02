@@ -5,15 +5,24 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useViewMode } from "@/contexts/ViewModeContext";
 
 import { SectionLabel } from "@/components/SectionLabel";
 
 export function NFTPreviewSection() {
+  const { viewMode } = useViewMode();
   const [box1Open, setBox1Open] = useState(false);
   const [box2Open, setBox2Open] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const isOverview = false;
+  const isOverview = viewMode === 'overview';
+
+  // Set default open state based on view mode
+  useEffect(() => {
+    setBox1Open(viewMode === 'full');
+    setBox2Open(viewMode === 'full');
+    setDetailsOpen(viewMode !== 'overview');
+  }, [viewMode]);
 
   return (
     <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">

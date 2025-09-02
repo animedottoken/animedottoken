@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Upload, ExternalLink, Users, Sparkles, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useViewMode } from "@/contexts/ViewModeContext";
 import { SectionLabel } from "@/components/SectionLabel";
 import communityPlaceholder from "@/assets/community-featured-placeholder.jpg";
 import sampleTwitterPost from "@/assets/sample-twitter-post.jpg";
@@ -48,9 +49,14 @@ const emptySlots = [
 ];
 
 export function FeaturedCommunityContent() {
+  const { viewMode } = useViewMode();
   const [selectedItem, setSelectedItem] = useState<typeof emptySlots[0] | null>(null);
   const [isItemOverlayOpen, setIsItemOverlayOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  useEffect(() => {
+    setDetailsOpen(viewMode === 'full');
+  }, [viewMode]);
 
   return (
     <section className="mx-auto mt-12 max-w-5xl px-6 featured-community-content">
