@@ -98,8 +98,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connect = useCallback(async () => {
     try {
-      if (!wallet) {
-        // No wallet selected, open the selection modal
+      // If "Remember this wallet" is off, always show wallet selector
+      if (!rememberWallet || !wallet) {
         setVisible(true);
         return;
       }
@@ -113,15 +113,19 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toast.error('Failed to connect wallet');
       }
     }
-  }, [walletConnect, wallet, setVisible]);
+  }, [walletConnect, wallet, setVisible, rememberWallet]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
-    // Clear remember preference when manually disconnecting
+    // Clear wallet selection and remember preference when manually disconnecting
+    if (!rememberWallet) {
+      // Clear the adapter's last wallet selection
+      select(null);
+    }
     localStorage.removeItem('remember-wallet');
     setRememberWallet(false);
     toast.info('Wallet disconnected');
-  }, [walletDisconnect]);
+  }, [walletDisconnect, rememberWallet, select]);
 
   const handleSetRememberWallet = useCallback((remember: boolean) => {
     setRememberWallet(remember);

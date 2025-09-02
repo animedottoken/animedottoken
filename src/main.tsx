@@ -30,5 +30,28 @@ const initMobile = async () => {
   }
 };
 
+// Debug scrollbar behavior
+const initScrollbarDebug = () => {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        const target = mutation.target as HTMLElement;
+        if (target.tagName === 'HTML' || target.tagName === 'BODY') {
+          const style = target.getAttribute('style') || '';
+          if (style.includes('overflow') || style.includes('padding-right')) {
+            console.log(`[Scrollbar Debug] ${target.tagName} style changed:`, style);
+          }
+        }
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement, { attributes: true });
+  observer.observe(document.body, { attributes: true });
+};
+
 // Run mobile initialization after a short delay to ensure React is ready
 setTimeout(initMobile, 100);
+
+// Initialize scrollbar debugging
+setTimeout(initScrollbarDebug, 200);

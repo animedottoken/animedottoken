@@ -5,7 +5,7 @@ import { LogIn, LogOut } from 'lucide-react';
 import { RememberWalletToggle } from '@/components/RememberWalletToggle';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, walletName, connect, disconnect } = useSolanaWallet();
+  const { connected, connecting, publicKey, balance, walletName, connect, disconnect, openWalletSelector } = useSolanaWallet();
 
   if (connected && publicKey) {
     return (
@@ -23,6 +23,9 @@ export const SolanaWalletButton = () => {
             {walletName}
           </Badge>
         )}
+        <Button onClick={openWalletSelector} variant="ghost" size="sm">
+          Switch
+        </Button>
         <Button onClick={disconnect} variant="outline" size="sm" className="flex items-center gap-2">
           Disconnect
           <LogOut className="h-4 w-4 text-destructive" />
