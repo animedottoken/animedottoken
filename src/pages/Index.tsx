@@ -1,6 +1,5 @@
 import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
-import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { useViewMode } from "@/contexts/ViewModeContext";
 import ViewModeToggle from "@/components/ViewModeToggle";
@@ -156,55 +155,6 @@ const Index = () => {
     });
   };
 
-  // Promo images for social sharing (downloads use SEO-friendly filenames)
-  const promoImages = [
-    { src: "/lovable-uploads/e8b630de-1a90-47b0-9e15-3e1ae87bdccd.png", filename: "anime-token-characters-logo-banner.png", alt: "ANIME Token characters banner with logo" },
-    { src: "/lovable-uploads/1bebfca8-6d92-4791-bc30-303e161808a0.png", filename: "anime-token-hooded-heroes-banner.png", alt: "ANIME.TOKEN banner with hooded figure and heroes" },
-    { src: "/lovable-uploads/d91f7864-13dd-4a41-8130-d0f197707870.png?v=13", filename: "congratulations-anime-token-celebration.png", alt: "Congratulations ANIME Token celebration with anime characters" },
-    { src: "/lovable-uploads/4f7e8ad1-deee-43db-a4c9-0db403808de7.png", filename: "congratulations-anime-society-crowd-bw.png", alt: "Congratulations black and white anime crowd poster" },
-    { src: "/lovable-uploads/b964ec40-31a7-483d-9cf3-f2fbd588edb8.png", filename: "congratulations-anime-society-bright.png", alt: "Congratulations bright colorful anime crowd poster" },
-    { src: "/lovable-uploads/d23194df-c1d3-4302-ab13-67508624ecbc.png", filename: "congratulations-anime-society-dark.png", alt: "Congratulations dark themed anime crowd poster" },
-    { src: "/lovable-uploads/8b8ade02-34e9-4e29-8fd3-38329767a814.png", filename: "congratulations-anime-society-bw-logo.png", alt: "Congratulations poster with large A logo in monochrome crowd" },
-    { src: "/lovable-uploads/d54f33b2-028c-448c-847b-5ac1f2ac9105.png", filename: "congratulations-anime-society-dark-alt.png", alt: "Congratulations dark variant poster alternate" },
-    { src: "/lovable-uploads/d0e5a634-f5fa-4206-9e71-da4892708c22.png", filename: "congratulations-anime-society-bright-alt.png", alt: "Congratulations bright variant poster alternate" },
-    { src: "/lovable-uploads/b2e5b681-da7f-4c05-a16c-12bbd52df2b3.png", filename: "congratulations-anime-society-bright-alt-2.png", alt: "Congratulations bright variant poster second alternate" },
-    { src: "/lovable-uploads/54b1f4dd-f6e8-4522-8afb-6708c6622cf8.png", filename: "anime-token-anime-girl-ui.png", alt: "Anime girl with futuristic UI and ANIME Token theme" },
-    { src: "/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png", filename: "anime-token-hexagon-a.png", alt: "ANIME Token hexagon A logo" },
-    { src: "/lovable-uploads/2d0b0a65-8c68-4d43-ace0-45ea6f8bea2b.png", filename: "anime-token-girl-sunset.png", alt: "Anime girl at sunset with ANIME Token logo" },
-    { src: "/lovable-uploads/b6429f29-773a-4b38-9851-15a00b150f31.png", filename: "anime-token-blue-haired-1.png", alt: "Blue-haired anime character with ANIME Token logo" },
-    { src: "/lovable-uploads/d0baaec8-b240-42ba-b15d-638dc9091518.png", filename: "anime-token-blue-haired-2.png", alt: "Blue-haired anime character with hexagon logo right" },
-    { src: "/lovable-uploads/58338e0a-c014-4592-9025-72d92f0851e0.png", filename: "anime-token-blue-haired-3.png", alt: "Blue-haired anime character close-up with logo" },
-    { src: "/lovable-uploads/2b1cb628-631d-4556-a5b8-0af2fddb836b.png", filename: "anime-token-banner-purple.png", alt: "Purple ANIME Token banner" },
-    { src: "/lovable-uploads/b27ad849-b843-4ef7-b5af-3a941e9f0789.png", filename: "anime-token-banner-black.png", alt: "Black ANIME Token banner" },
-    { src: "/lovable-uploads/172bbb91-3be7-4657-9a93-dcc7acb73474.png", filename: "anime-token-hooded-heroes-banner-2.png", alt: "ANIME.TOKEN banner with hooded figure and heroes variant" },
-  ];
-
-  const memoizedPromoImages = useMemo(() => promoImages, []);
-
-  const downloadAllPromo = async () => {
-    const zip = new JSZip();
-    const promises = memoizedPromoImages.map(async (img) => {
-      try {
-        const response = await fetch(img.src);
-        const blob = await response.blob();
-        zip.file(img.filename, blob);
-      } catch (error) {
-        console.error(`Failed to fetch ${img.src}:`, error);
-      }
-    });
-    
-    await Promise.all(promises);
-    const content = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "anime-token-promo-pack.zip";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success("Promo pack downloaded!");
-  };
 
   // Optimize images with intersection observer for better mobile performance
   useEffect(() => {
@@ -576,9 +526,8 @@ const Index = () => {
                    <Button variant="link" size="sm" className="px-0">{promoOpen ? "Hide promo package" : "Show promo package"} <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${promoOpen ? "rotate-180" : ""}`} /></Button>
                  </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <p className="mt-2 text-xs text-muted-foreground">1) Download an image or all 2) Copy text 3) Post on X or Telegram (attach the image).</p>
+                  <p className="mt-2 text-xs text-muted-foreground">Copy text and post on X or Telegram to share ANIME.TOKEN with your community.</p>
                   <div className="mt-3 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                    <Button variant="hero" onClick={downloadAllPromo}>Download All</Button>
                     <Button 
                       variant="glass" 
                       className="inline-flex items-center gap-2"
@@ -612,24 +561,6 @@ const Index = () => {
                         Open Telegram
                       </a>
                     </Button>
-                  </div>
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
-                    {memoizedPromoImages.map((img) => (
-                      <article key={img.src} className="rounded-md border bg-card/50 p-3">
-                        <ImageLazyLoad
-                          src={img.src} 
-                          alt={img.alt} 
-                          className="w-full h-auto rounded"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <div className="mt-2 flex justify-center">
-                          <Button asChild variant="hero">
-                            <a href={img.src} download={img.filename} aria-label={`Download ${img.alt}`}>Download Image</a>
-                          </Button>
-                        </div>
-                      </article>
-                    ))}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
