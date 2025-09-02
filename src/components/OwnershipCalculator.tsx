@@ -27,7 +27,8 @@ export function OwnershipCalculator() {
 
   const calculatePercentage = () => {
     const tokens = calculateTokens();
-    return (tokens / TOTAL_SUPPLY) * 100;
+    const percentage = (tokens / TOTAL_SUPPLY) * 100;
+    return Math.min(100, percentage);
   };
 
   const handleBlur = () => {
