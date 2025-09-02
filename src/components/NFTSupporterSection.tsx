@@ -4,7 +4,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, Crown, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useViewMode } from "@/contexts/ViewModeContext";
 import { SectionLabel } from "@/components/SectionLabel";
 import foundersNFT from "/lovable-uploads/a1ba5db4-90c5-4d0a-8223-8888c83dcaae.png";
 import ambassadorsNFT from "/lovable-uploads/19b93c70-6ed6-437f-945e-4046ed35eabd.png";
@@ -67,7 +66,7 @@ const nftTypes = [
   }
 ];
 
-const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupportersClaimed, earlySupportersTotal }: any) => (
+const SectionContent = ({ openDetails, setOpenDetails, earlySupportersClaimed, earlySupportersTotal }: any) => (
   <>
     {/* NFT Cards Grid */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -325,32 +324,25 @@ const SectionContent = ({ viewMode, openDetails, setOpenDetails, earlySupporters
 );
 
 export function NFTSupporterSection() {
-  const { viewMode } = useViewMode();
   const [openDetails, setOpenDetails] = useState<Set<string>>(new Set());
-  const [sectionOpen, setSectionOpen] = useState<boolean>(viewMode !== 'overview');
+  const [sectionOpen, setSectionOpen] = useState<boolean>(false);
   // Simulated counter - in real implementation, this would come from an API
   const earlySupportersClaimed = 0; // Set to 0 initially - no claims yet
   const earlySupportersTotal = 100;
 
-  // Set default open state based on view mode
+  // Auto-expand when navigating to specific sections
   useEffect(() => {
-    if (viewMode === 'full') {
-      setOpenDetails(new Set(nftTypes.map(nft => nft.id)));
-    } else {
-      setOpenDetails(new Set());
+    const hash = window.location.hash;
+    if (hash === "#nft-supporter-section") {
+      setSectionOpen(true);
     }
-  }, [viewMode]);
-
-  // Sync section open state with view mode
-  useEffect(() => {
-    setSectionOpen(viewMode !== 'overview');
-  }, [viewMode]);
+  }, []);
 
   return (
     <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div>
         {/* Header */}
-        <div className={`text-left ${viewMode === 'overview' ? 'mb-4' : 'mb-12'}`}>
+        <div className="text-left mb-4">
           <SectionLabel icon={Trophy} title="ANIME.TOKEN ARMY" />
           <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center gap-3">
             <Crown className="w-10 h-10 text-violet-400" />
@@ -361,35 +353,20 @@ export function NFTSupporterSection() {
           </p>
         </div>
 
-        {/* Show details trigger for overview mode */}
-        {viewMode === 'overview' && (
-          <Collapsible open={sectionOpen} onOpenChange={setSectionOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4 group font-medium">
-              {sectionOpen ? "Hide details" : "Show details"}
-              <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${sectionOpen ? "rotate-180" : ""}`} />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SectionContent 
-                viewMode={viewMode}
-                openDetails={openDetails}
-                setOpenDetails={setOpenDetails}
-                earlySupportersClaimed={earlySupportersClaimed}
-                earlySupportersTotal={earlySupportersTotal}
-              />
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-        
-        {/* For non-overview modes, show content directly */}
-        {viewMode !== 'overview' && (
-          <SectionContent 
-            viewMode={viewMode}
-            openDetails={openDetails}
-            setOpenDetails={setOpenDetails}
-            earlySupportersClaimed={earlySupportersClaimed}
-            earlySupportersTotal={earlySupportersTotal}
-          />
-        )}
+        <Collapsible open={sectionOpen} onOpenChange={setSectionOpen}>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors group font-medium">
+            <span>{sectionOpen ? "Hide Army details" : "Show Army details"}</span>
+            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-6">
+            <SectionContent
+              openDetails={openDetails}
+              setOpenDetails={setOpenDetails}
+              earlySupportersClaimed={earlySupportersClaimed}
+              earlySupportersTotal={earlySupportersTotal}
+            />
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </section>
   );

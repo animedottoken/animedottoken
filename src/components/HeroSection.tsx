@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { LiveStatsCounter } from '@/components/LiveStatsCounter';
-import { useViewMode } from '@/contexts/ViewModeContext';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { LiveStatsCounter } from '@/components/LiveStatsCounter';
 
 const HeroSection: React.FC = () => {
-  const { viewMode } = useViewMode();
   const [statsOpen, setStatsOpen] = useState(false);
-
-  useEffect(() => {
-    setStatsOpen(viewMode === 'full');
-  }, [viewMode]);
 
   return (
     <>

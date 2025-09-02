@@ -7,7 +7,6 @@ import { homeSections } from "@/lib/homeSections";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import ViewModeToggle from "@/components/ViewModeToggle";
 
 type RouteItem = {
   type: "route";
@@ -139,13 +138,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-          {/* ViewModeToggle for home page only */}
-          {location.pathname === "/" && !collapsed && (
-            <div className="pb-4 border-b">
-              <ViewModeToggle />
-            </div>
-          )}
-          
           {/* Home Sections Only */}
           <div>
             <div className="space-y-1">

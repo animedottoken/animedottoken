@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
-import { useViewMode } from "@/contexts/ViewModeContext";
 import { Link, useLocation } from "react-router-dom";
 
 import { SectionLabel } from "@/components/SectionLabel";
@@ -44,7 +43,6 @@ const TOTAL_SUPPLY = 974338302;
 
 function Section3({ holders }: { holders: number | null | undefined }) {
   const [section3DetailsOpen, setSection3DetailsOpen] = useState(false);
-  const { viewMode } = useViewMode();
   const location = useLocation();
 
   // Auto-open details when navigating to calculator or chart
@@ -54,11 +52,6 @@ function Section3({ holders }: { holders: number | null | undefined }) {
       setSection3DetailsOpen(true);
     }
   }, [location.hash]);
-
-  // Set initial state based on view mode
-  useEffect(() => {
-    setSection3DetailsOpen(viewMode === 'full');
-  }, [viewMode]);
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
@@ -238,29 +231,6 @@ const Index = () => {
   const [step3Open, setStep3Open] = useState(false);
   const [step4Open, setStep4Open] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
-  
-  const { viewMode } = useViewMode();
-  
-  // Set all collapsible states based on view mode
-  useEffect(() => {
-    if (viewMode === 'full') {
-      setBuyOpen(true);
-      setPromoOpen(true);
-      setStep1Open(true);
-      setStep2Open(true);
-      setStep3Open(true);
-      setStep4Open(true);
-      setFaqOpen(true);
-    } else {
-      setBuyOpen(false);
-      setPromoOpen(false);
-      setStep1Open(false);
-      setStep2Open(false);
-      setStep3Open(false);
-      setStep4Open(false);
-      setFaqOpen(false);
-    }
-  }, [viewMode]);
   
 
   return (

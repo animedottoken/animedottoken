@@ -12,7 +12,6 @@ import { BackToTop } from "@/components/BackToTop";
 import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
 import { SolanaWalletProvider } from "@/contexts/MockSolanaWalletContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ViewModeProvider } from "@/contexts/ViewModeContext";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
@@ -134,16 +133,14 @@ const App = () => {
         <HelmetProvider>
           <BrowserRouter>
             <AuthProvider>
-              <ViewModeProvider>
-                <SolanaWalletProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <ScrollToTopOnRoute />
-                  <AppLayout />
-                </TooltipProvider>
-                </SolanaWalletProvider>
-              </ViewModeProvider>
+              <SolanaWalletProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <ScrollToTopOnRoute />
+                <AppLayout />
+              </TooltipProvider>
+              </SolanaWalletProvider>
             </AuthProvider>
           </BrowserRouter>
         </HelmetProvider>
