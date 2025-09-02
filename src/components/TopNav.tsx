@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { StatusDots } from "@/components/StatusDots";
+import { homeSections } from "@/lib/homeSections";
 
 type RouteItem = {
   type: "route";
@@ -27,20 +28,19 @@ type SectionItem = {
 
 type NavigationItem = RouteItem | SectionItem;
 
-const navigationItems: NavigationItem[] = [
-  // Main routes
+const routes: RouteItem[] = [
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
-  
-  // Home sections - matching actual IDs and classes on the page
-  { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
-  { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
-  { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
-  { type: "section", title: "Live Daily Price Chart", icon: Target, hash: "live-daily-price-chart" },
-  { type: "section", title: "How to Buy $ANIME", icon: ShoppingCart, hash: "how-to-buy" },
-  { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
-  { type: "section", title: "ANIME.TOKEN ARMY", icon: Trophy, hash: "nft-supporter-section" },
-  { type: "section", title: "NFT Minting & Marketplace", icon: Coins, hash: "create-nfts" },
+];
+
+const navigationItems: NavigationItem[] = [
+  ...routes,
+  ...homeSections.map(section => ({
+    type: "section" as const,
+    title: section.title,
+    icon: section.icon,
+    hash: section.hash.replace('#', ''),
+  })),
 ];
 
 export const TopNav = () => {
