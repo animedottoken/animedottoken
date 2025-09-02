@@ -70,21 +70,21 @@ export type Database = {
           created_at: string
           id: string
           user_id: string | null
-          user_wallet: string
+          user_wallet: string | null
         }
         Insert: {
           collection_id: string
           created_at?: string
           id?: string
           user_id?: string | null
-          user_wallet: string
+          user_wallet?: string | null
         }
         Update: {
           collection_id?: string
           created_at?: string
           id?: string
           user_id?: string | null
-          user_wallet?: string
+          user_wallet?: string | null
         }
         Relationships: [
           {
@@ -243,21 +243,21 @@ export type Database = {
         Row: {
           created_at: string
           creator_wallet: string
-          follower_wallet: string
+          follower_wallet: string | null
           id: string
           user_id: string | null
         }
         Insert: {
           created_at?: string
           creator_wallet: string
-          follower_wallet: string
+          follower_wallet?: string | null
           id?: string
           user_id?: string | null
         }
         Update: {
           created_at?: string
           creator_wallet?: string
-          follower_wallet?: string
+          follower_wallet?: string | null
           id?: string
           user_id?: string | null
         }
@@ -507,21 +507,21 @@ export type Database = {
           id: string
           nft_id: string
           user_id: string | null
-          user_wallet: string
+          user_wallet: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           nft_id: string
           user_id?: string | null
-          user_wallet: string
+          user_wallet?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           nft_id?: string
           user_id?: string | null
-          user_wallet?: string
+          user_wallet?: string | null
         }
         Relationships: [
           {
