@@ -39,6 +39,7 @@ import { MultiWalletSection } from '@/components/MultiWalletSection';
 import { AutoPrimaryWalletPrompt } from '@/components/AutoPrimaryWalletPrompt';
 import { useAutoPrimaryWallet } from '@/hooks/useAutoPrimaryWallet';
 import { SecuritySettingsDialog } from '@/components/SecuritySettingsDialog';
+import SocialActionWrapper from '@/components/SocialActionWrapper';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -465,6 +466,31 @@ const Profile = () => {
                     >
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
+                  )}
+                  {targetWallet && !isOwnProfile && (
+                    <SocialActionWrapper
+                      action={isFollowing(targetWallet) ? 'unfollow this creator' : 'follow this creator'}
+                      onAction={async () => { await toggleFollow(targetWallet); }}
+                    >
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={followLoading}
+                        aria-label={isFollowing(targetWallet) ? 'Unfollow creator' : 'Follow creator'}
+                      >
+                        {isFollowing(targetWallet) ? (
+                          <>
+                            <UserMinus className="h-4 w-4 mr-2" />
+                            Unfollow
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Follow
+                          </>
+                        )}
+                      </Button>
+                    </SocialActionWrapper>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
