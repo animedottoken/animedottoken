@@ -467,7 +467,7 @@ const Profile = () => {
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                   )}
-                  {!isOwnProfile && profile?.id && (
+                  {profile?.id && (
                     <SocialActionWrapper
                       action="follow creator"
                       onAction={async () => {
