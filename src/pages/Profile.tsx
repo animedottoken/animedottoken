@@ -377,6 +377,11 @@ const Profile = () => {
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
   const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
 
+  // Check if current user is following this profile
+  const isFollowingProfile = useMemo(() => {
+    return profile?.wallet_address ? followedCreators.includes(profile.wallet_address) : false;
+  }, [followedCreators, profile?.wallet_address]);
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -469,7 +474,7 @@ const Profile = () => {
                   )}
                   {profile?.id && (
                     <SocialActionWrapper
-                      action="follow creator"
+                      action={isFollowingProfile ? "unfollow creator" : "follow creator"}
                       onAction={async () => {
                         if (profile?.id) {
                           await toggleFollowByUserId(profile.id);
@@ -481,8 +486,17 @@ const Profile = () => {
                         className="gap-2"
                         disabled={followLoading}
                       >
-                        <UserPlus className="h-4 w-4" />
-                        Follow
+                        {isFollowingProfile ? (
+                          <>
+                            <UserMinus className="h-4 w-4" />
+                            Unfollow
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-4 w-4" />
+                            Follow
+                          </>
+                        )}
                       </Button>
                     </SocialActionWrapper>
                   )}
