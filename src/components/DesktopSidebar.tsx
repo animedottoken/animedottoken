@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, ShoppingCart, Coins, FileText, Star, Target, LifeBuoy, Trophy, Users, Shield, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
+import { User, ShoppingCart, Coins, ChevronLeft, ChevronRight } from "lucide-react";
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
+import { homeSections } from "@/lib/homeSections";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -23,23 +24,18 @@ type SectionItem = {
 
 type NavigationItem = RouteItem | SectionItem;
 
-const navigationItems: NavigationItem[] = [
-  // Main routes
+const routes: RouteItem[] = [
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
   { type: "route", title: "Profile", icon: User, path: "/profile" },
-  
-  // Home sections - ordered to match actual homepage flow
-  { type: "section", title: "Minting NFT & Marketplace", icon: Coins, hash: "create-nfts" },
-  { type: "section", title: "Ownership Calculator", icon: FileText, hash: "ownership-calculator" },
-  { type: "section", title: "Live Daily Price Chart", icon: Target, hash: "live-daily-price-chart" },
-  { type: "section", title: "Trust & Security", icon: Shield, hash: "trust-security-section" },
-  { type: "section", title: "ANIME.TOKEN ARMY", icon: Trophy, hash: "nft-supporter-section" },
-  { type: "section", title: "Community Showcase", icon: Users, hash: "featured-community-content" },
-  { type: "section", title: "How to Buy $ANIME", icon: ShoppingCart, hash: "how-to-buy" },
-  { type: "section", title: "FAQ", icon: Star, hash: "faq-section" },
-  { type: "section", title: "Get In Touch", icon: LifeBuoy, hash: "get-in-touch" },
 ];
+
+const sections: SectionItem[] = homeSections.map(section => ({
+  type: "section" as const,
+  title: section.title,
+  icon: section.icon,
+  hash: section.hash.replace('#', ''),
+}));
 
 interface DesktopSidebarProps {
   className?: string;
@@ -91,8 +87,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     return false;
   };
 
-  const routes = navigationItems.filter((item): item is RouteItem => item.type === "route");
-  const sections = navigationItems.filter((item): item is SectionItem => item.type === "section");
 
   return (
     

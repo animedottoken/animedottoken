@@ -64,7 +64,6 @@ function Section3({ holders }: { holders: number | null | undefined }) {
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
       <header className="mb-0 text-left">
-        <SectionLabel icon={Users} title="Ownership Economy" />
         <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
           <BarChart3 className="w-10 h-10 text-violet-400" />
           The Power of Community: A Decentralized Future
@@ -368,7 +367,6 @@ const Index = () => {
 
       {/* 2. PRODUCT SECTION - NFT Minting & Marketplace */}
       <div className="scroll-mt-20">
-        <SectionLabel icon={Coins} title="Mint NFTs & Marketplace" />
         <NFTPreviewSection />
       </div>
 
@@ -377,19 +375,16 @@ const Index = () => {
 
       {/* 4. PROOF SECTION - Trust & Security */}
       <div id="trust-security-section" className="trust-security-section scroll-mt-20">
-        <SectionLabel icon={Shield} title="Trust & Security" />
         <TrustSecuritySection tokenAddress={CONTRACT} creatorWalletUrl={`https://solscan.io/account/${CREATOR_WALLET_ADDRESS}#portfolio`} />
       </div>
 
       {/* 5. COMMUNITY SECTION - ANIME ARMY */}
       <div id="nft-supporter-section" className="scroll-mt-20">
-        <SectionLabel icon={Users} title="ANIME.TOKEN ARMY" />
         <NFTSupporterSection />
       </div>
 
       {/* 6. SOCIAL PROOF & FINAL CTA */}
       <div id="featured-community-content" className="featured-community-content scroll-mt-20">
-        <SectionLabel icon={Users} title="Community Showcase" />
         <Suspense fallback={<div className="animate-pulse bg-muted/20 rounded-lg min-h-[420px]"></div>}>
           <FeaturedCommunityContent />
         </Suspense>
@@ -397,7 +392,6 @@ const Index = () => {
 
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <SectionLabel icon={ShoppingCart} title="How to Buy ANIME" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
@@ -643,7 +637,6 @@ const Index = () => {
       </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
-        <SectionLabel icon={HelpCircle} title="FAQ" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
@@ -747,7 +740,6 @@ const Index = () => {
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
       
       <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
-        <SectionLabel icon={Share2} title="Get in Touch" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <Users className="w-10 h-10 text-violet-400" />
           Join the Movement
