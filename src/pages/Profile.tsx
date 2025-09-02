@@ -561,7 +561,7 @@ const Profile = () => {
               <div className="flex items-start gap-2">
                 {profile?.bio ? (
                   <p className="text-muted-foreground break-words whitespace-normal min-h-[1.25rem] flex-1" data-testid="profile-bio">
-                    {profile.bio.length > 90 ? `${profile.bio.slice(0, 90)}...` : profile.bio}
+                    {profile.bio}
                   </p>
                 ) : isOwnProfile ? (
                   <p className="text-muted-foreground/60 text-sm italic flex-1">

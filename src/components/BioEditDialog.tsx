@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -68,6 +68,9 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
           <DialogTitle>
             {isFirstChange ? 'Add Your Bio' : 'Update Bio'}
           </DialogTitle>
+          <DialogDescription>
+            {isFirstChange ? 'Share something about yourself with the community.' : 'Update your bio to reflect your current interests.'}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

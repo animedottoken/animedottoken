@@ -197,8 +197,8 @@ export const GamifiedProfileCard = () => {
       return;
     }
 
-    if (bioInput.trim().length > 100) {
-      toast.error('Bio must be 100 characters or less');
+    if (bioInput.trim().length > 150) {
+      toast.error('Bio must be 150 characters or less');
       return;
     }
 
@@ -651,12 +651,12 @@ export const GamifiedProfileCard = () => {
                     value={bioInput}
                     onChange={(e) => setBioInput(e.target.value)}
                     placeholder="Tell everyone about yourself..."
-                    maxLength={100}
+                    maxLength={150}
                     className="w-full p-2 border border-border bg-background text-foreground rounded-md resize-none h-20 mt-1 focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="text-xs text-muted-foreground mt-1 flex justify-between">
                     <span>Will be visible on marketplace</span>
-                    <span>{bioInput.length}/100</span>
+                    <span>{bioInput.length}/150</span>
                   </div>
                 </div>
                 <Button 
