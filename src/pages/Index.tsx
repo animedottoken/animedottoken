@@ -5,8 +5,7 @@ import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { Link, useLocation } from "react-router-dom";
 
 import { SectionLabel } from "@/components/SectionLabel";
-import { Coins, Shield, Share2, Users, ShoppingCart, HelpCircle } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Coins, Shield, Share2, Users, ShoppingCart } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 
 
@@ -220,9 +219,14 @@ const Index = () => {
     }
   }, []);
 
-  // Native hash navigation will handle deep links to sections
-
-  // Removed custom hashchange handler to rely on native anchor behavior
+  // Clean up view parameter from URL
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('view')) {
+      url.searchParams.delete('view');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
@@ -297,34 +301,6 @@ const Index = () => {
                 <h3 className="font-semibold text-foreground text-sm hover:underline">Ownership Economy Platform</h3>
                 <p className="text-xs text-muted-foreground">Don't just be a user. Be an owner.</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 ml-auto">
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                    aria-label="View mode help"
-                    title="Learn about different view modes"
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </Button>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-80">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-semibold">View Modes</h4>
-                    <div className="space-y-2 text-xs">
-                      <div>
-                        <strong>Overview:</strong> Shows only headlines and subheadlines. Click "Show details" to expand sections.
-                      </div>
-                      <div>
-                        <strong>Full Details:</strong> Expands all sections to show complete information.
-                      </div>
-                    </div>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
             </div>
           </div>
         </div>
@@ -607,9 +583,9 @@ const Index = () => {
       </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
-        <SectionLabel icon={HelpCircle} title="FAQ" />
+        <SectionLabel icon={Shield} title="FAQ" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
-          <HelpCircle className="w-10 h-10 text-violet-400" />
+          <Shield className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
         </h2>
         <p className="mt-3 text-left text-muted-foreground">Your key questions about the ANIME.TOKEN project and the Ownership Economy, answered.</p>
