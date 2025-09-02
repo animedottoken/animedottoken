@@ -119,8 +119,8 @@ const Index = () => {
   // Use the production domain for social sharing to ensure proper OG metadata
   const shareBase = "https://animedottoken.com";
   const pageUrl = shareBase;
-  const congratsImage = `${shareBase}/og/anime-army-share-v19.png`;
-  const sharePageUrl = `${shareBase}/share-army-v19.html`;
+  const congratsImage = `${shareBase}/og/anime-army-share-v22.png?ts=1725292860`;
+  const sharePageUrl = `${shareBase}/share-army-v22.html`;
   const shareImage = congratsImage;
   const shareText = "I just joined the @AnimeDotToken Ownership Economy on #Solana. A community-owned ecosystem where users become stakeholders. Don't just be a user. Be an owner! #ANIMEtoken $ANIME";
   const shareUrlX = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(sharePageUrl)}`;
