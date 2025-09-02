@@ -13,6 +13,9 @@ verify_jwt = false  # Public read function
 [functions.get-creator-stats]
 verify_jwt = false  # Public read function
 
+[functions.get-creator-stats-by-user]
+verify_jwt = false  # Public read function
+
 [functions.create-mint-job]
 verify_jwt = true  # Requires authenticated user
 

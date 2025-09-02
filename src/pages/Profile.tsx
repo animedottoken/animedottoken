@@ -20,10 +20,10 @@ import { useUserNFTs } from '@/hooks/useUserNFTs';
 import { useCollections } from '@/hooks/useCollections';
 import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { useLikedCollections } from '@/hooks/useLikedCollections';
-import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
 import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData";
-import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -79,13 +79,13 @@ const Profile = () => {
   const { collections, loading: collectionsLoading } = useCollections();
   const { likedNFTs } = useLikedNFTs();
   const { likedCollections } = useLikedCollections();
-  const { followedCreators, isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
+  const { followedCreators, isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
   const { getLikeCount: getNFTLikeCount } = useNFTLikeCounts();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
   
-  // Real-time creator stats
-  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
-    targetWallet ? [targetWallet] : []
+  // Real-time creator stats - use user-based stats if profile has user_id
+  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
+    profile?.id ? [profile.id] : []
   );
 
   // Filter states - combine into one for the merged tab
@@ -467,28 +467,22 @@ const Profile = () => {
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                   )}
-                  {(targetWallet || profile?.wallet_address || publicKey) && (
+                  {!isOwnProfile && profile?.id && (
                     <SocialActionWrapper
-                      action={isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? 'unfollow this creator' : 'follow this creator'}
-                      onAction={async () => { await toggleFollow(targetWallet || profile?.wallet_address || publicKey || ''); }}
+                      action="follow creator"
+                      onAction={async () => {
+                        if (profile?.id) {
+                          await toggleFollowByUserId(profile.id);
+                        }
+                      }}
                     >
                       <Button
                         variant="secondary"
-                        size="sm"
+                        className="gap-2"
                         disabled={followLoading}
-                        aria-label={isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? 'Unfollow creator' : 'Follow creator'}
                       >
-                        {isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? (
-                          <>
-                            <UserMinus className="h-4 w-4 mr-2" />
-                            Unfollow
-                          </>
-                        ) : (
-                          <>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Follow
-                          </>
-                        )}
+                        <UserPlus className="h-4 w-4" />
+                        Follow
                       </Button>
                     </SocialActionWrapper>
                   )}
@@ -689,11 +683,11 @@ const Profile = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{getCreatorFollowerCount(targetWallet || '')}</span>
+                  <span className="font-medium">{getCreatorFollowerCount(profile?.id || '')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Heart className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{getCreatorTotalLikeCount(targetWallet || '')}</span>
+                  <span className="font-medium">{getCreatorTotalLikeCount(profile?.id || '')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Layers className="h-3.5 w-3.5 text-muted-foreground" />

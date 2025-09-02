@@ -1,0 +1,189 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface CreatorStats {
+  [userId: string]: {
+    follower_count: number;
+    nft_likes_count: number;
+    collection_likes_count: number;
+    total_likes_count: number;
+  };
+}
+
+export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
+  const [creatorStats, setCreatorStats] = useState<CreatorStats>({});
+  const [loading, setLoading] = useState(true);
+  const debounceRef = useRef<NodeJS.Timeout>();
+  const userIdsKey = userIds.sort().join(',');
+  
+  const loadCreatorStats = useCallback(async () => {
+    if (userIds.length === 0) {
+      setCreatorStats({});
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Use edge function to bypass RLS issues
+      const { data: response, error } = await supabase.functions.invoke('get-creator-stats-by-user', {
+        body: { user_ids: userIds }
+      });
+
+      if (error) throw error;
+
+      if (!response?.success) {
+        throw new Error(response?.error || 'Failed to fetch creator stats');
+      }
+
+      // Create stats map from response
+      const statsMap = (response.stats || []).reduce((acc: any, stat: any) => ({
+        ...acc,
+        [stat.user_id]: {
+          follower_count: stat.follower_count || 0,
+          nft_likes_count: stat.nft_likes_count || 0,
+          collection_likes_count: stat.collection_likes_count || 0,
+          total_likes_count: stat.total_likes_count || 0
+        }
+      }), {});
+
+      setCreatorStats(statsMap);
+    } catch (error) {
+      console.error('Error loading creator stats by user:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userIdsKey]);
+
+  // Debounced refresh to prevent rapid successive updates
+  const debouncedRefresh = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      loadCreatorStats();
+    }, 100);
+  }, [loadCreatorStats]);
+
+  // Optimistically update creator stats from cross-page signals
+  const handleCreatorStatsUpdate = useCallback((event: CustomEvent) => {
+    const { userId, type, delta } = event.detail;
+    if (userIds.includes(userId)) {
+      setCreatorStats(prev => ({
+        ...prev,
+        [userId]: {
+          follower_count: type === 'follow' 
+            ? Math.max(0, (prev[userId]?.follower_count || 0) + delta)
+            : (prev[userId]?.follower_count || 0),
+          nft_likes_count: type === 'nft_like' 
+            ? Math.max(0, (prev[userId]?.nft_likes_count || 0) + delta)
+            : (prev[userId]?.nft_likes_count || 0),
+          collection_likes_count: type === 'collection_like' 
+            ? Math.max(0, (prev[userId]?.collection_likes_count || 0) + delta)
+            : (prev[userId]?.collection_likes_count || 0),
+          total_likes_count: Math.max(0, 
+            (type === 'nft_like' ? (prev[userId]?.nft_likes_count || 0) + delta : (prev[userId]?.nft_likes_count || 0)) +
+            (type === 'collection_like' ? (prev[userId]?.collection_likes_count || 0) + delta : (prev[userId]?.collection_likes_count || 0))
+          ),
+        }
+      }));
+    }
+  }, [userIdsKey]);
+
+  useEffect(() => {
+    loadCreatorStats();
+
+    // Listen for cross-page creator stats updates
+    const handleStatsUpdate = (event: CustomEvent) => handleCreatorStatsUpdate(event);
+    window.addEventListener('creator-stats-update-by-user', handleStatsUpdate as EventListener);
+
+    // Refresh on tab visibility change to sync with database
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        debouncedRefresh();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Set up filtered real-time subscription for creator stats changes
+    const channel = supabase
+      .channel('creator_stats_realtime_by_user')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'creator_follows',
+          filter: userIds.length > 0 
+            ? `user_id=in.(${userIds.join(',')})`
+            : undefined
+        },
+        (payload) => {
+          console.log('Creator follows change detected in stats (by user):', payload);
+          // Only refresh if the change affects our tracked users
+          const affectedUserId = (payload.new as any)?.user_id || (payload.old as any)?.user_id;
+          if (userIds.includes(affectedUserId)) {
+            debouncedRefresh();
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'nft_likes'
+        },
+        (payload) => {
+          console.log('NFT likes change detected in creator stats (by user):', payload);
+          // For performance, just refresh without checking - the stats view will handle filtering
+          debouncedRefresh();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'collection_likes'
+        },
+        (payload) => {
+          console.log('Collection likes change detected in creator stats (by user):', payload);
+          // For performance, just refresh without checking - the stats view will handle filtering
+          debouncedRefresh();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      window.removeEventListener('creator-stats-update-by-user', handleStatsUpdate as EventListener);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      supabase.removeChannel(channel);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [userIdsKey, loadCreatorStats, handleCreatorStatsUpdate, debouncedRefresh]);
+
+  const getCreatorFollowerCount = (userId: string): number => {
+    return creatorStats[userId]?.follower_count || 0;
+  };
+
+  const getCreatorNFTLikeCount = (userId: string): number => {
+    return creatorStats[userId]?.nft_likes_count || 0;
+  };
+
+  const getCreatorTotalLikeCount = (userId: string): number => {
+    return creatorStats[userId]?.total_likes_count || 0;
+  };
+
+  return {
+    creatorStats,
+    loading,
+    getCreatorFollowerCount,
+    getCreatorNFTLikeCount,
+    getCreatorTotalLikeCount,
+    refreshStats: loadCreatorStats
+  };
+};
