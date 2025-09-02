@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
-import { ViewModeProvider, useViewMode } from "@/contexts/ViewModeContext";
+import { useViewMode } from "@/contexts/ViewModeContext";
 import ViewModeToggle from "@/components/ViewModeToggle";
 import { Link, useLocation } from "react-router-dom";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -261,7 +261,7 @@ const Index = () => {
   
 
   return (
-    <ViewModeProvider>
+    
       <main className="min-h-screen py-6 md:py-8 container mx-auto px-4 max-w-6xl overflow-x-hidden">
       <Helmet>
         <title>ANIME.TOKEN | Ownership Economy Platform | A New Internet Money Era on Solana</title>
@@ -794,7 +794,7 @@ const Index = () => {
         }}
       />
      </main>
-    </ViewModeProvider>
+    
   );
 };
 
