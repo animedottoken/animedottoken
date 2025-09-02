@@ -7,6 +7,8 @@ import { Palette, ShoppingBag, Coins, ArrowRight, Zap, Users, ChevronDown } from
 import { Link } from "react-router-dom";
 import { useViewMode } from "@/contexts/ViewModeContext";
 
+import { SectionLabel } from "@/components/SectionLabel";
+
 export function NFTPreviewSection() {
   const { viewMode } = useViewMode();
   const [box1Open, setBox1Open] = useState(false);
@@ -24,6 +26,7 @@ export function NFTPreviewSection() {
 
   return (
     <section id="create-nfts" className="nft-preview-section mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+      <SectionLabel icon={Coins} title="Mint NFTs & Marketplace" />
       <div className={`mb-12 ${isOverview ? 'text-left' : 'text-center'}`}>
         <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isOverview ? 'flex items-center' : 'flex items-center justify-center'} gap-3`}>
           <Palette className="w-10 h-10 text-violet-400" />

@@ -7,7 +7,7 @@ import ViewModeToggle from "@/components/ViewModeToggle";
 import { Link, useLocation } from "react-router-dom";
 
 import { SectionLabel } from "@/components/SectionLabel";
-import { Coins, Shield, Share2 } from "lucide-react";
+import { Coins, Shield, Share2, Users, ShoppingCart, HelpCircle } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import HeroSection from "@/components/HeroSection";
 
@@ -33,7 +33,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 // Social media icons and chevron for collapsibles
 import { SiX, SiTelegram, SiDiscord, SiTiktok, SiInstagram, SiYoutube, SiFacebook } from "react-icons/si";
-import { ChevronDown, Copy, Share, Handshake, BarChart3, ShoppingCart, HelpCircle, Users } from "lucide-react";
+import { ChevronDown, Copy, Share, Handshake, BarChart3 } from "lucide-react";
 import { useLivePrice } from "@/hooks/useLivePrice";
 import { useTokenHolders } from "@/hooks/useTokenHolders";
 import { scrollToHash } from "@/lib/scroll";
@@ -63,6 +63,7 @@ function Section3({ holders }: { holders: number | null | undefined }) {
 
   return (
     <section id="ownership-calculator" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 ownership-calculator scroll-mt-20">
+      <SectionLabel icon={Users} title="Ownership Economy" />
       <header className="mb-0 text-left">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
           <BarChart3 className="w-10 h-10 text-violet-400" />
@@ -392,6 +393,7 @@ const Index = () => {
 
 
       <section id="how-to-buy" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+        <SectionLabel icon={ShoppingCart} title="How to Buy ANIME" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <ShoppingCart className="w-10 h-10 text-violet-400" />
           How to Join the Ownership Economy: Buying $ANIME
@@ -637,6 +639,7 @@ const Index = () => {
       </section>
 
       <section id="faq-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20" key="faq-section">
+        <SectionLabel icon={HelpCircle} title="FAQ" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <HelpCircle className="w-10 h-10 text-violet-400" />
           Frequently Asked Questions (FAQ)
@@ -740,6 +743,7 @@ const Index = () => {
       <div id="contact-support-section" className="invisible absolute -mt-20"></div>
       
       <section id="get-in-touch" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700 scroll-mt-20">
+        <SectionLabel icon={Share2} title="Get in Touch" />
         <h2 className="text-left text-4xl font-bold flex items-center gap-3 mb-4">
           <Users className="w-10 h-10 text-violet-400" />
           Join the Movement
