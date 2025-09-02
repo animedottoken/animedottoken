@@ -57,11 +57,10 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
 
     const targetItem = items[newIndex];
     if (targetItem) {
-      // Keep minimal URL - only preserve view param if present
-      const viewParam = searchParams.get('view');
+      // Keep minimal URL - no view param preservation  
       const targetUrl = itemType === 'collection' 
-        ? `/collection/${targetItem.id}${viewParam ? `?view=${viewParam}` : ''}`
-        : `/nft/${targetItem.id}${viewParam ? `?view=${viewParam}` : ''}`;
+        ? `/collection/${targetItem.id}`
+        : `/nft/${targetItem.id}`;
       
       navigate(targetUrl);
     }

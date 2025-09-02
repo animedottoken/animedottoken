@@ -11,18 +11,30 @@ const PAIR_ADDRESS = "H5EYz1skuMdwrddHuCfnvSps1Ns3Lhf7WdTQMfdT8Zwc";
 const CONTRACT = "GRkAQsphKwc5PPMmi2bLT2aG9opmnHqJPN7spmjLpump";
 
 export function OwnershipCalculator() {
-  const [usdAmount, setUsdAmount] = useState(100);
+  const [usdValue, setUsdValue] = useState("100");
   const { tokenData, loading } = useLivePrice(PAIR_ADDRESS);
   const holders = useTokenHolders(CONTRACT);
 
+  const getUsdAmount = () => {
+    const num = parseFloat(usdValue);
+    return isNaN(num) || num < 0 ? 0 : num;
+  };
+
   const calculateTokens = () => {
     if (!tokenData?.price || tokenData.price <= 0) return 0;
-    return usdAmount / tokenData.price;
+    return getUsdAmount() / tokenData.price;
   };
 
   const calculatePercentage = () => {
     const tokens = calculateTokens();
     return (tokens / TOTAL_SUPPLY) * 100;
+  };
+
+  const handleBlur = () => {
+    const num = parseFloat(usdValue);
+    if (isNaN(num) || num < 0 || usdValue === "") {
+      setUsdValue("0");
+    }
   };
 
   return (
@@ -39,11 +51,13 @@ export function OwnershipCalculator() {
           <Input
             id="usd-input"
             type="number"
-            value={usdAmount}
-            onChange={(e) => setUsdAmount(Math.max(0, parseFloat(e.target.value) || 0))}
+            inputMode="decimal"
+            value={usdValue}
+            onChange={(e) => setUsdValue(e.target.value)}
+            onBlur={handleBlur}
             placeholder="100"
             min="0"
-            step="1"
+            step="any"
           />
         </div>
 
