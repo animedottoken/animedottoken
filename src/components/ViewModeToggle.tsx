@@ -12,25 +12,28 @@ const ViewModeToggle: React.FC = () => {
   ];
 
   return (
-    <div className="flex items-center gap-1 bg-card/50 backdrop-blur-sm rounded-lg p-1 border border-border/50">
-      {modes.map(({ key, label, icon: Icon }) => (
-        <Toggle
-          key={key}
-          pressed={viewMode === key}
-          onPressedChange={() => setViewMode(key)}
-          variant="outline"
-          size="sm"
-          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground gap-2 text-xs"
-          aria-label={`Switch to ${label} view mode`}
-          title={`${label}: ${
-            key === 'overview' ? 'Shows only headlines and subheadlines' :
-            'Expands all sections to show complete information'
-          }`}
-        >
-          <Icon className="h-3 w-3" />
-          <span className="hidden sm:inline">{label}</span>
-        </Toggle>
-      ))}
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-medium text-muted-foreground hidden sm:inline">Browse style:</span>
+      <div className="flex items-center gap-1 bg-card/50 backdrop-blur-sm rounded-lg p-1 border border-border/50">
+        {modes.map(({ key, label, icon: Icon }) => (
+          <Toggle
+            key={key}
+            pressed={viewMode === key}
+            onPressedChange={() => setViewMode(key)}
+            variant="outline"
+            size="sm"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground gap-2 text-xs"
+            aria-label={`Switch to ${label} view mode`}
+            title={`${label}: ${
+              key === 'overview' ? 'Shows only headlines and subheadlines' :
+              'Expands all sections to show complete information'
+            }`}
+          >
+            <Icon className="h-3 w-3" />
+            <span className="hidden sm:inline">{label}</span>
+          </Toggle>
+        ))}
+      </div>
     </div>
   );
 };

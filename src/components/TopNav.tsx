@@ -11,6 +11,7 @@ import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { StatusDots } from "@/components/StatusDots";
 import { homeSections } from "@/lib/homeSections";
+import ViewModeToggle from "@/components/ViewModeToggle";
 
 type RouteItem = {
   type: "route";
@@ -120,6 +121,9 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
+          {/* Show ViewModeToggle only on home page */}
+          {location.pathname === "/" && <ViewModeToggle />}
+          
           {/* Show email on desktop when signed in */}
           {user?.email && (
             <span className="text-sm text-muted-foreground max-w-32 truncate">
@@ -230,6 +234,13 @@ export const TopNav = () => {
                   <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
                 </div>
               </div>
+
+              {/* Show ViewModeToggle at top of mobile menu when on home page */}
+              {location.pathname === "/" && (
+                <div className="px-2 mb-4">
+                  <ViewModeToggle />
+                </div>
+              )}
 
               {/* Navigation Routes */}
               <div className="space-y-1">

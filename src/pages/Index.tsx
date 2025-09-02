@@ -3,7 +3,6 @@ import { useState, lazy, Suspense, useMemo, useEffect } from "react";
 import JSZip from "jszip";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { useViewMode } from "@/contexts/ViewModeContext";
-import ViewModeToggle from "@/components/ViewModeToggle";
 import { Link, useLocation } from "react-router-dom";
 
 import { SectionLabel } from "@/components/SectionLabel";
@@ -330,7 +329,6 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 ml-auto">
-              <ViewModeToggle />
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <Button 
