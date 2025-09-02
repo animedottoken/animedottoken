@@ -62,6 +62,7 @@ serve(async (req) => {
     let query = supabase
       .from("user_profiles")
       .select(`
+        id,
         user_id,
         wallet_address,
         nickname,
@@ -100,6 +101,7 @@ serve(async (req) => {
     // Create default profile if doesn't exist
     if (!profile) {
       const defaultProfile = {
+        id: userId ? crypto.randomUUID() : null, // Generate a UUID for the default profile
         user_id: userId,
         wallet_address: wallet_address || null,
         nickname: null,
