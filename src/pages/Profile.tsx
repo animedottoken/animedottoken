@@ -467,18 +467,18 @@ const Profile = () => {
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                   )}
-                  {targetWallet && !isOwnProfile && (
+                  {(targetWallet || profile?.wallet_address || publicKey) && (
                     <SocialActionWrapper
-                      action={isFollowing(targetWallet) ? 'unfollow this creator' : 'follow this creator'}
-                      onAction={async () => { await toggleFollow(targetWallet); }}
+                      action={isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? 'unfollow this creator' : 'follow this creator'}
+                      onAction={async () => { await toggleFollow(targetWallet || profile?.wallet_address || publicKey || ''); }}
                     >
                       <Button
                         variant="secondary"
                         size="sm"
                         disabled={followLoading}
-                        aria-label={isFollowing(targetWallet) ? 'Unfollow creator' : 'Follow creator'}
+                        aria-label={isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? 'Unfollow creator' : 'Follow creator'}
                       >
-                        {isFollowing(targetWallet) ? (
+                        {isFollowing(targetWallet || profile?.wallet_address || publicKey || '') ? (
                           <>
                             <UserMinus className="h-4 w-4 mr-2" />
                             Unfollow
@@ -494,26 +494,6 @@ const Profile = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {targetWallet && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => toggleFollow(targetWallet)}
-                      disabled={followLoading}
-                    >
-                      {isFollowing(targetWallet) ? (
-                        <>
-                          <UserMinus className="h-4 w-4 mr-2" />
-                          Unfollow
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Follow
-                        </>
-                      )}
-                    </Button>
-                  )}
                   <Button 
                     variant="outline" 
                     size="icon"
