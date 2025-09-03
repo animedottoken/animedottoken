@@ -220,14 +220,49 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [wallets]);
 
   const connectPaymentWallet = useCallback(async () => {
+    setError(null);
     try {
-      // Always open wallet selector for reliable connection
+      console.log('💰 Payment wallet connection requested...');
+      console.log('🖼️ Is in iframe:', window !== window.parent);
+      
+      // Find preview/unsafe/burner wallet for direct connection
+      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
+      
+      if (previewWallet && (previewWallet.readyState === WalletReadyState.Installed || previewWallet.readyState === WalletReadyState.Loadable)) {
+        console.log('🎭 Attempting direct preview wallet connection...');
+        try {
+          // Disconnect any existing wallet first
+          await walletDisconnect();
+          
+          // Connect directly to preview wallet
+          select(previewWallet.adapter.name);
+          
+          setTimeout(async () => {
+            try {
+              await walletConnect();
+              console.log('✅ Preview wallet connected successfully');
+              toast.success('Connected to Preview Wallet');
+            } catch (error) {
+              console.error('❌ Preview wallet connection failed:', error);
+              // Fallback to modal
+              console.log('🔄 Falling back to wallet selector...');
+              setVisible(true);
+              toast.info('Select a wallet to continue');
+            }
+          }, 50);
+          return;
+        } catch (error) {
+          console.error('Preview wallet selection error:', error);
+        }
+      }
+      
+      // Fallback: open wallet selector modal
       console.log('🎯 Opening wallet selector for connection...');
       setVisible(true);
       toast.info('Select a wallet to continue');
     } catch (error) {
       console.error('Payment wallet connection error:', error);
-      toast.error('Failed to open wallet selector');
+      toast.error('Failed to connect wallet');
     }
   }, [setVisible]);
 
