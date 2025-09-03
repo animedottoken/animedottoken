@@ -1,11 +1,23 @@
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LogIn, LogOut } from 'lucide-react';
-import { RememberWalletToggle } from '@/components/RememberWalletToggle';
+import { LogIn, LogOut, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useEffect, useState } from 'react';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, walletName, connect, disconnect, openWalletSelector } = useSolanaWallet();
+  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, openWalletSelector, listProviders, error } = useSolanaWallet();
+  const [isInIframe, setIsInIframe] = useState(false);
+  const [providers, setProviders] = useState<string[]>([]);
+
+  useEffect(() => {
+    setIsInIframe(window !== window.parent);
+    setProviders(listProviders());
+  }, [listProviders]);
+
+  const openFullApp = () => {
+    window.open(window.location.href, '_blank');
+  };
 
   if (connected && publicKey) {
     return (
@@ -34,23 +46,83 @@ export const SolanaWalletButton = () => {
     );
   }
 
+  if (isInIframe) {
+    return (
+      <div className="space-y-3">
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Wallet connection is blocked in preview mode for security. Open the full app to connect your wallet.
+          </AlertDescription>
+        </Alert>
+        <Button onClick={openFullApp} className="w-full flex items-center gap-2">
+          Open Full App
+          <ExternalLink className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-3">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+        <Button onClick={openWalletSelector} variant="outline" className="w-full">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
+      {/* Quick Connect Buttons */}
+      <div className="space-y-2">
+        <div className="text-xs text-muted-foreground text-center">Quick Connect</div>
+        <div className="grid grid-cols-2 gap-2">
+          {providers.includes('Phantom') && (
+            <Button
+              onClick={() => connectWith('Phantom')}
+              disabled={connecting}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {connecting ? '...' : 'Phantom'}
+            </Button>
+          )}
+          {providers.includes('Solflare') && (
+            <Button
+              onClick={() => connectWith('Solflare')}
+              disabled={connecting}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {connecting ? '...' : 'Solflare'}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Main Connect Button */}
       <Button 
-        onClick={() => connect()} 
+        onClick={openWalletSelector}
         disabled={connecting}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
       >
         {connecting ? (
           'Connecting...'
         ) : (
           <>
             Connect Wallet
-            <LogIn className="h-4 w-4 text-success" />
+            <LogIn className="h-4 w-4" />
           </>
         )}
       </Button>
-      <RememberWalletToggle />
     </div>
   );
 };

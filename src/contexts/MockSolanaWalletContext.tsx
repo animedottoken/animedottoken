@@ -32,8 +32,9 @@ interface SolanaWalletContextType {
   signMessage: (message: string) => Promise<string>;
   disconnect: () => void;
   setRememberWallet: (remember: boolean) => void;
-  listProviders: () => any[];
+  listProviders: () => string[];
   connectWith: (providerName: string) => Promise<void>;
+  error: string | null;
 }
 
 const SolanaWalletContext = createContext<SolanaWalletContextType>({
@@ -54,6 +55,7 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   setRememberWallet: () => {},
   listProviders: () => [],
   connectWith: async () => {},
+  error: null,
 });
 
 export const useSolanaWallet = () => {
@@ -70,6 +72,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { setVisible } = useWalletModal();
   const { user } = useAuth();
   const [balance, setBalance] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const [rememberWallet, setRememberWallet] = useState(() => {
     return localStorage.getItem('remember-wallet') === 'true';
   });
@@ -77,17 +80,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Fetch balance when wallet connects
   useEffect(() => {
-    console.log('🔵 Wallet state changed - Connected:', connected, 'PublicKey:', publicKey?.toBase58());
-    
     const fetchBalance = async () => {
       if (publicKey && connected) {
         try {
-          console.log('🔵 Fetching balance for:', publicKey.toBase58());
           const balance = await connection.getBalance(publicKey);
           setBalance(balance / LAMPORTS_PER_SOL);
-          console.log('🟢 Balance fetched:', balance / LAMPORTS_PER_SOL, 'SOL');
         } catch (error) {
-          console.error('🔴 Error fetching balance:', error);
+          console.error('Error fetching balance:', error);
         }
       } else {
         setBalance(0);
@@ -101,36 +100,15 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Wallets are now connected temporarily for payments or explicitly linked for identity
 
   const connect = useCallback(async () => {
-    console.log('🔵 Wallet connect called');
+    setError(null);
     try {
-      // Always show wallet selector if no wallet is selected, 
-      // remember preference is off, or multiple wallets available
-      const availableWallets = wallets.filter(w => w.readyState === 'Installed');
-      console.log('🔵 Available wallets:', availableWallets.map(w => w.adapter.name));
-      console.log('🔵 Current wallet:', wallet?.adapter.name);
-      console.log('🔵 Remember wallet:', rememberWallet);
-      
-      if (!wallet || !rememberWallet || availableWallets.length > 1) {
-        console.log('🔵 Opening wallet selector modal');
-        setVisible(true);
-        return;
-      }
-
-      console.log('🔵 Attempting to connect with selected wallet');
-      await walletConnect();
-      console.log('🟢 Wallet connected successfully');
+      // Always show wallet selector for simplified experience
+      setVisible(true);
     } catch (error) {
-      console.log('🔴 Wallet connection error:', error);
-      // Only show error toast for actual connection failures, not wallet selection issues
-      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
-        console.log('🔵 Showing wallet selector due to connection error');
-        setVisible(true);
-      } else {
-        console.error('Wallet connection error:', error);
-        toast.error('Failed to connect wallet');
-      }
+      console.error('Wallet connection error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to connect wallet');
     }
-  }, [walletConnect, wallet, setVisible, rememberWallet, wallets]);
+  }, [setVisible]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
@@ -154,11 +132,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const listProviders = useCallback(() => {
-    return wallets.map(wallet => ({
-      name: wallet.adapter.name,
-      icon: wallet.adapter.icon,
-      url: wallet.adapter.url
-    }));
+    return wallets
+      .filter(w => w.readyState === 'Installed')
+      .map(w => w.adapter.name);
   }, [wallets]);
 
   const connectPaymentWallet = useCallback(async () => {
@@ -249,34 +225,32 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [setVisible]);
 
   const connectWith = useCallback(async (providerName: string) => {
+    setError(null);
     try {
-      // Find the specific wallet adapter by name
       const selectedWallet = wallets.find(w => 
         w.adapter.name.toLowerCase() === providerName.toLowerCase() ||
         w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
       );
       
-      if (selectedWallet) {
-        // Select the wallet first
+      if (selectedWallet && selectedWallet.readyState === 'Installed') {
         select(selectedWallet.adapter.name);
-        // Wait a bit for the selection to take effect, then connect
         setTimeout(async () => {
           try {
             await walletConnect();
+            toast.success(`Connected to ${providerName}`);
           } catch (error) {
             console.error('Wallet connection error:', error);
-            toast.error(`Failed to connect to ${providerName}`);
+            setError(`Failed to connect to ${providerName}`);
           }
         }, 100);
       } else {
-        // Wallet not found, show selection modal
-        setVisible(true);
+        setError(`${providerName} wallet not installed`);
       }
     } catch (error) {
       console.error('Wallet selection error:', error);
-      toast.error(`Failed to select ${providerName} wallet`);
+      setError(`Failed to select ${providerName} wallet`);
     }
-  }, [wallets, select, walletConnect, setVisible]);
+  }, [wallets, select, walletConnect]);
 
   const value = {
     connected,
@@ -296,6 +270,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setRememberWallet: handleSetRememberWallet,
     listProviders,
     connectWith,
+    error,
   };
 
   return (
@@ -310,20 +285,13 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(
-    () => {
-      console.log('🔵 Initializing wallet adapters');
-      const adapters = [
-        new PhantomWalletAdapter(),
-        new SolflareWalletAdapter({ network }),
-        new TrustWalletAdapter(),
-      ];
-      console.log('🔵 Created wallet adapters:', adapters.map(w => w.name));
-      return adapters;
-    },
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter({ network }),
+      new TrustWalletAdapter(),
+    ],
     [network]
   );
-
-  console.log('🔵 SolanaWalletProvider rendering with endpoint:', endpoint);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
