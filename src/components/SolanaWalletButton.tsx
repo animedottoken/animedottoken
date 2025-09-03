@@ -46,22 +46,8 @@ export const SolanaWalletButton = () => {
     );
   }
 
-  if (isInIframe) {
-    return (
-      <div className="space-y-3">
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Wallet connection is blocked in preview mode for security. Open the full app to connect your wallet.
-          </AlertDescription>
-        </Alert>
-        <Button onClick={openFullApp} className="w-full flex items-center gap-2">
-          Open Full App
-          <ExternalLink className="h-4 w-4" />
-        </Button>
-      </div>
-    );
-  }
+  // Show iframe restriction note but allow connection attempts
+  const showIframeNote = isInIframe;
 
   if (error) {
     return (
@@ -70,15 +56,47 @@ export const SolanaWalletButton = () => {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-        <Button onClick={openWalletSelector} variant="outline" className="w-full">
-          Try Again
-        </Button>
+        {isInIframe && (
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              If wallet connection fails in preview mode, try opening the full app.
+            </AlertDescription>
+          </Alert>
+        )}
+        <div className="flex gap-2">
+          <Button onClick={openWalletSelector} variant="outline" className="flex-1">
+            Try Again
+          </Button>
+          {isInIframe && (
+            <Button onClick={openFullApp} variant="ghost" size="sm" className="flex items-center gap-1">
+              <ExternalLink className="h-3 w-3" />
+              Full App
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
+      {showIframeNote && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-xs">
+            Preview mode - some wallets may have connection restrictions.{' '}
+            <button 
+              onClick={openFullApp}
+              className="underline hover:no-underline"
+            >
+              Open full app
+            </button>{' '}
+            if needed.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {/* Quick Connect Buttons */}
       <div className="space-y-2">
         <div className="text-xs text-muted-foreground text-center">Quick Connect</div>
