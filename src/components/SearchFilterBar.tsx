@@ -1,7 +1,14 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  MenuSelect, 
+  MenuSelectContent, 
+  MenuSelectItem, 
+  MenuSelectTrigger, 
+  MenuSelectValue,
+  useMenuSelect 
+} from '@/components/ui/menu-select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -144,106 +151,37 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       {/* Primary Filters Row - Always visible */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         {showTypeFilter && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Type</Label>
-            <Select
-              value={localFilters.type || 'all'}
-              onValueChange={(value) => updateFilter('type', value)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="collections">Collections</SelectItem>
-                <SelectItem value="nfts">NFTs</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <TypeFilterSelect 
+            value={localFilters.type || 'all'}
+            onValueChange={(value) => updateFilter('type', value)}
+          />
         )}
 
         {showSourceFilter && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Source</Label>
-            <Select
-              value={localFilters.source}
-              onValueChange={(value) => updateFilter('source', value)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="liked">Liked</SelectItem>
-                <SelectItem value="from-liked">From Liked Creators</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <SourceFilterSelect 
+            value={localFilters.source}
+            onValueChange={(value) => updateFilter('source', value)}
+          />
         )}
 
         {showListingFilter && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Listing Status</Label>
-            <Select
-              value={localFilters.listing || 'all'}
-              onValueChange={(value) => updateFilter('listing', value)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="listed">Listed</SelectItem>
-                <SelectItem value="not-listed">Not Listed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <ListingFilterSelect 
+            value={localFilters.listing || 'all'}
+            onValueChange={(value) => updateFilter('listing', value)}
+          />
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Sort By</Label>
-          <Select
-            value={localFilters.sortBy}
-            onValueChange={(value) => updateFilter('sortBy', value)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="likes">Most Liked</SelectItem>
-              <SelectItem value="name-az">Name A-Z</SelectItem>
-              <SelectItem value="name-za">Name Z-A</SelectItem>
-              {showPriceFilters && (
-                <>
-                  <SelectItem value="price-high">Price High to Low</SelectItem>
-                  <SelectItem value="price-low">Price Low to High</SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
+        <SortByFilterSelect 
+          value={localFilters.sortBy}
+          onValueChange={(value) => updateFilter('sortBy', value)}
+          showPriceFilters={showPriceFilters}
+        />
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Category</Label>
-          <Select
-            value={localFilters.category}
-            onValueChange={(value) => updateFilter('category', value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <CategoryFilterSelect 
+          value={localFilters.category}
+          onValueChange={(value) => updateFilter('category', value)}
+          categories={categories}
+        />
 
         <div className="flex items-center space-x-2 pt-6">
           <Switch
@@ -356,6 +294,202 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           </Button>
         </div>
       )}
+    </div>
+  );
+};
+
+// Individual filter components using MenuSelect
+const TypeFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Type</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>
+            {value === 'all' ? 'All' : value === 'collections' ? 'Collections' : 'NFTs'}
+          </MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
+            All
+          </MenuSelectItem>
+          <MenuSelectItem value="collections" onSelect={() => selectState.onValueChange('collections')}>
+            Collections
+          </MenuSelectItem>
+          <MenuSelectItem value="nfts" onSelect={() => selectState.onValueChange('nfts')}>
+            NFTs
+          </MenuSelectItem>
+        </MenuSelectContent>
+      </MenuSelect>
+    </div>
+  );
+};
+
+const SourceFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  const getDisplayText = (val: string) => {
+    switch (val) {
+      case 'liked': return 'Liked';
+      case 'from-liked': return 'From Liked Creators';
+      default: return 'All';
+    }
+  };
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Source</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>{getDisplayText(value)}</MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
+            All
+          </MenuSelectItem>
+          <MenuSelectItem value="liked" onSelect={() => selectState.onValueChange('liked')}>
+            Liked
+          </MenuSelectItem>
+          <MenuSelectItem value="from-liked" onSelect={() => selectState.onValueChange('from-liked')}>
+            From Liked Creators
+          </MenuSelectItem>
+        </MenuSelectContent>
+      </MenuSelect>
+    </div>
+  );
+};
+
+const ListingFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  const getDisplayText = (val: string) => {
+    switch (val) {
+      case 'listed': return 'Listed';
+      case 'not-listed': return 'Not Listed';
+      default: return 'All';
+    }
+  };
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Listing Status</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>{getDisplayText(value)}</MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
+            All
+          </MenuSelectItem>
+          <MenuSelectItem value="listed" onSelect={() => selectState.onValueChange('listed')}>
+            Listed
+          </MenuSelectItem>
+          <MenuSelectItem value="not-listed" onSelect={() => selectState.onValueChange('not-listed')}>
+            Not Listed
+          </MenuSelectItem>
+        </MenuSelectContent>
+      </MenuSelect>
+    </div>
+  );
+};
+
+const SortByFilterSelect = ({ 
+  value, 
+  onValueChange, 
+  showPriceFilters 
+}: { 
+  value: string; 
+  onValueChange: (value: string) => void;
+  showPriceFilters?: boolean;
+}) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  const getDisplayText = (val: string) => {
+    switch (val) {
+      case 'oldest': return 'Oldest';
+      case 'likes': return 'Most Liked';
+      case 'name-az': return 'Name A-Z';
+      case 'name-za': return 'Name Z-A';
+      case 'price-high': return 'Price High to Low';
+      case 'price-low': return 'Price Low to High';
+      default: return 'Newest';
+    }
+  };
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Sort By</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>{getDisplayText(value)}</MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="newest" onSelect={() => selectState.onValueChange('newest')}>
+            Newest
+          </MenuSelectItem>
+          <MenuSelectItem value="oldest" onSelect={() => selectState.onValueChange('oldest')}>
+            Oldest
+          </MenuSelectItem>
+          <MenuSelectItem value="likes" onSelect={() => selectState.onValueChange('likes')}>
+            Most Liked
+          </MenuSelectItem>
+          <MenuSelectItem value="name-az" onSelect={() => selectState.onValueChange('name-az')}>
+            Name A-Z
+          </MenuSelectItem>
+          <MenuSelectItem value="name-za" onSelect={() => selectState.onValueChange('name-za')}>
+            Name Z-A
+          </MenuSelectItem>
+          {showPriceFilters && (
+            <>
+              <MenuSelectItem value="price-high" onSelect={() => selectState.onValueChange('price-high')}>
+                Price High to Low
+              </MenuSelectItem>
+              <MenuSelectItem value="price-low" onSelect={() => selectState.onValueChange('price-low')}>
+                Price Low to High
+              </MenuSelectItem>
+            </>
+          )}
+        </MenuSelectContent>
+      </MenuSelect>
+    </div>
+  );
+};
+
+const CategoryFilterSelect = ({ 
+  value, 
+  onValueChange, 
+  categories 
+}: { 
+  value: string; 
+  onValueChange: (value: string) => void;
+  categories: string[];
+}) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Category</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>{value === 'all' ? 'All categories' : value}</MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
+            All categories
+          </MenuSelectItem>
+          {categories.map((category) => (
+            <MenuSelectItem 
+              key={category} 
+              value={category} 
+              onSelect={() => selectState.onValueChange(category)}
+            >
+              {category}
+            </MenuSelectItem>
+          ))}
+        </MenuSelectContent>
+      </MenuSelect>
     </div>
   );
 };

@@ -98,11 +98,14 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connect = useCallback(async () => {
     try {
-      // If no wallet is selected, show the wallet selector
-      if (!wallet) {
+      // Always show wallet selector if no wallet is selected, 
+      // remember preference is off, or multiple wallets available
+      const availableWallets = wallets.filter(w => w.readyState === 'Installed');
+      if (!wallet || !rememberWallet || availableWallets.length > 1) {
         setVisible(true);
         return;
       }
+
       await walletConnect();
     } catch (error) {
       // Only show error toast for actual connection failures, not wallet selection issues
@@ -113,7 +116,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toast.error('Failed to connect wallet');
       }
     }
-  }, [walletConnect, wallet, setVisible]);
+  }, [walletConnect, wallet, setVisible, rememberWallet, wallets]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();

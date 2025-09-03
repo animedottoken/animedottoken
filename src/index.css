@@ -156,21 +156,7 @@ All colors MUST be HSL. */
     contain: layout;
   }
 
-  /* Neutralize all scroll-lock padding injections that cause layout shifts */
-  html[style*="overflow: hidden"],
-  html[data-scroll-locked],
-  html[style*="padding-right"] {
-    overflow-y: scroll !important;
-    padding-right: 0 !important;
-  }
-
-  body[style*="overflow: hidden"],
-  body[data-scroll-locked],
-  body.scroll-locked,
-  body[style*="padding-right"] {
-    padding-right: 0 !important;
-    overflow-y: auto !important;
-  }
+  /* Allow normal scroll-lock padding compensation - no aggressive overrides */
 
   #root {
     min-height: 100%;
