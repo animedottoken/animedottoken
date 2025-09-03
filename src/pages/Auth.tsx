@@ -195,7 +195,7 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(safeRedirect)}`;
+      const redirectUrl = `${window.location.origin}/?redirect=${encodeURIComponent(safeRedirect)}`;
       
       console.log('Google OAuth redirect URL:', redirectUrl);
       
@@ -239,7 +239,7 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(safeRedirect)}`;
+      const redirectUrl = `${window.location.origin}/?redirect=${encodeURIComponent(safeRedirect)}`;
       
       const { error } = await supabase.auth.signInWithOtp({
         email,

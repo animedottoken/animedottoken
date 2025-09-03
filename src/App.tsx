@@ -61,37 +61,64 @@ const AppLayout = () => {
   // Global magic link handler for root path redirects
   useEffect(() => {
     const handleRootMagicLink = async () => {
-      // Only process if we're on root path and have hash tokens
-      if (location.pathname === '/' && location.hash.includes('access_token')) {
-        console.log('Processing magic link tokens from root path...');
+      // Only process if we're on root path and have auth tokens/codes
+      if (location.pathname === '/' && (location.hash.includes('access_token') || location.search.includes('code='))) {
+        console.log('Processing auth tokens from root path...');
         
         try {
-          // Parse hash fragment for tokens
-          const hashParams = new URLSearchParams(location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          const refreshToken = hashParams.get('refresh_token');
+          // Parse redirect target from query params
+          const searchParams = new URLSearchParams(location.search);
+          const rawRedirect = searchParams.get('redirect');
+          const safeRedirect = rawRedirect && rawRedirect.startsWith('/') ? rawRedirect : '/profile';
           
-          if (accessToken && refreshToken) {
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken
-            });
+          // Handle Magic Link tokens in hash fragment
+          if (location.hash.includes('access_token')) {
+            console.log('Processing magic link tokens from hash...');
+            const hashParams = new URLSearchParams(location.hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+            
+            if (accessToken && refreshToken) {
+              const { data, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+              });
+              
+              if (error) {
+                console.error('Root magic link error:', error);
+                navigate('/auth');
+                return;
+              }
+              
+              if (data.session) {
+                console.log('Root magic link successful, session created');
+                // Clean URL and navigate to redirect target
+                window.history.replaceState({}, document.title, '/');
+                navigate(safeRedirect, { replace: true });
+              }
+            }
+          }
+          
+          // Handle OAuth code exchange for query params
+          if (location.search.includes('code=')) {
+            console.log('Processing OAuth code from root...');
+            const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
             
             if (error) {
-              console.error('Root magic link error:', error);
-              // Redirect to auth page with error handling
+              console.error('Root OAuth error:', error);
               navigate('/auth');
               return;
             }
             
             if (data.session) {
-              console.log('Root magic link successful, session created');
-              // Clean URL and stay on root
+              console.log('Root OAuth successful, session created');
+              // Clean URL and navigate to redirect target
               window.history.replaceState({}, document.title, '/');
+              navigate(safeRedirect, { replace: true });
             }
           }
         } catch (error) {
-          console.error('Root magic link processing failed:', error);
+          console.error('Root auth processing failed:', error);
           navigate('/auth');
         }
       }
