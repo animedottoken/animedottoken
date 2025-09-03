@@ -189,7 +189,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const listProviders = useCallback(() => {
     const installedWallets = wallets
       .filter(w => 
-        (w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable) && 
+        // Always expose primary wallets in UI regardless of readyState
         !/unsafe|burner/i.test(w.adapter.name)
       )
       .map(w => w.adapter.name);
@@ -299,32 +299,45 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
       );
       
-      if (selectedWallet && (selectedWallet.readyState === WalletReadyState.Installed || selectedWallet.readyState === WalletReadyState.Loadable)) {
-        console.log(`✅ Found ${providerName} wallet, selecting...`);
-        select(selectedWallet.adapter.name);
-        setTimeout(async () => {
-          try {
-            console.log(`🔗 Connecting to ${providerName}...`);
-            await walletConnect();
-            console.log(`✅ Successfully connected to ${providerName}`);
-            toast.success(`Connected to ${providerName}`);
-          } catch (error) {
-            console.error(`❌ Wallet connection error for ${providerName}:`, error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            console.log(`🔍 Error details:`, { name: error?.name, message: errorMessage, stack: error?.stack });
-            setError(`Failed to connect to ${providerName}: ${errorMessage}`);
-          }
-        }, 100);
-      } else {
-        const status = selectedWallet ? selectedWallet.readyState : 'not found';
-        console.log(`❌ ${providerName} wallet status:`, status);
-        setError(`${providerName} wallet not installed or not ready (status: ${status})`);
+      if (!selectedWallet) {
+        const available = wallets.map(w => ({ name: w.adapter.name, ready: w.readyState }));
+        console.warn(`⚠️ ${providerName} not found among adapters`, available);
+        const msg = `${providerName} wallet not available`;
+        setError(msg);
+        toast.error(msg);
+        return;
       }
+
+      // Proactively disconnect any previously selected wallet to avoid adapter conflicts
+      try {
+        await walletDisconnect();
+      } catch (_) {}
+
+      console.log(`✅ Found ${providerName} (ready: ${selectedWallet.readyState}), selecting...`);
+      select(selectedWallet.adapter.name);
+
+      setTimeout(async () => {
+        try {
+          console.log(`🔗 Connecting to ${providerName}...`);
+          await walletConnect();
+          console.log(`✅ Successfully connected to ${providerName}`);
+          toast.success(`Connected to ${providerName}`);
+        } catch (error: any) {
+          console.error(`❌ Wallet connection error for ${providerName}:`, error);
+          const errorMessage = error instanceof Error ? error.message : (error?.toString?.() ?? 'Unknown error');
+          console.log(`🔍 Error details:`, { name: error?.name, message: errorMessage, stack: error?.stack, readyState: selectedWallet.readyState });
+          const msg = `Failed to connect to ${providerName}: ${errorMessage}`;
+          setError(msg);
+          toast.error(msg);
+        }
+      }, 50);
     } catch (error) {
       console.error('Wallet selection error:', error);
-      setError(`Failed to select ${providerName} wallet`);
+      const msg = `Failed to select ${providerName} wallet`;
+      setError(msg);
+      toast.error(msg);
     }
-  }, [wallets, select, walletConnect]);
+  }, [wallets, select, walletConnect, walletDisconnect]);
 
   const value = {
     connected,
@@ -365,11 +378,12 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       new TrustWalletAdapter(),
     ];
 
-    // Add Preview Wallet (Unsafe Burner) for iframe and devnet only
+    // Conditionally add Preview Wallet (Unsafe Burner) only when explicitly enabled via ?preview=1
     const isInIframe = typeof window !== 'undefined' && window !== window.parent;
     const isDevnet = network === WalletAdapterNetwork.Devnet;
+    const previewEnabled = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     
-    if (isInIframe && isDevnet) {
+    if (isInIframe && isDevnet && previewEnabled) {
       baseWallets.push(new UnsafeBurnerWalletAdapter());
     }
 
