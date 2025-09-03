@@ -5,6 +5,8 @@ import { metaplexService, type NFTMetadata } from '@/services/metaplexService';
 import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
 import { toast } from 'sonner';
 
+const BATCH_SIZE = 50;
+
 export interface StandaloneNFTData {
   name: string;
   symbol?: string;
