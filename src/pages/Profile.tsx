@@ -85,7 +85,7 @@ const Profile = () => {
   
   // Real-time creator stats - use user-based stats if profile has user_id
   const { getCreatorFollowerCount, getCreatorFollowingCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
-    profile?.id ? [profile.id] : []
+    profile?.user_id ? [profile.user_id] : []
   );
 
   // Filter states - combine into one for the merged tab
@@ -379,10 +379,10 @@ const Profile = () => {
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
   const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
 
-  // Check if current user is following this profile - use user ID instead of wallet address
+  // Check if current user is following this profile - by user_id
   const isFollowingProfile = useMemo(() => {
-    return profile?.id ? followedCreators.includes(profile.id) : false;
-  }, [followedCreators, profile?.id]);
+    return profile?.user_id ? followedCreators.includes(profile.user_id) : false;
+  }, [followedCreators, profile?.user_id]);
 
   if (loading) {
     return (
@@ -474,12 +474,12 @@ const Profile = () => {
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                   )}
-                  {profile?.id && (
+                  {profile?.user_id && (
                     <SocialActionWrapper
                       action={isFollowingProfile ? "unfollow creator" : "follow creator"}
                       onAction={async () => {
-                        if (profile?.id) {
-                          await toggleFollowByUserId(profile.id);
+                        if (profile?.user_id) {
+                          await toggleFollowByUserId(profile.user_id);
                         }
                       }}
                     >
@@ -702,7 +702,7 @@ const Profile = () => {
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{getCreatorFollowerCount(profile?.id || '')}</span>
+                        <span className="font-medium">{getCreatorFollowerCount(profile?.user_id || '')}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -715,7 +715,7 @@ const Profile = () => {
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <UserPlus className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{getCreatorFollowingCount(profile?.id || '')}</span>
+                        <span className="font-medium">{getCreatorFollowingCount(profile?.user_id || '')}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -728,7 +728,7 @@ const Profile = () => {
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <Heart className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{getCreatorTotalLikeCount(profile?.id || '')}</span>
+                        <span className="font-medium">{getCreatorTotalLikeCount(profile?.user_id || '')}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
