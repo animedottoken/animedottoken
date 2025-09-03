@@ -4,6 +4,7 @@ import { User, ShoppingCart, Coins, ChevronLeft, ChevronRight } from "lucide-rea
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
 import { homeSections } from "@/lib/homeSections";
+import { MarketplaceFilterSidebar } from "@/components/MarketplaceFilterSidebar";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,14 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+
+  // Check if we're on marketplace page
+  const isMarketplacePage = location.pathname === '/marketplace';
+
+  // If on marketplace, show filter sidebar instead
+  if (isMarketplacePage) {
+    return <MarketplaceFilterSidebar className={className} collapsed={collapsed} />;
+  }
 
   const handleCollapseToggle = () => {
     const newCollapsed = !collapsed;
