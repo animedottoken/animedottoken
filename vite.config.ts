@@ -12,17 +12,18 @@ export default defineConfig(({ mode }) => ({
   define: {
     global: 'globalThis',
   },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      stream: "stream-browserify",
+    },
+    dedupe: ["react", "react-dom"]
+  },
   plugins: [
     react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-    dedupe: ["react", "react-dom"]
-  },
   build: {
     target: 'esnext',
     minify: 'terser',

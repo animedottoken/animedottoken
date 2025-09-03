@@ -26,6 +26,14 @@
     </script>
     <!-- End Meta Pixel Code -->
     
+    <!-- Node.js polyfills for Metaplex -->
+    <script type="module">
+      import { Buffer } from "buffer";
+      import process from "process";
+      window.Buffer = Buffer;
+      window.process = process;
+    </script>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
