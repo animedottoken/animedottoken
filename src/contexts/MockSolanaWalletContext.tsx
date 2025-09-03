@@ -102,13 +102,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const connect = useCallback(async () => {
     setError(null);
     try {
+      console.log('🔗 Attempting wallet connection...');
+      console.log('🖼️ Is in iframe:', window !== window.parent);
+      console.log('🌐 Origin:', window.location.origin);
+      console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
+      
       // Always show wallet selector for simplified experience
       setVisible(true);
     } catch (error) {
       console.error('Wallet connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect wallet');
     }
-  }, [setVisible]);
+  }, [setVisible, wallets]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
@@ -227,24 +232,34 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const connectWith = useCallback(async (providerName: string) => {
     setError(null);
     try {
+      console.log(`🎯 Attempting direct connection to ${providerName}...`);
+      console.log('🖼️ Is in iframe:', window !== window.parent);
+      
       const selectedWallet = wallets.find(w => 
         w.adapter.name.toLowerCase() === providerName.toLowerCase() ||
         w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
       );
       
       if (selectedWallet && selectedWallet.readyState === 'Installed') {
+        console.log(`✅ Found ${providerName} wallet, selecting...`);
         select(selectedWallet.adapter.name);
         setTimeout(async () => {
           try {
+            console.log(`🔗 Connecting to ${providerName}...`);
             await walletConnect();
+            console.log(`✅ Successfully connected to ${providerName}`);
             toast.success(`Connected to ${providerName}`);
           } catch (error) {
-            console.error('Wallet connection error:', error);
-            setError(`Failed to connect to ${providerName}`);
+            console.error(`❌ Wallet connection error for ${providerName}:`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.log(`🔍 Error details:`, { name: error?.name, message: errorMessage, stack: error?.stack });
+            setError(`Failed to connect to ${providerName}: ${errorMessage}`);
           }
         }, 100);
       } else {
-        setError(`${providerName} wallet not installed`);
+        const status = selectedWallet ? selectedWallet.readyState : 'not found';
+        console.log(`❌ ${providerName} wallet status:`, status);
+        setError(`${providerName} wallet not installed or not ready (status: ${status})`);
       }
     } catch (error) {
       console.error('Wallet selection error:', error);
