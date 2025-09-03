@@ -183,16 +183,16 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen w-full">
       <SecurityBanner />
-      <DesktopSidebar 
-        className="fixed left-0 top-0 h-screen z-30" 
-        onCollapseChange={setSidebarCollapsed}
-      />
-      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <div className="sticky top-0 z-20 bg-background border-b">
-          <TopNav />
-        </div>
-        <main className="flex-1">
-          <FiltersScope>
+      <FiltersScope>
+        <DesktopSidebar 
+          className="fixed left-0 top-0 h-screen z-30" 
+          onCollapseChange={setSidebarCollapsed}
+        />
+        <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+          <div className="sticky top-0 z-20 bg-background border-b">
+            <TopNav />
+          </div>
+          <main className="flex-1">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/share/nft/:nftId" element={<ShareNFT />} />
@@ -211,10 +211,10 @@ const AppLayout = () => {
               <Route path="/trust" element={<Trust />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </FiltersScope>
-        </main>
-        <BackToTop />
-      </div>
+          </main>
+          <BackToTop />
+        </div>
+      </FiltersScope>
     </div>
   );
 };
