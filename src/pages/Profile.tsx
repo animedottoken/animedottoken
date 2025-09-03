@@ -550,7 +550,16 @@ const Profile = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={hasWallet ? disconnect : connect}
+                        onClick={() => {
+                          console.log('🔵 Connect button clicked, hasWallet:', hasWallet);
+                          if (hasWallet) {
+                            console.log('🔵 Disconnecting wallet');
+                            disconnect();
+                          } else {
+                            console.log('🔵 Calling connect function');
+                            connect();
+                          }
+                        }}
                         disabled={connecting}
                         className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
                       >

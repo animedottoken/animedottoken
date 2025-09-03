@@ -310,13 +310,20 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter({ network }),
-      new TrustWalletAdapter(),
-    ],
+    () => {
+      console.log('🔵 Initializing wallet adapters');
+      const adapters = [
+        new PhantomWalletAdapter(),
+        new SolflareWalletAdapter({ network }),
+        new TrustWalletAdapter(),
+      ];
+      console.log('🔵 Created wallet adapters:', adapters.map(w => w.name));
+      return adapters;
+    },
     [network]
   );
+
+  console.log('🔵 SolanaWalletProvider rendering with endpoint:', endpoint);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
