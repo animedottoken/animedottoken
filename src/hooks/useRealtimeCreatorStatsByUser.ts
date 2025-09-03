@@ -75,10 +75,12 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
       setCreatorStats(prev => ({
         ...prev,
         [userId]: {
-          follower_count: type === 'follow' 
+          follower_count: type === 'follower' 
             ? Math.max(0, (prev[userId]?.follower_count || 0) + delta)
             : (prev[userId]?.follower_count || 0),
-          following_count: (prev[userId]?.following_count || 0), // Following count doesn't change for the target user
+          following_count: type === 'following' 
+            ? Math.max(0, (prev[userId]?.following_count || 0) + delta)
+            : (prev[userId]?.following_count || 0),
           nft_likes_count: type === 'nft_like' 
             ? Math.max(0, (prev[userId]?.nft_likes_count || 0) + delta)
             : (prev[userId]?.nft_likes_count || 0),

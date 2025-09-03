@@ -33,14 +33,26 @@ export const useCreatorFollowsByUser = () => {
       return false;
     }
 
+    const wasFollowing = followedCreators.includes(targetUserId);
+    const delta = wasFollowing ? -1 : 1;
+
     try {
-      const wasFollowing = followedCreators.includes(targetUserId);
       setLoading(true);
 
-      // Dispatch optimistic update signal using user_id
-      const delta = wasFollowing ? -1 : 1;
+      // Optimistic UI: update local state immediately
+      if (wasFollowing) {
+        setFollowedCreators(prev => prev.filter(c => c !== targetUserId));
+      } else {
+        setFollowedCreators(prev => prev.includes(targetUserId) ? prev : [...prev, targetUserId]);
+      }
+
+      // Dispatch TWO optimistic events - one for follower count, one for following count
       window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
-        detail: { userId: targetUserId, type: 'follow', delta }
+        detail: { userId: targetUserId, type: 'follower', delta }
+      }));
+      
+      window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+        detail: { userId: user.id, type: 'following', delta }
       }));
 
       const action = wasFollowing ? 'unfollow' : 'follow';
@@ -54,30 +66,31 @@ export const useCreatorFollowsByUser = () => {
 
       if (error) throw error;
       
-      // Update local state
-      if (action === 'follow') {
-        setFollowedCreators(prev => {
-          // Prevent duplicates
-          if (prev.includes(targetUserId)) return prev;
-          return [...prev, targetUserId];
-        });
-        toast.success('Successfully followed creator!');
-      } else {
-        setFollowedCreators(prev => prev.filter(c => c !== targetUserId));
-        toast.success('Successfully unfollowed creator!');
-      }
-      
+      toast.success(action === 'follow' ? 'Successfully followed creator!' : 'Successfully unfollowed creator!');
       return true;
     } catch (err: any) {
       console.error('Error toggling follow by user ID:', err);
       toast.error(err.message || 'Failed to update follow status');
       
-      // Revert optimistic update on error
-      const wasFollowing = followedCreators.includes(targetUserId);
+      // Revert optimistic updates on error
       const revertDelta = wasFollowing ? 1 : -1;
+      
+      // Revert follower count for target user
       window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
-        detail: { userId: targetUserId, type: 'follow', delta: revertDelta }
+        detail: { userId: targetUserId, type: 'follower', delta: revertDelta }
       }));
+      
+      // Revert following count for current user
+      window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+        detail: { userId: user.id, type: 'following', delta: revertDelta }
+      }));
+      
+      // Revert local state
+      if (wasFollowing) {
+        setFollowedCreators(prev => prev.includes(targetUserId) ? prev : [...prev, targetUserId]);
+      } else {
+        setFollowedCreators(prev => prev.filter(c => c !== targetUserId));
+      }
       
       return false;
     } finally {
@@ -85,7 +98,7 @@ export const useCreatorFollowsByUser = () => {
     }
   }, [user, followedCreators]);
 
-  const isFollowingUserId = useCallback(async (targetUserId: string): Promise<boolean> => {
+  const isFollowingUserId = useCallback((targetUserId: string): boolean => {
     return followedCreators.includes(targetUserId);
   }, [followedCreators]);
 

@@ -301,15 +301,17 @@ const Profile = () => {
     );
   }, [collections, targetWallet]);
 
-  // Get NFTs and Collections from liked creators
+  // Get NFTs and Collections from liked creators - need to map wallet addresses to user IDs
   const nftsFromLikedCreators = useMemo(() => {
-    return nfts.filter(nft => followedCreators.includes(nft.creator_address));
+    // Since followedCreators contains user IDs but NFTs have creator_address (wallet), 
+    // this filtering won't work until we have a mapping. For now, return empty array.
+    return [];
   }, [nfts, followedCreators]);
 
   const collectionsFromLikedCreators = useMemo(() => {
-    return userCollections.filter(collection => 
-      followedCreators.includes(collection.creator_address)
-    );
+    // Since followedCreators contains user IDs but collections have creator_address (wallet),
+    // this filtering won't work until we have a mapping. For now, return empty array.
+    return [];
   }, [userCollections, followedCreators]);
 
   // Apply filters - Convert UserNFT to NFT format
@@ -377,10 +379,10 @@ const Profile = () => {
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
   const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
 
-  // Check if current user is following this profile
+  // Check if current user is following this profile - use user ID instead of wallet address
   const isFollowingProfile = useMemo(() => {
-    return profile?.wallet_address ? followedCreators.includes(profile.wallet_address) : false;
-  }, [followedCreators, profile?.wallet_address]);
+    return profile?.id ? followedCreators.includes(profile.id) : false;
+  }, [followedCreators, profile?.id]);
 
   if (loading) {
     return (

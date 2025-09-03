@@ -19,31 +19,32 @@ interface LikedCollection {
 
 export const useLikedCollections = () => {
   const [likedCollections, setLikedCollections] = useState<LikedCollection[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  const { publicKey } = useSolanaWallet();
 
   const fetchLikedCollections = async () => {
-    if (!publicKey) {
+    if (!user) {
       setLikedCollections([]);
       return;
     }
 
     setLoading(true);
     try {
-      console.log('Fetching liked collections for wallet:', publicKey);
+      console.log('Fetching liked collections for user:', user.id);
       
-      // First get liked collection IDs from edge function (bypasses RLS)
-      const { data: likedData, error: likedError } = await supabase.functions.invoke('get-liked-collections', {
-        body: { user_wallet: publicKey }
-      });
+      // Get liked collection IDs directly from collection_likes table
+      const { data: likedData, error: likedError } = await supabase
+        .from('collection_likes')
+        .select('collection_id, created_at')
+        .eq('user_id', user.id);
 
       if (likedError) {
         console.error('Error fetching liked collection IDs:', likedError);
         return;
       }
 
-      const likedCollectionIds = likedData?.liked_collection_ids || [];
-      console.log('Liked collection IDs from edge function:', likedCollectionIds);
+      const likedCollectionIds = likedData?.map(l => l.collection_id) || [];
+      console.log('Liked collection IDs:', likedCollectionIds);
       
       if (likedCollectionIds.length === 0) {
         setLikedCollections([]);
@@ -61,19 +62,8 @@ export const useLikedCollections = () => {
         return;
       }
 
-      // Get the like timestamps
-      const { data: likesData, error: likesError } = await supabase
-        .from('collection_likes')
-        .select('collection_id, created_at')
-        .eq('user_wallet', publicKey)
-        .in('collection_id', likedCollectionIds);
-
-      if (likesError) {
-        console.error('Error fetching like timestamps:', likesError);
-      }
-
-      // Create a map of collection_id to like timestamp
-      const likeTimestamps = (likesData || []).reduce((acc, like) => {
+      // Create a map of collection_id to like timestamp from the first query
+      const likeTimestamps = (likedData || []).reduce((acc, like) => {
         acc[like.collection_id] = like.created_at;
         return acc;
       }, {} as Record<string, string>);
@@ -105,7 +95,7 @@ export const useLikedCollections = () => {
     fetchLikedCollections();
 
     // Set up real-time subscription for collection likes
-    if (publicKey) {
+    if (user) {
       const channel = supabase
         .channel('liked-collections-realtime')
         .on(
@@ -114,7 +104,7 @@ export const useLikedCollections = () => {
             event: '*',
             schema: 'public',
             table: 'collection_likes',
-            filter: `user_wallet=eq.${publicKey}`
+            filter: `user_id=eq.${user.id}`
           },
           (payload) => {
             console.log('🔥 Real-time liked collections change detected:', payload);
@@ -149,7 +139,7 @@ export const useLikedCollections = () => {
         window.removeEventListener('collection-like-toggled', handleCollectionLikeToggled as EventListener);
       };
     }
-  }, [publicKey]);
+  }, [user]);
 
   return {
     likedCollections,
