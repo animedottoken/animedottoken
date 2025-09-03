@@ -162,7 +162,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />
@@ -199,7 +199,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
             <Route path="/auth" element={<Auth />} />

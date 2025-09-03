@@ -127,8 +127,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       
       const isInIframe = window !== window.parent;
       const isDevnet = network === 'devnet';
-      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && w.adapter.name !== 'Preview Wallet');
-      const previewWallet = wallets.find(w => w.adapter.name === 'Preview Wallet');
+      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && !/unsafe|burner/i.test(w.adapter.name));
+      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
       
       console.log('🎯 Has installed wallets:', hasInstalledWallets);
       console.log('🎭 Preview wallet available:', !!previewWallet);
@@ -141,8 +141,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         await walletConnect();
         
         // Airdrop SOL if balance is low
-        if (publicKey && balance < 0.1) {
-          await airdropSOL(publicKey);
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for connection
+        if (wallet?.adapter.publicKey) {
+          const currentBalance = await connection.getBalance(wallet.adapter.publicKey);
+          const balanceInSOL = currentBalance / LAMPORTS_PER_SOL;
+          if (balanceInSOL < 0.1) {
+            await airdropSOL(wallet.adapter.publicKey);
+          }
         }
         
         toast.success('Preview wallet connected');

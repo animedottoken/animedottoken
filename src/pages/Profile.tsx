@@ -279,6 +279,19 @@ const Profile = () => {
           }
           
           setProfile(data || null);
+        } else if (publicKey && !user && !wallet) {
+          // Fetch profile using just the connected wallet's public key
+          const { data, error } = await supabase.functions.invoke('get-profile', {
+            body: { wallet_address: publicKey }
+          });
+          
+          if (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('Failed to load profile');
+            return;
+          }
+          
+          setProfile(data || null);
         } else {
           setProfile(null);
         }
@@ -291,7 +304,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, [targetWallet, user, wallet]);
+  }, [targetWallet, user, wallet, publicKey]);
 
   // Get collections created by this user
   const userCollections = useMemo(() => {
