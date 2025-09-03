@@ -53,15 +53,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const filterRoutes = ['/marketplace', '/profile'];
   const isCreatorProfileRoute = location.pathname.startsWith('/profile/');
   const shouldShowFilters = filterRoutes.includes(location.pathname) || isCreatorProfileRoute;
-  
-  if (shouldShowFilters) {
-    return (
-      <MarketplaceFilterSidebar 
-        className={className} 
-        collapsed={collapsed}
-      />
-    );
-  }
 
   const handleCollapseToggle = () => {
     const newCollapsed = !collapsed;
@@ -176,31 +167,38 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
             </div>
           </div>
 
-          {/* Home Sections */}
-          <div>
-            <div className="space-y-1">
-              {sections.map((item) => (
-                <Button
-                  key={item.hash}
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
-                    collapsed && "justify-center px-2"
-                  )}
-                  onClick={(e) => {
-                    if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                      handleNavigation(item, e);
-                    }
-                  }}
-                  aria-label={item.title}
-                  title={item.title}
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="font-medium">{item.title}</span>}
-                </Button>
-              ))}
+          {/* Conditional Filter Section */}
+          {shouldShowFilters && !collapsed && (
+            <MarketplaceFilterSidebar embedded />
+          )}
+
+          {/* Home Sections - only show when not on filter routes */}
+          {!shouldShowFilters && (
+            <div>
+              <div className="space-y-1">
+                {sections.map((item) => (
+                  <Button
+                    key={item.hash}
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
+                      collapsed && "justify-center px-2"
+                    )}
+                    onClick={(e) => {
+                      if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                        handleNavigation(item, e);
+                      }
+                    }}
+                    aria-label={item.title}
+                    title={item.title}
+                  >
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    {!collapsed && <span className="font-medium">{item.title}</span>}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </nav>
       </aside>
     

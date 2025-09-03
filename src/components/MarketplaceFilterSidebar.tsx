@@ -18,11 +18,12 @@ import { cn } from '@/lib/utils';
 interface MarketplaceFilterSidebarProps {
   className?: string;
   collapsed?: boolean;
+  embedded?: boolean;
 }
 
 const categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other'];
 
-export const MarketplaceFilterSidebar = ({ className, collapsed }: MarketplaceFilterSidebarProps) => {
+export const MarketplaceFilterSidebar = ({ className, collapsed, embedded }: MarketplaceFilterSidebarProps) => {
   const { filters, updateFilter, clearAllFilters } = useMarketplaceFilters();
 
   const hasActiveFilters = filters.searchQuery || 
@@ -42,12 +43,41 @@ export const MarketplaceFilterSidebar = ({ className, collapsed }: MarketplaceFi
     );
   }
 
+  if (embedded) {
+    return (
+      <div className="space-y-6 border-t pt-6">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Search & Filter</h3>
+          <p className="text-sm text-muted-foreground">Find the perfect NFTs and collections</p>
+        </div>
+        <FilterContent />
+      </div>
+    );
+  }
+
   return (
     <aside className={cn("w-64 border-r bg-sidebar-background p-4 space-y-6", className)}>
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Search & Filter</h3>
         <p className="text-sm text-muted-foreground">Find the perfect NFTs and collections</p>
       </div>
+      <FilterContent />
+    </aside>
+  );
+};
+
+const FilterContent = () => {
+  const { filters, updateFilter, clearAllFilters } = useMarketplaceFilters();
+
+  const hasActiveFilters = filters.searchQuery || 
+    filters.category !== 'all' || 
+    filters.sortBy !== 'newest' || 
+    filters.includeExplicit || 
+    filters.minPrice || 
+    filters.maxPrice;
+
+  return (
+    <div className="space-y-6">
 
       {/* Search */}
       <div className="space-y-2">
@@ -180,7 +210,7 @@ export const MarketplaceFilterSidebar = ({ className, collapsed }: MarketplaceFi
           </Button>
         </div>
       )}
-    </aside>
+    </div>
   );
 };
 
