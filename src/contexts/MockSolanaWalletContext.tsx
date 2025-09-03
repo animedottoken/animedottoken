@@ -399,9 +399,13 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return baseWallets;
   }, [network]);
 
+  const shouldAutoConnect = useMemo(() => {
+    return typeof window !== 'undefined' && localStorage.getItem('remember-wallet') === 'true';
+  }, []);
+
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider wallets={wallets} autoConnect={shouldAutoConnect}>
         <WalletModalProvider>
           <SolanaWalletInnerProvider>
             {children}
