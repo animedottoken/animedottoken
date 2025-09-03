@@ -118,7 +118,7 @@ All colors MUST be HSL. */
 @layer base {
   html {
     height: 100%;
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
     scrollbar-width: thin;
     scroll-behavior: smooth;
     overflow-y: scroll; /* Only html manages the main scrollbar */
@@ -138,7 +138,8 @@ All colors MUST be HSL. */
     outline: none;
   }
 
-  body {
+
+body {
     @apply bg-background text-foreground font-sans;
     background-image: var(--gradient-accent);
     background-attachment: fixed;

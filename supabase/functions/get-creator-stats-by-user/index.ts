@@ -85,16 +85,17 @@ Deno.serve(async (req) => {
       return acc;
     }, {} as Record<string, string>) || {};
 
-    // Get follower counts (user_id based)
-    const { data: followCounts, error: followError } = await supabase
+    // Get follower counts - count how many people follow each user (by their wallet address)
+    const walletAddresses = Object.values(userWalletMap);
+    const { data: followerData, error: followerError } = await supabase
       .from('creator_follows')
-      .select('user_id')
-      .in('user_id', user_ids.filter(id => userWalletMap[id])); // Only count users with wallets as creators
+      .select('creator_wallet')
+      .in('creator_wallet', walletAddresses);
 
-    if (followError) {
-      console.error('❌ Error fetching follow counts:', followError);
+    if (followerError) {
+      console.error('❌ Error fetching follower counts:', followerError);
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch follow counts' }),
+        JSON.stringify({ error: 'Failed to fetch follower counts' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -102,16 +103,40 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Count followers by user_id
-    const followerCounts = followCounts?.reduce((acc: Record<string, number>, follow) => {
-      if (follow.user_id) {
-        acc[follow.user_id] = (acc[follow.user_id] || 0) + 1;
+    // Count followers by wallet address, then map back to user_id
+    const followerCountsByWallet = followerData?.reduce((acc: Record<string, number>, follow) => {
+      if (follow.creator_wallet) {
+        acc[follow.creator_wallet] = (acc[follow.creator_wallet] || 0) + 1;
+      }
+      return acc;
+    }, {}) || {};
+
+    // Get following counts - count how many people each user follows
+    const { data: followingData, error: followingError } = await supabase
+      .from('creator_follows')
+      .select('follower_wallet')
+      .in('follower_wallet', walletAddresses);
+
+    if (followingError) {
+      console.error('❌ Error fetching following counts:', followingError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch following counts' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Count following by wallet address, then map back to user_id
+    const followingCountsByWallet = followingData?.reduce((acc: Record<string, number>, follow) => {
+      if (follow.follower_wallet) {
+        acc[follow.follower_wallet] = (acc[follow.follower_wallet] || 0) + 1;
       }
       return acc;
     }, {}) || {};
 
     // Get NFT like counts (wallet-based since NFTs are linked to wallet addresses)
-    const walletAddresses = Object.values(userWalletMap);
     const { data: nftLikes, error: nftLikesError } = await supabase
       .from('nft_likes')
       .select(`
@@ -177,7 +202,8 @@ Deno.serve(async (req) => {
       
       return {
         user_id: userId,
-        follower_count: followerCounts[userId] || 0,
+        follower_count: walletAddress ? (followerCountsByWallet[walletAddress] || 0) : 0,
+        following_count: walletAddress ? (followingCountsByWallet[walletAddress] || 0) : 0,
         nft_likes_count: nftLikesCount,
         collection_likes_count: collectionLikesCount,
         total_likes_count: nftLikesCount + collectionLikesCount

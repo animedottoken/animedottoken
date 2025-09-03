@@ -84,7 +84,7 @@ const Profile = () => {
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
   
   // Real-time creator stats - use user-based stats if profile has user_id
-  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
+  const { getCreatorFollowerCount, getCreatorFollowingCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
     profile?.id ? [profile.id] : []
   );
 
@@ -698,6 +698,10 @@ const Profile = () => {
                 <div className="flex items-center gap-1">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="font-medium">{getCreatorFollowerCount(profile?.id || '')}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <UserPlus className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium">{getCreatorFollowingCount(profile?.id || '')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Heart className="h-3.5 w-3.5 text-muted-foreground" />

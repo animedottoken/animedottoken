@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface CreatorStats {
   [userId: string]: {
     follower_count: number;
+    following_count: number;
     nft_likes_count: number;
     collection_likes_count: number;
     total_likes_count: number;
@@ -42,6 +43,7 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
         ...acc,
         [stat.user_id]: {
           follower_count: stat.follower_count || 0,
+          following_count: stat.following_count || 0,
           nft_likes_count: stat.nft_likes_count || 0,
           collection_likes_count: stat.collection_likes_count || 0,
           total_likes_count: stat.total_likes_count || 0
@@ -76,6 +78,7 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
           follower_count: type === 'follow' 
             ? Math.max(0, (prev[userId]?.follower_count || 0) + delta)
             : (prev[userId]?.follower_count || 0),
+          following_count: (prev[userId]?.following_count || 0), // Following count doesn't change for the target user
           nft_likes_count: type === 'nft_like' 
             ? Math.max(0, (prev[userId]?.nft_likes_count || 0) + delta)
             : (prev[userId]?.nft_likes_count || 0),
@@ -170,6 +173,10 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
     return creatorStats[userId]?.follower_count || 0;
   };
 
+  const getCreatorFollowingCount = (userId: string): number => {
+    return creatorStats[userId]?.following_count || 0;
+  };
+
   const getCreatorNFTLikeCount = (userId: string): number => {
     return creatorStats[userId]?.nft_likes_count || 0;
   };
@@ -182,6 +189,7 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
     creatorStats,
     loading,
     getCreatorFollowerCount,
+    getCreatorFollowingCount,
     getCreatorNFTLikeCount,
     getCreatorTotalLikeCount,
     refreshStats: loadCreatorStats
