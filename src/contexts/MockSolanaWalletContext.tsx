@@ -77,13 +77,17 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Fetch balance when wallet connects
   useEffect(() => {
+    console.log('🔵 Wallet state changed - Connected:', connected, 'PublicKey:', publicKey?.toBase58());
+    
     const fetchBalance = async () => {
       if (publicKey && connected) {
         try {
+          console.log('🔵 Fetching balance for:', publicKey.toBase58());
           const balance = await connection.getBalance(publicKey);
           setBalance(balance / LAMPORTS_PER_SOL);
+          console.log('🟢 Balance fetched:', balance / LAMPORTS_PER_SOL, 'SOL');
         } catch (error) {
-          console.error('Error fetching balance:', error);
+          console.error('🔴 Error fetching balance:', error);
         }
       } else {
         setBalance(0);
@@ -97,19 +101,29 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Wallets are now connected temporarily for payments or explicitly linked for identity
 
   const connect = useCallback(async () => {
+    console.log('🔵 Wallet connect called');
     try {
       // Always show wallet selector if no wallet is selected, 
       // remember preference is off, or multiple wallets available
       const availableWallets = wallets.filter(w => w.readyState === 'Installed');
+      console.log('🔵 Available wallets:', availableWallets.map(w => w.adapter.name));
+      console.log('🔵 Current wallet:', wallet?.adapter.name);
+      console.log('🔵 Remember wallet:', rememberWallet);
+      
       if (!wallet || !rememberWallet || availableWallets.length > 1) {
+        console.log('🔵 Opening wallet selector modal');
         setVisible(true);
         return;
       }
 
+      console.log('🔵 Attempting to connect with selected wallet');
       await walletConnect();
+      console.log('🟢 Wallet connected successfully');
     } catch (error) {
+      console.log('🔴 Wallet connection error:', error);
       // Only show error toast for actual connection failures, not wallet selection issues
       if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        console.log('🔵 Showing wallet selector due to connection error');
         setVisible(true);
       } else {
         console.error('Wallet connection error:', error);
