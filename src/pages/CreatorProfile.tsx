@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useCreatorFollows } from '@/hooks/useCreatorFollows';
 import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
 import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
@@ -74,6 +75,7 @@ export default function CreatorProfile() {
   const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
   const { isLiked: isCollectionLiked, toggleLike: toggleCollectionLike } = useCollectionLikes();
+  const { user } = useAuth();
   
   const [creator, setCreator] = useState<Creator | null>(null);
   const [creatorNFTs, setCreatorNFTs] = useState<NFT[]>([]);
@@ -230,22 +232,22 @@ export default function CreatorProfile() {
           .filter((collection: any) => collection.creator_address_masked === maskedWallet)
           .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-        // Fetch creator's liked NFTs (only for authenticated users)
+        // Fetch creator's liked NFTs (only for authenticated users viewing their own profile)
         let creatorLikedNFTs: NFT[] = [];
-        if (publicKey && publicKey.toString() === wallet) {
-          const { data: likedNFTIds } = await supabase
+        if (user && profile?.user_id === user.id) {
+          const { data: likedNFTIds } = await (supabase as any)
             .from('nft_likes')
             .select('nft_id')
-            .eq('user_wallet', wallet);
+            .eq('user_id', user.id);
 
           if (likedNFTIds && likedNFTIds.length > 0) {
-            const { data: allNftDetails } = await supabase.rpc('get_nfts_authenticated');
-            const nftDetails = (allNftDetails || []).filter(nft => 
-              likedNFTIds.some(l => l.nft_id === nft.id)
+            const { data: allNftDetails } = await (supabase as any).rpc('get_nfts_authenticated');
+            const nftDetails = (allNftDetails || []).filter((nft: any) => 
+              likedNFTIds.some((l: any) => l.nft_id === nft.id)
             );
             
             if (nftDetails) {
-              creatorLikedNFTs = nftDetails.map(nft => ({
+              creatorLikedNFTs = nftDetails.map((nft: any) => ({
                 id: nft.id,
                 name: nft.name,
                 image_url: nft.image_url,
@@ -258,22 +260,22 @@ export default function CreatorProfile() {
           }
         }
 
-        // Fetch creator's liked Collections (only for authenticated users)
+        // Fetch creator's liked Collections (only for authenticated users viewing their own profile)
         let creatorLikedCollections: Collection[] = [];
-        if (publicKey && publicKey.toString() === wallet) {
-          const { data: likedCollectionIds } = await supabase
+        if (user && profile?.user_id === user.id) {
+          const { data: likedCollectionIds } = await (supabase as any)
             .from('collection_likes')
             .select('collection_id')
-            .eq('user_wallet', wallet);
+            .eq('user_id', user.id);
 
           if (likedCollectionIds && likedCollectionIds.length > 0) {
-            const { data: allCollectionDetails } = await supabase.rpc('get_collections_authenticated');
-            const collectionDetails = (allCollectionDetails || []).filter(collection => 
-              likedCollectionIds.some(l => l.collection_id === collection.id)
+            const { data: allCollectionDetails } = await (supabase as any).rpc('get_collections_authenticated');
+            const collectionDetails = (allCollectionDetails || []).filter((collection: any) => 
+              likedCollectionIds.some((l: any) => l.collection_id === collection.id)
             );
             
             if (collectionDetails) {
-              creatorLikedCollections = collectionDetails.map(collection => ({
+              creatorLikedCollections = collectionDetails.map((collection: any) => ({
                 id: collection.id,
                 name: collection.name,
                 image_url: collection.image_url || collection.banner_image_url,
@@ -356,23 +358,23 @@ export default function CreatorProfile() {
 
         // Fetch creators this creator follows (only for authenticated users viewing their own profile)
         let followedCreatorsData: any[] = [];
-        if (publicKey && publicKey.toString() === wallet) {
-          const { data: followedCreatorIds } = await supabase
+        if (user && profile?.user_id === user.id) {
+          const { data: followedCreatorIds } = await (supabase as any)
             .from('creator_follows')
-            .select('creator_wallet')
-            .eq('follower_wallet', wallet);
+            .select('creator_user_id')
+            .eq('follower_user_id', user.id);
 
           if (followedCreatorIds && followedCreatorIds.length > 0) {
-            const { data: profiles } = await supabase.rpc('get_profiles_authenticated');
-            const matchingProfiles = (profiles || []).filter(profile => 
-              followedCreatorIds.some(f => f.creator_wallet === profile.wallet_address)
+            const { data: profiles } = await (supabase as any).rpc('get_profiles_authenticated');
+            const matchingProfiles = (profiles || []).filter((p: any) => 
+              followedCreatorIds.some((f: any) => f.creator_user_id === p.id)
             );
             
-            followedCreatorsData = matchingProfiles.map(profile => ({
-              wallet_address: profile.wallet_address,
-              nickname: profile.nickname,
-              bio: profile.bio,
-              profile_image_url: profile.profile_image_url
+            followedCreatorsData = matchingProfiles.map((p: any) => ({
+              wallet_address: p.wallet_address,
+              nickname: p.nickname,
+              bio: p.bio,
+              profile_image_url: p.profile_image_url
             }));
           }
         }

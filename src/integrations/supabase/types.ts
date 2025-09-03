@@ -69,22 +69,19 @@ export type Database = {
           collection_id: string
           created_at: string
           id: string
-          user_id: string | null
-          user_wallet: string | null
+          user_id: string
         }
         Insert: {
           collection_id: string
           created_at?: string
           id?: string
-          user_id?: string | null
-          user_wallet?: string | null
+          user_id: string
         }
         Update: {
           collection_id?: string
           created_at?: string
           id?: string
-          user_id?: string | null
-          user_wallet?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -140,6 +137,7 @@ export type Database = {
           collection_mint_address: string | null
           created_at: string
           creator_address: string
+          creator_user_id: string | null
           description: string | null
           enable_primary_sales: boolean
           explicit_content: boolean | null
@@ -175,6 +173,7 @@ export type Database = {
           collection_mint_address?: string | null
           created_at?: string
           creator_address: string
+          creator_user_id?: string | null
           description?: string | null
           enable_primary_sales?: boolean
           explicit_content?: boolean | null
@@ -210,6 +209,7 @@ export type Database = {
           collection_mint_address?: string | null
           created_at?: string
           creator_address?: string
+          creator_user_id?: string | null
           description?: string | null
           enable_primary_sales?: boolean
           explicit_content?: boolean | null
@@ -242,24 +242,21 @@ export type Database = {
       creator_follows: {
         Row: {
           created_at: string
-          creator_wallet: string
-          follower_wallet: string | null
+          creator_user_id: string
+          follower_user_id: string
           id: string
-          user_id: string | null
         }
         Insert: {
           created_at?: string
-          creator_wallet: string
-          follower_wallet?: string | null
+          creator_user_id: string
+          follower_user_id: string
           id?: string
-          user_id?: string | null
         }
         Update: {
           created_at?: string
-          creator_wallet?: string
-          follower_wallet?: string | null
+          creator_user_id?: string
+          follower_user_id?: string
           id?: string
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -506,22 +503,19 @@ export type Database = {
           created_at: string
           id: string
           nft_id: string
-          user_id: string | null
-          user_wallet: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           nft_id: string
-          user_id?: string | null
-          user_wallet?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           nft_id?: string
-          user_id?: string | null
-          user_wallet?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -540,6 +534,7 @@ export type Database = {
           collection_id: string | null
           created_at: string
           creator_address: string
+          creator_user_id: string | null
           currency: string | null
           description: string | null
           featured_at: string | null
@@ -563,6 +558,7 @@ export type Database = {
           collection_id?: string | null
           created_at?: string
           creator_address: string
+          creator_user_id?: string | null
           currency?: string | null
           description?: string | null
           featured_at?: string | null
@@ -586,6 +582,7 @@ export type Database = {
           collection_id?: string | null
           created_at?: string
           creator_address?: string
+          creator_user_id?: string | null
           currency?: string | null
           description?: string | null
           featured_at?: string | null

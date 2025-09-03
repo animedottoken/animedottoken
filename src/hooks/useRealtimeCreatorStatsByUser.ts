@@ -117,16 +117,15 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
         {
           event: '*',
           schema: 'public',
-          table: 'creator_follows',
-          filter: userIds.length > 0 
-            ? `user_id=in.(${userIds.join(',')})`
-            : undefined
+          table: 'creator_follows'
         },
         (payload) => {
           console.log('Creator follows change detected in stats (by user):', payload);
-          // Only refresh if the change affects our tracked users
-          const affectedUserId = (payload.new as any)?.user_id || (payload.old as any)?.user_id;
-          if (userIds.includes(affectedUserId)) {
+          // Only refresh if the change affects our tracked users (either follower or creator)
+          const newRecord = (payload.new as any) || {};
+          const oldRecord = (payload.old as any) || {};
+          const affectedIds = [newRecord.follower_user_id, newRecord.creator_user_id, oldRecord.follower_user_id, oldRecord.creator_user_id].filter(Boolean);
+          if (affectedIds.some((id: string) => userIds.includes(id))) {
             debouncedRefresh();
           }
         }

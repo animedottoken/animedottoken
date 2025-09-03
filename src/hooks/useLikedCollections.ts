@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LikedCollection {
   id: string;
@@ -19,7 +19,7 @@ interface LikedCollection {
 
 export const useLikedCollections = () => {
   const [likedCollections, setLikedCollections] = useState<LikedCollection[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
   const { publicKey } = useSolanaWallet();
 
   const fetchLikedCollections = async () => {
