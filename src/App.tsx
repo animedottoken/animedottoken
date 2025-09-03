@@ -34,6 +34,7 @@ import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
 import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
+import { ProfileFiltersProvider } from "@/contexts/ProfileFiltersContext";
 import { SecurityBanner } from "@/components/SecurityBanner";
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -227,12 +228,14 @@ const App = () => {
             <AuthProvider>
               <ViewModeProvider>
                 <SolanaWalletProvider>
+                <ProfileFiltersProvider>
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
                   <ScrollToTopOnRoute />
                   <AppLayout />
                 </TooltipProvider>
+                </ProfileFiltersProvider>
                 </SolanaWalletProvider>
               </ViewModeProvider>
             </AuthProvider>

@@ -11,6 +11,8 @@ import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
+import { useProfileFilters } from '@/contexts/ProfileFiltersContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { UserProfileDisplay } from '@/components/UserProfileDisplay';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -87,20 +89,9 @@ const Profile = () => {
     profile?.user_id ? [profile.user_id] : []
   );
 
-  // Filter states - combine into one for the merged tab
-  const [combinedFilters, setCombinedFilters] = useState<FilterState>({
-    searchQuery: '',
-    source: 'all',
-    sortBy: 'newest',
-    includeExplicit: false,
-    category: 'all',
-    minPrice: '',
-    maxPrice: '',
-    minRoyalty: '',
-    maxRoyalty: '',
-    listing: 'all',
-    type: 'all'
-  });
+  // Get filters from context
+  const { filters: combinedFilters, setFilters: setCombinedFilters } = useProfileFilters();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Own profile if viewing own wallet or if no wallet specified and we're authenticated
@@ -802,18 +793,21 @@ const Profile = () => {
         </TabsList>
 
         <TabsContent value="collections-nfts" className="space-y-6">
-          <SearchFilterBar
-            filters={combinedFilters}
-            onFiltersChange={setCombinedFilters}
-            showListingFilter={isOwnProfile}
-            showSourceFilter={isOwnProfile}
-            showTypeFilter={true}
-            showPriceFilters={true}
-            showRoyaltyFilters={true}
-            placeholder="Search collections and NFTs..."
-            categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
-            collapsible={true}
-          />
+          {/* Mobile-only SearchFilterBar */}
+          {isMobile && (
+            <SearchFilterBar
+              filters={combinedFilters}
+              onFiltersChange={setCombinedFilters}
+              showListingFilter={isOwnProfile}
+              showSourceFilter={isOwnProfile}
+              showTypeFilter={true}
+              showPriceFilters={true}
+              showRoyaltyFilters={true}
+              placeholder="Search collections and NFTs..."
+              categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
+              collapsible={true}
+            />
+          )}
 
           {collectionsLoading || nftsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
