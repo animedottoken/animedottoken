@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { metaplexService, type NFTMetadata } from '@/services/metaplexService';
+import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
 import { toast } from 'sonner';
 
 export interface StandaloneNFTData {
@@ -111,7 +113,7 @@ export const useStandaloneMint = () => {
               collection_id: nftData.collection_id,
               quantity,
               wallet_address: publicKey,
-              signature: 'placeholder_signature', // Mock signature for now
+              signature: 'placeholder_signature',
               message: `mint_${Date.now()}`,
               nft_data: {
                 name: nftData.name,
@@ -128,7 +130,6 @@ export const useStandaloneMint = () => {
 
           if (error) {
             console.error('Mint job creation failed:', error);
-            // Fall back to batch processing
             return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
           }
 
@@ -143,13 +144,13 @@ export const useStandaloneMint = () => {
             queued: true
           };
         } catch (error) {
-          console.warn('Mint job failed, falling back to batch processing:', error);
-          return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
+          console.warn('Mint job failed, falling back to real minting:', error);
+          return await realMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
         }
       }
 
-      // For smaller quantities or standalone NFTs, use batch processing
-      return await batchMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
+      // For smaller quantities or standalone NFTs, use real on-chain minting
+      return await realMintNFTs(nftData, quantity, imageUrl, mediaUrl, mediaType, publicKey);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -162,8 +163,110 @@ export const useStandaloneMint = () => {
     }
   };
 
+  const realMintNFTs = async (nftData: StandaloneNFTData, quantity: number, imageUrl: string | null, mediaUrl: string | null, mediaType: string, publicKey: string) => {
+    const results = [];
+    
+    // For real on-chain minting with Metaplex
+    for (let i = 0; i < quantity; i++) {
+      const nftName = quantity > 1 ? `${nftData.name} #${i + 1}` : nftData.name;
+      
+      try {
+        // Prepare NFT metadata for Metaplex
+        const nftMetadata: NFTMetadata = {
+          name: nftName,
+          symbol: nftData.symbol || 'NFT',
+          description: nftData.description || '',
+          image: imageUrl || '',
+          animation_url: (mediaUrl && mediaUrl !== imageUrl) ? mediaUrl : undefined,
+          sellerFeeBasisPoints: Math.round((nftData.royalty_percentage || 0) * 100),
+          creators: [{
+            address: publicKey,
+            verified: true,
+            share: 100,
+          }],
+          attributes: (nftData.attributes || []).map(attr => ({
+            trait_type: attr.trait_type,
+            value: attr.value,
+          })),
+        };
+        
+        // Upload metadata to storage
+        const metadataUri = await uploadMetadataToStorage(nftMetadata, 'nft', nftName);
+        
+        // Mint on-chain with Metaplex
+        const mintResult = await metaplexService.mintNFT({
+          metadata: { ...nftMetadata, image: metadataUri },
+          creatorWallet: publicKey,
+          collectionMint: nftData.collection_id,
+        });
+        
+        if (mintResult.success) {
+          // Store NFT data in database
+          const { data: nftRecord, error: dbError } = await supabase
+            .from('nfts')
+            .insert({
+              name: nftName,
+              symbol: nftData.symbol || 'NFT',
+              description: nftData.description || '',
+              mint_address: mintResult.mintAddress,
+              owner_address: publicKey,
+              creator_address: publicKey,
+              collection_id: nftData.collection_id || null,
+              image_url: imageUrl,
+              metadata_uri: metadataUri,
+              attributes: {
+                ...Object.fromEntries((nftData.attributes || []).map(attr => [attr.trait_type, attr.value])),
+                minted_at: new Date().toISOString(),
+                transaction_signature: mintResult.signature,
+                explorer_url: mintResult.explorerUrl,
+                ...(mediaUrl && mediaUrl !== imageUrl && {
+                  animation_url: mediaUrl,
+                  media_type: mediaType,
+                  has_media: true
+                })
+              },
+              is_listed: nftData.list_after_mint || false,
+              price: nftData.list_after_mint ? nftData.initial_price : null
+            })
+            .select()
+            .single();
+          
+          if (dbError) {
+            console.error('Database insert error:', dbError);
+          } else {
+            results.push(nftRecord);
+          }
+          
+          // Show progress for multiple NFTs
+          if (quantity > 1) {
+            toast.info(`Minted ${i + 1}/${quantity} NFTs`, {
+              description: `Transaction: ${mintResult.signature?.slice(0, 8)}...`,
+            });
+          }
+        } else {
+          throw new Error(mintResult.error || 'Mint failed');
+        }
+      } catch (error) {
+        console.error(`Failed to mint NFT ${i + 1}:`, error);
+        toast.error(`Failed to mint NFT ${i + 1}`, {
+          description: error instanceof Error ? error.message : 'Unknown error',
+        });
+        break; // Stop on first failure
+      }
+    }
+    
+    if (results.length > 0) {
+      toast.success(`Successfully minted ${results.length} NFT${results.length > 1 ? 's' : ''} on Solana Devnet! 🎉`);
+    }
+    
+    return { 
+      success: results.length > 0, 
+      nfts: results,
+      count: results.length
+    };
+  };
+
   const batchMintNFTs = async (nftData: StandaloneNFTData, quantity: number, imageUrl: string | null, mediaUrl: string | null, mediaType: string, publicKey: string) => {
-    const BATCH_SIZE = 50;
     const results = [];
     
     // Prepare all NFT data first

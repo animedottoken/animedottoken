@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useCircuitBreaker } from '@/hooks/useCircuitBreaker';
 import { useSecurityLogger } from '@/hooks/useSecurityLogger';
+import { Button } from '@/components/ui/button';
+import { metaplexService, type CollectionMetadata } from '@/services/metaplexService';
+import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
 import { CollectionBasicsStep } from './CollectionBasicsStep';
 import { CollectionSettingsStep } from './CollectionSettingsStep';
 import { CollectionReviewStep } from './CollectionReviewStep';
@@ -45,11 +48,18 @@ export const UnifiedMintInterface = () => {
   const [isMinting, setIsMinting] = useState(false);
   const [mintingError, setMintingError] = useState(null);
   const [mintNow, setMintNow] = useState(true);
+  const [collectionMintResult, setCollectionMintResult] = useState<{signature?: string; mintAddress?: string; explorerUrl?: string} | null>(null);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey, connect, connecting } = useSolanaWallet();
   const { checkAccess, guardedAction } = useCircuitBreaker();
   const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Set wallet on metaplex service when connected
+  useEffect(() => {
+    // For now, we'll handle wallet integration in individual mint calls
+    // metaplexService.setWallet(wallet);
+  }, [publicKey]);
 
   // Scroll to top when step changes
   useEffect(() => {
@@ -193,57 +203,122 @@ export const UnifiedMintInterface = () => {
       setIsMinting(true);
       setMintingError(null);
       try {
-        // Create collection
+        // Upload images first
+        let imageUrl = '';
+        let bannerUrl = '';
+        
+        if (formData.image_file) {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const imageExt = formData.image_file.name.split('.').pop();
+          const imagePath = `collection-images/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${imageExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('collection-images')
+            .upload(imagePath, formData.image_file);
+          
+          if (uploadError) throw new Error('Failed to upload collection image');
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('collection-images')
+            .getPublicUrl(imagePath);
+          
+          imageUrl = publicUrl;
+        }
+        
+        if (formData.banner_file) {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const bannerExt = formData.banner_file.name.split('.').pop();
+          const bannerPath = `collection-images/${Date.now()}_banner_${Math.random().toString(36).substr(2, 9)}.${bannerExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('collection-images')
+            .upload(bannerPath, formData.banner_file);
+          
+          if (uploadError) throw new Error('Failed to upload banner image');
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('collection-images')
+            .getPublicUrl(bannerPath);
+          
+          bannerUrl = publicUrl;
+        }
+
+        // Create collection in database first
         const result = await createCollection({
           ...formData,
-          name: formData.name,
-          symbol: formData.symbol,
-          site_description: formData.site_description,
-          onchain_description: formData.onchain_description,
           image_file: formData.image_file,
           banner_file: formData.banner_file,
-          external_links: formData.external_links,
-          category: formData.category,
-          explicit_content: formData.explicit_content,
-          enable_primary_sales: formData.enable_primary_sales,
-          mint_price: formData.mint_price,
-          max_supply: formData.max_supply,
-          royalty_percentage: formData.royalty_percentage,
           treasury_wallet: formData.treasury_wallet || publicKey,
-          whitelist_enabled: formData.whitelist_enabled,
-          go_live_date: formData.go_live_date,
-          mint_end_at: formData.mint_end_at,
-          supply_mode: formData.supply_mode,
-          locked_fields: formData.locked_fields,
-          attributes: formData.attributes,
         });
 
         if (result.success && result.collection) {
+          let collectionMintAddress = null;
+          let verified = false;
+          let explorerUrl = '';
+          
           if (mintNow) {
-            // Mint the Collection NFT on-chain
+            // Mint the Collection NFT on-chain using Metaplex
             toast.success('Collection created! Now minting on-chain...');
             
-            const { supabase } = await import('@/integrations/supabase/client');
-            const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
-              body: {
-                collectionId: result.collection.id,
-                creatorAddress: publicKey
-              }
+            // Prepare metadata for on-chain mint
+            const collectionMetadata: CollectionMetadata = {
+              name: formData.name,
+              symbol: formData.symbol || 'COLLECTION',
+              description: formData.onchain_description || formData.site_description,
+              image: imageUrl,
+              sellerFeeBasisPoints: Math.round((formData.royalty_percentage || 0) * 100),
+              creators: [{
+                address: publicKey!,
+                verified: true,
+                share: 100,
+              }],
+              attributes: formData.attributes.map(attr => ({
+                trait_type: attr.trait_type || '',
+                value: attr.value || '',
+              })),
+            };
+            
+            // Upload metadata to our storage
+            const metadataUri = await uploadMetadataToStorage(collectionMetadata, 'collection', formData.name);
+            
+            // Mint on-chain with Metaplex
+            const mintResult = await metaplexService.mintCollection({
+              metadata: { ...collectionMetadata, image: metadataUri },
+              creatorWallet: publicKey!,
             });
 
-            if (mintError || !mintResult?.success) {
-              console.error('Minting error:', mintError || mintResult);
-              setMintingError(mintError?.message || mintResult?.error || 'Failed to mint collection');
-              toast.error('Collection created but failed to mint on-chain');
+            if (mintResult.success) {
+              collectionMintAddress = mintResult.mintAddress;
+              verified = true;
+              explorerUrl = mintResult.explorerUrl || '';
+              setCollectionMintResult(mintResult);
+              
+              // Update database with mint address
+              const { supabase } = await import('@/integrations/supabase/client');
+              await supabase
+                .from('collections')
+                .update({
+                  collection_mint_address: collectionMintAddress,
+                  verified: true,
+                })
+                .eq('id', result.collection.id);
+              
+              toast.success('Collection minted successfully on Solana Devnet! 🎉');
             } else {
-              toast.success('Collection minted successfully on-chain! 🎉');
-              result.collection.collection_mint_address = mintResult.collectionMintAddress;
-              result.collection.verified = true;
+              setMintingError(mintResult.error || 'Failed to mint collection on-chain');
+              toast.error('Collection created but failed to mint on-chain', {
+                description: mintResult.error,
+              });
             }
           } else {
             toast.success('Collection created off-chain! You can mint it later.');
           }
 
+          // Update collection with mint results
+          result.collection.collection_mint_address = collectionMintAddress;
+          result.collection.verified = verified;
+          result.collection.explorer_url = explorerUrl;
+          
           setStep3Collection(result.collection);
           setActiveStep(4);
         }
@@ -251,14 +326,9 @@ export const UnifiedMintInterface = () => {
         console.error('Unexpected error:', error);
         let errorMessage = 'Unexpected error occurred';
         
-        // Surface exact Edge Function errors
         if (error && typeof error === 'object') {
           if ('message' in error && error.message) {
             errorMessage = error.message;
-          } else if ('error' in error && error.error) {
-            errorMessage = error.error;
-          } else if ('details' in error && error.details) {
-            errorMessage = error.details;
           }
         } else if (typeof error === 'string') {
           errorMessage = error;
@@ -300,6 +370,7 @@ export const UnifiedMintInterface = () => {
     });
     setMintPriceInput('');
     setStep3Collection(null);
+    setCollectionMintResult(null);
     setActiveStep(1);
     toast.success('Ready to create another collection!');
   };
@@ -343,6 +414,7 @@ export const UnifiedMintInterface = () => {
         <CollectionSuccessStep
           collection={step3Collection}
           mintingError={mintingError}
+          mintResult={collectionMintResult}
           onCreateAnother={handleCreateAnother}
         />
       )}

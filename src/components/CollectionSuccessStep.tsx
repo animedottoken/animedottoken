@@ -19,6 +19,7 @@ interface Collection {
 interface CollectionSuccessStepProps {
   collection: Collection | null;
   mintingError: string | null;
+  mintResult?: {signature?: string; mintAddress?: string; explorerUrl?: string} | null;
   onCreateAnother: () => void;
 }
 
@@ -39,6 +40,7 @@ interface FeeEstimate {
 export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   collection,
   mintingError,
+  mintResult,
   onCreateAnother
 }) => {
   const navigate = useNavigate();
@@ -165,6 +167,18 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
                   <div className="font-mono text-xs break-all bg-background p-2 rounded border">
                     {collection.collection_mint_address}
                   </div>
+                  {mintResult?.explorerUrl && (
+                    <div className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(mintResult.explorerUrl, '_blank')}
+                        className="w-full"
+                      >
+                        View on Explorer
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
