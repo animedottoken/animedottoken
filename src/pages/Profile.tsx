@@ -504,6 +504,16 @@ const Profile = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Wallet Connection - Show on own profile */}
+                  {isOwnProfile && !hasWallet && (
+                    <SolanaWalletButton />
+                  )}
+                  {isOwnProfile && hasWallet && (
+                    <div className="flex items-center gap-2 text-sm px-3 py-1.5 bg-green-50 text-green-700 rounded-md border border-green-200">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="font-medium">Connected</span>
+                    </div>
+                  )}
                   <Button 
                     variant="outline" 
                     size="icon"
