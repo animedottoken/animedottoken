@@ -79,24 +79,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
   const network = 'devnet';
 
-  // Fetch balance when wallet connects
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (publicKey && connected) {
-        try {
-          const balance = await connection.getBalance(publicKey);
-          setBalance(balance / LAMPORTS_PER_SOL);
-        } catch (error) {
-          console.error('Error fetching balance:', error);
-        }
-      } else {
-        setBalance(0);
-      }
-    };
-
-    fetchBalance();
-  }, [publicKey, connected, connection]);
-
   // Note: We no longer auto-link wallets on connect
   // Wallets are now connected temporarily for payments or explicitly linked for identity
 
@@ -116,6 +98,72 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Don't show error toast - this is best effort
     }
   }, [connection]);
+
+  // Auto-connect preview wallet on initial load (iframe + devnet only)
+  useEffect(() => {
+    const autoConnectPreviewWallet = async () => {
+      // Only run once per session to avoid loops
+      if (sessionStorage.getItem('preview-autoconnect-attempted')) {
+        return;
+      }
+
+      const isInIframe = window !== window.parent;
+      const isDevnet = network === 'devnet';
+      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && !/unsafe|burner/i.test(w.adapter.name));
+      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
+
+      // Auto-connect conditions: iframe + devnet + not connected + preview wallet available + no installed wallets
+      if (isInIframe && isDevnet && !connected && !connecting && previewWallet && !hasInstalledWallets) {
+        console.log('🎭 Auto-connecting preview wallet on page load...');
+        sessionStorage.setItem('preview-autoconnect-attempted', 'true');
+        
+        toast.info('Connecting preview wallet...', { duration: 2000 });
+        
+        try {
+          select(previewWallet.adapter.name);
+          await new Promise(resolve => setTimeout(resolve, 100));
+          await walletConnect();
+          
+          // Wait for connection then airdrop if needed
+          await new Promise(resolve => setTimeout(resolve, 200));
+          if (wallet?.adapter.publicKey) {
+            const currentBalance = await connection.getBalance(wallet.adapter.publicKey);
+            const balanceInSOL = currentBalance / LAMPORTS_PER_SOL;
+            if (balanceInSOL < 0.1) {
+              await airdropSOL(wallet.adapter.publicKey);
+            }
+          }
+          
+          toast.success('Preview wallet connected automatically');
+        } catch (error) {
+          console.error('Auto-connect failed:', error);
+          // Don't show error toast as this is best effort
+        }
+      }
+    };
+
+    // Small delay to ensure wallets are loaded
+    const timer = setTimeout(autoConnectPreviewWallet, 500);
+    return () => clearTimeout(timer);
+  }, [wallets, connected, connecting, network, select, walletConnect, wallet, connection, airdropSOL]);
+
+  // Fetch balance when wallet connects
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (publicKey && connected) {
+        try {
+          const balance = await connection.getBalance(publicKey);
+          setBalance(balance / LAMPORTS_PER_SOL);
+        } catch (error) {
+          console.error('Error fetching balance:', error);
+        }
+      } else {
+        setBalance(0);
+      }
+    };
+
+    fetchBalance();
+  }, [publicKey, connected, connection]);
 
   const connect = useCallback(async () => {
     setError(null);
@@ -193,6 +241,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // Clear the adapter's last wallet selection
       select(null);
     }
+    // Clear auto-connect attempt flag so it can try again if needed
+    sessionStorage.removeItem('preview-autoconnect-attempted');
     localStorage.removeItem('remember-wallet');
     setRememberWallet(false);
     toast.info('Wallet disconnected');
