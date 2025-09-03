@@ -48,13 +48,19 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-
-  // Check if we're on marketplace page
-  const isMarketplacePage = location.pathname === '/marketplace';
-
-  // If on marketplace, show filter sidebar instead
-  if (isMarketplacePage) {
-    return <MarketplaceFilterSidebar className={className} collapsed={collapsed} />;
+  
+  // Show marketplace filters for specific pages
+  const filterRoutes = ['/marketplace', '/profile'];
+  const isCreatorProfileRoute = location.pathname.startsWith('/profile/');
+  const shouldShowFilters = filterRoutes.includes(location.pathname) || isCreatorProfileRoute;
+  
+  if (shouldShowFilters) {
+    return (
+      <MarketplaceFilterSidebar 
+        className={className} 
+        collapsed={collapsed}
+      />
+    );
   }
 
   const handleCollapseToggle = () => {

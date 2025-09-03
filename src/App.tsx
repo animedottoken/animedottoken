@@ -35,6 +35,7 @@ import Support from "./pages/Support";
 import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
 import { SecurityBanner } from "@/components/SecurityBanner";
+import { FiltersScope } from "@/components/FiltersScope";
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -191,24 +192,26 @@ const AppLayout = () => {
           <TopNav />
         </div>
         <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/share/nft/:nftId" element={<ShareNFT />} />
-            <Route path="/mint" element={<Mint />} />
-            <Route path="/mint/collection" element={<MintCollection />} />
-            <Route path="/mint/nft" element={<MintNFT />} />
-            <Route path="/collection/:collectionId" element={<CollectionDetail />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profile/:wallet" element={<CreatorProfile />} />
-            <Route path="/nft/:id" element={<NFTDetail />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/trust" element={<Trust />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <FiltersScope>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/share/nft/:nftId" element={<ShareNFT />} />
+              <Route path="/mint" element={<Mint />} />
+              <Route path="/mint/collection" element={<MintCollection />} />
+              <Route path="/mint/nft" element={<MintNFT />} />
+              <Route path="/collection/:collectionId" element={<CollectionDetail />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:wallet" element={<CreatorProfile />} />
+              <Route path="/nft/:id" element={<NFTDetail />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/trust" element={<Trust />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </FiltersScope>
         </main>
         <BackToTop />
       </div>

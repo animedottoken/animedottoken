@@ -221,26 +221,15 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connectPaymentWallet = useCallback(async () => {
     try {
-      if (!wallet) {
-        // No wallet selected, open the selection modal and set auto-connect flag
-        console.log('🎯 Opening wallet modal for selection with auto-connect...');
-        setConnectAfterSelection(true);
-        setVisible(true);
-        toast.info('Select a wallet to continue');
-        return;
-      }
-      await walletConnect();
-      toast.success('Payment wallet connected');
+      // Always open wallet selector for reliable connection
+      console.log('🎯 Opening wallet selector for connection...');
+      setVisible(true);
+      toast.info('Select a wallet to continue');
     } catch (error) {
-      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
-        setConnectAfterSelection(true);
-        setVisible(true);
-      } else {
-        console.error('Payment wallet connection error:', error);
-        toast.error('Failed to connect payment wallet');
-      }
+      console.error('Payment wallet connection error:', error);
+      toast.error('Failed to open wallet selector');
     }
-  }, [walletConnect, wallet, setVisible]);
+  }, [setVisible]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {

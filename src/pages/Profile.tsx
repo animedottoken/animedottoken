@@ -802,18 +802,20 @@ const Profile = () => {
         </TabsList>
 
         <TabsContent value="collections-nfts" className="space-y-6">
-          <SearchFilterBar
-            filters={combinedFilters}
-            onFiltersChange={setCombinedFilters}
-            showListingFilter={isOwnProfile}
-            showSourceFilter={isOwnProfile}
-            showTypeFilter={true}
-            showPriceFilters={true}
-            showRoyaltyFilters={true}
-            placeholder="Search collections and NFTs..."
-            categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
-            collapsible={true}
-          />
+          {/* Hide SearchFilterBar on desktop, show on mobile */}
+          <div className="block lg:hidden">
+            <SearchFilterBar
+              filters={combinedFilters}
+              onFiltersChange={setCombinedFilters}
+              showListingFilter={isOwnProfile}
+              showSourceFilter={isOwnProfile}
+              showTypeFilter={true}
+              showPriceFilters={true}
+              showRoyaltyFilters={true}
+              placeholder="Search collections and NFTs..."
+              categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
+            />
+          </div>
 
           {collectionsLoading || nftsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
