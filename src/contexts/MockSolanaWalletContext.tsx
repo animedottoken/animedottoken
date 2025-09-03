@@ -98,8 +98,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connect = useCallback(async () => {
     try {
-      // If "Remember this wallet" is off, always show wallet selector
-      if (!rememberWallet || !wallet) {
+      // If no wallet is selected, show the wallet selector
+      if (!wallet) {
         setVisible(true);
         return;
       }
@@ -113,7 +113,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toast.error('Failed to connect wallet');
       }
     }
-  }, [walletConnect, wallet, setVisible, rememberWallet]);
+  }, [walletConnect, wallet, setVisible]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
