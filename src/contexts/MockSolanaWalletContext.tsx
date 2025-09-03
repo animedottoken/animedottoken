@@ -182,18 +182,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [setVisible, wallets, network, connected, connecting]);
 
   const disconnect = useCallback(() => {
+    console.log('🔌 Disconnecting wallet...');
     walletDisconnect();
+    // Always clear the selected adapter to prevent stale state
+    select(null);
     // Clear auto-connect flag when disconnecting
     setConnectAfterSelection(false);
-    // Clear wallet selection and remember preference when manually disconnecting
-    if (!rememberWallet) {
-      // Clear the adapter's last wallet selection
-      select(null);
-    }
+    // Clear remember preference when manually disconnecting
     localStorage.removeItem('remember-wallet');
     setRememberWallet(false);
     toast.info('Wallet disconnected');
-  }, [walletDisconnect, rememberWallet, select]);
+    console.log('✅ Wallet disconnected and adapter cleared');
+  }, [walletDisconnect, select]);
 
   const handleSetRememberWallet = useCallback((remember: boolean) => {
     setRememberWallet(remember);
@@ -221,6 +221,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connectPaymentWallet = useCallback(async () => {
     try {
+      console.log('💳 Attempting payment wallet connection...');
       if (!wallet) {
         // No wallet selected, open the selection modal and set auto-connect flag
         console.log('🎯 Opening wallet modal for selection with auto-connect...');
@@ -229,18 +230,32 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toast.info('Select a wallet to continue');
         return;
       }
+      
+      console.log('🔗 Connecting to selected wallet:', wallet.adapter.name);
       await walletConnect();
-      toast.success('Payment wallet connected');
+      
+      // Wait a moment for state to update, then verify connection
+      setTimeout(() => {
+        if (connected && publicKey) {
+          console.log('✅ Payment wallet connected successfully:', publicKey.toBase58());
+          toast.success('Payment wallet connected');
+        } else {
+          console.log('❌ Connection failed - wallet not properly connected');
+          toast.error('Wallet connection failed');
+        }
+      }, 100);
+      
     } catch (error) {
+      console.error('💳 Payment wallet connection error:', error);
       if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        console.log('🎯 Opening wallet selector due to connection error');
         setConnectAfterSelection(true);
         setVisible(true);
       } else {
-        console.error('Payment wallet connection error:', error);
         toast.error('Failed to connect payment wallet');
       }
     }
-  }, [walletConnect, wallet, setVisible]);
+  }, [walletConnect, wallet, setVisible, connected, publicKey]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
