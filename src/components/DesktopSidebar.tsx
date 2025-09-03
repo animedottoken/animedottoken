@@ -153,7 +153,30 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-          {/* Home Sections Only */}
+          {/* Route Links */}
+          <div>
+            <div className="space-y-1">
+              {routes.map((item) => (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
+                    collapsed && "justify-center px-2",
+                    isActive(item) && "bg-accent text-accent-foreground"
+                  )}
+                  onClick={() => navigate(item.path)}
+                  aria-label={item.title}
+                  title={item.title}
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {!collapsed && <span className="font-medium">{item.title}</span>}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Home Sections */}
           <div>
             <div className="space-y-1">
               {sections.map((item) => (

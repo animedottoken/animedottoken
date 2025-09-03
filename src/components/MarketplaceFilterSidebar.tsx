@@ -43,7 +43,7 @@ export const MarketplaceFilterSidebar = ({ className, collapsed }: MarketplaceFi
   }
 
   return (
-    <aside className={cn("w-80 border-r bg-sidebar-background p-4 space-y-6", className)}>
+    <aside className={cn("w-64 border-r bg-sidebar-background p-4 space-y-6", className)}>
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Search & Filter</h3>
         <p className="text-sm text-muted-foreground">Find the perfect NFTs and collections</p>

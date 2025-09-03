@@ -803,7 +803,7 @@ const Profile = () => {
 
         <TabsContent value="collections-nfts" className="space-y-6">
           {/* Hide SearchFilterBar on desktop, show on mobile */}
-          <div className="block lg:hidden">
+          <div className="block md:hidden">
             <SearchFilterBar
               filters={combinedFilters}
               onFiltersChange={setCombinedFilters}

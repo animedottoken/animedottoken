@@ -11,7 +11,7 @@ import { NFTCard } from "@/components/NFTCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { hasRequiredListingFields } from '@/lib/attributeHelpers';
 import { setNavContext } from "@/lib/navContext";
-import { useMarketplaceFilters, MarketplaceFiltersProvider } from '@/contexts/MarketplaceFiltersContext';
+import { useMarketplaceFilters } from '@/contexts/MarketplaceFiltersContext';
 import { 
   Pagination, 
   PaginationContent, 
@@ -360,13 +360,9 @@ const MarketplacePagination = ({ currentPage, totalPages, onPageChange }: Market
   );
 };
 
-// Main Marketplace Component with Provider
+// Main Marketplace Component without internal Provider (uses global FiltersScope)
 const Marketplace = () => {
-  return (
-    <MarketplaceFiltersProvider>
-      <MarketplaceContent />
-    </MarketplaceFiltersProvider>
-  );
+  return <MarketplaceContent />;
 };
 
 export default Marketplace;
