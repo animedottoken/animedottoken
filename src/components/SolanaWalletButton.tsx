@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useEffect, useState } from 'react';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, openWalletSelector, listProviders, error } = useSolanaWallet();
+  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, connect, openWalletSelector, listProviders, error } = useSolanaWallet();
   const [providers, setProviders] = useState<string[]>([]);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export const SolanaWalletButton = () => {
 
       {/* Main Connect Button */}
       <Button 
-        onClick={openWalletSelector}
+        onClick={connect}
         disabled={connecting}
         className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
       >

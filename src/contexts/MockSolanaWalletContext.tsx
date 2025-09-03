@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork, WalletNotConnectedError } from '@solana/wallet-adapter-base';
+import { WalletAdapterNetwork, WalletNotConnectedError, type Adapter } from '@solana/wallet-adapter-base';
 import { 
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   TrustWalletAdapter
 } from '@solana/wallet-adapter-wallets';
+import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-unsafe-burner';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -99,6 +100,23 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Note: We no longer auto-link wallets on connect
   // Wallets are now connected temporarily for payments or explicitly linked for identity
 
+  const airdropSOL = useCallback(async (publicKey: any) => {
+    try {
+      console.log('💰 Airdropping 1 SOL to preview wallet...');
+      const signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
+      await connection.confirmTransaction(signature);
+      console.log('✅ Airdrop successful:', signature);
+      toast.success('Preview wallet funded with 1 SOL');
+      
+      // Refresh balance
+      const balance = await connection.getBalance(publicKey);
+      setBalance(balance / LAMPORTS_PER_SOL);
+    } catch (error) {
+      console.error('❌ Airdrop failed:', error);
+      // Don't show error toast - this is best effort
+    }
+  }, [connection]);
+
   const connect = useCallback(async () => {
     setError(null);
     try {
@@ -108,9 +126,28 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
       
       const isInIframe = window !== window.parent;
-      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed');
+      const isDevnet = network === 'devnet';
+      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && w.adapter.name !== 'Preview Wallet');
+      const previewWallet = wallets.find(w => w.adapter.name === 'Preview Wallet');
       
       console.log('🎯 Has installed wallets:', hasInstalledWallets);
+      console.log('🎭 Preview wallet available:', !!previewWallet);
+      
+      // Auto-connect to Preview Wallet if in iframe, on devnet, and no installed wallets
+      if (isInIframe && isDevnet && !hasInstalledWallets && previewWallet) {
+        console.log('🎭 Auto-connecting to Preview Wallet...');
+        select(previewWallet.adapter.name);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await walletConnect();
+        
+        // Airdrop SOL if balance is low
+        if (publicKey && balance < 0.1) {
+          await airdropSOL(publicKey);
+        }
+        
+        toast.success('Preview wallet connected');
+        return;
+      }
       
       // Try inline connection first if wallets are available
       if (hasInstalledWallets) {
@@ -122,10 +159,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         } catch (inlineError) {
           console.error('❌ Inline connection failed:', inlineError);
           if (!isInIframe) {
-            // If not in iframe and inline failed, throw the error
             throw inlineError;
           }
-          // If in iframe and inline failed, fall through to open new tab
         }
       }
       
@@ -139,13 +174,12 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         return;
       }
       
-      // If we get here, something went wrong
       throw new Error('Unable to connect wallet');
     } catch (error) {
       console.error('Wallet connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect wallet');
     }
-  }, [setVisible, wallets]);
+  }, [setVisible, wallets, network, select, walletConnect, publicKey, balance, airdropSOL]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
@@ -331,14 +365,23 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
-  const wallets = useMemo(
-    () => [
+  const wallets = useMemo(() => {
+    const baseWallets: Adapter[] = [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
       new TrustWalletAdapter(),
-    ],
-    [network]
-  );
+    ];
+
+    // Add Preview Wallet (Unsafe Burner) for iframe and devnet only
+    const isInIframe = typeof window !== 'undefined' && window !== window.parent;
+    const isDevnet = network === WalletAdapterNetwork.Devnet;
+    
+    if (isInIframe && isDevnet) {
+      baseWallets.push(new UnsafeBurnerWalletAdapter());
+    }
+
+    return baseWallets;
+  }, [network]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
