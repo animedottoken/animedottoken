@@ -60,37 +60,11 @@ Deno.serve(async (req) => {
 
     console.log('🔍 Getting creator stats for user_ids:', user_ids);
 
-    // Get user profiles to map user_id to wallet_address for NFT/collection stats
-    const { data: userProfiles, error: profilesError } = await supabase
-      .from('user_profiles')
-      .select('id, wallet_address')
-      .in('id', user_ids);
-
-    if (profilesError) {
-      console.error('❌ Error fetching user profiles:', profilesError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch user profiles' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
-    }
-
-    // Create mapping of user_id to wallet_address
-    const userWalletMap = userProfiles?.reduce((acc, profile) => {
-      if (profile.wallet_address) {
-        acc[profile.id] = profile.wallet_address;
-      }
-      return acc;
-    }, {} as Record<string, string>) || {};
-
-    // Get follower counts - count how many people follow each user (by their wallet address)
-    const walletAddresses = Object.values(userWalletMap);
+    // Get follower counts - count how many people follow each user (by user_id)
     const { data: followerData, error: followerError } = await supabase
       .from('creator_follows')
-      .select('creator_wallet')
-      .in('creator_wallet', walletAddresses);
+      .select('creator_user_id')
+      .in('creator_user_id', user_ids);
 
     if (followerError) {
       console.error('❌ Error fetching follower counts:', followerError);
@@ -103,10 +77,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Count followers by wallet address, then map back to user_id
-    const followerCountsByWallet = followerData?.reduce((acc: Record<string, number>, follow) => {
-      if (follow.creator_wallet) {
-        acc[follow.creator_wallet] = (acc[follow.creator_wallet] || 0) + 1;
+    // Count followers by user_id
+    const followerCountsByUserId = followerData?.reduce((acc: Record<string, number>, follow) => {
+      if (follow.creator_user_id) {
+        acc[follow.creator_user_id] = (acc[follow.creator_user_id] || 0) + 1;
       }
       return acc;
     }, {}) || {};
@@ -114,8 +88,8 @@ Deno.serve(async (req) => {
     // Get following counts - count how many people each user follows
     const { data: followingData, error: followingError } = await supabase
       .from('creator_follows')
-      .select('follower_wallet')
-      .in('follower_wallet', walletAddresses);
+      .select('follower_user_id')
+      .in('follower_user_id', user_ids);
 
     if (followingError) {
       console.error('❌ Error fetching following counts:', followingError);
@@ -128,22 +102,22 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Count following by wallet address, then map back to user_id
-    const followingCountsByWallet = followingData?.reduce((acc: Record<string, number>, follow) => {
-      if (follow.follower_wallet) {
-        acc[follow.follower_wallet] = (acc[follow.follower_wallet] || 0) + 1;
+    // Count following by user_id
+    const followingCountsByUserId = followingData?.reduce((acc: Record<string, number>, follow) => {
+      if (follow.follower_user_id) {
+        acc[follow.follower_user_id] = (acc[follow.follower_user_id] || 0) + 1;
       }
       return acc;
     }, {}) || {};
 
-    // Get NFT like counts (wallet-based since NFTs are linked to wallet addresses)
+    // Get NFT like counts (user_id-based via creator_user_id)
     const { data: nftLikes, error: nftLikesError } = await supabase
       .from('nft_likes')
       .select(`
         id,
-        nfts!inner(creator_address)
+        nfts!inner(creator_user_id)
       `)
-      .in('nfts.creator_address', walletAddresses);
+      .in('nfts.creator_user_id', user_ids);
 
     if (nftLikesError) {
       console.error('❌ Error fetching NFT likes:', nftLikesError);
@@ -156,23 +130,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Count NFT likes by creator wallet, then map back to user_id
+    // Count NFT likes by creator user_id
     const nftLikeCounts = nftLikes?.reduce((acc: Record<string, number>, like: any) => {
-      const creatorWallet = like.nfts?.creator_address;
-      if (creatorWallet) {
-        acc[creatorWallet] = (acc[creatorWallet] || 0) + 1;
+      const creatorUserId = like.nfts?.creator_user_id;
+      if (creatorUserId) {
+        acc[creatorUserId] = (acc[creatorUserId] || 0) + 1;
       }
       return acc;
     }, {}) || {};
 
-    // Get collection like counts (wallet-based since collections are linked to wallet addresses)
+    // Get collection like counts (user_id-based via creator_user_id)
     const { data: collectionLikes, error: collectionLikesError } = await supabase
       .from('collection_likes')
       .select(`
         id,
-        collections!inner(creator_address)
+        collections!inner(creator_user_id)
       `)
-      .in('collections.creator_address', walletAddresses);
+      .in('collections.creator_user_id', user_ids);
 
     if (collectionLikesError) {
       console.error('❌ Error fetching collection likes:', collectionLikesError);
@@ -185,25 +159,24 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Count collection likes by creator wallet, then map back to user_id
+    // Count collection likes by creator user_id
     const collectionLikeCounts = collectionLikes?.reduce((acc: Record<string, number>, like: any) => {
-      const creatorWallet = like.collections?.creator_address;
-      if (creatorWallet) {
-        acc[creatorWallet] = (acc[creatorWallet] || 0) + 1;
+      const creatorUserId = like.collections?.creator_user_id;
+      if (creatorUserId) {
+        acc[creatorUserId] = (acc[creatorUserId] || 0) + 1;
       }
       return acc;
     }, {}) || {};
 
     // Aggregate stats by user_id
     const stats = user_ids.map(userId => {
-      const walletAddress = userWalletMap[userId];
-      const nftLikesCount = walletAddress ? (nftLikeCounts[walletAddress] || 0) : 0;
-      const collectionLikesCount = walletAddress ? (collectionLikeCounts[walletAddress] || 0) : 0;
+      const nftLikesCount = nftLikeCounts[userId] || 0;
+      const collectionLikesCount = collectionLikeCounts[userId] || 0;
       
       return {
         user_id: userId,
-        follower_count: walletAddress ? (followerCountsByWallet[walletAddress] || 0) : 0,
-        following_count: walletAddress ? (followingCountsByWallet[walletAddress] || 0) : 0,
+        follower_count: followerCountsByUserId[userId] || 0,
+        following_count: followingCountsByUserId[userId] || 0,
         nft_likes_count: nftLikesCount,
         collection_likes_count: collectionLikesCount,
         total_likes_count: nftLikesCount + collectionLikesCount

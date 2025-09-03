@@ -695,26 +695,71 @@ const Profile = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{getCreatorFollowerCount(profile?.id || '')}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <UserPlus className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{getCreatorFollowingCount(profile?.id || '')}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Heart className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{getCreatorTotalLikeCount(profile?.id || '')}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Layers className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{userCollections.length}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Image className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">{nfts.length}</span>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{getCreatorFollowerCount(profile?.id || '')}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Followers - users who follow this profile (includes self-follows)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <UserPlus className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{getCreatorFollowingCount(profile?.id || '')}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Following - users this profile is following (includes self-follows)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Heart className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{getCreatorTotalLikeCount(profile?.id || '')}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Total Likes - likes received on NFTs and collections (includes self-likes)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{userCollections.length}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Collections - number of NFT collections created</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Image className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{nfts.length}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">NFTs - number of NFTs owned or created</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
             </div>
           </div>
         </div>

@@ -50,8 +50,8 @@ Deno.serve(async (req) => {
 
     const { data, error } = await supabase
       .from('creator_follows')
-      .select('creator_wallet')
-      .eq('user_id', user.id);
+      .select('creator_user_id')
+      .eq('follower_user_id', user.id);
 
     if (error) {
       console.error('❌ Error fetching followed creators:', error);
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const creators = data?.map(f => f.creator_wallet) || [];
+    const creators = data?.map(f => f.creator_user_id) || [];
     console.log('✅ Found followed creators:', creators.length);
 
     return new Response(

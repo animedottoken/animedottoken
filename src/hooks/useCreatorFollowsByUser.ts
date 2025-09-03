@@ -33,21 +33,8 @@ export const useCreatorFollowsByUser = () => {
       return false;
     }
 
-    // Get target user's wallet address for the follow action
     try {
-      const { data: targetProfile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('wallet_address')
-        .eq('id', targetUserId)
-        .single();
-
-      if (profileError || !targetProfile?.wallet_address) {
-        toast.error('Cannot follow user without a connected wallet');
-        return false;
-      }
-
-      const targetWallet = targetProfile.wallet_address;
-      const wasFollowing = followedCreators.includes(targetWallet);
+      const wasFollowing = followedCreators.includes(targetUserId);
       setLoading(true);
 
       // Dispatch optimistic update signal using user_id
@@ -60,7 +47,7 @@ export const useCreatorFollowsByUser = () => {
 
       const { data, error } = await supabase.functions.invoke('toggle-follow', {
         body: { 
-          creator_wallet: targetWallet,
+          target_user_id: targetUserId,
           action,
         },
       });
@@ -71,12 +58,12 @@ export const useCreatorFollowsByUser = () => {
       if (action === 'follow') {
         setFollowedCreators(prev => {
           // Prevent duplicates
-          if (prev.includes(targetWallet)) return prev;
-          return [...prev, targetWallet];
+          if (prev.includes(targetUserId)) return prev;
+          return [...prev, targetUserId];
         });
         toast.success('Successfully followed creator!');
       } else {
-        setFollowedCreators(prev => prev.filter(c => c !== targetWallet));
+        setFollowedCreators(prev => prev.filter(c => c !== targetUserId));
         toast.success('Successfully unfollowed creator!');
       }
       
@@ -86,7 +73,12 @@ export const useCreatorFollowsByUser = () => {
       toast.error(err.message || 'Failed to update follow status');
       
       // Revert optimistic update on error
-      const wasFollowing = followedCreators.includes(''); // This is complex to determine, so skip revert
+      const wasFollowing = followedCreators.includes(targetUserId);
+      const revertDelta = wasFollowing ? 1 : -1;
+      window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+        detail: { userId: targetUserId, type: 'follow', delta: revertDelta }
+      }));
+      
       return false;
     } finally {
       setLoading(false);
@@ -94,21 +86,7 @@ export const useCreatorFollowsByUser = () => {
   }, [user, followedCreators]);
 
   const isFollowingUserId = useCallback(async (targetUserId: string): Promise<boolean> => {
-    try {
-      const { data: targetProfile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('wallet_address')
-        .eq('id', targetUserId)
-        .single();
-
-      if (profileError || !targetProfile?.wallet_address) {
-        return false;
-      }
-
-      return followedCreators.includes(targetProfile.wallet_address);
-    } catch (error) {
-      return false;
-    }
+    return followedCreators.includes(targetUserId);
   }, [followedCreators]);
 
   useEffect(() => {
@@ -125,7 +103,7 @@ export const useCreatorFollowsByUser = () => {
           event: '*',
           schema: 'public',
           table: 'creator_follows',
-          filter: `user_id=eq.${user.id}`
+          filter: `follower_user_id=eq.${user.id}`
         },
         (payload) => {
           console.log('🔥 Real-time creator follows change detected for current user (by user):', payload);
@@ -133,7 +111,7 @@ export const useCreatorFollowsByUser = () => {
           // Only refresh if this change is for the current user
           const newRecord = payload.new as any;
           const oldRecord = payload.old as any;
-          if (newRecord?.user_id === user.id || oldRecord?.user_id === user.id) {
+          if (newRecord?.follower_user_id === user.id || oldRecord?.follower_user_id === user.id) {
             loadFollowedCreators();
           }
         }

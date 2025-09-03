@@ -47,11 +47,11 @@ serve(async (req) => {
       );
     }
 
-    const { creator_wallet, action } = await req.json();
+    const { target_user_id, action } = await req.json();
 
-    if (!creator_wallet || !action) {
+    if (!target_user_id || !action) {
       return new Response(
-        JSON.stringify({ error: "creator_wallet and action are required" }),
+        JSON.stringify({ error: "target_user_id and action are required" }),
         { status: 400, headers: corsHeaders }
       );
     }
@@ -66,14 +66,14 @@ serve(async (req) => {
     // Use service role for database operations
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    console.log(`${action} request: Creator ${creator_wallet}, User: ${user.id}`);
+    console.log(`${action} request: Target User ${target_user_id}, Current User: ${user.id}`);
 
     if (action === 'follow') {
       const { error } = await supabase
         .from("creator_follows")
         .insert({ 
-          creator_wallet, 
-          user_id: user.id,
+          follower_user_id: user.id,
+          creator_user_id: target_user_id,
           created_at: new Date().toISOString()
         });
 
@@ -82,8 +82,8 @@ serve(async (req) => {
         if (error.code === '23505') {
           return new Response(JSON.stringify({ 
             success: true,
-            message: "Already following this creator",
-            creator_wallet,
+            message: "Already following this user",
+            target_user_id,
             user_id: user.id 
           }), {
             status: 200,
@@ -91,35 +91,35 @@ serve(async (req) => {
           });
         }
         console.error('Database error during follow:', error);
-        return new Response(JSON.stringify({ error: "Failed to follow creator" }), {
+        return new Response(JSON.stringify({ error: "Failed to follow user" }), {
           status: 500,
           headers: corsHeaders,
         });
       }
 
-      console.log(`User ${user.id} successfully followed creator ${creator_wallet}`);
+      console.log(`User ${user.id} successfully followed user ${target_user_id}`);
     } else {
       const { error } = await supabase
         .from("creator_follows")
         .delete()
-        .eq("creator_wallet", creator_wallet)
-        .eq("user_id", user.id);
+        .eq("creator_user_id", target_user_id)
+        .eq("follower_user_id", user.id);
 
       if (error) {
         console.error('Database error during unfollow:', error);
-        return new Response(JSON.stringify({ error: "Failed to unfollow creator" }), {
+        return new Response(JSON.stringify({ error: "Failed to unfollow user" }), {
           status: 500,
           headers: corsHeaders,
         });
       }
 
-      console.log(`User ${user.id} successfully unfollowed creator ${creator_wallet}`);
+      console.log(`User ${user.id} successfully unfollowed user ${target_user_id}`);
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
       action,
-      creator_wallet,
+      target_user_id,
       user_id: user.id
     }), {
       status: 200,
