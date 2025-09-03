@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 export const SolanaWalletButton = () => {
   const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, connect, openWalletSelector, listProviders, error } = useSolanaWallet();
-  const [providers, setProviders] = useState<string[]>([]);
+  const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ installed: [], hasPreview: false });
   const [requestingAirdrop, setRequestingAirdrop] = useState(false);
   
   const isPreviewWallet = walletName && /unsafe|burner/i.test(walletName);
@@ -42,6 +42,23 @@ export const SolanaWalletButton = () => {
   useEffect(() => {
     setProviders(listProviders());
   }, [listProviders]);
+
+  const isInIframe = typeof window !== 'undefined' && window !== window.parent;
+
+  const openInNewTab = () => {
+    const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
+    window.open(fullAppUrl, '_blank');
+    toast.info('Opening wallet connection in new tab...');
+  };
+
+  const connectPreviewWallet = async () => {
+    try {
+      await connectWith('Unsafe');
+    } catch (error) {
+      console.error('Preview wallet connection failed:', error);
+      toast.error('Failed to connect preview wallet');
+    }
+  };
 
   if (connected && publicKey) {
     return (
@@ -112,33 +129,53 @@ export const SolanaWalletButton = () => {
   return (
     <div className="space-y-3">
       {/* Quick Connect Buttons */}
-      <div className="space-y-2">
-        <div className="text-xs text-muted-foreground text-center">Quick Connect</div>
-        <div className="grid grid-cols-2 gap-2">
-          {providers.includes('Phantom') && (
-            <Button
-              onClick={() => connectWith('Phantom')}
-              disabled={connecting}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              {connecting ? '...' : 'Phantom'}
-            </Button>
-          )}
-          {providers.includes('Solflare') && (
-            <Button
-              onClick={() => connectWith('Solflare')}
-              disabled={connecting}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              {connecting ? '...' : 'Solflare'}
-            </Button>
-          )}
+      {providers.installed.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground text-center">Quick Connect</div>
+          <div className="grid grid-cols-2 gap-2">
+            {providers.installed.includes('Phantom') && (
+              <Button
+                onClick={() => connectWith('Phantom')}
+                disabled={connecting}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {connecting ? '...' : 'Phantom'}
+              </Button>
+            )}
+            {providers.installed.includes('Solflare') && (
+              <Button
+                onClick={() => connectWith('Solflare')}
+                disabled={connecting}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {connecting ? '...' : 'Solflare'}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Iframe Connection Options */}
+      {isInIframe && providers.installed.length > 0 && (
+        <div className="space-y-2">
+          <Button 
+            onClick={openInNewTab}
+            variant="outline"
+            size="sm"
+            className="w-full flex items-center gap-2"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Connect in new tab (Recommended)
+          </Button>
+          <div className="text-xs text-muted-foreground text-center">
+            For reliable Phantom/Solflare connection
+          </div>
+        </div>
+      )}
 
       {/* Main Connect Button */}
       <Button 
@@ -155,6 +192,25 @@ export const SolanaWalletButton = () => {
           </>
         )}
       </Button>
+
+      {/* Preview Wallet Option */}
+      {providers.hasPreview && (
+        <div className="pt-2 border-t space-y-2">
+          <Button 
+            onClick={connectPreviewWallet}
+            disabled={connecting}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center gap-2 text-muted-foreground"
+          >
+            <Zap className="h-4 w-4" />
+            Use Preview Wallet (Devnet)
+          </Button>
+          <div className="text-xs text-muted-foreground text-center">
+            For quick testing only
+          </div>
+        </div>
+      )}
     </div>
   );
 };

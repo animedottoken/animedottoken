@@ -33,7 +33,7 @@ interface SolanaWalletContextType {
   signMessage: (message: string) => Promise<string>;
   disconnect: () => void;
   setRememberWallet: (remember: boolean) => void;
-  listProviders: () => string[];
+  listProviders: () => { installed: string[]; hasPreview: boolean };
   connectWith: (providerName: string) => Promise<void>;
   error: string | null;
 }
@@ -54,7 +54,7 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   signMessage: async () => '',
   disconnect: () => {},
   setRememberWallet: () => {},
-  listProviders: () => [],
+  listProviders: () => ({ installed: [], hasPreview: false }),
   connectWith: async () => {},
   error: null,
 });
@@ -99,53 +99,26 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connection]);
 
-  // Auto-connect preview wallet on initial load (iframe + devnet only)
+  // Handle wallet-connect=1 URL parameter for new tab connections
   useEffect(() => {
-    const autoConnectPreviewWallet = async () => {
-      // Only run once per session to avoid loops
-      if (sessionStorage.getItem('preview-autoconnect-attempted')) {
-        return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldConnect = urlParams.get('wallet-connect') === '1';
+    const isTopLevel = window === window.parent;
+    
+    if (shouldConnect && isTopLevel && !connected && !connecting) {
+      console.log('🎯 Auto-opening wallet modal from URL parameter...');
+      const hasInstalledWallets = wallets.some(w => 
+        (w.readyState === 'Installed' || w.readyState === 'Loadable') && 
+        !/unsafe|burner/i.test(w.adapter.name)
+      );
+      
+      if (hasInstalledWallets) {
+        setTimeout(() => {
+          setVisible(true);
+        }, 500);
       }
-
-      const isInIframe = window !== window.parent;
-      const isDevnet = network === 'devnet';
-      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && !/unsafe|burner/i.test(w.adapter.name));
-      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
-
-      // Auto-connect only if NO installed wallets; prefer user's Phantom/Solflare when present
-      if (isInIframe && isDevnet && !connected && !connecting && previewWallet && !hasInstalledWallets) {
-        console.log('🎭 Auto-connecting preview wallet on page load (no installed wallet detected)...');
-        sessionStorage.setItem('preview-autoconnect-attempted', 'true');
-        
-        toast.info('Connecting preview wallet...', { duration: 2000 });
-        
-        try {
-          select(previewWallet.adapter.name);
-          await new Promise(resolve => setTimeout(resolve, 100));
-          await walletConnect();
-          
-          // Wait for connection then airdrop if needed
-          await new Promise(resolve => setTimeout(resolve, 200));
-          if (wallet?.adapter.publicKey) {
-            const currentBalance = await connection.getBalance(wallet.adapter.publicKey);
-            const balanceInSOL = currentBalance / LAMPORTS_PER_SOL;
-            if (balanceInSOL < 0.1) {
-              await airdropSOL(wallet.adapter.publicKey);
-            }
-          }
-          
-          toast.success('Preview wallet connected automatically');
-        } catch (error) {
-          console.error('Auto-connect failed:', error);
-          // Don't show error toast as this is best effort
-        }
-      }
-    };
-
-    // Small delay to ensure wallets are loaded
-    const timer = setTimeout(autoConnectPreviewWallet, 500);
-    return () => clearTimeout(timer);
-  }, [wallets, connected, connecting, network, select, walletConnect, wallet, connection, airdropSOL]);
+    }
+  }, [wallets, connected, connecting, setVisible]);
 
   // Fetch balance when wallet connects
   useEffect(() => {
@@ -181,33 +154,25 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('🎯 Has installed wallets:', hasInstalledWallets);
       console.log('🎭 Preview wallet available:', !!previewWallet);
       
-      // Prefer installed wallets; only fall back to Preview Wallet in iframe + devnet when none installed
-      if (isInIframe && isDevnet && previewWallet && !hasInstalledWallets) {
-        console.log('🎭 Auto-connecting to Preview Wallet (no installed wallet detected)...');
-        select(previewWallet.adapter.name);
-        await new Promise(resolve => setTimeout(resolve, 100));
-        await walletConnect();
-        
-        // Airdrop SOL if balance is low
-        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for connection
-        if (wallet?.adapter.publicKey) {
-          const currentBalance = await connection.getBalance(wallet.adapter.publicKey);
-          const balanceInSOL = currentBalance / LAMPORTS_PER_SOL;
-          if (balanceInSOL < 0.1) {
-            await airdropSOL(wallet.adapter.publicKey);
-          }
-        }
-        
-        toast.success('Preview wallet connected');
-        return;
-      }
-      
-      // Try inline connection first if wallets are available
+      // Try installed wallets first
       if (hasInstalledWallets) {
         console.log('✅ Attempting inline wallet connection...');
+        
         try {
           setVisible(true);
           console.log('🎉 Wallet modal opened successfully');
+          
+          // If in iframe, set fallback timer
+          if (isInIframe) {
+            setTimeout(() => {
+              if (!connected && !connecting) {
+                console.log('🚀 Iframe connection timeout, opening new tab...');
+                const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
+                window.open(fullAppUrl, '_blank');
+                toast.info('Opening wallet connection in new tab...');
+              }
+            }, 1200);
+          }
           return;
         } catch (inlineError) {
           console.error('❌ Inline connection failed:', inlineError);
@@ -232,7 +197,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.error('Wallet connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect wallet');
     }
-  }, [setVisible, wallets, network, select, walletConnect, publicKey, balance, airdropSOL]);
+  }, [setVisible, wallets, network, connected, connecting]);
 
   const disconnect = useCallback(() => {
     walletDisconnect();
@@ -258,9 +223,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const listProviders = useCallback(() => {
-    return wallets
-      .filter(w => w.readyState === 'Installed')
+    const installedWallets = wallets
+      .filter(w => 
+        (w.readyState === 'Installed' || w.readyState === 'Loadable') && 
+        !/unsafe|burner/i.test(w.adapter.name)
+      )
       .map(w => w.adapter.name);
+    
+    const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
+    return {
+      installed: installedWallets,
+      hasPreview: !!previewWallet
+    };
   }, [wallets]);
 
   const connectPaymentWallet = useCallback(async () => {
@@ -361,7 +335,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
       );
       
-      if (selectedWallet && selectedWallet.readyState === 'Installed') {
+      if (selectedWallet && (selectedWallet.readyState === 'Installed' || selectedWallet.readyState === 'Loadable')) {
         console.log(`✅ Found ${providerName} wallet, selecting...`);
         select(selectedWallet.adapter.name);
         setTimeout(async () => {
