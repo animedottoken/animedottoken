@@ -220,51 +220,27 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [wallets]);
 
   const connectPaymentWallet = useCallback(async () => {
-    setError(null);
     try {
-      console.log('💰 Payment wallet connection requested...');
-      console.log('🖼️ Is in iframe:', window !== window.parent);
-      
-      // Find preview/unsafe/burner wallet for direct connection
-      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
-      
-      if (previewWallet && (previewWallet.readyState === WalletReadyState.Installed || previewWallet.readyState === WalletReadyState.Loadable)) {
-        console.log('🎭 Attempting direct preview wallet connection...');
-        try {
-          // Disconnect any existing wallet first
-          await walletDisconnect();
-          
-          // Connect directly to preview wallet
-          select(previewWallet.adapter.name);
-          
-          setTimeout(async () => {
-            try {
-              await walletConnect();
-              console.log('✅ Preview wallet connected successfully');
-              toast.success('Connected to Preview Wallet');
-            } catch (error) {
-              console.error('❌ Preview wallet connection failed:', error);
-              // Fallback to modal
-              console.log('🔄 Falling back to wallet selector...');
-              setVisible(true);
-              toast.info('Select a wallet to continue');
-            }
-          }, 50);
-          return;
-        } catch (error) {
-          console.error('Preview wallet selection error:', error);
-        }
+      if (!wallet) {
+        // No wallet selected, open the selection modal and set auto-connect flag
+        console.log('🎯 Opening wallet modal for selection with auto-connect...');
+        setConnectAfterSelection(true);
+        setVisible(true);
+        toast.info('Select a wallet to continue');
+        return;
       }
-      
-      // Fallback: open wallet selector modal
-      console.log('🎯 Opening wallet selector for connection...');
-      setVisible(true);
-      toast.info('Select a wallet to continue');
+      await walletConnect();
+      toast.success('Payment wallet connected');
     } catch (error) {
-      console.error('Payment wallet connection error:', error);
-      toast.error('Failed to connect wallet');
+      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        setConnectAfterSelection(true);
+        setVisible(true);
+      } else {
+        console.error('Payment wallet connection error:', error);
+        toast.error('Failed to connect payment wallet');
+      }
     }
-  }, [setVisible]);
+  }, [walletConnect, wallet, setVisible]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
@@ -424,23 +400,21 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       new TrustWalletAdapter(),
     ];
 
-    // Always add Preview Wallet (Unsafe Burner) on Devnet for testing
+    // Conditionally add Preview Wallet (Unsafe Burner) only when explicitly enabled via ?preview=1
+    const isInIframe = typeof window !== 'undefined' && window !== window.parent;
     const isDevnet = network === WalletAdapterNetwork.Devnet;
+    const previewEnabled = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     
-    if (isDevnet) {
+    if (isInIframe && isDevnet && previewEnabled) {
       baseWallets.push(new UnsafeBurnerWalletAdapter());
     }
 
     return baseWallets;
   }, [network]);
 
-  const shouldAutoConnect = useMemo(() => {
-    return typeof window !== 'undefined' && localStorage.getItem('remember-wallet') === 'true';
-  }, []);
-
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={shouldAutoConnect}>
+      <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>
           <SolanaWalletInnerProvider>
             {children}

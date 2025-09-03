@@ -139,7 +139,7 @@ export const SolanaWalletButton = () => {
           <div className="grid grid-cols-2 gap-2">
             {providers.installed.includes('Phantom') && (
               <Button
-                onClick={() => connectWith('Phantom')}
+                onClick={handleConnect}
                 disabled={connecting}
                 variant="outline"
                 size="sm"
@@ -150,7 +150,7 @@ export const SolanaWalletButton = () => {
             )}
             {providers.installed.includes('Solflare') && (
               <Button
-                onClick={() => connectWith('Solflare')}
+                onClick={handleConnect}
                 disabled={connecting}
                 variant="outline"
                 size="sm"

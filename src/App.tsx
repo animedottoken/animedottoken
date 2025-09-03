@@ -35,7 +35,6 @@ import Support from "./pages/Support";
 import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
 import { SecurityBanner } from "@/components/SecurityBanner";
-import { FiltersScope } from "@/components/FiltersScope";
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -151,33 +150,31 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col w-full">
         <SecurityBanner />
-        <FiltersScope>
-          <div className="sticky top-0 z-20 bg-background border-b">
-            <TopNav />
-          </div>
-          <main className="flex-1 overflow-x-hidden">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/share/nft/:nftId" element={<ShareNFT />} />
-              <Route path="/mint" element={<Mint />} />
-              <Route path="/mint/collection" element={<MintCollection />} />
-              <Route path="/mint/nft" element={<MintNFT />} />
-              <Route path="/collection/:collectionId" element={<CollectionDetail />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:wallet" element={<CreatorProfile />} />
-              <Route path="/nft/:id" element={<NFTDetail />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/trust" element={<Trust />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <BottomNav />
-          <BackToTop />
-        </FiltersScope>
+        <div className="sticky top-0 z-20 bg-background border-b">
+          <TopNav />
+        </div>
+        <main className="flex-1 overflow-x-hidden">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/share/nft/:nftId" element={<ShareNFT />} />
+            <Route path="/mint" element={<Mint />} />
+            <Route path="/mint/collection" element={<MintCollection />} />
+            <Route path="/mint/nft" element={<MintNFT />} />
+            <Route path="/collection/:collectionId" element={<CollectionDetail />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:wallet" element={<CreatorProfile />} />
+            <Route path="/nft/:id" element={<NFTDetail />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/trust" element={<Trust />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <BottomNav />
+        <BackToTop />
       </div>
     );
   }
@@ -185,38 +182,36 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen w-full">
       <SecurityBanner />
-      <FiltersScope>
-        <DesktopSidebar 
-          className="fixed left-0 top-0 h-screen z-30" 
-          onCollapseChange={setSidebarCollapsed}
-        />
-        <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-          <div className="sticky top-0 z-20 bg-background border-b">
-            <TopNav />
-          </div>
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/share/nft/:nftId" element={<ShareNFT />} />
-              <Route path="/mint" element={<Mint />} />
-              <Route path="/mint/collection" element={<MintCollection />} />
-              <Route path="/mint/nft" element={<MintNFT />} />
-              <Route path="/collection/:collectionId" element={<CollectionDetail />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:wallet" element={<CreatorProfile />} />
-              <Route path="/nft/:id" element={<NFTDetail />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/trust" element={<Trust />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <BackToTop />
+      <DesktopSidebar 
+        className="fixed left-0 top-0 h-screen z-30" 
+        onCollapseChange={setSidebarCollapsed}
+      />
+      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <div className="sticky top-0 z-20 bg-background border-b">
+          <TopNav />
         </div>
-      </FiltersScope>
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/share/nft/:nftId" element={<ShareNFT />} />
+            <Route path="/mint" element={<Mint />} />
+            <Route path="/mint/collection" element={<MintCollection />} />
+            <Route path="/mint/nft" element={<MintNFT />} />
+            <Route path="/collection/:collectionId" element={<CollectionDetail />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:wallet" element={<CreatorProfile />} />
+            <Route path="/nft/:id" element={<NFTDetail />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/trust" element={<Trust />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <BackToTop />
+      </div>
     </div>
   );
 };

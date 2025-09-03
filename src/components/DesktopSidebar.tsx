@@ -1,19 +1,37 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { User, ShoppingCart, Coins, ChevronLeft, ChevronRight } from "lucide-react";
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
 import { homeSections } from "@/lib/homeSections";
-import { MarketplaceFilterSidebar } from "@/components/MarketplaceFilterSidebar";
+
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
+type RouteItem = {
+  type: "route";
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path: string;
+};
+
 type SectionItem = {
+  type: "section";
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   hash: string;
 };
 
+type NavigationItem = RouteItem | SectionItem;
+
+const routes: RouteItem[] = [
+  { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
+  { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
+  { type: "route", title: "Profile", icon: User, path: "/profile" },
+];
+
 const sections: SectionItem[] = homeSections.map(section => ({
+  type: "section" as const,
   title: section.title,
   icon: section.icon,
   hash: section.hash.replace('#', ''),
@@ -28,11 +46,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Show marketplace filters for specific pages
-  const filterRoutes = ['/marketplace', '/profile'];
-  const isCreatorProfileRoute = location.pathname.startsWith('/profile/');
-  const shouldShowFilters = filterRoutes.includes(location.pathname) || isCreatorProfileRoute;
+  const { user, signOut } = useAuth();
 
   const handleCollapseToggle = () => {
     const newCollapsed = !collapsed;
@@ -50,7 +64,12 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     }
   };
 
-  const handleNavigation = (item: SectionItem, e?: React.MouseEvent) => {
+  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
+    if (item.type === "route") {
+      navigate(item.path);
+      return;
+    }
+
     // Navigate to home first if on different page
     if (location.pathname !== "/") {
       navigate(`/#${item.hash}`);
@@ -59,6 +78,13 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
     // Use robust scroll utility for reliable hash navigation
     scrollToHash(`#${item.hash}`);
+  };
+
+  const isActive = (item: NavigationItem) => {
+    if (item.type === "route") {
+      return location.pathname === item.path;
+    }
+    return false;
   };
 
 
@@ -112,7 +138,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-          {/* Home Sections - always show */}
+          {/* Home Sections Only */}
           <div>
             <div className="space-y-1">
               {sections.map((item) => (
@@ -137,11 +163,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
               ))}
             </div>
           </div>
-
-          {/* Filters Section - show below home sections on filter routes */}
-          {shouldShowFilters && !collapsed && (
-            <MarketplaceFilterSidebar embedded />
-          )}
         </nav>
       </aside>
     
