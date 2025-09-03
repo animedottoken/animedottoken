@@ -2,7 +2,7 @@ import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { LogIn, LogOut, ExternalLink, AlertTriangle, Coins, Zap } from 'lucide-react';
+import { LogIn, LogOut, AlertTriangle, Coins, Zap } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useEffect, useState } from 'react';
 import { requestDevnetAirdrop } from '@/services/devnetHelpers';
@@ -43,13 +43,8 @@ export const SolanaWalletButton = () => {
     setProviders(listProviders());
   }, [listProviders]);
 
-  const isInIframe = typeof window !== 'undefined' && window !== window.parent;
+  
 
-  const openInNewTab = () => {
-    const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
-    window.open(fullAppUrl, '_blank');
-    toast.info('Opening wallet connection in new tab...');
-  };
 
   const connectPreviewWallet = async () => {
     try {
@@ -159,23 +154,6 @@ export const SolanaWalletButton = () => {
         </div>
       )}
 
-      {/* Iframe Connection Options */}
-      {isInIframe && providers.installed.length > 0 && (
-        <div className="space-y-2">
-          <Button 
-            onClick={openInNewTab}
-            variant="outline"
-            size="sm"
-            className="w-full flex items-center gap-2"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Connect in new tab (Recommended)
-          </Button>
-          <div className="text-xs text-muted-foreground text-center">
-            For reliable Phantom/Solflare connection
-          </div>
-        </div>
-      )}
 
       {/* Main Connect Button */}
       <Button 

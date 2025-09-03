@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork, WalletNotConnectedError, type Adapter } from '@solana/wallet-adapter-base';
+import { WalletAdapterNetwork, WalletNotConnectedError, WalletReadyState, type Adapter } from '@solana/wallet-adapter-base';
 import { 
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -99,26 +99,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connection]);
 
-  // Handle wallet-connect=1 URL parameter for new tab connections
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldConnect = urlParams.get('wallet-connect') === '1';
-    const isTopLevel = window === window.parent;
-    
-    if (shouldConnect && isTopLevel && !connected && !connecting) {
-      console.log('🎯 Auto-opening wallet modal from URL parameter...');
-      const hasInstalledWallets = wallets.some(w => 
-        (w.readyState === 'Installed' || w.readyState === 'Loadable') && 
-        !/unsafe|burner/i.test(w.adapter.name)
-      );
-      
-      if (hasInstalledWallets) {
-        setTimeout(() => {
-          setVisible(true);
-        }, 500);
-      }
-    }
-  }, [wallets, connected, connecting, setVisible]);
 
   // Fetch balance when wallet connects
   useEffect(() => {
@@ -148,7 +128,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       
       const isInIframe = window !== window.parent;
       const isDevnet = network === 'devnet';
-      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && !/unsafe|burner/i.test(w.adapter.name));
+      const hasInstalledWallets = wallets.some(w => (w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable) && !/unsafe|burner/i.test(w.adapter.name));
       const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
       
       console.log('🎯 Has installed wallets:', hasInstalledWallets);
@@ -162,17 +142,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setVisible(true);
           console.log('🎉 Wallet modal opened successfully');
           
-          // If in iframe, set fallback timer
-          if (isInIframe) {
-            setTimeout(() => {
-              if (!connected && !connecting) {
-                console.log('🚀 Iframe connection timeout, opening new tab...');
-                const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
-                window.open(fullAppUrl, '_blank');
-                toast.info('Opening wallet connection in new tab...');
-              }
-            }, 1200);
-          }
           return;
         } catch (inlineError) {
           console.error('❌ Inline connection failed:', inlineError);
@@ -182,15 +151,10 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
       }
       
-      // Fallback: open new tab (only if in iframe or no wallets detected)
-      if (isInIframe || !hasInstalledWallets) {
-        const reason = !hasInstalledWallets ? 'no wallets detected' : 'iframe fallback';
-        console.log(`🚀 Opening full app for wallet connection (${reason})...`);
-        const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
-        window.open(fullAppUrl, '_blank');
-        toast.info('Opening wallet connection in new tab...');
-        return;
-      }
+      // Fallback: open wallet selection modal inline
+      console.log('ℹ️ Opening wallet modal for selection...');
+      setVisible(true);
+      return;
       
       throw new Error('Unable to connect wallet');
     } catch (error) {
@@ -225,7 +189,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const listProviders = useCallback(() => {
     const installedWallets = wallets
       .filter(w => 
-        (w.readyState === 'Installed' || w.readyState === 'Loadable') && 
+        (w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable) && 
         !/unsafe|burner/i.test(w.adapter.name)
       )
       .map(w => w.adapter.name);
@@ -335,7 +299,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         w.adapter.name.toLowerCase().includes(providerName.toLowerCase())
       );
       
-      if (selectedWallet && (selectedWallet.readyState === 'Installed' || selectedWallet.readyState === 'Loadable')) {
+      if (selectedWallet && (selectedWallet.readyState === WalletReadyState.Installed || selectedWallet.readyState === WalletReadyState.Loadable)) {
         console.log(`✅ Found ${providerName} wallet, selecting...`);
         select(selectedWallet.adapter.name);
         setTimeout(async () => {
