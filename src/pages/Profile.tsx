@@ -42,7 +42,7 @@ import SocialActionWrapper from '@/components/SocialActionWrapper';
 
 const Profile = () => {
   const { wallet } = useParams();
-  const { publicKey, connected, connect, disconnect, connecting, walletName } = useSolanaWallet();
+  const { publicKey, connected, connectPaymentWallet, disconnect, connecting, walletName } = useSolanaWallet();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
@@ -562,7 +562,7 @@ const Profile = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={hasWallet ? disconnect : connect}
+                        onClick={hasWallet ? disconnect : connectPaymentWallet}
                         disabled={connecting}
                         className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
                       >

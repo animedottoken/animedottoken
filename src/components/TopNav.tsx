@@ -49,7 +49,7 @@ export const TopNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { connected, connecting, connect, disconnect } = useSolanaWallet();
+  const { connected, connecting, connectPaymentWallet, disconnect } = useSolanaWallet();
 
   const handleHomeNavigation = () => {
     if (location.pathname === "/") {
@@ -192,7 +192,7 @@ export const TopNav = () => {
                     if (connected) {
                       disconnect();
                     } else {
-                      connect();
+                      connectPaymentWallet();
                     }
                   }}
                 >
@@ -353,7 +353,7 @@ export const TopNav = () => {
                   if (connected) {
                     disconnect();
                   } else {
-                    connect();
+                    connectPaymentWallet();
                   }
                 }}
               >
