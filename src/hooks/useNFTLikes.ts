@@ -71,11 +71,7 @@ export const useNFTLikes = () => {
       detail: { nftId, delta: nftDelta }
     }));
     
-    if (creatorAddress) {
-      window.dispatchEvent(new CustomEvent('creator-stats-update', {
-        detail: { wallet: creatorAddress, type: 'nft_like', delta: nftDelta }
-      }));
-    }
+    // Note: Creator stats updates are now handled by user-ID based system
 
     return new Promise<boolean>((resolve) => {
       toggleDebounceTimeout = setTimeout(async () => {
@@ -138,11 +134,7 @@ export const useNFTLikes = () => {
             detail: { nftId, delta: revertDelta }
           }));
           
-          if (creatorAddress) {
-            window.dispatchEvent(new CustomEvent('creator-stats-update', {
-              detail: { wallet: creatorAddress, type: 'nft_like', delta: revertDelta }
-            }));
-          }
+          // Note: Creator stats updates are now handled by user-ID based system
           
           resolve(false);
         } finally {

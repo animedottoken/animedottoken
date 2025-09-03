@@ -14,8 +14,8 @@ import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
-import { useCreatorFollows } from '@/hooks/useCreatorFollows';
-import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
+import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 export const GamifiedProfileCard = () => {
   const { publicKey } = useSolanaWallet();
@@ -32,11 +32,11 @@ export const GamifiedProfileCard = () => {
     getRankBadge
   } = useGamifiedProfile();
 
-  const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
+  const { isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
 
   // Use real-time creator stats
-  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStats(
-    profile?.wallet_address ? [profile.wallet_address] : []
+  const { getCreatorFollowerCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
+    profile?.user_id ? [profile.user_id] : []
   );
   
   const [nftCount, setNftCount] = useState(0);
@@ -334,17 +334,17 @@ export const GamifiedProfileCard = () => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="text-sm text-muted-foreground">{profile.trade_count} trades</span>
             <button
-                onClick={() => toggleFollow(profile.wallet_address)}
+                onClick={() => profile?.user_id && toggleFollowByUserId(profile.user_id)}
                 className="inline-flex items-center gap-1 px-2 py-1 rounded-full border transition-all duration-200 hover:scale-105"
-                aria-label={isFollowing(profile.wallet_address) ? 'Unfollow creator' : 'Follow creator'}
-                disabled={followLoading}
+                aria-label={profile?.user_id && isFollowingUserId(profile.user_id) ? 'Unfollow creator' : 'Follow creator'}
+                disabled={followLoading || !profile?.user_id}
               >
-                {isFollowing(profile.wallet_address) ? (
+                {profile?.user_id && isFollowingUserId(profile.user_id) ? (
                   <UserCheck className="w-4 h-4 text-green-500" />
                 ) : (
                   <UserPlus className="w-4 h-4 text-muted-foreground" />
                 )}
-                <span className="text-xs">{isFollowing(profile.wallet_address) ? 'Following' : 'Follow'}</span>
+                <span className="text-xs">{profile?.user_id && isFollowingUserId(profile.user_id) ? 'Following' : 'Follow'}</span>
               </button>
           </div>
         </div>
@@ -369,15 +369,15 @@ export const GamifiedProfileCard = () => {
         {/* Profile Like/Follow */}
         <div className="mb-4">
             <button
-              aria-label={isFollowing(profile.wallet_address) ? 'Unfollow' : 'Follow'}
-              disabled={followLoading}
+              aria-label={profile?.user_id && isFollowingUserId(profile.user_id) ? 'Unfollow' : 'Follow'}
+              disabled={followLoading || !profile?.user_id}
               onClick={(e) => {
                 e.stopPropagation();
-                toggleFollow(profile.wallet_address);
+                if (profile?.user_id) toggleFollowByUserId(profile.user_id);
               }}
               className="inline-flex items-center gap-2 justify-center px-4 py-2 rounded-md border hover:bg-muted transition-colors"
             >
-              {isFollowing(profile.wallet_address) ? (
+              {profile?.user_id && isFollowingUserId(profile.user_id) ? (
                 <>
                   <UserCheck className="w-5 h-5 text-green-500" />
                   <span className="text-sm">Following</span>
@@ -405,9 +405,9 @@ export const GamifiedProfileCard = () => {
          
         {/* Activity Stats */}
         <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-          <span>{getCreatorFollowerCount(profile.wallet_address)} followers</span>
+          <span>{profile?.user_id ? getCreatorFollowerCount(profile.user_id) : 0} followers</span>
           <span>•</span>
-          <span>{getCreatorTotalLikeCount(profile.wallet_address)} likes received</span>
+          <span>{profile?.user_id ? getCreatorTotalLikeCount(profile.user_id) : 0} likes received</span>
         </div>
 
         <div className="space-y-2">

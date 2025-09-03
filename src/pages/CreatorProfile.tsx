@@ -11,9 +11,9 @@ import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x
 import { supabase } from "@/integrations/supabase/client";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCreatorFollows } from '@/hooks/useCreatorFollows';
+import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
-import { useRealtimeCreatorStats } from '@/hooks/useRealtimeCreatorStats';
+import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useCollectionLikes } from "@/hooks/useCollectionLikes";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ import { getNavContext, clearNavContext } from "@/lib/navContext";
 
 interface Creator {
   wallet_address: string;
+  user_id?: string;
   nickname?: string;
   bio?: string;
   profile_image_url?: string;
@@ -72,7 +73,7 @@ export default function CreatorProfile() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { publicKey, connect, connecting } = useSolanaWallet();
-  const { isFollowing, toggleFollow, loading: followLoading } = useCreatorFollows();
+  const { isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
   const { isLiked: isCollectionLiked, toggleLike: toggleCollectionLike } = useCollectionLikes();
   const { user } = useAuth();
@@ -86,31 +87,30 @@ export default function CreatorProfile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("collections");
   
-  // Get follower counts for followed creators
-  const { getCreatorFollowerCount } = useRealtimeCreatorStats(
-    followedCreators.map(f => f.wallet_address)
-  );
-
-  // Get real-time stats for the current creator
-  const { getCreatorFollowerCount: getCurrentCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStats(
-    wallet ? [wallet] : []
+  // Get real-time stats for creators by user ID
+  const followedCreatorUserIds = followedCreators.map(f => f.user_id).filter(Boolean);
+  const currentCreatorUserId = creator?.user_id;
+  
+  const { getCreatorFollowerCount } = useRealtimeCreatorStatsByUser(followedCreatorUserIds);
+  const { getCreatorFollowerCount: getCurrentCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStatsByUser(
+    currentCreatorUserId ? [currentCreatorUserId] : []
   );
 
   // Listen for cross-page creator stats updates to refresh current creator
   useEffect(() => {
     const handleStatsUpdate = (event: CustomEvent) => {
-      const { wallet: updatedWallet } = event.detail;
-      if (updatedWallet === wallet) {
-        // Creator stats will update automatically via useRealtimeCreatorStats
+      const { userId: updatedUserId } = event.detail;
+      if (updatedUserId === creator?.user_id) {
+        // Creator stats will update automatically via useRealtimeCreatorStatsByUser
       }
     };
 
-    window.addEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+    window.addEventListener('creator-stats-update-by-user', handleStatsUpdate as EventListener);
     
     return () => {
-      window.removeEventListener('creator-stats-update', handleStatsUpdate as EventListener);
+      window.removeEventListener('creator-stats-update-by-user', handleStatsUpdate as EventListener);
     };
-  }, [wallet]);
+  }, [creator?.user_id]);
 
   // Navigation state - use storage context with legacy URL support
   const navContext = getNavContext('nft'); // Creator profiles can navigate through creator lists
@@ -158,14 +158,14 @@ export default function CreatorProfile() {
   }, [hasPrevious, hasNext, handlePrevious, handleNext]);
 
   // Toggle follow with real-time stats
-  const handleToggleFollow = async (creatorWallet: string) => {
+  const handleToggleFollow = async (creatorUserId: string) => {
     if (!publicKey) {
       await connect();
       return;
     }
     try {
       // Real-time stats will update automatically via cross-page signals
-      await toggleFollow(creatorWallet);
+      await toggleFollowByUserId(creatorUserId);
     } catch (error) {
       console.error('Error toggling follow:', error);
     }
@@ -292,6 +292,7 @@ export default function CreatorProfile() {
           console.log('CreatorProfile: Profile found:', profile);
           setCreator({
             wallet_address: profile.wallet_address,
+            user_id: profile.user_id,
             nickname: profile.nickname,
             bio: profile.bio,
             profile_image_url: profile.profile_image_url,
@@ -372,6 +373,7 @@ export default function CreatorProfile() {
             
             followedCreatorsData = matchingProfiles.map((p: any) => ({
               wallet_address: p.wallet_address,
+              user_id: p.id,
               nickname: p.nickname,
               bio: p.bio,
               profile_image_url: p.profile_image_url
@@ -507,14 +509,14 @@ export default function CreatorProfile() {
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-bold">{creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}</h2>
                     <button
-                      onClick={() => handleToggleFollow(creator.wallet_address)}
+                      onClick={() => handleToggleFollow(creator.user_id!)}
                       className="transition-colors duration-200"
-                      disabled={followLoading || connecting}
-                      aria-label={!publicKey ? 'Connect to follow' : isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
-                      title={!publicKey ? 'Connect to follow' : isFollowing(creator.wallet_address) ? 'Unfollow' : 'Follow'}
+                      disabled={followLoading || connecting || !creator.user_id}
+                      aria-label={!publicKey ? 'Connect to follow' : isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
+                      title={!publicKey ? 'Connect to follow' : isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
                     >
                       <Heart className={`w-5 h-5 ${
-                        publicKey && isFollowing(creator.wallet_address)
+                        publicKey && creator.user_id && isFollowingUserId(creator.user_id)
                           ? 'fill-red-500 text-red-500' 
                           : 'text-muted-foreground hover:text-red-500'
                       }`} />
@@ -788,7 +790,7 @@ export default function CreatorProfile() {
           {followedCreators.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {followedCreators.map((followedCreator) => {
-                const followerCount = getCreatorFollowerCount(followedCreator.wallet_address);
+                const followerCount = getCreatorFollowerCount(followedCreator.user_id);
                 return (
                   <FollowedAuthorCard
                     key={followedCreator.wallet_address}
