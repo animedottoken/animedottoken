@@ -107,6 +107,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('🌐 Origin:', window.location.origin);
       console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
       
+      // Check if we're in iframe and no wallets are available
+      const isInIframe = window !== window.parent;
+      const hasReadyWallets = wallets.some(w => w.readyState === 'Installed');
+      
+      if (isInIframe && !hasReadyWallets) {
+        console.log('🚀 Opening full app for wallet connection...');
+        const fullAppUrl = `${window.location.origin}/?wallet-connect=1`;
+        window.open(fullAppUrl, '_blank');
+        toast.info('Opening wallet connection in new tab...');
+        return;
+      }
+      
       // Always show wallet selector for simplified experience
       setVisible(true);
     } catch (error) {

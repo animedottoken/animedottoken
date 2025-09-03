@@ -16,6 +16,7 @@ import { ViewModeProvider } from "@/contexts/ViewModeContext";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
+import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ShareNFT from "./pages/ShareNFT";
@@ -57,6 +58,7 @@ const AppLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { openWalletSelector } = useSolanaWallet();
 
   // Global magic link handler for root path redirects
   useEffect(() => {
@@ -126,6 +128,23 @@ const AppLayout = () => {
 
     handleRootMagicLink();
   }, [location, navigate]);
+
+  // Auto-open wallet selector if wallet-connect parameter is present
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('wallet-connect') === '1') {
+      console.log('🎯 Auto-opening wallet selector from URL parameter');
+      // Clean URL first
+      searchParams.delete('wallet-connect');
+      const newUrl = searchParams.toString() ? `${location.pathname}?${searchParams.toString()}` : location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      // Open wallet selector after a brief delay
+      setTimeout(() => {
+        openWalletSelector();
+      }, 500);
+    }
+  }, [location.search, location.pathname, openWalletSelector]);
 
   if (isMobile) {
     return (
