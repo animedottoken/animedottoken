@@ -25,45 +25,95 @@ export default function Auth() {
     const handleAuthCallback = async () => {
       const url = window.location.href;
       const urlParams = new URLSearchParams(window.location.search);
+      const hashFragment = window.location.hash;
       
-      // Check for OAuth callback or magic link
-      const hasAuthParams = urlParams.has('code') || urlParams.has('access_token') || urlParams.has('error_description');
+      // Check for OAuth callback (query params) or magic link (hash fragment)
+      const hasOAuthParams = urlParams.has('code') || urlParams.has('error_description');
+      const hasMagicLinkTokens = hashFragment.includes('access_token') || hashFragment.includes('refresh_token') || hashFragment.includes('error');
       
-      if (hasAuthParams) {
+      if (hasOAuthParams || hasMagicLinkTokens) {
         setCompleting(true);
         console.log('Handling auth callback with URL:', url);
         
         try {
-          // Handle error in URL
-          const errorDescription = urlParams.get('error_description');
-          const error = urlParams.get('error');
-          
-          if (errorDescription || error) {
-            console.log('Auth callback error detected:', { error, errorDescription });
-            const errorMsg = errorDescription ? decodeURIComponent(errorDescription) : error;
-            throw new Error(errorMsg || 'Authentication failed');
-          }
-          
-          // Exchange code/token for session
-          console.log('Attempting session exchange...');
-          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(url);
-          
-          if (exchangeError) {
-            console.error('Session exchange error:', exchangeError);
-            throw exchangeError;
-          }
-          
-          if (data.session) {
-            console.log('Auth callback successful, session created');
-            toast({
-              title: "Welcome!",
-              description: "You've been signed in successfully.",
-            });
+          // Handle OAuth callback errors in query params
+          if (hasOAuthParams) {
+            const errorDescription = urlParams.get('error_description');
+            const error = urlParams.get('error');
             
-            // Clean URL and redirect to target
-            window.history.replaceState({}, document.title, '/auth');
-            navigate(safeRedirect, { replace: true });
-            return;
+            if (errorDescription || error) {
+              console.log('OAuth callback error detected:', { error, errorDescription });
+              const errorMsg = errorDescription ? decodeURIComponent(errorDescription) : error;
+              throw new Error(errorMsg || 'Authentication failed');
+            }
+          }
+          
+          // Handle Magic Link tokens in hash fragment
+          if (hasMagicLinkTokens) {
+            console.log('Processing magic link tokens from hash...');
+            
+            // Parse hash fragment for tokens
+            const hashParams = new URLSearchParams(hashFragment.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+            const tokenType = hashParams.get('token_type');
+            const expiresIn = hashParams.get('expires_in');
+            
+            if (accessToken && refreshToken) {
+              const { data, error: sessionError } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+              });
+              
+              if (sessionError) {
+                console.error('Magic link session error:', sessionError);
+                throw sessionError;
+              }
+              
+              if (data.session) {
+                console.log('Magic link successful, session created');
+                toast({
+                  title: "Welcome!",
+                  description: "You've been signed in successfully.",
+                });
+                
+                // Clean URL and redirect to target
+                window.history.replaceState({}, document.title, '/auth');
+                navigate(safeRedirect, { replace: true });
+                return;
+              }
+            } else {
+              // Check for error in hash
+              const errorDescription = hashParams.get('error_description');
+              const error = hashParams.get('error');
+              if (errorDescription || error) {
+                throw new Error(errorDescription || error || 'Magic link authentication failed');
+              }
+            }
+          }
+          
+          // Handle OAuth code exchange for query params
+          if (hasOAuthParams && urlParams.has('code')) {
+            console.log('Attempting OAuth session exchange...');
+            const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(url);
+            
+            if (exchangeError) {
+              console.error('OAuth session exchange error:', exchangeError);
+              throw exchangeError;
+            }
+            
+            if (data.session) {
+              console.log('OAuth callback successful, session created');
+              toast({
+                title: "Welcome!",
+                description: "You've been signed in successfully.",
+              });
+              
+              // Clean URL and redirect to target
+              window.history.replaceState({}, document.title, '/auth');
+              navigate(safeRedirect, { replace: true });
+              return;
+            }
           }
         } catch (error: any) {
           console.error('Auth callback failed:', error);
@@ -74,7 +124,8 @@ export default function Auth() {
           
           if (error.message?.includes('One-time token not found') || 
               error.message?.includes('invalid_request') ||
-              error.message?.includes('token_not_found')) {
+              error.message?.includes('token_not_found') ||
+              error.message?.includes('Token has expired')) {
             title = "Invalid or expired link";
             description = "This magic link has expired or already been used. Please request a new one.";
           }
@@ -86,7 +137,7 @@ export default function Auth() {
           });
           
           // Focus email input for easy retry if it's a token error
-          if (error.message?.includes('token')) {
+          if (error.message?.includes('token') || error.message?.includes('expired')) {
             setTimeout(() => {
               const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
               if (emailInput) emailInput.focus();

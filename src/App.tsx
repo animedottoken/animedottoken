@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TopNav } from "@/components/TopNav";
@@ -15,6 +15,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ViewModeProvider } from "@/contexts/ViewModeContext";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ShareNFT from "./pages/ShareNFT";
@@ -54,6 +55,50 @@ function ErrorFallback({ error }: { error: Error }) {
 const AppLayout = () => {
   const isMobile = useIsMobile();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Global magic link handler for root path redirects
+  useEffect(() => {
+    const handleRootMagicLink = async () => {
+      // Only process if we're on root path and have hash tokens
+      if (location.pathname === '/' && location.hash.includes('access_token')) {
+        console.log('Processing magic link tokens from root path...');
+        
+        try {
+          // Parse hash fragment for tokens
+          const hashParams = new URLSearchParams(location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          
+          if (accessToken && refreshToken) {
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+            
+            if (error) {
+              console.error('Root magic link error:', error);
+              // Redirect to auth page with error handling
+              navigate('/auth');
+              return;
+            }
+            
+            if (data.session) {
+              console.log('Root magic link successful, session created');
+              // Clean URL and stay on root
+              window.history.replaceState({}, document.title, '/');
+            }
+          }
+        } catch (error) {
+          console.error('Root magic link processing failed:', error);
+          navigate('/auth');
+        }
+      }
+    };
+
+    handleRootMagicLink();
+  }, [location, navigate]);
 
   if (isMobile) {
     return (
