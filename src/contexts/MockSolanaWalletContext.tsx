@@ -389,12 +389,10 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       new TrustWalletAdapter(),
     ];
 
-    // Conditionally add Preview Wallet (Unsafe Burner) only when explicitly enabled via ?preview=1
-    const isInIframe = typeof window !== 'undefined' && window !== window.parent;
+    // Always add Preview Wallet (Unsafe Burner) on Devnet for testing
     const isDevnet = network === WalletAdapterNetwork.Devnet;
-    const previewEnabled = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     
-    if (isInIframe && isDevnet && previewEnabled) {
+    if (isDevnet) {
       baseWallets.push(new UnsafeBurnerWalletAdapter());
     }
 
