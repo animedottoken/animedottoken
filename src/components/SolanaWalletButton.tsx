@@ -7,19 +7,11 @@ import { useEffect, useState } from 'react';
 
 export const SolanaWalletButton = () => {
   const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, openWalletSelector, listProviders, error } = useSolanaWallet();
-  const [isInIframe, setIsInIframe] = useState(false);
   const [providers, setProviders] = useState<string[]>([]);
 
   useEffect(() => {
-    setIsInIframe(window !== window.parent);
     setProviders(listProviders());
   }, [listProviders]);
-
-  const openFullApp = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('wallet-connect', '1');
-    window.open(url.toString(), '_blank');
-  };
 
   if (connected && publicKey) {
     return (
@@ -48,9 +40,6 @@ export const SolanaWalletButton = () => {
     );
   }
 
-  // Show iframe restriction note but allow connection attempts
-  const showIframeNote = isInIframe;
-
   if (error) {
     return (
       <div className="space-y-3">
@@ -58,47 +47,15 @@ export const SolanaWalletButton = () => {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-        {isInIframe && (
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              If wallet connection fails in preview mode, try opening the full app.
-            </AlertDescription>
-          </Alert>
-        )}
-        <div className="flex gap-2">
-          <Button onClick={openWalletSelector} variant="outline" className="flex-1">
-            Try Again
-          </Button>
-          {isInIframe && (
-            <Button onClick={openFullApp} variant="ghost" size="sm" className="flex items-center gap-1">
-              <ExternalLink className="h-3 w-3" />
-              Full App
-            </Button>
-          )}
-        </div>
+        <Button onClick={openWalletSelector} variant="outline" className="w-full">
+          Try Again
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      {showIframeNote && (
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="text-xs">
-            Preview mode - some wallets may have connection restrictions.{' '}
-            <button 
-              onClick={openFullApp}
-              className="underline hover:no-underline"
-            >
-              Open full app
-            </button>{' '}
-            if needed.
-          </AlertDescription>
-        </Alert>
-      )}
-      
       {/* Quick Connect Buttons */}
       <div className="space-y-2">
         <div className="text-xs text-muted-foreground text-center">Quick Connect</div>

@@ -107,18 +107,40 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('🌐 Origin:', window.location.origin);
       console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
       
-      // If in admin/preview iframe, open full app for reliable wallet injection
       const isInIframe = window !== window.parent;
-      if (isInIframe) {
-        console.log('🚀 Opening full app for wallet connection (iframe detected)...');
+      const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed');
+      
+      console.log('🎯 Has installed wallets:', hasInstalledWallets);
+      
+      // Try inline connection first if wallets are available
+      if (hasInstalledWallets) {
+        console.log('✅ Attempting inline wallet connection...');
+        try {
+          setVisible(true);
+          console.log('🎉 Wallet modal opened successfully');
+          return;
+        } catch (inlineError) {
+          console.error('❌ Inline connection failed:', inlineError);
+          if (!isInIframe) {
+            // If not in iframe and inline failed, throw the error
+            throw inlineError;
+          }
+          // If in iframe and inline failed, fall through to open new tab
+        }
+      }
+      
+      // Fallback: open new tab (only if in iframe or no wallets detected)
+      if (isInIframe || !hasInstalledWallets) {
+        const reason = !hasInstalledWallets ? 'no wallets detected' : 'iframe fallback';
+        console.log(`🚀 Opening full app for wallet connection (${reason})...`);
         const fullAppUrl = `${window.location.origin}${window.location.pathname}?wallet-connect=1`;
         window.open(fullAppUrl, '_blank');
         toast.info('Opening wallet connection in new tab...');
         return;
       }
       
-      // Always show wallet selector for simplified experience
-      setVisible(true);
+      // If we get here, something went wrong
+      throw new Error('Unable to connect wallet');
     } catch (error) {
       console.error('Wallet connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect wallet');
