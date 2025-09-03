@@ -16,7 +16,9 @@ export const SolanaWalletButton = () => {
   }, [listProviders]);
 
   const openFullApp = () => {
-    window.open(window.location.href, '_blank');
+    const url = new URL(window.location.href);
+    url.searchParams.set('wallet-connect', '1');
+    window.open(url.toString(), '_blank');
   };
 
   if (connected && publicKey) {
