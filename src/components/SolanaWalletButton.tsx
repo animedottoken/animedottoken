@@ -9,7 +9,7 @@ import { requestDevnetAirdrop } from '@/services/devnetHelpers';
 import { toast } from 'sonner';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, connect, openWalletSelector, listProviders, error } = useSolanaWallet();
+  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, connectPaymentWallet, openWalletSelector, listProviders, error } = useSolanaWallet();
   const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ installed: [], hasPreview: false });
   const [requestingAirdrop, setRequestingAirdrop] = useState(false);
   
@@ -45,6 +45,15 @@ export const SolanaWalletButton = () => {
 
   
 
+
+  const handleConnect = async () => {
+    try {
+      await connectPaymentWallet();
+    } catch (error) {
+      console.error('Wallet connection failed:', error);
+      toast.error('Failed to connect wallet');
+    }
+  };
 
   const connectPreviewWallet = async () => {
     try {
@@ -130,7 +139,7 @@ export const SolanaWalletButton = () => {
           <div className="grid grid-cols-2 gap-2">
             {providers.installed.includes('Phantom') && (
               <Button
-                onClick={() => connectWith('Phantom')}
+                onClick={handleConnect}
                 disabled={connecting}
                 variant="outline"
                 size="sm"
@@ -141,7 +150,7 @@ export const SolanaWalletButton = () => {
             )}
             {providers.installed.includes('Solflare') && (
               <Button
-                onClick={() => connectWith('Solflare')}
+                onClick={handleConnect}
                 disabled={connecting}
                 variant="outline"
                 size="sm"
@@ -157,7 +166,7 @@ export const SolanaWalletButton = () => {
 
       {/* Main Connect Button */}
       <Button 
-        onClick={connect}
+        onClick={handleConnect}
         disabled={connecting}
         className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
       >
