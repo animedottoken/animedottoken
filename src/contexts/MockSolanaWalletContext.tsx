@@ -74,6 +74,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { user } = useAuth();
   const [balance, setBalance] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [connectAfterSelection, setConnectAfterSelection] = useState(false);
   const [rememberWallet, setRememberWallet] = useState(() => {
     return localStorage.getItem('remember-wallet') === 'true';
   });
@@ -99,6 +100,23 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connection]);
 
+
+  // Auto-connect after wallet selection
+  useEffect(() => {
+    if (connectAfterSelection && wallet && !connected && !connecting) {
+      console.log('🚀 Auto-connecting to selected wallet:', wallet.adapter.name);
+      setConnectAfterSelection(false);
+      walletConnect()
+        .then(() => {
+          console.log('✅ Auto-connect successful');
+          toast.success(`Connected to ${wallet.adapter.name}`);
+        })
+        .catch((error) => {
+          console.error('❌ Auto-connect failed:', error);
+          toast.error('Failed to connect wallet');
+        });
+    }
+  }, [connectAfterSelection, wallet, connected, connecting, walletConnect]);
 
   // Fetch balance when wallet connects
   useEffect(() => {
@@ -165,13 +183,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const disconnect = useCallback(() => {
     walletDisconnect();
+    // Clear auto-connect flag when disconnecting
+    setConnectAfterSelection(false);
     // Clear wallet selection and remember preference when manually disconnecting
     if (!rememberWallet) {
       // Clear the adapter's last wallet selection
       select(null);
     }
-    // Clear auto-connect attempt flag so it can try again if needed
-    sessionStorage.removeItem('preview-autoconnect-attempted');
     localStorage.removeItem('remember-wallet');
     setRememberWallet(false);
     toast.info('Wallet disconnected');
@@ -204,14 +222,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const connectPaymentWallet = useCallback(async () => {
     try {
       if (!wallet) {
-        // No wallet selected, open the selection modal
+        // No wallet selected, open the selection modal and set auto-connect flag
+        console.log('🎯 Opening wallet modal for selection with auto-connect...');
+        setConnectAfterSelection(true);
         setVisible(true);
+        toast.info('Select a wallet to continue');
         return;
       }
       await walletConnect();
       toast.success('Payment wallet connected');
     } catch (error) {
       if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
+        setConnectAfterSelection(true);
         setVisible(true);
       } else {
         console.error('Payment wallet connection error:', error);
