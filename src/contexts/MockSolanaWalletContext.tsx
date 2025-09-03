@@ -112,9 +112,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const hasInstalledWallets = wallets.some(w => w.readyState === 'Installed' && !/unsafe|burner/i.test(w.adapter.name));
       const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
 
-      // Auto-connect conditions: iframe + devnet + not connected + preview wallet available
-      if (isInIframe && isDevnet && !connected && !connecting && previewWallet) {
-        console.log('🎭 Auto-connecting preview wallet on page load...');
+      // Auto-connect only if NO installed wallets; prefer user's Phantom/Solflare when present
+      if (isInIframe && isDevnet && !connected && !connecting && previewWallet && !hasInstalledWallets) {
+        console.log('🎭 Auto-connecting preview wallet on page load (no installed wallet detected)...');
         sessionStorage.setItem('preview-autoconnect-attempted', 'true');
         
         toast.info('Connecting preview wallet...', { duration: 2000 });
@@ -181,9 +181,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('🎯 Has installed wallets:', hasInstalledWallets);
       console.log('🎭 Preview wallet available:', !!previewWallet);
       
-      // Force Preview Wallet in iframe + devnet (ignore installed wallets)
-      if (isInIframe && isDevnet && previewWallet) {
-        console.log('🎭 Auto-connecting to Preview Wallet...');
+      // Prefer installed wallets; only fall back to Preview Wallet in iframe + devnet when none installed
+      if (isInIframe && isDevnet && previewWallet && !hasInstalledWallets) {
+        console.log('🎭 Auto-connecting to Preview Wallet (no installed wallet detected)...');
         select(previewWallet.adapter.name);
         await new Promise(resolve => setTimeout(resolve, 100));
         await walletConnect();
