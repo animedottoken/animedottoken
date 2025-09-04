@@ -9,11 +9,7 @@ interface EnvironmentContextType {
 const EnvironmentContext = createContext<EnvironmentContextType | null>(null);
 
 const BETA_FEATURES = [
-  'wallet-linking',
-  'collection-minting',
-  'nft-minting',
-  'boost-listings',
-  'profile-editing'
+  'wallet-linking'
 ];
 
 export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {

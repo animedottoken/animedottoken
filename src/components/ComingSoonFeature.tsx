@@ -30,15 +30,17 @@ export const ComingSoonFeature = ({ title, description, children }: ComingSoonFe
             <h3 className="font-semibold text-lg mb-2">{title}</h3>
             <p className="text-muted-foreground text-sm mb-4">{description}</p>
             <div className="flex flex-col gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.open('https://animedottoken.com', '_blank')}
-                className="text-xs"
-              >
-                <ExternalLink className="h-3 w-3 mr-1" />
-                Visit Live Site
-              </Button>
+              {typeof window !== 'undefined' && !window.location.hostname.includes('animedottoken.com') && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open('https://animedottoken.com', '_blank')}
+                  className="text-xs"
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
+                  Visit Live Site
+                </Button>
+              )}
               <p className="text-xs text-muted-foreground">
                 Follow our channels for updates!
               </p>
