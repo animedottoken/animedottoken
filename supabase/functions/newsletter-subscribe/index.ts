@@ -208,8 +208,15 @@ serve(async (req) => {
 
     // Send confirmation email
     console.log('📨 Sending confirmation email...')
+    
+    // Validate and use RESEND_FROM_EMAIL with fallback
+    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
+    const validatedFrom = fromEmail && fromEmail.includes('@') ? fromEmail : 'ANIME.TOKEN Newsletter <onboarding@resend.dev>';
+    
+    console.log('📧 Using from address:', validatedFrom);
+    
     const { error: emailError } = await resend.emails.send({
-      from: 'Newsletter <newsletter@animedottoken.com>',
+      from: validatedFrom,
       to: [email],
       subject: 'Please confirm your newsletter subscription',
       html,

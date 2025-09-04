@@ -128,8 +128,15 @@ serve(async (req) => {
     // Send confirmation email
     try {
       console.log('📧 Sending subscription confirmed email...');
+      
+      // Validate and use RESEND_FROM_EMAIL with fallback
+      const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
+      const validatedFrom = fromEmail && fromEmail.includes('@') ? fromEmail : 'ANIME.TOKEN Newsletter <onboarding@resend.dev>';
+      
+      console.log('📧 Using from address:', validatedFrom);
+      
       const emailResponse = await resend.emails.send({
-        from: Deno.env.get('RESEND_FROM_EMAIL') || 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
+        from: validatedFrom,
         to: [subscription.email],
         subject: 'Newsletter subscription confirmed!',
         html: `
@@ -151,7 +158,7 @@ serve(async (req) => {
     }
     
     // Return HTML page with confirmation message and redirect
-    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animecoin.io';
+    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animedottoken.com';
     const redirectUrl = `${siteUrl}/profile?newsletter=confirmed`;
     
     const html = `

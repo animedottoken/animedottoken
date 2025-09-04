@@ -109,8 +109,15 @@ serve(async (req) => {
       const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
       
       console.log('📧 Sending unsubscribe confirmation email...');
+      
+      // Validate and use RESEND_FROM_EMAIL with fallback
+      const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
+      const validatedFrom = fromEmail && fromEmail.includes('@') ? fromEmail : 'ANIME.TOKEN Newsletter <onboarding@resend.dev>';
+      
+      console.log('📧 Using from address:', validatedFrom);
+      
       const emailResponse = await resend.emails.send({
-        from: Deno.env.get('RESEND_FROM_EMAIL') || 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
+        from: validatedFrom,
         to: [subscription.email],
         subject: 'You have been unsubscribed',
         html: `
@@ -132,7 +139,7 @@ serve(async (req) => {
     }
     
     // Return HTML page with confirmation message and redirect
-    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animecoin.io';
+    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animedottoken.com';
     const redirectUrl = `${siteUrl}/profile?newsletter=unsubscribed`;
     
     const html = `
