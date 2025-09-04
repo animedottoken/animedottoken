@@ -29,8 +29,9 @@ export function useNewsletterStatus() {
       setError(null);
 
       console.log('📊 Fetching newsletter status...');
-      const { data, error: fetchError } = await supabase.functions.invoke('newsletter-status');
-      
+      const { data, error: fetchError } = await supabase.functions.invoke('newsletter-status', {
+        method: 'GET'
+      });
       if (fetchError) {
         console.error('❌ Newsletter status error:', fetchError);
         throw fetchError;
