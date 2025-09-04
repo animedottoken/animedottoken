@@ -24,8 +24,8 @@ serve(async (req) => {
   try {
     console.log('📧 Newsletter subscribe request received')
     
-    // Get user from JWT token
-    const authHeader = req.headers.get('authorization');
+    // For authenticated edge functions (verify_jwt = true), user info is available in JWT
+    const authHeader = req.headers.get('authorization')
     console.log('Auth header present:', !!authHeader)
     
     if (!authHeader) {
@@ -38,7 +38,8 @@ serve(async (req) => {
       })
     }
 
-    const supabase = createClient(
+    // Create Supabase client with the user's JWT
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
@@ -49,7 +50,7 @@ serve(async (req) => {
     )
 
     console.log('🔐 Getting user from JWT...')
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     
     console.log('User error:', userError)
     console.log('User found:', !!user)
@@ -58,7 +59,7 @@ serve(async (req) => {
     if (userError || !user?.email) {
       console.log('❌ Authentication failed:', userError?.message || 'No user email')
       return new Response(JSON.stringify({ 
-        error: 'Authentication required' 
+        error: 'Authentication required. Please sign in first.' 
       }), {
         status: 401,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -69,7 +70,7 @@ serve(async (req) => {
 
     console.log(`📬 Newsletter subscription request for: ${email}`)
 
-    // Create Supabase client with service role for database operations
+    // Create admin Supabase client for database operations
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -85,8 +86,11 @@ serve(async (req) => {
       .eq('email', email)
       .maybeSingle()
 
+    console.log('Existing subscription:', existing)
+
     if (existing) {
       if (existing.status === 'confirmed') {
+        console.log('Already subscribed')
         return new Response(JSON.stringify({ 
           message: 'You are already subscribed to our newsletter!' 
         }), {
@@ -96,15 +100,22 @@ serve(async (req) => {
       }
       
       // Update existing pending subscription with new token
-      await supabaseAdmin
+      console.log('Updating existing pending subscription')
+      const { error: updateError } = await supabaseAdmin
         .from('newsletter_subscribers')
         .update({ 
           opt_in_token: optInToken,
           updated_at: new Date().toISOString()
         })
         .eq('email', email)
+
+      if (updateError) {
+        console.error('Error updating existing subscription:', updateError)
+        throw updateError
+      }
     } else {
       // Insert new subscription
+      console.log('Creating new subscription')
       const { error: insertError } = await supabaseAdmin
         .from('newsletter_subscribers')
         .insert({
@@ -122,7 +133,7 @@ serve(async (req) => {
     // Create confirmation URL
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
 
-    // Build confirmation email HTML (no external template to keep deploy simple)
+    // Build confirmation email HTML
     const html = `
       <!DOCTYPE html>
       <html>
@@ -133,7 +144,7 @@ serve(async (req) => {
         <body style="font-family: Arial, sans-serif; background:#000; color:#fff; padding:24px;">
           <div style="max-width:600px;margin:0 auto;background:#111;padding:32px;border-radius:8px;">
             <h1 style="margin-top:0;color:#8B5CF6;">ANIME.TOKEN Newsletter</h1>
-            <p style="color:#ddd;">Hi${' ' + email}, please confirm your subscription.</p>
+            <p style="color:#ddd;">Hi ${email}, please confirm your subscription.</p>
             <div style="text-align:center;margin:28px 0;">
               <a href="${confirmUrl}" style="background:#8B5CF6;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Confirm subscription</a>
             </div>
@@ -145,6 +156,7 @@ serve(async (req) => {
     `;
 
     // Send confirmation email
+    console.log('Sending confirmation email...')
     const { error: emailError } = await resend.emails.send({
       from: 'Newsletter <newsletter@animedottoken.com>',
       to: [email],
@@ -171,7 +183,7 @@ serve(async (req) => {
     console.error('Newsletter subscribe error:', error)
     
     return new Response(JSON.stringify({
-      error: 'Failed to process subscription request'
+      error: 'Failed to process subscription request. Please try again.'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
