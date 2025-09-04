@@ -375,7 +375,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
-            {localFilters.minPrice && (
+            {localFilters.minPrice && !autoPriceSync.min && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Min Price: {localFilters.minPrice} SOL
                 <button 
@@ -386,7 +386,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
-            {localFilters.maxPrice && (
+            {localFilters.maxPrice && !autoPriceSync.max && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Max Price: {localFilters.maxPrice} SOL
                 <button 
