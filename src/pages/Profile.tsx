@@ -35,6 +35,7 @@ import { PfpPickerDialog } from '@/components/PfpPickerDialog';
 import { BannerPickerDialog } from '@/components/BannerPickerDialog';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
+import { NewsletterManagement } from '@/components/NewsletterManagement';
 import { StatusDots } from '@/components/StatusDots';
 import { MultiWalletSection } from '@/components/MultiWalletSection';
 import { AutoPrimaryWalletPrompt } from '@/components/AutoPrimaryWalletPrompt';
@@ -1039,20 +1040,9 @@ const Profile = () => {
               </ComingSoonFeature>
             )}
             
-            {/* Stay Updated Section */}
+            {/* Newsletter Management */}
             <section>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Stay Updated</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-center">
-                    <div className="w-full max-w-2xl">
-                      <NewsletterSubscribe />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <NewsletterManagement />
             </section>
           </TabsContent>
         )}
