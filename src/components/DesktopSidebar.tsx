@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, ShoppingCart, Coins, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { scrollToHash } from "@/lib/scroll";
 import { Button } from "@/components/ui/button";
 import { homeSections } from "@/lib/homeSections";
@@ -11,27 +11,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
-type RouteItem = {
-  type: "route";
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  path: string;
-};
-
 type SectionItem = {
   type: "section";
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   hash: string;
 };
-
-type NavigationItem = RouteItem | SectionItem;
-
-const routes: RouteItem[] = [
-  { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
-  { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
-  { type: "route", title: "Profile", icon: User, path: "/profile" },
-];
 
 const sections: SectionItem[] = homeSections.map(section => ({
   type: "section" as const,
@@ -69,12 +54,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
     }
   };
 
-  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
-    if (item.type === "route") {
-      navigate(item.path);
-      return;
-    }
-
+  const handleNavigation = (item: SectionItem, e?: React.MouseEvent) => {
     // Navigate to home first if on different page
     if (location.pathname !== "/") {
       navigate(`/#${item.hash}`);
@@ -83,13 +63,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
     // Use robust scroll utility for reliable hash navigation
     scrollToHash(`#${item.hash}`);
-  };
-
-  const isActive = (item: NavigationItem) => {
-    if (item.type === "route") {
-      return location.pathname === item.path;
-    }
-    return false;
   };
 
 
@@ -143,33 +116,6 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-          {/* Main Navigation */}
-          <div>
-            <div className="space-y-1">
-              {routes.map((item) => (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 h-10 cursor-pointer transition-all hover:bg-accent hover:text-accent-foreground",
-                    collapsed && "justify-center px-2",
-                    isActive(item) && "bg-accent text-accent-foreground"
-                  )}
-                  onClick={(e) => {
-                    if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
-                      handleNavigation(item, e);
-                    }
-                  }}
-                  aria-label={item.title}
-                  title={item.title}
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="font-medium">{item.title}</span>}
-                </Button>
-              ))}
-            </div>
-          </div>
-
           {/* Home Sections */}
           <div>
             {!collapsed && <h3 className="text-sm font-medium text-muted-foreground mb-2">Home Sections</h3>}

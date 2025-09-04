@@ -1,7 +1,4 @@
 import { 
-  Coins, 
-  ShoppingCart, 
-  Users,
   LucideIcon
 } from "lucide-react";
 import React from "react";
@@ -21,42 +18,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-type NavigationItem = RouteItem | SectionItem;
-
-interface RouteItem {
-  type: "route";
-  title: string;
-  icon: LucideIcon;
-  path: string;
-}
-
 interface SectionItem {
   type: "section";
   title: string;
   icon: LucideIcon;
   hash: string;
 }
-
-const routes: RouteItem[] = [
-  {
-    type: "route",
-    title: "Mint NFTs",
-    icon: Coins,
-    path: "/mint",
-  },
-  {
-    type: "route", 
-    title: "Marketplace",
-    icon: ShoppingCart,
-    path: "/marketplace",
-  },
-  {
-    type: "route",
-    title: "Profile",
-    icon: Users,
-    path: "/profile",
-  },
-];
 
 const sections: SectionItem[] = homeSections.map(section => ({
   type: "section" as const,
@@ -72,12 +39,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigation = (item: NavigationItem, e?: React.MouseEvent) => {
-    if (item.type === "route") {
-      navigate(item.path);
-      return;
-    }
-
+  const handleNavigation = (item: SectionItem, e?: React.MouseEvent) => {
     // Navigate to home first if on different page
     if (location.pathname !== '/') {
       navigate(`/#${item.hash.replace('#', '')}`);
@@ -88,41 +50,9 @@ export function AppSidebar() {
     scrollToHash(item.hash);
   };
 
-  const isActive = (item: NavigationItem) => {
-    if (item.type === "route") {
-      return location.pathname === item.path;
-    }
-    return false;
-  };
-
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
-            Main Routes
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {routes.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      to={item.path}
-                      className={`flex items-center ${
-                        isActive(item) ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
-                      }`}
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {showLabel && <span>{item.title}</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        
         <SidebarGroup>
           <SidebarGroupLabel className={showLabel ? "" : "sr-only"}>
             Home Sections
