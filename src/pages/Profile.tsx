@@ -505,16 +505,17 @@ const Profile = () => {
                       </Button>
                     </SocialActionWrapper>
                   )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* Status Dots */}
+                  {/* Login Status Dot */}
                   <StatusDots 
                     isLoggedIn={!!user} 
                     isWalletConnected={connected} 
                     size="sm"
+                    showLogin={true}
+                    showWallet={false}
                   />
-                  
-                  <Button 
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
                     variant="outline" 
                     size="icon"
                     onClick={() => copyToClipboard(window.location.href)}
@@ -568,6 +569,13 @@ const Profile = () => {
                   {/* Wallet connection for own profile */}
                   {isOwnProfile && (
                      <div className="flex items-center gap-2">
+                       <StatusDots 
+                         isLoggedIn={!!user} 
+                         isWalletConnected={connected} 
+                         size="sm"
+                         showLogin={false}
+                         showWallet={true}
+                       />
                        <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
                          {hasWallet && publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'No wallet connected'}
                        </Badge>
