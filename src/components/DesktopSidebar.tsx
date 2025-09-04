@@ -35,7 +35,8 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { filters, setFilters } = useProfileFilters();
+  // Get filters and ranges from context
+  const { filters: combinedFilters, setFilters: setCombinedFilters, currentPriceRange, currentRoyaltyRange } = useProfileFilters();
   const isMobile = useIsMobile();
 
   const handleCollapseToggle = () => {
@@ -147,8 +148,8 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
           {!isMobile && location.pathname === '/profile' && !collapsed && (
             <div>
               <SearchFilterBar
-                filters={filters}
-                onFiltersChange={setFilters}
+                filters={combinedFilters}
+                onFiltersChange={setCombinedFilters}
                 showListingFilter={true}
                 showPriceFilters={true}
                 showRoyaltyFilters={true}
@@ -156,6 +157,8 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                 showTypeFilter={true}
                 placeholder="Search..."
                 collapsible={false}
+                currentPriceRange={currentPriceRange}
+                currentRoyaltyRange={currentRoyaltyRange}
               />
             </div>
           )}

@@ -38,6 +38,16 @@ export interface FilterState {
   type?: 'all' | 'collections' | 'nfts'; // New type filter for combined tab
 }
 
+interface PriceRange {
+  min?: number;
+  max?: number;
+}
+
+interface RoyaltyRange {
+  min?: number;
+  max?: number;
+}
+
 interface SearchFilterBarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
@@ -49,6 +59,8 @@ interface SearchFilterBarProps {
   placeholder?: string;
   categories?: string[];
   collapsible?: boolean;
+  currentPriceRange?: PriceRange;
+  currentRoyaltyRange?: RoyaltyRange;
 }
 
 export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
@@ -61,7 +73,9 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showTypeFilter = false,
   placeholder = "Search...",
   categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other'],
-  collapsible = false
+  collapsible = false,
+  currentPriceRange,
+  currentRoyaltyRange
 }) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -200,20 +214,34 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           {showPriceFilters && (
             <>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Min Price (SOL)</Label>
+                <Label className="text-sm font-medium">
+                  Min Price (SOL)
+                  {currentPriceRange?.min !== undefined && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      Current: {currentPriceRange.min.toFixed(2)}
+                    </span>
+                  )}
+                </Label>
                 <Input
                   type="number"
-                  placeholder="0.0"
+                  placeholder={currentPriceRange?.min !== undefined ? currentPriceRange.min.toFixed(2) : "0.0"}
                   value={localFilters.minPrice}
                   onChange={(e) => updateFilter('minPrice', e.target.value)}
                   className="max-w-xs"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Max Price (SOL)</Label>
+                <Label className="text-sm font-medium">
+                  Max Price (SOL)
+                  {currentPriceRange?.max !== undefined && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      Current: {currentPriceRange.max.toFixed(2)}
+                    </span>
+                  )}
+                </Label>
                 <Input
                   type="number"
-                  placeholder="1000.0"
+                  placeholder={currentPriceRange?.max !== undefined ? currentPriceRange.max.toFixed(2) : "1000.0"}
                   value={localFilters.maxPrice}
                   onChange={(e) => updateFilter('maxPrice', e.target.value)}
                   className="max-w-xs"
@@ -225,20 +253,34 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           {showRoyaltyFilters && (
             <>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Min Royalty (%)</Label>
+                <Label className="text-sm font-medium">
+                  Min Royalty (%)
+                  {currentRoyaltyRange?.min !== undefined && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      Current: {currentRoyaltyRange.min.toFixed(1)}%
+                    </span>
+                  )}
+                </Label>
                 <Input
                   type="number"
-                  placeholder="0"
+                  placeholder={currentRoyaltyRange?.min !== undefined ? currentRoyaltyRange.min.toFixed(1) : "0"}
                   value={localFilters.minRoyalty}
                   onChange={(e) => updateFilter('minRoyalty', e.target.value)}
                   className="max-w-xs"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Max Royalty (%)</Label>
+                <Label className="text-sm font-medium">
+                  Max Royalty (%)
+                  {currentRoyaltyRange?.max !== undefined && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      Current: {currentRoyaltyRange.max.toFixed(1)}%
+                    </span>
+                  )}
+                </Label>
                 <Input
                   type="number"
-                  placeholder="50"
+                  placeholder={currentRoyaltyRange?.max !== undefined ? currentRoyaltyRange.max.toFixed(1) : "50"}
                   value={localFilters.maxRoyalty}
                   onChange={(e) => updateFilter('maxRoyalty', e.target.value)}
                   className="max-w-xs"

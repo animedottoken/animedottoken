@@ -89,8 +89,8 @@ const Profile = () => {
     profile?.user_id ? [profile.user_id] : []
   );
 
-  // Get filters from context
-  const { filters: combinedFilters, setFilters: setCombinedFilters } = useProfileFilters();
+  // Get filters and ranges from context
+  const { filters: combinedFilters, setFilters: setCombinedFilters, currentPriceRange, currentRoyaltyRange, setCurrentPriceRange, setCurrentRoyaltyRange } = useProfileFilters();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -381,6 +381,56 @@ const Profile = () => {
   // Filter by type for the combined view
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
   const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
+
+  // Compute current price and royalty ranges from filtered data
+  const computedPriceRange = useMemo(() => {
+    const allPrices: number[] = [];
+    
+    // Get prices from filtered NFTs
+    filteredCombinedNFTs.forEach(nft => {
+      if (nft.price && nft.price > 0) {
+        allPrices.push(nft.price);
+      }
+    });
+    
+    // Get mint prices from filtered collections
+    filteredCombinedCollections.forEach(collection => {
+      if (collection.mint_price && collection.mint_price > 0) {
+        allPrices.push(collection.mint_price);
+      }
+    });
+    
+    if (allPrices.length === 0) return undefined;
+    
+    return {
+      min: Math.min(...allPrices),
+      max: Math.max(...allPrices)
+    };
+  }, [filteredCombinedNFTs, filteredCombinedCollections]);
+
+  const computedRoyaltyRange = useMemo(() => {
+    const allRoyalties: number[] = [];
+    
+    // Get royalty percentages from filtered collections
+    filteredCombinedCollections.forEach(collection => {
+      if (collection.royalty_percentage !== undefined && collection.royalty_percentage !== null) {
+        allRoyalties.push(collection.royalty_percentage);
+      }
+    });
+    
+    if (allRoyalties.length === 0) return undefined;
+    
+    return {
+      min: Math.min(...allRoyalties),
+      max: Math.max(...allRoyalties)
+    };
+  }, [filteredCombinedCollections]);
+
+  // Update context with current ranges
+  useEffect(() => {
+    setCurrentPriceRange(computedPriceRange);
+    setCurrentRoyaltyRange(computedRoyaltyRange);
+  }, [computedPriceRange, computedRoyaltyRange, setCurrentPriceRange, setCurrentRoyaltyRange]);
 
   // Check if current user is following this profile - by user_id
   const isFollowingProfile = useMemo(() => {
@@ -840,6 +890,8 @@ const Profile = () => {
               placeholder="Search..."
               categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
               collapsible={true}
+              currentPriceRange={currentPriceRange}
+              currentRoyaltyRange={currentRoyaltyRange}
             />
           )}
 
