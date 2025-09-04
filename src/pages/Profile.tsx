@@ -463,6 +463,14 @@ const Profile = () => {
               {/* Name Row with Actions */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2">
+                  {/* Login Status Dot */}
+                  <StatusDots 
+                    isLoggedIn={!!user} 
+                    isWalletConnected={connected} 
+                    size="sm"
+                    showLogin={true}
+                    showWallet={false}
+                  />
                   <h1 className="text-2xl font-bold text-foreground" data-testid="profile-name">
                     {profile?.display_name || profile?.nickname || (user?.email?.split('@')[0] || 'User')}
                   </h1>
@@ -505,14 +513,6 @@ const Profile = () => {
                       </Button>
                     </SocialActionWrapper>
                   )}
-                  {/* Login Status Dot */}
-                  <StatusDots 
-                    isLoggedIn={!!user} 
-                    isWalletConnected={connected} 
-                    size="sm"
-                    showLogin={true}
-                    showWallet={false}
-                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
