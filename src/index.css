@@ -222,9 +222,4 @@ body {
   .wallet-adapter-modal .wallet-adapter-modal-container {
     z-index: 10001 !important;
   }
-
-  /* Restore body scroll when modal is open */
-  body.wallet-adapter-modal-open {
-    overflow: hidden !important;
-  }
 }
