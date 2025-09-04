@@ -104,6 +104,10 @@ serve(async (req) => {
 
     console.log(`✅ Newsletter unsubscribed for: ${subscription.email}`)
 
+    // Send confirmation email and update Resend audience (don't fail unsubscribe if these fail)
+    try {
+      const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+      
       console.log('📧 Sending unsubscribe confirmation email...');
       const emailResponse = await resend.emails.send({
         from: Deno.env.get('RESEND_FROM_EMAIL') || 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
