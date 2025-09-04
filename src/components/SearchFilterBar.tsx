@@ -244,7 +244,6 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   const hasActiveFilters = localFilters.searchQuery || 
     localFilters.source !== 'all' || 
-    localFilters.sortBy !== 'newest' || 
     localFilters.includeExplicit || 
     (localFilters.category && localFilters.category !== 'all') || 
     localFilters.minPrice || 
@@ -253,6 +252,9 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     localFilters.maxRoyalty ||
     (showListingFilter && localFilters.listing !== 'all') ||
     (showTypeFilter && localFilters.type !== 'all');
+
+  // Always show selected filters section since we always show sort
+  const shouldShowSelectedFilters = hasActiveFilters || true;
 
   return (
     <div className="bg-card p-4 rounded-lg border space-y-4">
@@ -280,7 +282,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       </div>
 
       {/* Selected Filters Summary and Clear All */}
-      {hasActiveFilters && (
+      {shouldShowSelectedFilters && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">Selected filters:</span>
