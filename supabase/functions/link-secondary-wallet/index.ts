@@ -50,15 +50,15 @@ serve(async (req) => {
     if (authError || !user) {
       console.error('Authentication error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
     if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
-        { status: 405, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
@@ -74,17 +74,17 @@ serve(async (req) => {
 
     if (!wallet_address || !signature || !message) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: wallet_address, signature, message' }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Missing required fields: wallet_address, signature, message' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
-    // Validate message format
-    const expectedMessagePattern = /^I am linking this wallet .+ to my ANIME\.TOKEN account\.\n\nTimestamp: \d+$/;
+    // Validate message format (accept both CRLF and LF line endings)
+    const expectedMessagePattern = /^I am linking this wallet .+ to my ANIME\.TOKEN account\.(?:\r?\n){2}Timestamp: \d+$/;
     if (!expectedMessagePattern.test(message)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid message format' }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Invalid message format' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
@@ -92,8 +92,8 @@ serve(async (req) => {
     const messageWalletMatch = message.match(/I am linking this wallet (.+) to my ANIME\.TOKEN account\./);
     if (!messageWalletMatch || messageWalletMatch[1] !== wallet_address) {
       return new Response(
-        JSON.stringify({ error: 'Wallet address in message does not match provided wallet address' }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Wallet address in message does not match provided wallet address' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
@@ -113,15 +113,15 @@ serve(async (req) => {
       
       if (!isValid) {
         return new Response(
-          JSON.stringify({ error: 'Invalid signature' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'Invalid signature' }),
+          { status: 200, headers: corsHeaders }
         );
       }
     } catch (verifyError) {
       console.error('Signature verification error:', verifyError);
       return new Response(
-        JSON.stringify({ error: 'Signature verification failed' }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Signature verification failed' }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
@@ -140,8 +140,8 @@ serve(async (req) => {
           maxAllowed: sixtyMinutes
         });
         return new Response(
-          JSON.stringify({ error: 'Message timestamp is too old or too far in the future. Please generate a new message.' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'Message timestamp is too old or too far in the future. Please generate a new message.' }),
+          { status: 200, headers: corsHeaders }
         );
       }
     }
@@ -157,8 +157,8 @@ serve(async (req) => {
       
       if (existingPrimary) {
         return new Response(
-          JSON.stringify({ error: 'User already has a primary wallet' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'User already has a primary wallet' }),
+          { status: 200, headers: corsHeaders }
         );
       }
     }
@@ -173,13 +173,13 @@ serve(async (req) => {
     if (existingWallet) {
       if (existingWallet.user_id === user.id) {
         return new Response(
-          JSON.stringify({ error: 'This wallet is already linked to your account' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'This wallet is already linked to your account' }),
+          { status: 200, headers: corsHeaders }
         );
       } else {
         return new Response(
-          JSON.stringify({ error: 'This wallet is already linked to another account' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'This wallet is already linked to another account' }),
+          { status: 200, headers: corsHeaders }
         );
       }
     }
@@ -240,14 +240,14 @@ serve(async (req) => {
       // Handle specific error cases
       if (typeof insertError.message === 'string' && insertError.message.includes('more than 10 secondary wallets')) {
         return new Response(
-          JSON.stringify({ error: 'You cannot link more than 10 secondary wallets' }),
-          { status: 400, headers: corsHeaders }
+          JSON.stringify({ success: false, error: 'You cannot link more than 10 secondary wallets' }),
+          { status: 200, headers: corsHeaders }
         );
       }
       
       return new Response(
-        JSON.stringify({ error: 'Failed to link wallet', details: insertError.message }),
-        { status: 500, headers: corsHeaders }
+        JSON.stringify({ success: false, error: 'Failed to link wallet', details: insertError.message }),
+        { status: 200, headers: corsHeaders }
       );
     }
 
@@ -274,8 +274,8 @@ serve(async (req) => {
   } catch (error) {
     console.error('link-secondary-wallet error:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: corsHeaders }
+      JSON.stringify({ success: false, error: 'Internal server error' }),
+      { status: 200, headers: corsHeaders }
     );
   }
 });

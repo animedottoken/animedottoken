@@ -121,6 +121,7 @@ export function useUserWallets() {
         },
         headers: {
           'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -147,6 +148,14 @@ export function useUserWallets() {
           errorMsg = error.toString() || errorMsg;
         }
         
+        toast.error(errorMsg);
+        return false;
+      }
+
+      // Check the response data for success/error
+      if (data?.success === false) {
+        // Extract specific error message from function response
+        const errorMsg = data?.error || 'Failed to link wallet';
         toast.error(errorMsg);
         return false;
       }
