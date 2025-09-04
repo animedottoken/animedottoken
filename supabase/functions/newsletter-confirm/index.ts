@@ -129,7 +129,7 @@ serve(async (req) => {
     try {
       console.log('📧 Sending subscription confirmed email...');
       const emailResponse = await resend.emails.send({
-        from: 'ANIME.TOKEN Newsletter <newsletter@resend.dev>',
+        from: 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
         to: [subscription.email],
         subject: 'Newsletter subscription confirmed!',
         html: `

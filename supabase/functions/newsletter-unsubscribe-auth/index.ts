@@ -154,7 +154,7 @@ serve(async (req) => {
       
       console.log('📧 Sending unsubscribe confirmation email...');
       const emailResponse = await resend.emails.send({
-        from: 'ANIME.TOKEN Newsletter <newsletter@resend.dev>',
+        from: 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
         to: [userEmail],
         subject: 'You have been unsubscribed',
         html: `
