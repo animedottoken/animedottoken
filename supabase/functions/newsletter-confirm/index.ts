@@ -125,7 +125,7 @@ serve(async (req) => {
 
     console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)
 
-    // Send "Subscription confirmed" email to appear in Resend
+    // Send confirmation email
     try {
       console.log('📧 Sending subscription confirmed email...');
       const emailResponse = await resend.emails.send({
@@ -133,46 +133,101 @@ serve(async (req) => {
         to: [subscription.email],
         subject: 'Newsletter subscription confirmed!',
         html: `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #28a745 0%, #20a744 100%); padding: 40px 20px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ANIME.TOKEN Newsletter</h1>
-            </div>
-            
-            <div style="padding: 40px 20px; background: #ffffff;">
-              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px;">✅ Subscription confirmed!</h2>
-              <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                Thank you for confirming your subscription! You are now signed up to receive our newsletter updates at <strong>${subscription.email}</strong>.
-              </p>
-              <p style="margin: 0 0 32px; color: #6b7280; font-size: 14px;">
-                You'll be the first to know about new drops, events, and community updates.
-              </p>
-              
-              <div style="text-align: center;">
-                <a href="${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || '#'}" 
-                   style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                  Visit website
-                </a>
-              </div>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb; text-align: center;">Welcome to ANIME.TOKEN Newsletter! 🎉</h1>
+            <p style="font-size: 16px; line-height: 1.6;">Thank you for confirming your subscription to our newsletter.</p>
+            <p style="font-size: 16px; line-height: 1.6;">You'll now receive updates about the latest NFT drops, community events, and exclusive announcements.</p>
+            <div style="text-align: center; margin-top: 30px;">
+              <p style="color: #666; font-size: 14px;">Visit your profile to manage your newsletter preferences anytime.</p>
             </div>
           </div>
         `,
       });
-
+      
       console.log('✅ Subscription confirmed email sent:', emailResponse);
     } catch (emailError) {
-      console.log('⚠️ Failed to send subscription confirmed email (non-critical):', emailError);
+      console.error('❌ Error sending confirmation email:', emailError);
+      // Don't fail the entire operation if email fails
     }
-
-    // Redirect to profile page with confirmation
-    const redirectUrl = `${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || 'https://animecoin.io'}/profile?newsletter=confirmed`;
     
-    return new Response(null, {
-      status: 302,
+    // Return HTML page with confirmation message and redirect
+    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animecoin.io';
+    const redirectUrl = `${siteUrl}/profile?newsletter=confirmed`;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Newsletter Subscription Confirmed</title>
+        <meta http-equiv="refresh" content="3;url=${redirectUrl}">
+        <style>
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+          }
+          .container { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 40px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            max-width: 500px; 
+            width: 100%; 
+          }
+          h1 { color: #2563eb; margin-bottom: 20px; font-size: 28px; }
+          p { color: #666; line-height: 1.6; margin-bottom: 15px; }
+          .success-icon { font-size: 48px; margin-bottom: 20px; }
+          .button { 
+            display: inline-block; 
+            background: #2563eb; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            margin-top: 20px; 
+            font-weight: 600; 
+          }
+          .countdown { color: #888; font-size: 14px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="success-icon">🎉</div>
+          <h1>Newsletter Subscription Confirmed!</h1>
+          <p><strong>Thank you for joining the ANIME.TOKEN newsletter!</strong></p>
+          <p>You'll now receive updates about the latest NFT drops, community events, and exclusive announcements.</p>
+          <a href="${redirectUrl}" class="button">Continue to Your Profile</a>
+          <div class="countdown">Redirecting automatically in <span id="timer">3</span> seconds...</div>
+        </div>
+        <script>
+          let count = 3;
+          const timer = setInterval(() => {
+            count--;
+            document.getElementById('timer').textContent = count;
+            if (count <= 0) {
+              clearInterval(timer);
+              window.location.href = '${redirectUrl}';
+            }
+          }, 1000);
+        </script>
+      </body>
+      </html>
+    `;
+    
+    return new Response(html, {
+      status: 200,
       headers: {
-        'Location': redirectUrl,
-        'Cache-Control': 'no-cache',
-        ...corsHeaders
-      }
+        'Content-Type': 'text/html',
+        ...corsHeaders,
+      },
     })
 
   } catch (error) {

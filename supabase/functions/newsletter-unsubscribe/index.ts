@@ -104,73 +104,107 @@ serve(async (req) => {
 
     console.log(`✅ Newsletter unsubscribed for: ${subscription.email}`)
 
-    // Send confirmation email and update Resend audience (don't fail unsubscribe if these fail)
-    try {
-      const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-      
       console.log('📧 Sending unsubscribe confirmation email...');
       const emailResponse = await resend.emails.send({
         from: Deno.env.get('RESEND_FROM_EMAIL') || 'ANIME.TOKEN Newsletter <onboarding@resend.dev>',
         to: [subscription.email],
         subject: 'You have been unsubscribed',
         html: `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #6b7280 0%, #374151 100%); padding: 40px 20px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ANIME.TOKEN Newsletter</h1>
-            </div>
-            
-            <div style="padding: 40px 20px; background: #ffffff;">
-              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px;">Successfully unsubscribed</h2>
-              <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                You have been successfully unsubscribed from our newsletter. You will no longer receive updates at <strong>${subscription.email}</strong>.
-              </p>
-              <p style="margin: 0 0 32px; color: #6b7280; font-size: 14px;">
-                We're sorry to see you go! If you change your mind, you can always subscribe again from our website.
-              </p>
-              
-              <div style="text-align: center;">
-                <a href="${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || '#'}" 
-                   style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                  Return to website
-                </a>
-              </div>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #dc2626; text-align: center;">You're All Set 👋</h1>
+            <p style="font-size: 16px; line-height: 1.6;">You have been successfully unsubscribed from the ANIME.TOKEN newsletter.</p>
+            <p style="font-size: 16px; line-height: 1.6;">We're sorry to see you go! If you change your mind, you can always subscribe again from your profile page.</p>
+            <div style="text-align: center; margin-top: 30px;">
+              <p style="color: #666; font-size: 14px;">Thank you for being part of our community.</p>
             </div>
           </div>
         `,
       });
-
+      
       console.log('✅ Unsubscribe confirmation email sent:', emailResponse);
-
-      // Try to update contact in Resend audience if configured
-      const audienceId = Deno.env.get("RESEND_NEWSLETTER_AUDIENCE_ID");
-      if (audienceId) {
-        try {
-          console.log('👥 Marking contact as unsubscribed in Resend audience...');
-          await resend.contacts.update({
-            audienceId,
-            email: subscription.email,
-            unsubscribed: true
-          });
-          console.log('✅ Contact marked as unsubscribed in Resend audience');
-        } catch (audienceError) {
-          console.log('⚠️ Failed to update Resend audience (non-critical):', audienceError);
-        }
-      }
-
     } catch (emailError) {
-      console.log('⚠️ Failed to send unsubscribe confirmation email (non-critical):', emailError);
+      console.error('❌ Error sending unsubscribe confirmation email:', emailError);
+      // Don't fail the entire operation if email fails
     }
-
-    // Redirect to profile page with unsubscribe confirmation
-    const redirectUrl = `${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || 'https://animecoin.io'}/profile?newsletter=unsubscribed`;
     
-    return new Response(null, {
-      status: 302,
+    // Return HTML page with confirmation message and redirect
+    const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animecoin.io';
+    const redirectUrl = `${siteUrl}/profile?newsletter=unsubscribed`;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Newsletter Unsubscribed</title>
+        <meta http-equiv="refresh" content="3;url=${redirectUrl}">
+        <style>
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+          }
+          .container { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 40px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            max-width: 500px; 
+            width: 100%; 
+          }
+          h1 { color: #dc2626; margin-bottom: 20px; font-size: 28px; }
+          p { color: #666; line-height: 1.6; margin-bottom: 15px; }
+          .success-icon { font-size: 48px; margin-bottom: 20px; }
+          .button { 
+            display: inline-block; 
+            background: #dc2626; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            margin-top: 20px; 
+            font-weight: 600; 
+          }
+          .countdown { color: #888; font-size: 14px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="success-icon">👋</div>
+          <h1>You're All Set!</h1>
+          <p><strong>You have been successfully unsubscribed from the ANIME.TOKEN newsletter.</strong></p>
+          <p>We're sorry to see you go! If you change your mind, you can always subscribe again from your profile page.</p>
+          <a href="${redirectUrl}" class="button">Continue to Your Profile</a>
+          <div class="countdown">Redirecting automatically in <span id="timer">3</span> seconds...</div>
+        </div>
+        <script>
+          let count = 3;
+          const timer = setInterval(() => {
+            count--;
+            document.getElementById('timer').textContent = count;
+            if (count <= 0) {
+              clearInterval(timer);
+              window.location.href = '${redirectUrl}';
+            }
+          }, 1000);
+        </script>
+      </body>
+      </html>
+    `;
+    
+    return new Response(html, {
+      status: 200,
       headers: {
-        'Location': redirectUrl,
-        'Cache-Control': 'no-cache',
-        ...corsHeaders
-      }
+        'Content-Type': 'text/html',
+        ...corsHeaders,
+      },
     })
 
   } catch (error) {

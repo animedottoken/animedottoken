@@ -57,7 +57,10 @@ const Profile = () => {
   const location = useLocation();
   const { toast } = useToast();
   
-  // Check for newsletter query parameters and show toast
+  // Newsletter banner state
+  const [newsletterBanner, setNewsletterBanner] = useState<{ type: 'confirmed' | 'unsubscribed' | null; show: boolean }>({ type: null, show: false });
+
+  // Check for newsletter query parameters and show both toast and banner
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newsletter = params.get('newsletter');
@@ -67,6 +70,7 @@ const Profile = () => {
         title: "Newsletter confirmed!",
         description: "You have successfully subscribed to our newsletter.",
       });
+      setNewsletterBanner({ type: 'confirmed', show: true });
       // Clear the query parameter to avoid showing toast again
       navigate(location.pathname, { replace: true });
     } else if (newsletter === 'unsubscribed') {
@@ -74,6 +78,7 @@ const Profile = () => {
         title: "Unsubscribed",
         description: "You have been successfully unsubscribed from our newsletter.",
       });
+      setNewsletterBanner({ type: 'unsubscribed', show: true });
       // Clear the query parameter to avoid showing toast again
       navigate(location.pathname, { replace: true });
     }
@@ -957,6 +962,41 @@ const Profile = () => {
             />
           </ComingSoonFeature>
         )
+      )}
+
+      {/* Newsletter Banner */}
+      {newsletterBanner.show && (
+        <div className={`relative rounded-lg p-4 border ${
+          newsletterBanner.type === 'confirmed' 
+            ? 'bg-success/10 border-success/20 text-success-foreground' 
+            : 'bg-info/10 border-info/20 text-info-foreground'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className="text-2xl">
+              {newsletterBanner.type === 'confirmed' ? '🎉' : '👋'}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold mb-1">
+                {newsletterBanner.type === 'confirmed' 
+                  ? 'Newsletter Subscription Confirmed!' 
+                  : 'Newsletter Unsubscribed'}
+              </h3>
+              <p className="text-sm opacity-90">
+                {newsletterBanner.type === 'confirmed' 
+                  ? 'Thank you for joining the ANIME.TOKEN newsletter! You\'ll now receive updates about the latest NFT drops, community events, and exclusive announcements.' 
+                  : 'You have been successfully unsubscribed from our newsletter. We\'re sorry to see you go! You can always subscribe again anytime.'}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setNewsletterBanner({ type: null, show: false })}
+              className="flex-shrink-0"
+            >
+              ✕
+            </Button>
+          </div>
+        </div>
       )}
 
       {/* Profile Content */}
