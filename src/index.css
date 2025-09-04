@@ -62,6 +62,10 @@ All colors MUST be HSL. */
     --gradient-accent: radial-gradient(1200px 600px at 50% -100px, hsl(var(--primary) / 0.25), transparent 60%);
     --shadow-elevated: 0 10px 30px -10px hsl(var(--primary) / 0.35);
     --shadow-glow: 0 0 0 1px hsl(var(--primary) / 0.3), 0 8px 30px hsl(var(--primary) / 0.25);
+    
+    /* Feature states */
+    --feature-disabled: 240 5% 40%;
+    --feature-disabled-foreground: 240 5% 60%;
   }
 
   .dark {

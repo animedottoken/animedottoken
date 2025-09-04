@@ -35,7 +35,9 @@ import Support from "./pages/Support";
 import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
 import { ProfileFiltersProvider } from "@/contexts/ProfileFiltersContext";
+import { EnvironmentProvider } from "@/contexts/EnvironmentContext";
 import { SecurityBanner } from "@/components/SecurityBanner";
+import { BetaBanner } from "@/components/BetaBanner";
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -156,6 +158,9 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col w-full">
         <SecurityBanner />
+        <div className="px-4 pt-2">
+          <BetaBanner />
+        </div>
         <div className="sticky top-0 z-20 bg-background border-b">
           <TopNav />
         </div>
@@ -188,6 +193,9 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen w-full">
       <SecurityBanner />
+      <div className="px-4 pt-2">
+        <BetaBanner />
+      </div>
       <DesktopSidebar 
         className="fixed left-0 top-0 h-screen z-30" 
         onCollapseChange={setSidebarCollapsed}
@@ -230,20 +238,22 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <HelmetProvider>
           <BrowserRouter>
-            <AuthProvider>
-              <ViewModeProvider>
-                <SolanaWalletProvider>
-                <ProfileFiltersProvider>
-                <TooltipProvider>
+            <EnvironmentProvider>
+              <AuthProvider>
+                <ViewModeProvider>
+                  <SolanaWalletProvider>
+                  <ProfileFiltersProvider>
+                  <TooltipProvider>
                   <Toaster />
                   <Sonner />
                   <ScrollToTopOnRoute />
                   <AppLayout />
-                </TooltipProvider>
-                </ProfileFiltersProvider>
-                </SolanaWalletProvider>
-              </ViewModeProvider>
-            </AuthProvider>
+                  </TooltipProvider>
+                  </ProfileFiltersProvider>
+                  </SolanaWalletProvider>
+                </ViewModeProvider>
+              </AuthProvider>
+            </EnvironmentProvider>
           </BrowserRouter>
         </HelmetProvider>
       </QueryClientProvider>

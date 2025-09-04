@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { useEnvironment } from "@/contexts/EnvironmentContext";
+import { ComingSoonFeature } from "@/components/ComingSoonFeature";
 export default function Mint() {
   const { connected } = useSolanaWallet();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const collectionParam = searchParams.get('collection');
+  const { canUseFeature } = useEnvironment();
 
   // If there's a collection parameter, redirect directly to collection minting
   useEffect(() => {
@@ -65,73 +68,144 @@ export default function Mint() {
 
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Create Collection & Mint NFT */}
-                <Link 
-                  to="/mint/collection" 
-                  className="block"
-                >
-                  <Card 
-                    className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                    role="button"
-                    tabIndex={0}
+                {canUseFeature('collection-minting') ? (
+                  <Link 
+                    to="/mint/collection" 
+                    className="block"
                   >
-                  <CardContent className="p-8 text-center h-full flex flex-col">
-                    <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
-                      <Layers className="h-10 w-10 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">Mint Collection + NFT</h3>
-                    <div className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit mx-auto">
-                      RECOMMENDED
-                    </div>
-                    <p className="text-muted-foreground mb-6 flex-1">
-                      Launch a full collection with multiple NFTs, royalties, and professional branding. <strong>FREE minting</strong> - you only pay minimal Solana network fees.
-                    </p>
-                    <Button 
-                      size="lg" 
-                      className="w-full"
-                      asChild
+                    <Card 
+                      className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      role="button"
+                      tabIndex={0}
                     >
-                      <Link to="/mint/collection">
-                        Start Collection Mint
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-                </Link>
+                    <CardContent className="p-8 text-center h-full flex flex-col">
+                      <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                        <Layers className="h-10 w-10 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">Mint Collection + NFT</h3>
+                      <div className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit mx-auto">
+                        RECOMMENDED
+                      </div>
+                      <p className="text-muted-foreground mb-6 flex-1">
+                        Launch a full collection with multiple NFTs, royalties, and professional branding. <strong>FREE minting</strong> - you only pay minimal Solana network fees.
+                      </p>
+                      <Button 
+                        size="lg" 
+                        className="w-full"
+                        asChild
+                      >
+                        <Link to="/mint/collection">
+                          Start Collection Mint
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  </Link>
+                ) : (
+                  <ComingSoonFeature
+                    title="Collection Minting"
+                    description="Create professional NFT collections with royalties and branding. Launch your art series with ease."
+                  >
+                    <Card 
+                      className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      role="button"
+                      tabIndex={0}
+                    >
+                    <CardContent className="p-8 text-center h-full flex flex-col">
+                      <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                        <Layers className="h-10 w-10 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">Mint Collection + NFT</h3>
+                      <div className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit mx-auto">
+                        RECOMMENDED
+                      </div>
+                      <p className="text-muted-foreground mb-6 flex-1">
+                        Launch a full collection with multiple NFTs, royalties, and professional branding. <strong>FREE minting</strong> - you only pay minimal Solana network fees.
+                      </p>
+                      <Button 
+                        size="lg" 
+                        className="w-full"
+                        asChild
+                      >
+                        <Link to="/mint/collection">
+                          Start Collection Mint
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  </ComingSoonFeature>
+                )}
 
                 {/* Mint NFT Now */}
-                <Link 
-                  to="/mint/nft" 
-                  className="block"
-                >
-                  <Card 
-                    className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                    role="button"
-                    tabIndex={0}
+                {canUseFeature('nft-minting') ? (
+                  <Link 
+                    to="/mint/nft" 
+                    className="block"
                   >
-                  <CardContent className="p-8 text-center h-full flex flex-col">
-                    <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
-                      <FileImage className="h-10 w-10 text-accent" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">Mint Standalone NFT</h3>
-                    <div className="text-muted-foreground text-xs font-medium px-3 py-1 mb-4">
-                      Without Collection
-                    </div>
-                    <p className="text-muted-foreground mb-6 flex-1">
-                      Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection. <strong>FREE minting</strong> - only pay network fees.
-                    </p>
-                    <Button 
-                      size="lg" 
-                      variant="outline"
-                      className="w-full"
-                      asChild
+                    <Card 
+                      className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      role="button"
+                      tabIndex={0}
                     >
-                      <Link to="/mint/nft">
-                        Mint Standalone NFT
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-                </Link>
+                    <CardContent className="p-8 text-center h-full flex flex-col">
+                      <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
+                        <FileImage className="h-10 w-10 text-accent" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">Mint Standalone NFT</h3>
+                      <div className="text-muted-foreground text-xs font-medium px-3 py-1 mb-4">
+                        Without Collection
+                      </div>
+                      <p className="text-muted-foreground mb-6 flex-1">
+                        Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection. <strong>FREE minting</strong> - only pay network fees.
+                      </p>
+                      <Button 
+                        size="lg" 
+                        variant="outline"
+                        className="w-full"
+                        asChild
+                      >
+                        <Link to="/mint/nft">
+                          Mint Standalone NFT
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  </Link>
+                ) : (
+                  <ComingSoonFeature
+                    title="Standalone NFT Minting"
+                    description="Create individual NFTs quickly without setting up a collection. Perfect for single artworks."
+                  >
+                    <Card 
+                      className="group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                      role="button"
+                      tabIndex={0}
+                    >
+                    <CardContent className="p-8 text-center h-full flex flex-col">
+                      <div className="bg-accent/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
+                        <FileImage className="h-10 w-10 text-accent" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3">Mint Standalone NFT</h3>
+                      <div className="text-muted-foreground text-xs font-medium px-3 py-1 mb-4">
+                        Without Collection
+                      </div>
+                      <p className="text-muted-foreground mb-6 flex-1">
+                        Quick and simple NFT creation. Upload your art and mint immediately without setting up a collection. <strong>FREE minting</strong> - only pay network fees.
+                      </p>
+                      <Button 
+                        size="lg" 
+                        variant="outline"
+                        className="w-full"
+                        asChild
+                      >
+                        <Link to="/mint/nft">
+                          Mint Standalone NFT
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  </ComingSoonFeature>
+                )}
               </div>
             </div>
           )}

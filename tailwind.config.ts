@@ -48,6 +48,10 @@ export default {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))'
 				},
+				'feature-disabled': {
+					DEFAULT: 'hsl(var(--feature-disabled))',
+					foreground: 'hsl(var(--feature-disabled-foreground))'
+				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'

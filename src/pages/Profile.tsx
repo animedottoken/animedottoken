@@ -41,6 +41,8 @@ import { AutoPrimaryWalletPrompt } from '@/components/AutoPrimaryWalletPrompt';
 import { useAutoPrimaryWallet } from '@/hooks/useAutoPrimaryWallet';
 import { SecuritySettingsDialog } from '@/components/SecuritySettingsDialog';
 import SocialActionWrapper from '@/components/SocialActionWrapper';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
+import { ComingSoonFeature } from '@/components/ComingSoonFeature';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -54,6 +56,9 @@ const Profile = () => {
   
   // Auto primary wallet functionality
   const { showPrimaryPrompt, handleSetAsPrimary, handleDismiss, connectedWallet } = useAutoPrimaryWallet();
+  
+  // Environment context
+  const { canUseFeature } = useEnvironment();
   
   // Edit dialog states
   const [showBioEdit, setShowBioEdit] = useState(false);
@@ -850,11 +855,24 @@ const Profile = () => {
 
       {/* Auto Primary Wallet Prompt - Show only on own profile */}
       {isOwnProfile && showPrimaryPrompt && connectedWallet && (
-        <AutoPrimaryWalletPrompt
-          walletAddress={connectedWallet}
-          onSetAsPrimary={handleSetAsPrimary}
-          onDismiss={handleDismiss}
-        />
+        canUseFeature('wallet-linking') ? (
+          <AutoPrimaryWalletPrompt
+            walletAddress={connectedWallet}
+            onSetAsPrimary={handleSetAsPrimary}
+            onDismiss={handleDismiss}
+          />
+        ) : (
+          <ComingSoonFeature
+            title="Primary Wallet Linking"
+            description="Set up your primary wallet for identity verification and enhanced features."
+          >
+            <AutoPrimaryWalletPrompt
+              walletAddress={connectedWallet}
+              onSetAsPrimary={handleSetAsPrimary}
+              onDismiss={handleDismiss}
+            />
+          </ComingSoonFeature>
+        )
       )}
 
       {/* Profile Content */}
@@ -1010,7 +1028,16 @@ const Profile = () => {
             </section>
 
             {/* Wallet Management */}
-            <MultiWalletSection />
+            {canUseFeature('wallet-linking') ? (
+              <MultiWalletSection />
+            ) : (
+              <ComingSoonFeature
+                title="Multi-Wallet Management"
+                description="Link multiple wallets to your account for seamless asset management and enhanced security."
+              >
+                <MultiWalletSection />
+              </ComingSoonFeature>
+            )}
             
             {/* Stay Updated Section */}
             <section>
