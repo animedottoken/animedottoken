@@ -515,6 +515,26 @@ const Profile = () => {
                   >
                     <Share className="h-4 w-4" />
                   </Button>
+                  
+                  {/* Login/Logout Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={user ? signOut : () => navigate('/auth')}
+                    className={`flex items-center gap-2 ${user ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
+                  >
+                    {user ? (
+                      <>
+                        Logout
+                        <LogOut className="h-4 w-4 text-destructive" />
+                      </>
+                    ) : (
+                      <>
+                        Login
+                        <LogIn className="h-4 w-4 text-success" />
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
 
@@ -570,31 +590,11 @@ const Profile = () => {
                             <LogIn className="h-4 w-4 text-success" />
                           </>
                         )}
-                      </Button>
-                      
-                      {/* Login/Logout Button */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={user ? signOut : () => navigate('/auth')}
-                        className={`flex items-center gap-2 ${user ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
-                      >
-                        {user ? (
-                          <>
-                            Logout
-                            <LogOut className="h-4 w-4 text-destructive" />
-                          </>
-                        ) : (
-                          <>
-                            Login
-                            <LogIn className="h-4 w-4 text-success" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                       </Button>
+                     </div>
+                   )}
 
-              </div>
+               </div>
 
               {/* Bio */}
               <div className="flex items-start gap-2">
