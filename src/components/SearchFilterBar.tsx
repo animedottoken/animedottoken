@@ -332,7 +332,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             )}
             {/* Always show sort, but only deletable if not newest */}
             <Badge variant="secondary" className="text-xs flex items-center gap-1">
-              Sort: {localFilters.sortBy.replace('-', ' ')}
+              Sort: {localFilters.sortBy.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
               {localFilters.sortBy !== 'newest' && (
                 <button 
                   onClick={() => clearIndividualFilter('sortBy')}
