@@ -80,7 +80,7 @@ serve(async (req) => {
     }
 
     // Validate message format (accept both CRLF and LF line endings)
-    const expectedMessagePattern = /^I am linking this wallet .+ to my ANIME\.TOKEN account\.(?:\r?\n){2}Timestamp: \d+$/;
+    const expectedMessagePattern = /^I am linking this wallet .+ to my ANIME\.TOKEN account\.\n\nTimestamp: \d+$/;
     if (!expectedMessagePattern.test(message)) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid message format' }),
