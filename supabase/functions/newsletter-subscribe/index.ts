@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { Resend } from "npm:resend@2.0.0"
+import { Resend } from "npm:resend@4.0.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -209,32 +209,46 @@ serve(async (req) => {
     // Send confirmation email
     console.log('📨 Sending confirmation email...')
     
-    // Validate and use RESEND_FROM_EMAIL with fallback
+    // Get validated RESEND_FROM_EMAIL - no fallback
     const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
-    const validatedFrom = fromEmail && fromEmail.includes('@') ? fromEmail : 'ANIME.TOKEN Newsletter <onboarding@resend.dev>';
+    let emailSent = false;
     
-    console.log('📧 Using from address:', validatedFrom);
-    
-    const { error: emailError } = await resend.emails.send({
-      from: validatedFrom,
-      to: [email],
-      subject: 'Please confirm your newsletter subscription',
-      html,
-      reply_to: 'support@animedottoken.com'
-    })
-
-    if (emailError) {
-      console.error('❌ Email send error:', emailError)
-      // Don't throw here - we want to still return success if DB was updated
-      console.log('⚠️ Email failed but subscription record was created/updated')
+    if (!fromEmail || !fromEmail.includes('@')) {
+      console.error('❌ RESEND_FROM_EMAIL not configured or invalid:', fromEmail);
+      console.log('⚠️ Skipping email send - will return confirmation URL for manual confirmation');
     } else {
-      console.log(`✅ Confirmation email sent successfully to: ${email}`)
+      console.log('📧 Using from address:', fromEmail);
+      
+      try {
+        const { error: emailError } = await resend.emails.send({
+          from: fromEmail,
+          to: [email],
+          subject: 'Please confirm your newsletter subscription',
+          html,
+          reply_to: 'support@animedottoken.com'
+        });
+
+        if (emailError) {
+          console.error('❌ Email send error:', emailError);
+          console.log('⚠️ Email failed but subscription record was created/updated');
+        } else {
+          console.log(`✅ Confirmation email sent successfully to: ${email}`);
+          emailSent = true;
+        }
+      } catch (sendError) {
+        console.error('❌ Email send exception:', sendError);
+        console.log('⚠️ Email failed but subscription record was created/updated');
+      }
     }
 
     return new Response(JSON.stringify({ 
-      message: 'Please check your email to confirm your subscription!',
+      message: emailSent 
+        ? 'Please check your email to confirm your subscription!' 
+        : 'Please use the confirmation link below to complete your subscription.',
       status: 'confirmation_sent',
-      email: email
+      email: email,
+      emailSent: emailSent,
+      confirmUrl: confirmUrl
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
