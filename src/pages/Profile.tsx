@@ -507,6 +507,13 @@ const Profile = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Status Dots */}
+                  <StatusDots 
+                    isLoggedIn={!!user} 
+                    isWalletConnected={connected} 
+                    size="sm"
+                  />
+                  
                   <Button 
                     variant="outline" 
                     size="icon"
@@ -560,38 +567,37 @@ const Profile = () => {
                   
                   {/* Wallet connection for own profile */}
                   {isOwnProfile && (
-                    <div className="flex items-center gap-2">
-                      <StatusDots isLoggedIn={!!user} isWalletConnected={connected} />
-                      <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
-                        {hasWallet && publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'No wallet connected'}
-                      </Badge>
-                      {walletName && hasWallet && (
-                        <Badge variant="secondary" className="text-xs">
-                          {walletName}
-                        </Badge>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={hasWallet ? disconnect : connectPaymentWallet}
-                        disabled={connecting}
-                        className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
-                      >
-                        {connecting ? (
-                          'Connecting...'
-                        ) : hasWallet ? (
-                          <>
-                            Disconnect Wallet
-                            <LogOut className="h-4 w-4 text-destructive" />
-                          </>
-                        ) : (
-                          <>
-                            Connect Wallet
-                            <LogIn className="h-4 w-4 text-success" />
-                          </>
-                        )}
-                       </Button>
-                     </div>
+                     <div className="flex items-center gap-2">
+                       <Badge variant={hasWallet ? "secondary" : "outline"} className="text-xs">
+                         {hasWallet && publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'No wallet connected'}
+                       </Badge>
+                       {walletName && hasWallet && (
+                         <Badge variant="secondary" className="text-xs">
+                           {walletName}
+                         </Badge>
+                       )}
+                       <Button
+                         variant="outline"
+                         size="sm"
+                         onClick={hasWallet ? disconnect : connectPaymentWallet}
+                         disabled={connecting}
+                         className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
+                       >
+                         {connecting ? (
+                           'Connecting...'
+                         ) : hasWallet ? (
+                           <>
+                             Disconnect Wallet
+                             <LogOut className="h-4 w-4 text-destructive" />
+                           </>
+                         ) : (
+                           <>
+                             Connect Wallet
+                             <LogIn className="h-4 w-4 text-success" />
+                           </>
+                         )}
+                        </Button>
+                      </div>
                    )}
 
                </div>
