@@ -225,19 +225,19 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         break;
       case 'minPrice':
         updateFilter('minPrice', '');
-        setAutoPriceSync(prev => ({ ...prev, min: true }));
+        setAutoPriceSync(prev => ({ ...prev, min: false }));
         break;
       case 'maxPrice':
         updateFilter('maxPrice', '');
-        setAutoPriceSync(prev => ({ ...prev, max: true }));
+        setAutoPriceSync(prev => ({ ...prev, max: false }));
         break;
       case 'minRoyalty':
         updateFilter('minRoyalty', '');
-        setAutoRoyaltySync(prev => ({ ...prev, min: true }));
+        setAutoRoyaltySync(prev => ({ ...prev, min: false }));
         break;
       case 'maxRoyalty':
         updateFilter('maxRoyalty', '');
-        setAutoRoyaltySync(prev => ({ ...prev, max: true }));
+        setAutoRoyaltySync(prev => ({ ...prev, max: false }));
         break;
     }
   };
