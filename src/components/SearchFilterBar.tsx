@@ -85,35 +85,43 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   // Auto-sync price and royalty values when ranges change and clear when no results
   useEffect(() => {
     if (currentPriceRange === undefined) {
-      // Clear price fields when no results
-      if (autoPriceSync.min) setLocalFilters(prev => ({ ...prev, minPrice: '' }));
-      if (autoPriceSync.max) setLocalFilters(prev => ({ ...prev, maxPrice: '' }));
+      // Clear price fields when no results only if auto-sync is enabled
+      if (autoPriceSync.min && localFilters.minPrice === '') {
+        setLocalFilters(prev => ({ ...prev, minPrice: '' }));
+      }
+      if (autoPriceSync.max && localFilters.maxPrice === '') {
+        setLocalFilters(prev => ({ ...prev, maxPrice: '' }));
+      }
     } else {
-      // Update with live values when available
-      if (autoPriceSync.min && !localFilters.minPrice) {
+      // Update with live values only if auto-sync is enabled AND field is empty
+      if (autoPriceSync.min && localFilters.minPrice === '') {
         setLocalFilters(prev => ({ ...prev, minPrice: currentPriceRange.min?.toString() || '' }));
       }
-      if (autoPriceSync.max && !localFilters.maxPrice) {
+      if (autoPriceSync.max && localFilters.maxPrice === '') {
         setLocalFilters(prev => ({ ...prev, maxPrice: currentPriceRange.max?.toString() || '' }));
       }
     }
-  }, [currentPriceRange, autoPriceSync]);
+  }, [currentPriceRange, autoPriceSync.min, autoPriceSync.max]);
 
   useEffect(() => {
     if (currentRoyaltyRange === undefined) {
-      // Clear royalty fields when no results
-      if (autoRoyaltySync.min) setLocalFilters(prev => ({ ...prev, minRoyalty: '' }));
-      if (autoRoyaltySync.max) setLocalFilters(prev => ({ ...prev, maxRoyalty: '' }));
+      // Clear royalty fields when no results only if auto-sync is enabled
+      if (autoRoyaltySync.min && localFilters.minRoyalty === '') {
+        setLocalFilters(prev => ({ ...prev, minRoyalty: '' }));
+      }
+      if (autoRoyaltySync.max && localFilters.maxRoyalty === '') {
+        setLocalFilters(prev => ({ ...prev, maxRoyalty: '' }));
+      }
     } else {
-      // Update with live values when available
-      if (autoRoyaltySync.min && !localFilters.minRoyalty) {
+      // Update with live values only if auto-sync is enabled AND field is empty
+      if (autoRoyaltySync.min && localFilters.minRoyalty === '') {
         setLocalFilters(prev => ({ ...prev, minRoyalty: currentRoyaltyRange.min?.toString() || '' }));
       }
-      if (autoRoyaltySync.max && !localFilters.maxRoyalty) {
+      if (autoRoyaltySync.max && localFilters.maxRoyalty === '') {
         setLocalFilters(prev => ({ ...prev, maxRoyalty: currentRoyaltyRange.max?.toString() || '' }));
       }
     }
-  }, [currentRoyaltyRange, autoRoyaltySync]);
+  }, [currentRoyaltyRange, autoRoyaltySync.min, autoRoyaltySync.max]);
 
   // Debounced update to parent
   const debouncedUpdate = useCallback(
