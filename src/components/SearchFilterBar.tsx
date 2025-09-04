@@ -152,21 +152,37 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
     updateFilter(field, value);
-    // Disable auto-sync for this field when manually edited
+    // Disable auto-sync for this field when manually edited or cleared
     if (field === 'minPrice') {
-      setAutoPriceSync(prev => ({ ...prev, min: value === '' }));
+      setAutoPriceSync(prev => ({ ...prev, min: false }));
     } else {
-      setAutoPriceSync(prev => ({ ...prev, max: value === '' }));
+      setAutoPriceSync(prev => ({ ...prev, max: false }));
+    }
+    // Re-enable auto-sync only if field is completely cleared
+    if (value === '') {
+      if (field === 'minPrice') {
+        setAutoPriceSync(prev => ({ ...prev, min: true }));
+      } else {
+        setAutoPriceSync(prev => ({ ...prev, max: true }));
+      }
     }
   };
 
   const handleRoyaltyChange = (field: 'minRoyalty' | 'maxRoyalty', value: string) => {
     updateFilter(field, value);
-    // Disable auto-sync for this field when manually edited
+    // Disable auto-sync for this field when manually edited or cleared
     if (field === 'minRoyalty') {
-      setAutoRoyaltySync(prev => ({ ...prev, min: value === '' }));
+      setAutoRoyaltySync(prev => ({ ...prev, min: false }));
     } else {
-      setAutoRoyaltySync(prev => ({ ...prev, max: value === '' }));
+      setAutoRoyaltySync(prev => ({ ...prev, max: false }));
+    }
+    // Re-enable auto-sync only if field is completely cleared
+    if (value === '') {
+      if (field === 'minRoyalty') {
+        setAutoRoyaltySync(prev => ({ ...prev, min: true }));
+      } else {
+        setAutoRoyaltySync(prev => ({ ...prev, max: true }));
+      }
     }
   };
 
