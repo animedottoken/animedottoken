@@ -255,7 +255,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           <div className="flex flex-wrap gap-2">
             {localFilters.searchQuery && (
               <Badge variant="secondary" className="text-xs">
-                Search: {localFilters.searchQuery}
+                Name: {localFilters.searchQuery}
               </Badge>
             )}
             {localFilters.source !== 'all' && (
