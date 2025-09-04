@@ -220,4 +220,31 @@ body {
     z-index: 10000 !important;
     pointer-events: auto !important;
   }
+
+  /* Ensure wallet modal buttons are clickable and interactive */
+  .wallet-adapter-modal button,
+  .wallet-adapter-modal .wallet-adapter-button,
+  .wallet-adapter-modal-button-close,
+  .wallet-adapter-modal li[role="menuitem"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    position: relative !important;
+    z-index: 10001 !important;
+  }
+
+  /* Restore focus styles for wallet modal buttons */
+  .wallet-adapter-modal button:focus,
+  .wallet-adapter-modal .wallet-adapter-button:focus,
+  .wallet-adapter-modal-button-close:focus {
+    outline: 2px solid hsl(var(--primary)) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Ensure hover states work */
+  .wallet-adapter-modal button:hover,
+  .wallet-adapter-modal .wallet-adapter-button:hover,
+  .wallet-adapter-modal li[role="menuitem"]:hover {
+    opacity: 0.8 !important;
+    transform: none !important;
+  }
 }
