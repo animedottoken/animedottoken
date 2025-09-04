@@ -380,12 +380,12 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             )}
           </div>
           <Button
-            variant="outline"
-            size="sm"
+            variant="secondary"
+            size="default"
             onClick={clearFilters}
-            className="text-xs self-start sm:self-center"
+            className="text-sm font-medium self-start sm:self-center bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive border-destructive/20"
           >
-            <X className="h-3 w-3 mr-1" />
+            <X className="h-4 w-4 mr-2" />
             Clear All
           </Button>
         </div>
