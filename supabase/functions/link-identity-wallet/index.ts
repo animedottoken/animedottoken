@@ -17,8 +17,8 @@ serve(async (req) => {
     // Get authenticated user
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Authentication required" }), {
-        status: 401,
+      return new Response(JSON.stringify({ success: false, error: "Authentication required" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -28,8 +28,8 @@ serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
-      return new Response(JSON.stringify({ error: "Missing Supabase configuration" }), {
-        status: 500,
+      return new Response(JSON.stringify({ success: false, error: "Missing Supabase configuration" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -41,8 +41,8 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid authentication" }), {
-        status: 401,
+      return new Response(JSON.stringify({ success: false, error: "Invalid authentication" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -51,8 +51,8 @@ serve(async (req) => {
     const { wallet_address, signature_message, wallet_signature } = await req.json();
 
     if (!wallet_address || !signature_message || !wallet_signature) {
-      return new Response(JSON.stringify({ error: "Missing required parameters" }), {
-        status: 400,
+      return new Response(JSON.stringify({ success: false, error: "Missing required parameters" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -62,6 +62,38 @@ serve(async (req) => {
       wallet_address,
       signature_message
     });
+
+    // Validate message format (accept space or newline after "wallet" and both CRLF/LF)
+    const expectedMessagePattern = /^I am linking this wallet[\r\n ]+(.+?) to my ANIME\.TOKEN account\.\r?\n\r?\nTimestamp: \d+$/;
+    if (!expectedMessagePattern.test(signature_message)) {
+      return new Response(JSON.stringify({ success: false, error: "Invalid message format" }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
+    // Ensure the wallet in the message matches the provided wallet_address
+    const msgMatch = signature_message.match(/^I am linking this wallet[\r\n ]+(.+?) to my ANIME\.TOKEN account\./m);
+    if (!msgMatch || msgMatch[1] !== wallet_address) {
+      return new Response(JSON.stringify({ success: false, error: "Wallet address in message does not match provided wallet address" }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
+    // Basic timestamp freshness check (within 60 minutes)
+    const ts = signature_message.match(/Timestamp: (\d+)$/);
+    if (ts) {
+      const messageTimestamp = parseInt(ts[1]);
+      const now = Date.now();
+      const sixtyMinutes = 60 * 60 * 1000;
+      if (Math.abs(now - messageTimestamp) > sixtyMinutes) {
+        return new Response(JSON.stringify({ success: false, error: "Message timestamp is too old or too far in the future. Please generate a new message." }), {
+          status: 200,
+          headers: corsHeaders,
+        });
+      }
+    }
 
     // Use service role for database operations
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -75,18 +107,19 @@ serve(async (req) => {
 
     if (walletCheckError) {
       console.error('Wallet check error:', walletCheckError);
-      return new Response(JSON.stringify({ error: "Failed to check wallet status" }), {
-        status: 500,
+      return new Response(JSON.stringify({ success: false, error: "Failed to check wallet status" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
 
     if (existingWallet && existingWallet.user_id !== user.id) {
       return new Response(JSON.stringify({ 
+        success: false,
         error: "This wallet is already linked to another account. Log in to that account or pick a different wallet.",
         code: "WALLET_ALREADY_LINKED"
       }), {
-        status: 409,
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -96,8 +129,8 @@ serve(async (req) => {
     const signatureValid = true; // This would be the result of signature verification
 
     if (!signatureValid) {
-      return new Response(JSON.stringify({ error: "Invalid wallet signature" }), {
-        status: 400,
+      return new Response(JSON.stringify({ success: false, error: "Invalid wallet signature" }), {
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -123,10 +156,11 @@ serve(async (req) => {
         error_details: updateError.details
       });
       return new Response(JSON.stringify({ 
+        success: false,
         error: "Failed to link wallet", 
         details: updateError.message 
       }), {
-        status: 400,
+        status: 200,
         headers: corsHeaders,
       });
     }
@@ -143,8 +177,8 @@ serve(async (req) => {
     });
   } catch (err) {
     console.error('link-identity-wallet unexpected error:', err);
-    return new Response(JSON.stringify({ error: (err as Error).message || "Unexpected error" }), {
-      status: 500,
+    return new Response(JSON.stringify({ success: false, error: (err as Error).message || "Internal server error" }), {
+      status: 200,
       headers: corsHeaders,
     });
   }

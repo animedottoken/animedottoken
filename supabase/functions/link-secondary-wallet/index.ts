@@ -79,8 +79,8 @@ serve(async (req) => {
       );
     }
 
-    // Validate message format (accept both CRLF and LF line endings)
-    const expectedMessagePattern = /^I am linking this wallet .+ to my ANIME\.TOKEN account\.\n\nTimestamp: \d+$/;
+    // Validate message format (accept space or newline after "wallet" and both CRLF/LF)
+    const expectedMessagePattern = /^I am linking this wallet[\r\n ]+(.+?) to my ANIME\.TOKEN account\.\r?\n\r?\nTimestamp: \d+$/;
     if (!expectedMessagePattern.test(message)) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid message format' }),
@@ -89,7 +89,7 @@ serve(async (req) => {
     }
 
     // Extract wallet address from message
-    const messageWalletMatch = message.match(/I am linking this wallet (.+) to my ANIME\.TOKEN account\./);
+    const messageWalletMatch = message.match(/^I am linking this wallet[\r\n ]+(.+?) to my ANIME\.TOKEN account\./m);
     if (!messageWalletMatch || messageWalletMatch[1] !== wallet_address) {
       return new Response(
         JSON.stringify({ success: false, error: 'Wallet address in message does not match provided wallet address' }),
