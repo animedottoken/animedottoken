@@ -837,7 +837,7 @@ const Profile = () => {
               showTypeFilter={true}
               showPriceFilters={true}
               showRoyaltyFilters={true}
-              placeholder="Search collections and NFTs..."
+              placeholder="Search..."
               categories={['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other']}
               collapsible={true}
             />

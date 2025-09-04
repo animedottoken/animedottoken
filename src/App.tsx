@@ -61,6 +61,11 @@ const AppLayout = () => {
   const location = useLocation();
   const { openWalletSelector } = useSolanaWallet();
 
+  // Route diagnostics - log path changes to help debug navigation issues
+  useEffect(() => {
+    console.log(`🗺️ Route changed to: ${location.pathname}${location.search}${location.hash}`);
+  }, [location.pathname, location.search, location.hash]);
+
   // Global magic link handler for root path redirects
   useEffect(() => {
     const handleRootMagicLink = async () => {

@@ -154,7 +154,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                 showRoyaltyFilters={true}
                 showSourceFilter={true}
                 showTypeFilter={true}
-                placeholder="Search NFTs and collections..."
+                placeholder="Search..."
                 collapsible={false}
               />
             </div>
