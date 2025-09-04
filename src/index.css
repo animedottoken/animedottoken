@@ -215,9 +215,13 @@ body {
   /* Solana wallet modal z-index + conditional pointer-events fix */
   .wallet-adapter-modal-wrapper,
   .wallet-adapter-modal,
-  .wallet-adapter-modal .wallet-adapter-modal-overlay,
-  .wallet-adapter-modal .wallet-adapter-modal-container {
+  .wallet-adapter-modal .wallet-adapter-modal-overlay {
     z-index: 10000 !important;
+    pointer-events: none !important;
+  }
+  
+  .wallet-adapter-modal .wallet-adapter-modal-container {
+    z-index: 10001 !important;
     pointer-events: none !important;
   }
 
