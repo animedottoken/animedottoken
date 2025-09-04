@@ -236,6 +236,81 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           </Button>
         )}
       </div>
+
+      {/* Selected Filters Summary and Clear All */}
+      {hasActiveFilters && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Selected filters:</span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={clearFilters}
+              className="text-sm font-medium bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive border-destructive/20"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear All
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {localFilters.searchQuery && (
+              <Badge variant="secondary" className="text-xs">
+                Search: {localFilters.searchQuery}
+              </Badge>
+            )}
+            {localFilters.source !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
+              </Badge>
+            )}
+            {localFilters.category && localFilters.category !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Category: {localFilters.category}
+              </Badge>
+            )}
+            {localFilters.sortBy !== 'newest' && (
+              <Badge variant="secondary" className="text-xs">
+                Sort: {localFilters.sortBy.replace('-', ' ')}
+              </Badge>
+            )}
+            {localFilters.includeExplicit && (
+              <Badge variant="secondary" className="text-xs">
+                Explicit Content
+              </Badge>
+            )}
+            {showListingFilter && localFilters.listing !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
+              </Badge>
+            )}
+            {showTypeFilter && localFilters.type !== 'all' && (
+              <Badge variant="secondary" className="text-xs">
+                Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
+              </Badge>
+            )}
+            {localFilters.minPrice && (
+              <Badge variant="secondary" className="text-xs">
+                Min Price: {localFilters.minPrice} SOL
+              </Badge>
+            )}
+            {localFilters.maxPrice && (
+              <Badge variant="secondary" className="text-xs">
+                Max Price: {localFilters.maxPrice} SOL
+              </Badge>
+            )}
+            {localFilters.minRoyalty && (
+              <Badge variant="secondary" className="text-xs">
+                Min Royalty: {localFilters.minRoyalty}%
+              </Badge>
+            )}
+            {localFilters.maxRoyalty && (
+              <Badge variant="secondary" className="text-xs">
+                Max Royalty: {localFilters.maxRoyalty}%
+              </Badge>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Search Bar - Show if not collapsible or if expanded */}
       {(!collapsible || isExpanded) && (
@@ -386,52 +461,6 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       )}
 
-      {/* Active Filters and Clear All - Combined Row */}
-      {((!collapsible || isExpanded) || hasActiveFilters) && hasActiveFilters && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex flex-wrap gap-2">
-            {localFilters.searchQuery && (
-              <Badge variant="secondary" className="text-xs">
-                Search: {localFilters.searchQuery}
-              </Badge>
-            )}
-            {localFilters.source !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
-              </Badge>
-            )}
-            {localFilters.category && localFilters.category !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                Category: {localFilters.category}
-              </Badge>
-            )}
-            {localFilters.includeExplicit && (
-              <Badge variant="secondary" className="text-xs">
-                Explicit Content
-              </Badge>
-            )}
-            {showListingFilter && localFilters.listing !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
-              </Badge>
-            )}
-            {showTypeFilter && localFilters.type !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
-              </Badge>
-            )}
-          </div>
-          <Button
-            variant="secondary"
-            size="default"
-            onClick={clearFilters}
-            className="text-sm font-medium self-start sm:self-center bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive border-destructive/20"
-          >
-            <X className="h-4 w-4 mr-2" />
-            Clear All
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
