@@ -133,23 +133,47 @@ serve(async (req) => {
     // Create confirmation URL
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
 
-    // Build confirmation email HTML
+    // Build unified confirmation email HTML to match Magic Link style
     const html = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8" />
-          <title>Confirm your subscription</title>
+          <title>Confirm Your ANIME.TOKEN Newsletter Subscription</title>
         </head>
-        <body style="font-family: Arial, sans-serif; background:#000; color:#fff; padding:24px;">
-          <div style="max-width:600px;margin:0 auto;background:#111;padding:32px;border-radius:8px;">
-            <h1 style="margin-top:0;color:#8B5CF6;">ANIME.TOKEN Newsletter</h1>
-            <p style="color:#ddd;">Hi ${email}, please confirm your subscription.</p>
-            <div style="text-align:center;margin:28px 0;">
-              <a href="${confirmUrl}" style="background:#8B5CF6;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Confirm subscription</a>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <!-- Header -->
+            <div style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">ANIME.TOKEN Newsletter</h1>
             </div>
-            <p style="color:#aaa;font-size:14px;">Or copy this link: <a href="${confirmUrl}" style="color:#8B5CF6;word-break:break-all;">${confirmUrl}</a></p>
-            <p style="color:#666;font-size:12px;text-align:center;margin-top:24px;">If you didn't request this, ignore this email.</p>
+            
+            <!-- Body -->
+            <div style="padding: 40px;">
+              <div style="text-align: center; margin-bottom: 32px;">
+                <h2 style="margin: 0 0 16px; color: #1a1a1a; font-size: 24px; font-weight: 600;">Welcome to the community!</h2>
+                <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">Click below to confirm your newsletter subscription and stay up to date with the latest news, drops, and events.</p>
+              </div>
+              
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${confirmUrl}" style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Confirm Subscription</a>
+              </div>
+              
+              <!-- Alternative link -->
+              <div style="margin: 24px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #8B5CF6;">
+                <p style="margin: 0 0 8px; color: #374151; font-size: 14px; font-weight: 500;">Or copy this link:</p>
+                <p style="margin: 0; color: #8B5CF6; font-size: 12px; word-break: break-all; font-family: monospace;">${confirmUrl}</p>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="padding: 24px 40px; background: #f8f9fa; border-top: 1px solid #e5e7eb; text-align: center;">
+              <p style="margin: 0 0 12px; color: #9ca3af; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
+              <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                Need help? <a href="https://discord.gg/animedottoken" style="color: #8B5CF6; text-decoration: none; font-weight: 500;">Join our Discord support</a>
+              </p>
+            </div>
           </div>
         </body>
       </html>
