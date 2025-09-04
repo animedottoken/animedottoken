@@ -82,22 +82,36 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   const [autoPriceSync, setAutoPriceSync] = useState({ min: true, max: true });
   const [autoRoyaltySync, setAutoRoyaltySync] = useState({ min: true, max: true });
 
-  // Auto-sync price and royalty values when ranges change
+  // Auto-sync price and royalty values when ranges change and clear when no results
   useEffect(() => {
-    if (currentPriceRange?.min !== undefined && autoPriceSync.min && !localFilters.minPrice) {
-      setLocalFilters(prev => ({ ...prev, minPrice: currentPriceRange.min!.toString() }));
-    }
-    if (currentPriceRange?.max !== undefined && autoPriceSync.max && !localFilters.maxPrice) {
-      setLocalFilters(prev => ({ ...prev, maxPrice: currentPriceRange.max!.toString() }));
+    if (currentPriceRange === undefined) {
+      // Clear price fields when no results
+      if (autoPriceSync.min) setLocalFilters(prev => ({ ...prev, minPrice: '' }));
+      if (autoPriceSync.max) setLocalFilters(prev => ({ ...prev, maxPrice: '' }));
+    } else {
+      // Update with live values when available
+      if (autoPriceSync.min && !localFilters.minPrice) {
+        setLocalFilters(prev => ({ ...prev, minPrice: currentPriceRange.min?.toString() || '' }));
+      }
+      if (autoPriceSync.max && !localFilters.maxPrice) {
+        setLocalFilters(prev => ({ ...prev, maxPrice: currentPriceRange.max?.toString() || '' }));
+      }
     }
   }, [currentPriceRange, autoPriceSync]);
 
   useEffect(() => {
-    if (currentRoyaltyRange?.min !== undefined && autoRoyaltySync.min && !localFilters.minRoyalty) {
-      setLocalFilters(prev => ({ ...prev, minRoyalty: currentRoyaltyRange.min!.toString() }));
-    }
-    if (currentRoyaltyRange?.max !== undefined && autoRoyaltySync.max && !localFilters.maxRoyalty) {
-      setLocalFilters(prev => ({ ...prev, maxRoyalty: currentRoyaltyRange.max!.toString() }));
+    if (currentRoyaltyRange === undefined) {
+      // Clear royalty fields when no results
+      if (autoRoyaltySync.min) setLocalFilters(prev => ({ ...prev, minRoyalty: '' }));
+      if (autoRoyaltySync.max) setLocalFilters(prev => ({ ...prev, maxRoyalty: '' }));
+    } else {
+      // Update with live values when available
+      if (autoRoyaltySync.min && !localFilters.minRoyalty) {
+        setLocalFilters(prev => ({ ...prev, minRoyalty: currentRoyaltyRange.min?.toString() || '' }));
+      }
+      if (autoRoyaltySync.max && !localFilters.maxRoyalty) {
+        setLocalFilters(prev => ({ ...prev, maxRoyalty: currentRoyaltyRange.max?.toString() || '' }));
+      }
     }
   }, [currentRoyaltyRange, autoRoyaltySync]);
 
@@ -260,20 +274,32 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Min Price (SOL)</Label>
                 <Input
                   type="number"
-                  placeholder=""
+                  placeholder={
+                    !autoPriceSync.min ? "" : 
+                    currentPriceRange ? currentPriceRange.min?.toString() || "0" : 
+                    "e.g. 0"
+                  }
                   value={localFilters.minPrice}
                   onChange={(e) => handlePriceChange('minPrice', e.target.value)}
-                  className="max-w-xs"
+                  className={`max-w-xs ${
+                    autoPriceSync.min && currentPriceRange === undefined ? "text-muted-foreground" : ""
+                  }`}
                 />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Max Price (SOL)</Label>
                 <Input
                   type="number"
-                  placeholder=""
+                  placeholder={
+                    !autoPriceSync.max ? "" : 
+                    currentPriceRange ? currentPriceRange.max?.toString() || "0" : 
+                    "e.g. 50"
+                  }
                   value={localFilters.maxPrice}
                   onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
-                  className="max-w-xs"
+                  className={`max-w-xs ${
+                    autoPriceSync.max && currentPriceRange === undefined ? "text-muted-foreground" : ""
+                  }`}
                 />
               </div>
             </>
@@ -285,20 +311,32 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Min Royalty (%)</Label>
                 <Input
                   type="number"
-                  placeholder=""
+                  placeholder={
+                    !autoRoyaltySync.min ? "" : 
+                    currentRoyaltyRange ? currentRoyaltyRange.min?.toString() || "0" : 
+                    "e.g. 0"
+                  }
                   value={localFilters.minRoyalty}
                   onChange={(e) => handleRoyaltyChange('minRoyalty', e.target.value)}
-                  className="max-w-xs"
+                  className={`max-w-xs ${
+                    autoRoyaltySync.min && currentRoyaltyRange === undefined ? "text-muted-foreground" : ""
+                  }`}
                 />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Max Royalty (%)</Label>
                 <Input
                   type="number"
-                  placeholder=""
+                  placeholder={
+                    !autoRoyaltySync.max ? "" : 
+                    currentRoyaltyRange ? currentRoyaltyRange.max?.toString() || "0" : 
+                    "e.g. 50"
+                  }
                   value={localFilters.maxRoyalty}
                   onChange={(e) => handleRoyaltyChange('maxRoyalty', e.target.value)}
-                  className="max-w-xs"
+                  className={`max-w-xs ${
+                    autoRoyaltySync.max && currentRoyaltyRange === undefined ? "text-muted-foreground" : ""
+                  }`}
                 />
               </div>
             </>

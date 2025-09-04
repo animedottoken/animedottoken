@@ -78,10 +78,10 @@ export const useFilteredNFTs = (
       }
 
       // Price filters
-      if (filters.minPrice && nft.price && nft.price < parseFloat(filters.minPrice)) {
+      if (filters.minPrice && (nft.price || 0) < parseFloat(filters.minPrice)) {
         return false;
       }
-      if (filters.maxPrice && nft.price && nft.price > parseFloat(filters.maxPrice)) {
+      if (filters.maxPrice && (nft.price || 0) > parseFloat(filters.maxPrice)) {
         return false;
       }
 
@@ -157,18 +157,18 @@ export const useFilteredCollections = (
       }
 
       // Price filters (mint price)
-      if (filters.minPrice && collection.mint_price && collection.mint_price < parseFloat(filters.minPrice)) {
+      if (filters.minPrice && (collection.mint_price || 0) < parseFloat(filters.minPrice)) {
         return false;
       }
-      if (filters.maxPrice && collection.mint_price && collection.mint_price > parseFloat(filters.maxPrice)) {
+      if (filters.maxPrice && (collection.mint_price || 0) > parseFloat(filters.maxPrice)) {
         return false;
       }
 
       // Royalty filters
-      if (filters.minRoyalty && collection.royalty_percentage && collection.royalty_percentage < parseFloat(filters.minRoyalty)) {
+      if (filters.minRoyalty && (collection.royalty_percentage || 0) < parseFloat(filters.minRoyalty)) {
         return false;
       }
-      if (filters.maxRoyalty && collection.royalty_percentage && collection.royalty_percentage > parseFloat(filters.maxRoyalty)) {
+      if (filters.maxRoyalty && (collection.royalty_percentage || 0) > parseFloat(filters.maxRoyalty)) {
         return false;
       }
 

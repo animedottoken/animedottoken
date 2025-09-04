@@ -386,18 +386,14 @@ const Profile = () => {
   const computedPriceRange = useMemo(() => {
     const allPrices: number[] = [];
     
-    // Get prices from filtered NFTs
+    // Get prices from filtered NFTs (treat undefined as 0)
     filteredCombinedNFTs.forEach(nft => {
-      if (nft.price && nft.price > 0) {
-        allPrices.push(nft.price);
-      }
+      allPrices.push(nft.price || 0);
     });
     
-    // Get mint prices from filtered collections
+    // Get mint prices from filtered collections (treat undefined as 0)
     filteredCombinedCollections.forEach(collection => {
-      if (collection.mint_price && collection.mint_price > 0) {
-        allPrices.push(collection.mint_price);
-      }
+      allPrices.push(collection.mint_price || 0);
     });
     
     if (allPrices.length === 0) return undefined;
@@ -411,11 +407,9 @@ const Profile = () => {
   const computedRoyaltyRange = useMemo(() => {
     const allRoyalties: number[] = [];
     
-    // Get royalty percentages from filtered collections
+    // Get royalty percentages from filtered collections (treat undefined as 0)
     filteredCombinedCollections.forEach(collection => {
-      if (collection.royalty_percentage !== undefined && collection.royalty_percentage !== null) {
-        allRoyalties.push(collection.royalty_percentage);
-      }
+      allRoyalties.push(collection.royalty_percentage || 0);
     });
     
     if (allRoyalties.length === 0) return undefined;
