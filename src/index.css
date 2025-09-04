@@ -212,13 +212,34 @@ body {
     text-overflow: ellipsis;
   }
 
-  /* Solana wallet modal z-index + pointer-events fix */
+  /* Solana wallet modal z-index + conditional pointer-events fix */
   .wallet-adapter-modal-wrapper,
   .wallet-adapter-modal,
   .wallet-adapter-modal .wallet-adapter-modal-overlay,
   .wallet-adapter-modal .wallet-adapter-modal-container {
     z-index: 10000 !important;
+    pointer-events: none !important;
+  }
+
+  /* Only enable pointer-events when modal is open */
+  .wallet-adapter-modal-wrapper:not([aria-hidden="true"]),
+  .wallet-adapter-modal:not([aria-hidden="true"]),
+  .wallet-adapter-modal:not([aria-hidden="true"]) .wallet-adapter-modal-overlay,
+  .wallet-adapter-modal:not([aria-hidden="true"]) .wallet-adapter-modal-container,
+  body.wallet-adapter-modal-open .wallet-adapter-modal-wrapper,
+  body.wallet-adapter-modal-open .wallet-adapter-modal,
+  body.wallet-adapter-modal-open .wallet-adapter-modal .wallet-adapter-modal-overlay,
+  body.wallet-adapter-modal-open .wallet-adapter-modal .wallet-adapter-modal-container {
     pointer-events: auto !important;
+  }
+
+  /* Restore body scroll when modal is closed */
+  body.wallet-adapter-modal-open {
+    overflow: hidden !important;
+  }
+  
+  body:not(.wallet-adapter-modal-open) {
+    overflow: auto !important;
   }
 
   /* Ensure wallet modal buttons are clickable and interactive */

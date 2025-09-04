@@ -159,7 +159,7 @@ const AppLayout = () => {
         <div className="sticky top-0 z-20 bg-background border-b">
           <TopNav />
         </div>
-        <main className="flex-1 overflow-x-hidden">
+        <main className="flex-1 overflow-x-hidden pb-20 md:pb-0">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
