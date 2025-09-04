@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { Resend } from "npm:resend@2.0.0"
+import { Resend } from "npm:resend@4.0.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,7 +37,7 @@ serve(async (req) => {
         </html>
       `, {
         status: 400,
-        headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders }
       })
     }
 
@@ -69,24 +69,21 @@ serve(async (req) => {
         </html>
       `, {
         status: 404,
-        headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders }
       })
     }
 
     if (subscription.status === 'confirmed') {
-      return new Response(`
-        <html>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
-            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
-              <h2 style="color: #28a745; margin: 0 0 16px;">Already confirmed!</h2>
-              <p style="color: #6b7280; margin: 0;">Your email subscription is already active. Thank you!</p>
-            </div>
-          </body>
-        </html>
-      `, {
-        status: 200,
-        headers: { 'Content-Type': 'text/html', ...corsHeaders }
-      })
+      const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animedottoken.com';
+      const redirectUrl = `${siteUrl}/profile?newsletter=already-confirmed`;
+      
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': redirectUrl,
+          ...corsHeaders,
+        },
+      });
     }
 
     // Update subscription status to confirmed
@@ -111,12 +108,14 @@ serve(async (req) => {
     if (audienceId && subscription?.email) {
       try {
         console.log('Adding subscriber to Resend audience:', subscription.email)
-        await resend.contacts.create({
-          email: subscription.email,
-          unsubscribed: false,
-          audienceId: audienceId,
-        })
-        console.log('Successfully added to Resend audience')
+        if (resend.contacts) {
+          await resend.contacts.create({
+            email: subscription.email,
+            unsubscribed: false,
+            audienceId: audienceId,
+          })
+          console.log('Successfully added to Resend audience')
+        }
       } catch (resendError) {
         console.error('Error adding to Resend audience:', resendError)
         // Don't fail the confirmation if Resend sync fails
@@ -157,85 +156,17 @@ serve(async (req) => {
       // Don't fail the entire operation if email fails
     }
     
-    // Return HTML page with confirmation message and redirect
+    // Return HTTP redirect to profile with success message
     const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://animedottoken.com';
     const redirectUrl = `${siteUrl}/profile?newsletter=confirmed`;
     
-    const html = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Newsletter Subscription Confirmed</title>
-        <meta http-equiv="refresh" content="3;url=${redirectUrl}">
-        <style>
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
-            padding: 40px 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-          }
-          .container { 
-            background: white; 
-            border-radius: 12px; 
-            padding: 40px; 
-            text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            max-width: 500px; 
-            width: 100%; 
-          }
-          h1 { color: #2563eb; margin-bottom: 20px; font-size: 28px; }
-          p { color: #666; line-height: 1.6; margin-bottom: 15px; }
-          .success-icon { font-size: 48px; margin-bottom: 20px; }
-          .button { 
-            display: inline-block; 
-            background: #2563eb; 
-            color: white; 
-            padding: 12px 24px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            margin-top: 20px; 
-            font-weight: 600; 
-          }
-          .countdown { color: #888; font-size: 14px; margin-top: 20px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="success-icon">🎉</div>
-          <h1>Newsletter Subscription Confirmed!</h1>
-          <p><strong>Thank you for joining the ANIME.TOKEN newsletter!</strong></p>
-          <p>You'll now receive updates about the latest NFT drops, community events, and exclusive announcements.</p>
-          <a href="${redirectUrl}" class="button">Continue to Your Profile</a>
-          <div class="countdown">Redirecting automatically in <span id="timer">3</span> seconds...</div>
-        </div>
-        <script>
-          let count = 3;
-          const timer = setInterval(() => {
-            count--;
-            document.getElementById('timer').textContent = count;
-            if (count <= 0) {
-              clearInterval(timer);
-              window.location.href = '${redirectUrl}';
-            }
-          }, 1000);
-        </script>
-      </body>
-      </html>
-    `;
-    
-    return new Response(html, {
-      status: 200,
+    return new Response(null, {
+      status: 302,
       headers: {
-        'Content-Type': 'text/html',
+        'Location': redirectUrl,
         ...corsHeaders,
       },
-    })
+    });
 
   } catch (error) {
     console.error('Newsletter confirm error:', error)
@@ -251,7 +182,7 @@ serve(async (req) => {
       </html>
     `, {
       status: 500,
-      headers: { 'Content-Type': 'text/html', ...corsHeaders }
+      headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders }
     })
   }
 })
