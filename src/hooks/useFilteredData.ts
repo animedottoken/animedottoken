@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { FilterState } from '@/components/SearchFilterBar';
 import { hasRequiredListingFields } from '@/lib/attributeHelpers';
+import { normalizeAttributes } from '@/lib/attributes';
 
 interface NFT {
   id: string;
@@ -52,12 +53,29 @@ export const useFilteredNFTs = (
     }
 
     let filtered = sourceData.filter(nft => {
-      // Search query
+      // Full-text search query
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
         const matchesName = nft.name.toLowerCase().includes(query);
         const matchesDescription = nft.description?.toLowerCase().includes(query);
-        if (!matchesName && !matchesDescription) return false;
+        
+        // Search in attributes/properties
+        let matchesAttributes = false;
+        if (nft.attributes) {
+          try {
+            const normalizedAttrs = normalizeAttributes(nft.attributes);
+            matchesAttributes = normalizedAttrs.some(attr => 
+              attr.trait_type.toLowerCase().includes(query) ||
+              attr.value.toLowerCase().includes(query)
+            );
+          } catch (error) {
+            // Fallback for non-standard attribute formats
+            const attrString = JSON.stringify(nft.attributes).toLowerCase();
+            matchesAttributes = attrString.includes(query);
+          }
+        }
+        
+        if (!matchesName && !matchesDescription && !matchesAttributes) return false;
       }
 
       // Category filter

@@ -71,7 +71,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showRoyaltyFilters = true,
   showSourceFilter = true,
   showTypeFilter = false,
-  placeholder = "Search...",
+  placeholder = "Full-text search...",
   categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other'],
   collapsible = false,
   currentPriceRange,
@@ -200,6 +200,48 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     }
   };
 
+  const clearIndividualFilter = (filterKey: keyof FilterState) => {
+    switch (filterKey) {
+      case 'searchQuery':
+        updateFilter('searchQuery', '');
+        break;
+      case 'source':
+        updateFilter('source', 'all');
+        break;
+      case 'category':
+        updateFilter('category', 'all');
+        break;
+      case 'sortBy':
+        updateFilter('sortBy', 'newest');
+        break;
+      case 'includeExplicit':
+        updateFilter('includeExplicit', false);
+        break;
+      case 'listing':
+        updateFilter('listing', 'all');
+        break;
+      case 'type':
+        updateFilter('type', 'all');
+        break;
+      case 'minPrice':
+        updateFilter('minPrice', '');
+        setAutoPriceSync(prev => ({ ...prev, min: true }));
+        break;
+      case 'maxPrice':
+        updateFilter('maxPrice', '');
+        setAutoPriceSync(prev => ({ ...prev, max: true }));
+        break;
+      case 'minRoyalty':
+        updateFilter('minRoyalty', '');
+        setAutoRoyaltySync(prev => ({ ...prev, min: true }));
+        break;
+      case 'maxRoyalty':
+        updateFilter('maxRoyalty', '');
+        setAutoRoyaltySync(prev => ({ ...prev, max: true }));
+        break;
+    }
+  };
+
   const hasActiveFilters = localFilters.searchQuery || 
     localFilters.source !== 'all' || 
     localFilters.sortBy !== 'newest' || 
@@ -254,58 +296,124 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           </div>
           <div className="flex flex-wrap gap-2">
             {localFilters.searchQuery && (
-              <Badge variant="secondary" className="text-xs">
-                Name: {localFilters.searchQuery}
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                Fulltext: {localFilters.searchQuery}
+                <button 
+                  onClick={() => clearIndividualFilter('searchQuery')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.source !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Source: {localFilters.source === 'liked' ? 'Liked' : 'From Liked Creators'}
+                <button 
+                  onClick={() => clearIndividualFilter('source')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.category && localFilters.category !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Category: {localFilters.category}
+                <button 
+                  onClick={() => clearIndividualFilter('category')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.sortBy !== 'newest' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Sort: {localFilters.sortBy.replace('-', ' ')}
+                <button 
+                  onClick={() => clearIndividualFilter('sortBy')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.includeExplicit && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Explicit Content
+                <button 
+                  onClick={() => clearIndividualFilter('includeExplicit')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {showListingFilter && localFilters.listing !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
+                <button 
+                  onClick={() => clearIndividualFilter('listing')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {showTypeFilter && localFilters.type !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Type: {localFilters.type === 'collections' ? 'Collections' : 'NFTs'}
+                <button 
+                  onClick={() => clearIndividualFilter('type')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.minPrice && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Min Price: {localFilters.minPrice} SOL
+                <button 
+                  onClick={() => clearIndividualFilter('minPrice')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.maxPrice && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Max Price: {localFilters.maxPrice} SOL
+                <button 
+                  onClick={() => clearIndividualFilter('maxPrice')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.minRoyalty && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Min Royalty: {localFilters.minRoyalty}%
+                <button 
+                  onClick={() => clearIndividualFilter('minRoyalty')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
             {localFilters.maxRoyalty && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Max Royalty: {localFilters.maxRoyalty}%
+                <button 
+                  onClick={() => clearIndividualFilter('maxRoyalty')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
               </Badge>
             )}
           </div>
@@ -314,14 +422,17 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       
       {/* Search Bar - Show if not collapsible or if expanded */}
       {(!collapsible || isExpanded) && (
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder={placeholder}
-            value={localFilters.searchQuery}
-            onChange={(e) => updateFilter('searchQuery', e.target.value)}
-            className="pl-10"
-          />
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Full-text search</Label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder={placeholder}
+              value={localFilters.searchQuery}
+              onChange={(e) => updateFilter('searchQuery', e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
       )}
 
