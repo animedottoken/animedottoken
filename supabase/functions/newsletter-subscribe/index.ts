@@ -130,8 +130,9 @@ serve(async (req) => {
       }
     }
 
-    // Create confirmation URL
+    // Create confirmation and unsubscribe URLs
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
+    const unsubscribeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-unsubscribe?token=${optInToken}`
 
     // Build unified confirmation email HTML to match Magic Link style
     const html = `
@@ -170,8 +171,11 @@ serve(async (req) => {
             <!-- Footer -->
             <div style="padding: 24px 40px; background: #f8f9fa; border-top: 1px solid #e5e7eb; text-align: center;">
               <p style="margin: 0 0 12px; color: #9ca3af; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
-              <p style="margin: 0; color: #6b7280; font-size: 14px;">
+              <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">
                 Need help? <a href="https://discord.gg/animedottoken" style="color: #8B5CF6; text-decoration: none; font-weight: 500;">Join our Discord support</a>
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                <a href="${unsubscribeUrl}" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a>
               </p>
             </div>
           </div>

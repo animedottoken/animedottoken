@@ -28,9 +28,11 @@ serve(async (req) => {
     if (!token) {
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #dc3545;">Invalid confirmation link</h2>
-            <p>The confirmation token is missing or invalid.</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #dc3545; margin: 0 0 16px;">Invalid confirmation link</h2>
+              <p style="color: #6b7280; margin: 0;">The confirmation token is missing or invalid.</p>
+            </div>
           </body>
         </html>
       `, {
@@ -58,9 +60,11 @@ serve(async (req) => {
       console.log('Subscription not found for token:', token)
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #dc3545;">Invalid confirmation link</h2>
-            <p>This confirmation link is invalid or has already been used.</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #dc3545; margin: 0 0 16px;">Invalid confirmation link</h2>
+              <p style="color: #6b7280; margin: 0;">This confirmation link is invalid or has already been used.</p>
+            </div>
           </body>
         </html>
       `, {
@@ -72,9 +76,11 @@ serve(async (req) => {
     if (subscription.status === 'confirmed') {
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #28a745;">Already confirmed!</h2>
-            <p>Your email subscription is already active. Thank you!</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #28a745; margin: 0 0 16px;">Already confirmed!</h2>
+              <p style="color: #6b7280; margin: 0;">Your email subscription is already active. Thank you!</p>
+            </div>
           </body>
         </html>
       `, {
@@ -119,21 +125,35 @@ serve(async (req) => {
 
     console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)
 
+    // Create unsubscribe URL using the same token
+    const unsubscribeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-unsubscribe?token=${token}`
+
     return new Response(`
       <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2 style="color: #28a745;">Subscription confirmed!</h2>
-          <p>Thank you for subscribing to our newsletter!</p>
-          <p>You'll receive our latest updates at <strong>${subscription.email}</strong></p>
-          <div style="margin-top: 30px;">
-            <a href="/" style="
-              background-color: #007bff; 
-              color: white; 
-              padding: 12px 24px; 
-              text-decoration: none; 
-              border-radius: 4px;
-              display: inline-block;
-            ">Return to website</a>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <!-- Header -->
+            <div style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #28a745 0%, #20a744 100%);">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">ANIME.TOKEN Newsletter</h1>
+            </div>
+            
+            <!-- Body -->
+            <div style="padding: 40px;">
+              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px; font-weight: 600;">Subscription confirmed!</h2>
+              <p style="margin: 0 0 16px; color: #6b7280; font-size: 16px; line-height: 1.6;">Thank you for subscribing to our newsletter!</p>
+              <p style="margin: 0 0 32px; color: #6b7280; font-size: 16px; line-height: 1.6;">You'll receive our latest updates at <strong>${subscription.email}</strong></p>
+              
+              <div style="text-align: center;">
+                <a href="/" style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">Return to website</a>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="padding: 24px 40px; background: #f8f9fa; border-top: 1px solid #e5e7eb; text-align: center;">
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                Want to unsubscribe? <a href="${unsubscribeUrl}" style="color: #9ca3af; text-decoration: underline;">Click here</a>
+              </p>
+            </div>
           </div>
         </body>
       </html>
@@ -147,9 +167,11 @@ serve(async (req) => {
     
     return new Response(`
       <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2 style="color: #dc3545;">Something went wrong</h2>
-          <p>We couldn't process your confirmation. Please try again later.</p>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+            <h2 style="color: #dc3545; margin: 0 0 16px;">Something went wrong</h2>
+            <p style="color: #6b7280; margin: 0;">We couldn't process your confirmation. Please try again later.</p>
+          </div>
         </body>
       </html>
     `, {

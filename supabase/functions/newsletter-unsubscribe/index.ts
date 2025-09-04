@@ -20,14 +20,16 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url)
-    const email = url.searchParams.get('email')
+    const token = url.searchParams.get('token')
 
-    if (!email) {
+    if (!token) {
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #dc3545;">Invalid unsubscribe link</h2>
-            <p>The email parameter is missing.</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #dc3545; margin: 0 0 16px;">Invalid unsubscribe link</h2>
+              <p style="color: #6b7280; margin: 0;">The unsubscribe token is missing or invalid.</p>
+            </div>
           </body>
         </html>
       `, {
@@ -36,7 +38,7 @@ serve(async (req) => {
       })
     }
 
-    console.log(`📤 Processing newsletter unsubscribe for: ${email}`)
+    console.log(`🔗 Processing newsletter unsubscribe for token: ${token}`)
 
     // Create Supabase client
     const supabase = createClient(
@@ -44,19 +46,22 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Find the subscription by email
+    // Find the subscription by token
     const { data: subscription, error: findError } = await supabase
       .from('newsletter_subscribers')
       .select('*')
-      .eq('email', email)
+      .eq('opt_in_token', token)
       .single()
 
     if (findError || !subscription) {
+      console.log('Subscription not found for token:', token)
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #ffc107;">Email not found</h2>
-            <p>We couldn't find an active subscription for this email address.</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #dc3545; margin: 0 0 16px;">Invalid unsubscribe link</h2>
+              <p style="color: #6b7280; margin: 0;">This unsubscribe link is invalid or has already been used.</p>
+            </div>
           </body>
         </html>
       `, {
@@ -65,12 +70,14 @@ serve(async (req) => {
       })
     }
 
-    if (subscription.status === 'unsubscribed') {
+    if (subscription.unsubscribed_at) {
       return new Response(`
         <html>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2 style="color: #6c757d;">Already unsubscribed</h2>
-            <p>This email address is already unsubscribed from our newsletter.</p>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+              <h2 style="color: #28a745; margin: 0 0 16px;">Already unsubscribed</h2>
+              <p style="color: #6b7280; margin: 0;">You have already been unsubscribed from our newsletter.</p>
+            </div>
           </body>
         </html>
       `, {
@@ -87,30 +94,34 @@ serve(async (req) => {
         unsubscribed_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .eq('email', email)
+      .eq('opt_in_token', token)
 
     if (updateError) {
       console.error('Update error:', updateError)
       throw updateError
     }
 
-    console.log(`✅ Newsletter unsubscribe processed for: ${email}`)
+    console.log(`✅ Newsletter unsubscribed for: ${subscription.email}`)
 
     return new Response(`
       <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2 style="color: #28a745;">Successfully unsubscribed</h2>
-          <p>You have been unsubscribed from our newsletter.</p>
-          <p>We're sorry to see you go! If you change your mind, you can always resubscribe.</p>
-          <div style="margin-top: 30px;">
-            <a href="/" style="
-              background-color: #007bff; 
-              color: white; 
-              padding: 12px 24px; 
-              text-decoration: none; 
-              border-radius: 4px;
-              display: inline-block;
-            ">Return to website</a>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <!-- Header -->
+            <div style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #6b7280 0%, #374151 100%);">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">ANIME.TOKEN Newsletter</h1>
+            </div>
+            
+            <!-- Body -->
+            <div style="padding: 40px;">
+              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px; font-weight: 600;">Successfully unsubscribed</h2>
+              <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">You have been unsubscribed from our newsletter. You will no longer receive emails at <strong>${subscription.email}</strong></p>
+              <p style="margin: 0 0 32px; color: #6b7280; font-size: 14px;">We're sorry to see you go! If you change your mind, you can always subscribe again from our website.</p>
+              
+              <div style="text-align: center;">
+                <a href="/" style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">Return to website</a>
+              </div>
+            </div>
           </div>
         </body>
       </html>
@@ -124,9 +135,11 @@ serve(async (req) => {
     
     return new Response(`
       <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2 style="color: #dc3545;">Something went wrong</h2>
-          <p>We couldn't process your unsubscribe request. Please try again later.</p>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
+          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); padding: 40px;">
+            <h2 style="color: #dc3545; margin: 0 0 16px;">Something went wrong</h2>
+            <p style="color: #6b7280; margin: 0;">We couldn't process your unsubscribe request. Please try again later.</p>
+          </div>
         </body>
       </html>
     `, {
