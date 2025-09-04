@@ -21,9 +21,14 @@ serve(async (req) => {
   }
 
   try {
+    console.log('🚫 Newsletter unsubscribe-auth request started');
+    
     // Get user from JWT (authenticated request)
     const authHeader = req.headers.get('authorization');
+    console.log('Auth header present:', !!authHeader);
+    
     if (!authHeader) {
+      console.log('❌ No authorization header provided');
       return new Response(JSON.stringify({ error: "Authentication required" }), {
         status: 401,
         headers: corsHeaders,
@@ -38,9 +43,19 @@ serve(async (req) => {
       }
     );
     
+    console.log('🔐 Getting user from JWT...');
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      console.log('Authentication error:', authError);
+    
+    if (authError) {
+      console.log('❌ Auth error:', authError.message);
+      return new Response(JSON.stringify({ error: "Invalid authentication" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+    
+    if (!user) {
+      console.log('❌ No user found in JWT');
       return new Response(JSON.stringify({ error: "Invalid authentication" }), {
         status: 401,
         headers: corsHeaders,
@@ -49,11 +64,14 @@ serve(async (req) => {
 
     const userEmail = user.email;
     if (!userEmail) {
+      console.log('❌ User email not found');
       return new Response(JSON.stringify({ error: "User email not found" }), {
         status: 400,
         headers: corsHeaders,
       });
     }
+
+    console.log('✅ Authenticated user for unsubscribe:', userEmail);
 
     // Use service role key for database operations
     const supabase = createClient(
@@ -61,24 +79,31 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    console.log('Processing unsubscribe for authenticated user:', userEmail);
+    console.log('🔍 Finding subscription record...');
 
     // Find the subscription record by email
     const { data: subscription, error: findError } = await supabase
       .from('newsletter_subscribers')
       .select('*')
       .eq('email', userEmail)
-      .single();
+      .maybeSingle();
 
-    if (findError && findError.code !== 'PGRST116') {
-      console.log('Database error finding subscription:', findError);
-      return new Response(JSON.stringify({ error: "Database error" }), {
+    if (findError) {
+      console.error('❌ Database error finding subscription:', findError);
+      return new Response(JSON.stringify({ 
+        error: "Database error", 
+        details: findError.message 
+      }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
+    console.log('📋 Subscription record found:', !!subscription);
+    console.log('📋 Current status:', subscription?.status);
+
     if (!subscription) {
+      console.log('❌ No subscription found');
       return new Response(JSON.stringify({ error: "No active subscription found" }), {
         status: 404,
         headers: corsHeaders,
@@ -86,11 +111,17 @@ serve(async (req) => {
     }
 
     if (subscription.status === 'unsubscribed') {
-      return new Response(JSON.stringify({ message: "Already unsubscribed" }), {
+      console.log('✅ Already unsubscribed');
+      return new Response(JSON.stringify({ 
+        message: "Already unsubscribed",
+        status: 'already_unsubscribed' 
+      }), {
         status: 200,
         headers: corsHeaders,
       });
     }
+
+    console.log('🔄 Updating subscription status to unsubscribed...');
 
     // Update subscription status to unsubscribed
     const { error: updateError } = await supabase
@@ -103,26 +134,33 @@ serve(async (req) => {
       .eq('email', userEmail);
 
     if (updateError) {
-      console.log('Error updating subscription status:', updateError);
-      return new Response(JSON.stringify({ error: "Failed to unsubscribe" }), {
+      console.error('❌ Error updating subscription status:', updateError);
+      return new Response(JSON.stringify({ 
+        error: "Failed to unsubscribe", 
+        details: updateError.message 
+      }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
-    console.log('Successfully unsubscribed user:', userEmail);
+    console.log('✅ Successfully unsubscribed user:', userEmail);
 
     return new Response(JSON.stringify({ 
       message: "Successfully unsubscribed from newsletter",
-      email: userEmail 
+      email: userEmail,
+      status: 'unsubscribed'
     }), {
       status: 200,
       headers: corsHeaders,
     });
 
   } catch (err) {
-    console.error('Unexpected error in newsletter-unsubscribe-auth:', err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error('💥 Unexpected error in newsletter-unsubscribe-auth:', err);
+    return new Response(JSON.stringify({ 
+      error: "Internal server error",
+      details: err instanceof Error ? err.message : 'Unknown error'
+    }), {
       status: 500,
       headers: corsHeaders,
     });

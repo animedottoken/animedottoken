@@ -18,6 +18,7 @@ export function useNewsletterStatus() {
 
   const fetchStatus = async () => {
     if (!user) {
+      console.log('👤 No user authenticated');
       setStatus(null);
       setLoading(false);
       return;
@@ -27,16 +28,20 @@ export function useNewsletterStatus() {
       setLoading(true);
       setError(null);
 
+      console.log('📊 Fetching newsletter status...');
       const { data, error: fetchError } = await supabase.functions.invoke('newsletter-status');
       
       if (fetchError) {
+        console.error('❌ Newsletter status error:', fetchError);
         throw fetchError;
       }
 
+      console.log('✅ Newsletter status response:', data);
       setStatus(data);
     } catch (err) {
-      console.error('Error fetching newsletter status:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch newsletter status');
+      console.error('💥 Error fetching newsletter status:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch newsletter status';
+      setError(errorMessage);
       setStatus(null);
     } finally {
       setLoading(false);
@@ -49,19 +54,23 @@ export function useNewsletterStatus() {
     }
 
     try {
+      console.log('🚫 Unsubscribing from newsletter...');
       const { data, error: unsubError } = await supabase.functions.invoke('newsletter-unsubscribe-auth', {
         method: 'POST'
       });
       
       if (unsubError) {
+        console.error('❌ Unsubscribe error:', unsubError);
         throw unsubError;
       }
 
+      console.log('✅ Unsubscribe response:', data);
+      
       // Refresh status after unsubscribing
       await fetchStatus();
       return data;
     } catch (err) {
-      console.error('Error unsubscribing:', err);
+      console.error('💥 Error unsubscribing:', err);
       throw err instanceof Error ? err : new Error('Failed to unsubscribe');
     }
   };

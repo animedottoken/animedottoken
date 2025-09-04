@@ -15,14 +15,14 @@ serve(async (req) => {
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { 
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
-      headers: corsHeaders 
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
     })
   }
 
   try {
-    console.log('📧 Newsletter subscribe request received')
+    console.log('📧 Newsletter subscribe request started')
     
     // For authenticated edge functions (verify_jwt = true), user info is available in JWT
     const authHeader = req.headers.get('authorization')
@@ -31,7 +31,7 @@ serve(async (req) => {
     if (!authHeader) {
       console.log('❌ No auth header found')
       return new Response(JSON.stringify({ 
-        error: 'Authentication required' 
+        error: 'Authentication required. Please sign in first.' 
       }), {
         status: 401,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -52,14 +52,20 @@ serve(async (req) => {
     console.log('🔐 Getting user from JWT...')
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     
-    console.log('User error:', userError)
-    console.log('User found:', !!user)
-    console.log('User email:', user?.email)
-    
-    if (userError || !user?.email) {
-      console.log('❌ Authentication failed:', userError?.message || 'No user email')
+    if (userError) {
+      console.log('❌ Auth error:', userError.message)
       return new Response(JSON.stringify({ 
-        error: 'Authentication required. Please sign in first.' 
+        error: 'Authentication failed: ' + userError.message
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      })
+    }
+    
+    if (!user?.email) {
+      console.log('❌ No user or email found:', { user: !!user, email: user?.email })
+      return new Response(JSON.stringify({ 
+        error: 'Authentication required. Please sign in with a valid email.' 
       }), {
         status: 401,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -67,8 +73,7 @@ serve(async (req) => {
     }
 
     const email = user.email
-
-    console.log(`📬 Newsletter subscription request for: ${email}`)
+    console.log(`📬 Processing newsletter subscription for: ${email}`)
 
     // Create admin Supabase client for database operations
     const supabaseAdmin = createClient(
@@ -78,21 +83,33 @@ serve(async (req) => {
 
     // Generate confirmation token
     const optInToken = crypto.randomUUID()
+    console.log('🎫 Generated opt-in token:', optInToken)
 
     // Check if email already exists
-    const { data: existing } = await supabaseAdmin
+    console.log('🔍 Checking for existing subscription...')
+    const { data: existing, error: existingError } = await supabaseAdmin
       .from('newsletter_subscribers')
       .select('*')
       .eq('email', email)
       .maybeSingle()
 
-    console.log('Existing subscription:', existing)
+    if (existingError) {
+      console.error('❌ Error checking existing subscription:', existingError)
+      throw existingError
+    }
+
+    console.log('📋 Existing subscription:', existing ? {
+      status: existing.status,
+      created_at: existing.created_at,
+      confirmed_at: existing.confirmed_at
+    } : 'None found')
 
     if (existing) {
       if (existing.status === 'confirmed') {
-        console.log('Already subscribed')
+        console.log('✅ Already confirmed subscription found')
         return new Response(JSON.stringify({ 
-          message: 'You are already subscribed to our newsletter!' 
+          message: 'You are already subscribed to our newsletter!',
+          status: 'already_subscribed'
         }), {
           status: 200,
           headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -100,22 +117,23 @@ serve(async (req) => {
       }
       
       // Update existing pending subscription with new token
-      console.log('Updating existing pending subscription')
+      console.log('🔄 Updating existing pending subscription')
       const { error: updateError } = await supabaseAdmin
         .from('newsletter_subscribers')
         .update({ 
           opt_in_token: optInToken,
+          status: 'pending',
           updated_at: new Date().toISOString()
         })
         .eq('email', email)
 
       if (updateError) {
-        console.error('Error updating existing subscription:', updateError)
+        console.error('❌ Error updating existing subscription:', updateError)
         throw updateError
       }
     } else {
       // Insert new subscription
-      console.log('Creating new subscription')
+      console.log('➕ Creating new subscription record')
       const { error: insertError } = await supabaseAdmin
         .from('newsletter_subscribers')
         .insert({
@@ -125,7 +143,7 @@ serve(async (req) => {
         })
 
       if (insertError) {
-        console.error('Database insert error:', insertError)
+        console.error('❌ Database insert error:', insertError)
         throw insertError
       }
     }
@@ -133,6 +151,11 @@ serve(async (req) => {
     // Create confirmation and unsubscribe URLs
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
     const unsubscribeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-unsubscribe?token=${optInToken}`
+
+    console.log('🔗 Generated URLs:', {
+      confirmUrl: confirmUrl.substring(0, 50) + '...',
+      unsubscribeUrl: unsubscribeUrl.substring(0, 50) + '...'
+    })
 
     // Build unified confirmation email HTML to match Magic Link style
     const html = `
@@ -184,7 +207,7 @@ serve(async (req) => {
     `;
 
     // Send confirmation email
-    console.log('Sending confirmation email...')
+    console.log('📨 Sending confirmation email...')
     const { error: emailError } = await resend.emails.send({
       from: 'Newsletter <newsletter@animedottoken.com>',
       to: [email],
@@ -194,24 +217,28 @@ serve(async (req) => {
     })
 
     if (emailError) {
-      console.error('Email send error:', emailError)
-      throw emailError
+      console.error('❌ Email send error:', emailError)
+      // Don't throw here - we want to still return success if DB was updated
+      console.log('⚠️ Email failed but subscription record was created/updated')
+    } else {
+      console.log(`✅ Confirmation email sent successfully to: ${email}`)
     }
 
-    console.log(`✅ Confirmation email sent to: ${email}`)
-
     return new Response(JSON.stringify({ 
-      message: 'Please check your email to confirm your subscription!' 
+      message: 'Please check your email to confirm your subscription!',
+      status: 'confirmation_sent',
+      email: email
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
     })
 
   } catch (error) {
-    console.error('Newsletter subscribe error:', error)
+    console.error('💥 Newsletter subscribe error:', error)
     
     return new Response(JSON.stringify({
-      error: 'Failed to process subscription request. Please try again.'
+      error: 'Failed to process subscription request. Please try again.',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders }

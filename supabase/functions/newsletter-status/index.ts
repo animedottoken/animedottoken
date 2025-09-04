@@ -21,9 +21,14 @@ serve(async (req) => {
   }
 
   try {
+    console.log('📧 Newsletter status check started');
+    
     // Get user from JWT (authenticated request)
     const authHeader = req.headers.get('authorization');
+    console.log('Auth header present:', !!authHeader);
+    
     if (!authHeader) {
+      console.log('❌ No authorization header provided');
       return new Response(JSON.stringify({ error: "Authentication required" }), {
         status: 401,
         headers: corsHeaders,
@@ -38,9 +43,19 @@ serve(async (req) => {
       }
     );
     
+    console.log('🔐 Getting user from JWT...');
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      console.log('Authentication error:', authError);
+    
+    if (authError) {
+      console.log('❌ Auth error:', authError.message);
+      return new Response(JSON.stringify({ error: "Invalid authentication" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+    
+    if (!user) {
+      console.log('❌ No user found in JWT');
       return new Response(JSON.stringify({ error: "Invalid authentication" }), {
         status: 401,
         headers: corsHeaders,
@@ -49,11 +64,14 @@ serve(async (req) => {
 
     const userEmail = user.email;
     if (!userEmail) {
+      console.log('❌ User email not found');
       return new Response(JSON.stringify({ error: "User email not found" }), {
         status: 400,
         headers: corsHeaders,
       });
     }
+
+    console.log('✅ Authenticated user:', userEmail);
 
     // Use service role key for database operations
     const supabase = createClient(
@@ -61,7 +79,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    console.log('Checking newsletter status for user:', userEmail);
+    console.log('📊 Checking newsletter status in database for:', userEmail);
 
     // Find the subscription record by email
     const { data: subscription, error: findError } = await supabase
@@ -71,33 +89,54 @@ serve(async (req) => {
       .maybeSingle();
 
     if (findError) {
-      console.log('Database error finding subscription:', findError);
-      return new Response(JSON.stringify({ error: "Database error" }), {
+      console.error('❌ Database error finding subscription:', findError);
+      return new Response(JSON.stringify({ 
+        error: "Database error", 
+        details: findError.message 
+      }), {
         status: 500,
         headers: corsHeaders,
       });
     }
 
+    console.log('📋 Subscription record found:', !!subscription);
+    console.log('📋 Subscription data:', subscription ? {
+      status: subscription.status,
+      created_at: subscription.created_at,
+      confirmed_at: subscription.confirmed_at,
+      unsubscribed_at: subscription.unsubscribed_at
+    } : 'No record');
+
     const status = subscription ? subscription.status : 'not_subscribed';
     const subscribedAt = subscription?.confirmed_at || subscription?.created_at;
     const unsubscribedAt = subscription?.unsubscribed_at;
+    const isSubscribed = status === 'confirmed';
 
-    console.log('Newsletter status for user:', { email: userEmail, status });
+    console.log('✅ Final newsletter status:', { 
+      email: userEmail, 
+      status, 
+      isSubscribed,
+      subscribedAt,
+      unsubscribedAt 
+    });
 
     return new Response(JSON.stringify({ 
       email: userEmail,
       status,
       subscribedAt,
       unsubscribedAt,
-      isSubscribed: status === 'confirmed'
+      isSubscribed
     }), {
       status: 200,
       headers: corsHeaders,
     });
 
   } catch (err) {
-    console.error('Unexpected error in newsletter-status:', err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error('💥 Unexpected error in newsletter-status:', err);
+    return new Response(JSON.stringify({ 
+      error: "Internal server error",
+      details: err instanceof Error ? err.message : 'Unknown error'
+    }), {
       status: 500,
       headers: corsHeaders,
     });
