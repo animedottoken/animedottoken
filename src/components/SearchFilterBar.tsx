@@ -154,8 +154,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       ...(showTypeFilter && { type: 'all' })
     };
     setLocalFilters(clearedFilters);
-    setAutoPriceSync({ min: true, max: true });
-    setAutoRoyaltySync({ min: true, max: true });
+    setAutoPriceSync({ min: false, max: false });
+    setAutoRoyaltySync({ min: false, max: false });
   };
 
   const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
