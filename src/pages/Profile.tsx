@@ -45,7 +45,7 @@ import SocialActionWrapper from '@/components/SocialActionWrapper';
 const Profile = () => {
   const { wallet } = useParams();
   const { publicKey, connected, connectPaymentWallet, disconnect, connecting, walletName } = useSolanaWallet();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -567,6 +567,26 @@ const Profile = () => {
                         ) : (
                           <>
                             Connect Wallet
+                            <LogIn className="h-4 w-4 text-success" />
+                          </>
+                        )}
+                      </Button>
+                      
+                      {/* Login/Logout Button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={user ? signOut : () => navigate('/auth')}
+                        className={`flex items-center gap-2 ${user ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
+                      >
+                        {user ? (
+                          <>
+                            Logout
+                            <LogOut className="h-4 w-4 text-destructive" />
+                          </>
+                        ) : (
+                          <>
+                            Login
                             <LogIn className="h-4 w-4 text-success" />
                           </>
                         )}
