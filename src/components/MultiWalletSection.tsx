@@ -226,18 +226,20 @@ export const MultiWalletSection = () => {
             </div>
           )}
 
-          {/* Add Secondary Wallet Button */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              onClick={() => setLinkWalletOpen(true)}
-              disabled={summary.remaining_secondary_slots === 0}
-              variant="outline"
-              className="flex-1"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {!primaryWallet ? 'Link Primary Wallet' : 'Add Secondary Wallet'}
-            </Button>
-          </div>
+          {/* Add Secondary Wallet Button - Only show when primary wallet exists */}
+          {primaryWallet && (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                onClick={() => setLinkWalletOpen(true)}
+                disabled={summary.remaining_secondary_slots === 0}
+                variant="outline"
+                className="flex-1"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Secondary Wallet
+              </Button>
+            </div>
+          )}
 
           {/* Info */}
           <Alert className="bg-blue-50 border-blue-200 text-blue-700">
