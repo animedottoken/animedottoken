@@ -22,9 +22,14 @@ serve(async (req) => {
   }
 
   try {
+    console.log('📧 Newsletter subscribe request received')
+    
     // Get user from JWT token
     const authHeader = req.headers.get('authorization');
+    console.log('Auth header present:', !!authHeader)
+    
     if (!authHeader) {
+      console.log('❌ No auth header found')
       return new Response(JSON.stringify({ 
         error: 'Authentication required' 
       }), {
@@ -43,9 +48,15 @@ serve(async (req) => {
       }
     )
 
+    console.log('🔐 Getting user from JWT...')
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     
+    console.log('User error:', userError)
+    console.log('User found:', !!user)
+    console.log('User email:', user?.email)
+    
     if (userError || !user?.email) {
+      console.log('❌ Authentication failed:', userError?.message || 'No user email')
       return new Response(JSON.stringify({ 
         error: 'Authentication required' 
       }), {
@@ -72,7 +83,7 @@ serve(async (req) => {
       .from('newsletter_subscribers')
       .select('*')
       .eq('email', email)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       if (existing.status === 'confirmed') {
