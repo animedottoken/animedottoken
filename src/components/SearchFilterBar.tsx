@@ -328,17 +328,18 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
-            {localFilters.sortBy !== 'newest' && (
-              <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                Sort: {localFilters.sortBy.replace('-', ' ')}
+            {/* Always show sort, but only deletable if not newest */}
+            <Badge variant="secondary" className="text-xs flex items-center gap-1">
+              Sort: {localFilters.sortBy.replace('-', ' ')}
+              {localFilters.sortBy !== 'newest' && (
                 <button 
                   onClick={() => clearIndividualFilter('sortBy')}
                   className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
                 </button>
-              </Badge>
-            )}
+              )}
+            </Badge>
             {localFilters.includeExplicit && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Explicit Content
