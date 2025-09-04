@@ -112,8 +112,26 @@ export function useUserWallets() {
       });
 
       if (error) {
-        const serverMsg = (error as any)?.context?.body?.error || (error as any)?.context?.error || (error as any)?.message || 'Failed to link wallet';
-        toast.error(serverMsg);
+        console.error('Edge function error:', error);
+        
+        // Try to extract the actual error message from the response
+        let errorMsg = 'Failed to link wallet';
+        try {
+          // Check if error has a detailed message from the edge function
+          if (error.message) {
+            const errorData = JSON.parse(error.message);
+            errorMsg = errorData.error || errorMsg;
+          }
+        } catch (parseError) {
+          // If parsing fails, try other error properties
+          errorMsg = (error as any)?.context?.body?.error || 
+                    (error as any)?.context?.error || 
+                    (error as any)?.message || 
+                    error.toString() || 
+                    errorMsg;
+        }
+        
+        toast.error(errorMsg);
         return false;
       }
 

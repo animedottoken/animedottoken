@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Wallet, Copy, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Wallet, Copy, AlertTriangle, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useUserWallets } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
@@ -18,6 +18,8 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
   const [step, setStep] = useState<'connect' | 'sign' | 'linking'>('connect');
   const [message, setMessage] = useState('');
   const [signature, setSignature] = useState('');
+  const [currentWalletOnSign, setCurrentWalletOnSign] = useState<string | null>(null);
+  const [walletChanged, setWalletChanged] = useState(false);
   const { connected, publicKey, connect, signMessage } = useSolanaWallet();
   const { linkWallet, generateLinkingMessage, summary } = useUserWallets();
 
@@ -29,6 +31,8 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
     if (publicKey) {
       const linkingMessage = generateLinkingMessage(publicKey);
       setMessage(linkingMessage);
+      setCurrentWalletOnSign(publicKey);
+      setWalletChanged(false);
       setStep('sign');
     }
   };
@@ -37,18 +41,29 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
     if (!publicKey || !message) return;
     
     try {
-      const signedMessage = await signMessage(message);
+      // Regenerate message with current wallet if needed
+      let currentMessage = message;
+      if (publicKey !== currentWalletOnSign) {
+        currentMessage = generateLinkingMessage(publicKey);
+        setMessage(currentMessage);
+        setCurrentWalletOnSign(publicKey);
+        setWalletChanged(false);
+      }
+      
+      const signedMessage = await signMessage(currentMessage);
       if (signedMessage) {
         setSignature(signedMessage);
         setStep('linking');
         
-        const success = await linkWallet(publicKey, signedMessage, message, walletType);
+        const success = await linkWallet(publicKey, signedMessage, currentMessage, walletType);
         if (success) {
           onOpenChange(false);
           // Reset state
           setStep('connect');
           setMessage('');
           setSignature('');
+          setCurrentWalletOnSign(null);
+          setWalletChanged(false);
         } else {
           setStep('sign'); // Go back to signing step on failure
         }
@@ -74,7 +89,25 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
     setStep('connect');
     setMessage('');
     setSignature('');
+    setCurrentWalletOnSign(null);
+    setWalletChanged(false);
   };
+
+  // Watch for wallet changes during the sign step
+  useEffect(() => {
+    if (step === 'sign' && publicKey && currentWalletOnSign && publicKey !== currentWalletOnSign) {
+      // Wallet changed during signing step - regenerate message
+      const newMessage = generateLinkingMessage(publicKey);
+      setMessage(newMessage);
+      setCurrentWalletOnSign(publicKey);
+      setWalletChanged(true);
+      
+      // Reset the changed flag after a short delay
+      setTimeout(() => {
+        setWalletChanged(false);
+      }, 3000);
+    }
+  }, [publicKey, currentWalletOnSign, step, generateLinkingMessage]);
 
   // Check if at limit for secondary wallets
   const atSecondaryLimit = walletType === 'secondary' && summary.remaining_secondary_slots === 0;
@@ -141,6 +174,15 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
                       To verify ownership, please sign the message below with your wallet.
                     </AlertDescription>
                   </Alert>
+
+                  {walletChanged && (
+                    <Alert className="border-blue-200 bg-blue-50 text-blue-700">
+                      <RefreshCw className="h-4 w-4" />
+                      <AlertDescription>
+                        Wallet changed — message refreshed automatically.
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
                   <div>
                     <label className="text-sm font-medium">Message to Sign:</label>
