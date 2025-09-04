@@ -22,21 +22,44 @@ serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json()
-
-    if (!email || !email.includes('@')) {
+    // Get user from JWT token
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
       return new Response(JSON.stringify({ 
-        error: 'Valid email address is required' 
+        error: 'Authentication required' 
       }), {
-        status: 400,
+        status: 401,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
 
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: authHeader },
+        },
+      }
+    )
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    
+    if (userError || !user?.email) {
+      return new Response(JSON.stringify({ 
+        error: 'Authentication required' 
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      })
+    }
+
+    const email = user.email
+
     console.log(`📬 Newsletter subscription request for: ${email}`)
 
-    // Create Supabase client
-    const supabase = createClient(
+    // Create Supabase client with service role for database operations
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
@@ -45,7 +68,7 @@ serve(async (req) => {
     const optInToken = crypto.randomUUID()
 
     // Check if email already exists
-    const { data: existing } = await supabase
+    const { data: existing } = await supabaseAdmin
       .from('newsletter_subscribers')
       .select('*')
       .eq('email', email)
@@ -62,7 +85,7 @@ serve(async (req) => {
       }
       
       // Update existing pending subscription with new token
-      await supabase
+      await supabaseAdmin
         .from('newsletter_subscribers')
         .update({ 
           opt_in_token: optInToken,
@@ -71,7 +94,7 @@ serve(async (req) => {
         .eq('email', email)
     } else {
       // Insert new subscription
-      const { error: insertError } = await supabase
+      const { error: insertError } = await supabaseAdmin
         .from('newsletter_subscribers')
         .insert({
           email,
@@ -112,10 +135,11 @@ serve(async (req) => {
 
     // Send confirmation email
     const { error: emailError } = await resend.emails.send({
-      from: 'Newsletter <onboarding@resend.dev>',
+      from: 'Newsletter <newsletter@animedottoken.com>',
       to: [email],
       subject: 'Please confirm your newsletter subscription',
-      html
+      html,
+      reply_to: 'support@animedottoken.com'
     })
 
     if (emailError) {

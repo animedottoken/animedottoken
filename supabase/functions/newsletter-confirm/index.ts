@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { Resend } from "npm:resend@4.0.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -81,7 +84,7 @@ serve(async (req) => {
     }
 
     // Update subscription status to confirmed
-    const { error: updateError } = await supabase
+    const { data: updateData, error: updateError } = await supabase
       .from('newsletter_subscribers')
       .update({
         status: 'confirmed',
@@ -89,10 +92,29 @@ serve(async (req) => {
         updated_at: new Date().toISOString()
       })
       .eq('opt_in_token', token)
+      .select()
+      .single()
 
     if (updateError) {
       console.error('Update error:', updateError)
       throw updateError
+    }
+
+    // Add confirmed subscriber to Resend audience
+    const audienceId = Deno.env.get('RESEND_NEWSLETTER_AUDIENCE_ID')
+    if (audienceId && subscription?.email) {
+      try {
+        console.log('Adding subscriber to Resend audience:', subscription.email)
+        await resend.contacts.create({
+          email: subscription.email,
+          unsubscribed: false,
+          audienceId: audienceId,
+        })
+        console.log('Successfully added to Resend audience')
+      } catch (resendError) {
+        console.error('Error adding to Resend audience:', resendError)
+        // Don't fail the confirmation if Resend sync fails
+      }
     }
 
     console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)

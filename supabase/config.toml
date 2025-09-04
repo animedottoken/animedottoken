@@ -83,7 +83,7 @@ verify_jwt = true  # Uses Supabase JWT verification
 verify_jwt = false  # Called by Supabase Auth system with webhook signature
 
 [functions.newsletter-subscribe]
-verify_jwt = false  # Public newsletter subscription
+verify_jwt = true  # Requires authenticated user
 
 [functions.newsletter-confirm]
 verify_jwt = false  # Public email confirmation via link
