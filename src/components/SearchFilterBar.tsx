@@ -113,9 +113,10 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   return (
     <div className="bg-card p-4 rounded-lg border space-y-4">
-      {collapsible && (
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Search & Filter</h3>
+      {/* Always show Search & Filter header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Search & Filter</h3>
+        {collapsible && (
           <Button
             variant="ghost"
             size="sm"
@@ -132,8 +133,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
               </>
             )}
           </Button>
-        </div>
-      )}
+        )}
+      </div>
       
       {/* Search Bar - Show if not collapsible or if expanded */}
       {(!collapsible || isExpanded) && (
@@ -148,8 +149,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       )}
 
-      {/* Primary Filters Row - Always visible */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      {/* Primary Filters - Each on its own row */}
+      <div className="space-y-4">
         {showTypeFilter && (
           <TypeFilterSelect 
             value={localFilters.type || 'all'}
@@ -183,7 +184,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           categories={categories}
         />
 
-        <div className="flex items-center space-x-2 pt-6">
+        <div className="flex items-center space-x-2">
           <Switch
             id="explicit"
             checked={localFilters.includeExplicit}
@@ -193,9 +194,9 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
       </div>
 
-      {/* Price & Royalty Filters - Only show if not collapsible or expanded */}
+      {/* Price & Royalty Filters - Each on its own row */}
       {(!collapsible || isExpanded) && (showPriceFilters || showRoyaltyFilters) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-4">
           {showPriceFilters && (
             <>
               <div className="space-y-2">
@@ -205,7 +206,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="0.0"
                   value={localFilters.minPrice}
                   onChange={(e) => updateFilter('minPrice', e.target.value)}
-                  className="w-28"
+                  className="max-w-xs"
                 />
               </div>
               <div className="space-y-2">
@@ -215,7 +216,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="1000.0"
                   value={localFilters.maxPrice}
                   onChange={(e) => updateFilter('maxPrice', e.target.value)}
-                  className="w-28"
+                  className="max-w-xs"
                 />
               </div>
             </>
@@ -230,7 +231,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="0"
                   value={localFilters.minRoyalty}
                   onChange={(e) => updateFilter('minRoyalty', e.target.value)}
-                  className="w-20"
+                  className="max-w-xs"
                 />
               </div>
               <div className="space-y-2">
@@ -240,7 +241,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   placeholder="50"
                   value={localFilters.maxRoyalty}
                   onChange={(e) => updateFilter('maxRoyalty', e.target.value)}
-                  className="w-20"
+                  className="max-w-xs"
                 />
               </div>
             </>
