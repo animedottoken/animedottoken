@@ -184,8 +184,8 @@ serve(async (req) => {
       }
     }
 
-    // Add the wallet to user_wallets
-    const { data: newWallet, error: insertError } = await supabaseClient
+    // Add the wallet to user_wallets (handle schemas that may not have verification columns)
+    let insertResult = await supabaseClient
       .from('user_wallets')
       .insert({
         user_id: user.id,
@@ -199,8 +199,37 @@ serve(async (req) => {
       .select()
       .single();
 
+    let newWallet = insertResult.data;
+    let insertError = insertResult.error as any;
+
     if (insertError) {
-      console.error('Database insert error:', insertError, {
+      console.error('Database insert error (attempt 1):', insertError);
+
+      // Fallback for schemas without verification_* columns
+      const isUndefinedColumn = insertError?.code === '42703' ||
+        (typeof insertError?.message === 'string' &&
+         (insertError.message.includes('verification_signature') || insertError.message.includes('verification_message') || insertError.message.includes('column')));
+
+      if (isUndefinedColumn) {
+        const fallback = await supabaseClient
+          .from('user_wallets')
+          .insert({
+            user_id: user.id,
+            wallet_address,
+            wallet_type,
+            is_verified: true,
+            linked_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        newWallet = fallback.data;
+        insertError = fallback.error;
+      }
+    }
+
+    if (insertError) {
+      console.error('Database insert error (final):', insertError, {
         user_id: user.id,
         wallet_address,
         wallet_type,
@@ -209,7 +238,7 @@ serve(async (req) => {
       });
       
       // Handle specific error cases
-      if (insertError.message.includes('more than 10 secondary wallets')) {
+      if (typeof insertError.message === 'string' && insertError.message.includes('more than 10 secondary wallets')) {
         return new Response(
           JSON.stringify({ error: 'You cannot link more than 10 secondary wallets' }),
           { status: 400, headers: corsHeaders }
