@@ -161,31 +161,16 @@ serve(async (req) => {
       console.log('⚠️ Failed to send unsubscribe confirmation email (non-critical):', emailError);
     }
 
-    return new Response(`
-      <html>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
-          <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden;">
-            <!-- Header -->
-            <div style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #6b7280 0%, #374151 100%);">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">ANIME.TOKEN Newsletter</h1>
-            </div>
-            
-            <!-- Body -->
-            <div style="padding: 40px;">
-              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px; font-weight: 600;">Successfully unsubscribed</h2>
-              <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">You have been unsubscribed from our newsletter. You will no longer receive emails at <strong>${subscription.email}</strong></p>
-              <p style="margin: 0 0 32px; color: #6b7280; font-size: 14px;">We're sorry to see you go! If you change your mind, you can always subscribe again from our website.</p>
-              
-              <div style="text-align: center;">
-                <a href="/" style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">Return to website</a>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `, {
-      status: 200,
-      headers: { 'Content-Type': 'text/html', ...corsHeaders }
+    // Redirect to profile page with unsubscribe confirmation
+    const redirectUrl = `${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || 'https://animecoin.io'}/profile?newsletter=unsubscribed`;
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': redirectUrl,
+        'Cache-Control': 'no-cache',
+        ...corsHeaders
+      }
     })
 
   } catch (error) {

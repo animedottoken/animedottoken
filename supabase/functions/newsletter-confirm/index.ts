@@ -125,57 +125,53 @@ serve(async (req) => {
 
     console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)
 
-    // Create unsubscribe URL using the same token
-    const unsubscribeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-unsubscribe?token=${token}`
+    // Send "Subscription confirmed" email to appear in Resend
+    try {
+      console.log('📧 Sending subscription confirmed email...');
+      const emailResponse = await resend.emails.send({
+        from: 'ANIME.TOKEN Newsletter <newsletter@animecoin.io>',
+        to: [subscription.email],
+        subject: 'Newsletter subscription confirmed!',
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #28a745 0%, #20a744 100%); padding: 40px 20px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ANIME.TOKEN Newsletter</h1>
+            </div>
+            
+            <div style="padding: 40px 20px; background: #ffffff;">
+              <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px;">✅ Subscription confirmed!</h2>
+              <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">
+                Thank you for confirming your subscription! You are now signed up to receive our newsletter updates at <strong>${subscription.email}</strong>.
+              </p>
+              <p style="margin: 0 0 32px; color: #6b7280; font-size: 14px;">
+                You'll be the first to know about new drops, events, and community updates.
+              </p>
+              
+              <div style="text-align: center;">
+                <a href="${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || '#'}" 
+                   style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                  Visit website
+                </a>
+              </div>
+            </div>
+          </div>
+        `,
+      });
 
-    return new Response(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newsletter Subscription Confirmed - ANIME.TOKEN</title>
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background-color: #f8f9fa; margin: 0; padding: 40px 20px; text-align: center;">
-  <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden;">
-    <!-- Header -->
-    <div style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #28a745 0%, #20a744 100%);">
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">ANIME.TOKEN Newsletter</h1>
-    </div>
-    
-    <!-- Body -->
-    <div style="padding: 40px;">
-      <h2 style="margin: 0 0 16px; color: #28a745; font-size: 24px; font-weight: 600;">✅ Subscription confirmed!</h2>
-      <p style="margin: 0 0 16px; color: #6b7280; font-size: 16px; line-height: 1.6;">Thank you for subscribing to our newsletter!</p>
-      <p style="margin: 0 0 32px; color: #6b7280; font-size: 16px; line-height: 1.6;">You'll receive our latest updates at <strong>${subscription.email}</strong></p>
-      
-      <div style="text-align: center;">
-        <a href="/" style="display: inline-block; background: #8B5CF6; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; transition: all 0.2s;" onmouseover="this.style.background='#7C3AED'" onmouseout="this.style.background='#8B5CF6'">Return to website</a>
-      </div>
-    </div>
-    
-    <!-- Footer -->
-    <div style="padding: 24px 40px; background: #f8f9fa; border-top: 1px solid #e5e7eb; text-align: center;">
-      <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-        Want to unsubscribe? <a href="${unsubscribeUrl}" style="color: #9ca3af; text-decoration: underline;">Click here</a>
-      </p>
-    </div>
-  </div>
-  
-  <script>
-    // Auto-close tab after 5 seconds if opened in a new tab
-    if (window.opener) {
-      setTimeout(() => {
-        window.close();
-      }, 5000);
+      console.log('✅ Subscription confirmed email sent:', emailResponse);
+    } catch (emailError) {
+      console.log('⚠️ Failed to send subscription confirmed email (non-critical):', emailError);
     }
-  </script>
-</body>
-</html>`, {
-      status: 200,
-      headers: { 
-        'Content-Type': 'text/html; charset=utf-8',
+
+    // Redirect to profile page with confirmation
+    const redirectUrl = `${Deno.env.get('SUPABASE_URL')?.replace('https://eztzddykjnmnpoeyfqcg.supabase.co', 'https://animecoin.io') || 'https://animecoin.io'}/profile?newsletter=confirmed`;
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': redirectUrl,
         'Cache-Control': 'no-cache',
-        ...corsHeaders 
+        ...corsHeaders
       }
     })
 

@@ -27,7 +27,7 @@ import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { setNavContext } from "@/lib/navContext";
 import { BioEditDialog } from '@/components/BioEditDialog';
 import { NicknameEditDialog } from '@/components/NicknameEditDialog';
@@ -54,6 +54,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
+  const { toast } = useToast();
   
   // Auto primary wallet functionality
   const { showPrimaryPrompt, handleSetAsPrimary, handleDismiss, connectedWallet } = useAutoPrimaryWallet();
@@ -127,15 +128,26 @@ const Profile = () => {
       const isFirstChange = !profile?.nickname;
       const success = await setNickname(nickname);
       if (!success) {
-        toast.error('Failed to update nickname');
+        toast({
+          title: "Error",
+          description: "Failed to update nickname",
+          variant: "destructive",
+        });
         return false;
       }
       await fetchProfile();
-      toast.success(isFirstChange ? 'Nickname set successfully!' : 'Nickname updated successfully!');
+      toast({
+        title: "Success",
+        description: isFirstChange ? 'Nickname set successfully!' : 'Nickname updated successfully!',
+      });
       return true;
     } catch (error) {
       console.error('Error updating nickname:', error);
-      toast.error('Failed to update nickname');
+      toast({
+        title: "Error", 
+        description: "Failed to update nickname",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -145,7 +157,11 @@ const Profile = () => {
       if (hasWallet) {
         const success = await setBio(bio);
         if (!success) {
-          toast.error('Failed to update bio');
+          toast({
+            title: "Error",
+            description: "Failed to update bio",
+            variant: "destructive",
+          });
           return false;
         }
         await fetchProfile();
@@ -159,11 +175,18 @@ const Profile = () => {
         // Update local profile state
         setProfile(prev => prev ? { ...prev, bio } : null);
       }
-      toast.success('Bio updated successfully!');
+      toast({
+        title: "Success",
+        description: "Bio updated successfully!",
+      });
       return true;
     } catch (error) {
       console.error('Error updating bio:', error);
-      toast.error('Failed to update bio');
+      toast({
+        title: "Error",
+        description: "Failed to update bio",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -172,11 +195,18 @@ const Profile = () => {
     try {
       await setPFP(nftMintAddress, 'dummy-tx-signature');
       await fetchProfile();
-      toast.success('Profile picture updated successfully!');
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully!",
+      });
       return true;
     } catch (error) {
       console.error('Error updating profile picture:', error);
-      toast.error('Failed to update profile picture');
+      toast({
+        title: "Error",
+        description: "Failed to update profile picture", 
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -194,13 +224,20 @@ const Profile = () => {
       const result = await setAvatar(file);
       if (result) {
         await fetchProfile();
-        toast.success("Profile picture updated successfully!");
+        toast({
+          title: "Success",
+          description: "Profile picture updated successfully!",
+        });
         return true;
       }
       return false;
     } catch (error) {
       console.error('Avatar update error:', error);
-      toast.error("Failed to update profile picture");
+      toast({
+        title: "Error",
+        description: "Failed to update profile picture",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -240,9 +277,16 @@ const Profile = () => {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success('Copied to clipboard!');
+      toast({
+        title: "Success",
+        description: "Copied to clipboard!",
+      });
     } catch (err) {
-      toast.error('Failed to copy to clipboard');
+      toast({
+        title: "Error", 
+        description: "Failed to copy to clipboard",
+        variant: "destructive",
+      });
     }
   };
 
@@ -258,7 +302,11 @@ const Profile = () => {
           
           if (error) {
             console.error('Error fetching profile:', error);
-            toast.error('Failed to load profile');
+            toast({
+              title: "Error",
+              description: "Failed to load profile",
+              variant: "destructive",
+            });
             return;
           }
           
@@ -271,7 +319,11 @@ const Profile = () => {
           
           if (error) {
             console.error('Error fetching profile:', error);
-            toast.error('Failed to load profile');
+            toast({
+              title: "Error",
+              description: "Failed to load profile",
+              variant: "destructive",
+            });
             return;
           }
           
