@@ -6,11 +6,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Wallet, LinkIcon, AlertTriangle } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
+import { useUserWallets } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
 
 export const IdentityWalletSection = () => {
-  const { connected, publicKey, connectPaymentWallet, linkIdentityWallet } = useSolanaWallet();
+  const { connected, publicKey, connectPaymentWallet, signMessage } = useSolanaWallet();
   const { profile, fetchProfile } = useGamifiedProfile();
+  const { linkWallet, generateLinkingMessage, getPrimaryWallet } = useUserWallets();
   const [linking, setLinking] = useState(false);
 
   const handleLinkWallet = async () => {
@@ -21,17 +23,25 @@ export const IdentityWalletSection = () => {
 
     setLinking(true);
     try {
-      const success = await linkIdentityWallet(publicKey);
+      // Generate message and sign it
+      const message = generateLinkingMessage(publicKey);
+      const signature = await signMessage(message);
+      
+      // Use unified linking path for primary wallet
+      const success = await linkWallet(publicKey, signature, message, 'primary');
       if (success) {
         await fetchProfile();
       }
+    } catch (error) {
+      console.error('Failed to link wallet:', error);
     } finally {
       setLinking(false);
     }
   };
 
-  const hasLinkedWallet = profile?.wallet_address;
-  const isCurrentWalletLinked = hasLinkedWallet && publicKey === profile.wallet_address;
+  const primaryWallet = getPrimaryWallet();
+  const hasLinkedWallet = primaryWallet?.wallet_address;
+  const isCurrentWalletLinked = hasLinkedWallet && publicKey === primaryWallet?.wallet_address;
 
   return (
     <Card>
@@ -52,7 +62,7 @@ export const IdentityWalletSection = () => {
                 <Wallet className="h-4 w-4 text-primary" />
                 <div>
                   <div className="font-mono text-sm">
-                    {truncateAddress(profile.wallet_address || '')}
+                    {truncateAddress(hasLinkedWallet || '')}
                   </div>
                   <div className="text-xs text-muted-foreground">Identity Wallet</div>
                 </div>
@@ -66,7 +76,7 @@ export const IdentityWalletSection = () => {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  You have a different wallet connected. Your identity wallet remains {truncateAddress(profile.wallet_address || '')}.
+                  You have a different wallet connected. Your identity wallet remains {truncateAddress(hasLinkedWallet || '')}.
                 </AlertDescription>
               </Alert>
             )}

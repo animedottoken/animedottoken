@@ -90,22 +90,35 @@ export function useUserWallets() {
     walletType: 'primary' | 'secondary' = 'secondary'
   ): Promise<boolean> => {
     try {
+      // Client-side guardrails: Check if wallet is already linked
+      const existingWallet = wallets.find(w => w.wallet_address === walletAddress);
+      if (existingWallet) {
+        toast.error('This wallet is already linked to your account');
+        return false;
+      }
+
       // Prevent attempting to link a second primary wallet
       if (walletType === 'primary' && (summary?.primary ?? 0) > 0) {
         toast.error('You already have a primary wallet linked. Unlink it first or add this as a secondary wallet.');
         return false;
       }
 
+      // Check secondary wallet limit
+      if (walletType === 'secondary' && (summary?.secondary ?? 0) >= 10) {
+        toast.error('You have reached the maximum limit of 10 secondary wallets');
+        return false;
+      }
+
       const accessToken = (await supabase.auth.getSession()).data.session?.access_token;
       
-      // Use different functions for primary vs secondary wallets
-      const functionName = walletType === 'primary' ? 'link-identity-wallet' : 'link-secondary-wallet';
-      const body = walletType === 'primary' 
-        ? { wallet_address: walletAddress, signature_message: message, wallet_signature: signature }
-        : { wallet_address: walletAddress, signature, message, wallet_type: walletType };
-      
-      const { data, error } = await supabase.functions.invoke(functionName, {
-        body,
+      // Always use link-secondary-wallet for both primary and secondary wallets
+      const { data, error } = await supabase.functions.invoke('link-secondary-wallet', {
+        body: {
+          wallet_address: walletAddress,
+          signature,
+          message,
+          wallet_type: walletType
+        },
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         }
@@ -114,21 +127,24 @@ export function useUserWallets() {
       if (error) {
         console.error('Edge function error:', error);
         
-        // Try to extract the actual error message from the response
+        // Enhanced error parsing to surface specific messages
         let errorMsg = 'Failed to link wallet';
         try {
-          // Check if error has a detailed message from the edge function
-          if (error.message) {
+          // First try to parse the error body for JSON responses
+          if (error.message && error.message.includes('{')) {
             const errorData = JSON.parse(error.message);
-            errorMsg = errorData.error || errorMsg;
+            errorMsg = errorData.error || errorData.message || errorMsg;
+          } else {
+            // Try other error properties and contexts
+            errorMsg = (error as any)?.context?.body?.error || 
+                      (error as any)?.context?.error || 
+                      (error as any)?.message || 
+                      error.message || 
+                      errorMsg;
           }
         } catch (parseError) {
-          // If parsing fails, try other error properties
-          errorMsg = (error as any)?.context?.body?.error || 
-                    (error as any)?.context?.error || 
-                    (error as any)?.message || 
-                    error.toString() || 
-                    errorMsg;
+          // If all parsing fails, use the raw error
+          errorMsg = error.toString() || errorMsg;
         }
         
         toast.error(errorMsg);
