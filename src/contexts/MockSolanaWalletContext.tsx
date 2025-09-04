@@ -222,40 +222,21 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const connectPaymentWallet = useCallback(async () => {
     try {
       console.log('💳 Attempting payment wallet connection...');
-      if (!wallet) {
-        // No wallet selected, open the selection modal and set auto-connect flag
-        console.log('🎯 Opening wallet modal for selection with auto-connect...');
-        setConnectAfterSelection(true);
-        setVisible(true);
-        toast.info('Select a wallet to continue');
-        return;
-      }
       
-      console.log('🔗 Connecting to selected wallet:', wallet.adapter.name);
-      await walletConnect();
+      // Always clear selected wallet to force modal selection
+      select(null);
       
-      // Wait a moment for state to update, then verify connection
-      setTimeout(() => {
-        if (connected && publicKey) {
-          console.log('✅ Payment wallet connected successfully:', publicKey.toBase58());
-          toast.success('Payment wallet connected');
-        } else {
-          console.log('❌ Connection failed - wallet not properly connected');
-          toast.error('Wallet connection failed');
-        }
-      }, 100);
+      // Always open the wallet modal and set auto-connect flag
+      console.log('🎯 Opening wallet modal for selection with auto-connect...');
+      setConnectAfterSelection(true);
+      setVisible(true);
+      toast.info('Select a wallet to continue');
       
     } catch (error) {
       console.error('💳 Payment wallet connection error:', error);
-      if (error instanceof WalletNotConnectedError || (error as any)?.name === 'WalletNotSelectedError') {
-        console.log('🎯 Opening wallet selector due to connection error');
-        setConnectAfterSelection(true);
-        setVisible(true);
-      } else {
-        toast.error('Failed to connect payment wallet');
-      }
+      toast.error('Failed to open wallet selector');
     }
-  }, [walletConnect, wallet, setVisible, connected, publicKey]);
+  }, [select, setVisible]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
