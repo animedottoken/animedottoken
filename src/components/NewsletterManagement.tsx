@@ -17,10 +17,16 @@ export function NewsletterManagement() {
   const handleUnsubscribe = async () => {
     try {
       setUnsubscribing(true);
-      await unsubscribe();
+      const result = await unsubscribe();
+      
+      // Check if confirmation email was sent
+      const emailSent = result && typeof result === 'object' && 'emailSent' in result && result.emailSent;
+      
       toast({
         title: "Unsubscribed successfully",
-        description: "You've been unsubscribed from our newsletter.",
+        description: emailSent 
+          ? "You've been unsubscribed from our newsletter. We sent a confirmation to your email."
+          : "You've been unsubscribed from our newsletter.",
       });
     } catch (error) {
       console.error('Error unsubscribing:', error);
