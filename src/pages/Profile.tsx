@@ -1,7 +1,7 @@
 
 import defaultBanner from '@/assets/default-profile-banner.jpg';
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -54,7 +54,30 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
+  const location = useLocation();
   const { toast } = useToast();
+  
+  // Check for newsletter query parameters and show toast
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const newsletter = params.get('newsletter');
+    
+    if (newsletter === 'confirmed') {
+      toast({
+        title: "Newsletter confirmed!",
+        description: "You have successfully subscribed to our newsletter.",
+      });
+      // Clear the query parameter to avoid showing toast again
+      navigate(location.pathname, { replace: true });
+    } else if (newsletter === 'unsubscribed') {
+      toast({
+        title: "Unsubscribed",
+        description: "You have been successfully unsubscribed from our newsletter.",
+      });
+      // Clear the query parameter to avoid showing toast again
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, toast, navigate]);
   
   // Auto primary wallet functionality
   const { showPrimaryPrompt, handleSetAsPrimary, handleDismiss, connectedWallet } = useAutoPrimaryWallet();
@@ -336,7 +359,11 @@ const Profile = () => {
           
           if (error) {
             console.error('Error fetching profile:', error);
-            toast.error('Failed to load profile');
+            toast({
+              title: "Error",
+              description: "Failed to load profile",
+              variant: "destructive",
+            });
             return;
           }
           
@@ -346,7 +373,11 @@ const Profile = () => {
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
-        toast.error('Failed to load profile');
+        toast({
+          title: "Error",
+          description: "Failed to load profile", 
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
