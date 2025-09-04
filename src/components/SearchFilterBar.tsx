@@ -160,13 +160,16 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
     updateFilter(field, value);
-    // Disable auto-sync for this field when manually edited or cleared
+    // Disable auto-sync when user starts typing
     if (field === 'minPrice') {
       setAutoPriceSync(prev => ({ ...prev, min: false }));
     } else {
       setAutoPriceSync(prev => ({ ...prev, max: false }));
     }
-    // Re-enable auto-sync only if field is completely cleared
+  };
+
+  const handlePriceBlur = (field: 'minPrice' | 'maxPrice', value: string) => {
+    // Re-enable auto-sync only if field is completely empty
     if (value === '') {
       if (field === 'minPrice') {
         setAutoPriceSync(prev => ({ ...prev, min: true }));
@@ -178,13 +181,16 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   const handleRoyaltyChange = (field: 'minRoyalty' | 'maxRoyalty', value: string) => {
     updateFilter(field, value);
-    // Disable auto-sync for this field when manually edited or cleared
+    // Disable auto-sync when user starts typing
     if (field === 'minRoyalty') {
       setAutoRoyaltySync(prev => ({ ...prev, min: false }));
     } else {
       setAutoRoyaltySync(prev => ({ ...prev, max: false }));
     }
-    // Re-enable auto-sync only if field is completely cleared
+  };
+
+  const handleRoyaltyBlur = (field: 'minRoyalty' | 'maxRoyalty', value: string) => {
+    // Re-enable auto-sync only if field is completely empty
     if (value === '') {
       if (field === 'minRoyalty') {
         setAutoRoyaltySync(prev => ({ ...prev, min: true }));
@@ -298,6 +304,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Min Price (SOL)</Label>
                 <Input
                   type="number"
+                  step="any"
+                  inputMode="decimal"
                   placeholder={
                     !autoPriceSync.min ? "" : 
                     currentPriceRange ? currentPriceRange.min?.toString() || "0" : 
@@ -305,6 +313,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   }
                   value={localFilters.minPrice}
                   onChange={(e) => handlePriceChange('minPrice', e.target.value)}
+                  onBlur={(e) => handlePriceBlur('minPrice', e.target.value)}
                   className={`max-w-xs ${
                     autoPriceSync.min && currentPriceRange === undefined ? "text-muted-foreground" : ""
                   }`}
@@ -314,6 +323,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Max Price (SOL)</Label>
                 <Input
                   type="number"
+                  step="any"
+                  inputMode="decimal"
                   placeholder={
                     !autoPriceSync.max ? "" : 
                     currentPriceRange ? currentPriceRange.max?.toString() || "0" : 
@@ -321,6 +332,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   }
                   value={localFilters.maxPrice}
                   onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
+                  onBlur={(e) => handlePriceBlur('maxPrice', e.target.value)}
                   className={`max-w-xs ${
                     autoPriceSync.max && currentPriceRange === undefined ? "text-muted-foreground" : ""
                   }`}
@@ -335,6 +347,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Min Royalty (%)</Label>
                 <Input
                   type="number"
+                  step="any"
+                  inputMode="decimal"
                   placeholder={
                     !autoRoyaltySync.min ? "" : 
                     currentRoyaltyRange ? currentRoyaltyRange.min?.toString() || "0" : 
@@ -342,6 +356,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   }
                   value={localFilters.minRoyalty}
                   onChange={(e) => handleRoyaltyChange('minRoyalty', e.target.value)}
+                  onBlur={(e) => handleRoyaltyBlur('minRoyalty', e.target.value)}
                   className={`max-w-xs ${
                     autoRoyaltySync.min && currentRoyaltyRange === undefined ? "text-muted-foreground" : ""
                   }`}
@@ -351,6 +366,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 <Label className="text-sm font-medium">Max Royalty (%)</Label>
                 <Input
                   type="number"
+                  step="any"
+                  inputMode="decimal"
                   placeholder={
                     !autoRoyaltySync.max ? "" : 
                     currentRoyaltyRange ? currentRoyaltyRange.max?.toString() || "0" : 
@@ -358,6 +375,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                   }
                   value={localFilters.maxRoyalty}
                   onChange={(e) => handleRoyaltyChange('maxRoyalty', e.target.value)}
+                  onBlur={(e) => handleRoyaltyBlur('maxRoyalty', e.target.value)}
                   className={`max-w-xs ${
                     autoRoyaltySync.max && currentRoyaltyRange === undefined ? "text-muted-foreground" : ""
                   }`}
