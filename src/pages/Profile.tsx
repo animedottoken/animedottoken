@@ -1115,41 +1115,41 @@ const Profile = () => {
 
         {isOwnProfile && (
           <TabsContent value="settings" className="space-y-6">
-            <ComingSoonFeature
-              title="Account Settings"
-              description="Advanced account management features including security, privacy, wallet linking, and newsletter preferences are coming soon."
-            >
-              {/* Security Settings */}
-              <section>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Shield className="h-5 w-5" />
-                        Security & Privacy
-                      </span>
-                      <SecuritySettingsDialog>
-                        <Button variant="outline" size="sm" className="flex items-center gap-2">
-                          <Settings className="h-4 w-4" />
-                          <span className="hidden sm:inline">Settings</span>
-                        </Button>
-                      </SecuritySettingsDialog>
-                    </CardTitle>
-                    <CardDescription>
-                      Manage your account security, session preferences, and wallet settings.
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </section>
+            {/* Security Settings */}
+            <section>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <Shield className="h-5 w-5" />
+                      Security & Privacy
+                    </span>
+                    <SecuritySettingsDialog>
+                      <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        <span className="hidden sm:inline">Settings</span>
+                      </Button>
+                    </SecuritySettingsDialog>
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your account security, session preferences, and wallet settings.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </section>
 
-              {/* Wallet Management */}
-              <MultiWalletSection disabledActions={!canUseFeature('wallet-linking')} />
-              
-              {/* Newsletter Management */}
-              <section>
+            {/* Wallet Management */}
+            <MultiWalletSection disabledActions={!canUseFeature('wallet-linking')} />
+            
+            {/* Newsletter Management */}
+            <section>
+              <ComingSoonFeature
+                title="Newsletter Settings"
+                description="Newsletter subscription and management features are coming soon."
+              >
                 <NewsletterManagement />
-              </section>
-            </ComingSoonFeature>
+              </ComingSoonFeature>
+            </section>
           </TabsContent>
         )}
       </Tabs>
