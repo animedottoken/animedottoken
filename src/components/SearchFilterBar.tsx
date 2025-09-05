@@ -540,10 +540,13 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         />
 
         {showMediaTypeFilter && (
-          <MediaTypeFilterSelect 
-            value={localFilters.mediaType || 'all'}
-            onValueChange={(value) => updateFilter('mediaType', value)}
-          />
+          <div className="space-y-1">
+            <MediaTypeFilterSelect 
+              value={localFilters.mediaType || 'all'}
+              onValueChange={(value) => updateFilter('mediaType', value)}
+            />
+            <p className="text-xs text-muted-foreground px-3">Applies to NFTs only</p>
+          </div>
         )}
 
         <div className="flex items-center space-x-2">

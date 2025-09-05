@@ -545,7 +545,10 @@ const Profile = () => {
 
   // Filter by type for the combined view
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
-  const filteredCombinedCollections = combinedFilters.type === 'nfts' ? [] : filteredCollections;
+  const filteredCombinedCollections = (
+    combinedFilters.type === 'nfts' || 
+    (combinedFilters.type === 'all' && combinedFilters.mediaType !== 'all')
+  ) ? [] : filteredCollections;
 
   // Compute current price and royalty ranges from filtered data
   const computedPriceRange = useMemo(() => {
