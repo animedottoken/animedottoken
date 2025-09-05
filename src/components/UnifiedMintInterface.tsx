@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, ExternalLink } from 'lucide-react';
+import { CheckCircle, ExternalLink, Link } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useCircuitBreaker } from '@/hooks/useCircuitBreaker';
 import { useSecurityLogger } from '@/hooks/useSecurityLogger';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { metaplexService, type CollectionMetadata } from '@/services/metaplexService';
 import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
 import { CollectionBasicsStep } from './CollectionBasicsStep';
@@ -53,10 +54,12 @@ export const UnifiedMintInterface = () => {
   const [collectionMintResult, setCollectionMintResult] = useState<{signature?: string; mintAddress?: string; explorerUrl?: string} | null>(null);
   const [pendingMintAfterConnect, setPendingMintAfterConnect] = useState(false);
   const [hasShownWalletConnectedToast, setHasShownWalletConnectedToast] = useState(false);
+  const [showLinkWalletDialog, setShowLinkWalletDialog] = useState(false);
+  const [isLinkingWallet, setIsLinkingWallet] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
-  const { publicKey, connect, connecting } = useSolanaWallet();
+  const { publicKey, connect, connecting, signMessage } = useSolanaWallet();
   const { user } = useAuth();
-  const { getPrimaryWallet } = useUserWallets();
+  const { getPrimaryWallet, linkWallet, generateLinkingMessage } = useUserWallets();
   const { checkAccess, guardedAction } = useCircuitBreaker();
   const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -204,15 +207,9 @@ export const UnifiedMintInterface = () => {
     }
 
     // Check if user has linked this wallet to their account
-    const primaryWallet = await getPrimaryWallet();
+    const primaryWallet = getPrimaryWallet();
     if (!primaryWallet || primaryWallet.wallet_address !== publicKey) {
-      toast.error('Please link this wallet to your account first', {
-        description: 'You need to link your connected wallet to your account to create collections',
-        action: {
-          label: 'Go to Profile',
-          onClick: () => navigate('/profile')
-        }
-      });
+      setShowLinkWalletDialog(true);
       return;
     }
 
@@ -418,6 +415,166 @@ export const UnifiedMintInterface = () => {
     }
   };
 
+  const handleLinkWallet = async () => {
+    if (!publicKey) return;
+    
+    setIsLinkingWallet(true);
+    try {
+      const message = generateLinkingMessage(publicKey);
+      const signature = await signMessage(message);
+      
+      if (!signature) {
+        toast.error('Wallet signature was cancelled');
+        return;
+      }
+      
+      const success = await linkWallet(publicKey, signature, message, 'primary');
+      if (success) {
+        setShowLinkWalletDialog(false);
+        toast.success('Wallet linked successfully!');
+        // Continue with the original mint action after a brief delay to ensure state updates
+        setTimeout(() => {
+          handleSubmitAfterLink();
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error linking wallet:', error);
+      toast.error('Failed to link wallet');
+    } finally {
+      setIsLinkingWallet(false);
+    }
+  };
+
+  const handleSubmitAfterLink = async () => {
+    // Skip wallet linking check since we just linked it
+    if (!user || !publicKey) return;
+
+    // Circuit breaker check
+    if (!checkAccess("create collections")) {
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.name.trim()) {
+      toast.error('Collection name is required');
+      return;
+    }
+
+    if (!formData.image_file) {
+      toast.error('Collection avatar is required');
+      return;
+    }
+
+    // Security: Log large supply attempts
+    if (formData.max_supply > 10000) {
+      logSuspiciousActivity('large_supply_attempt', {
+        max_supply: formData.max_supply,
+        collection_name: formData.name
+      });
+    }
+
+    // Enforce 1-hour buffer if end time is set
+    if (formData.mint_end_at) {
+      const end = new Date(formData.mint_end_at);
+      const minEnd = new Date(Date.now() + 60 * 60 * 1000);
+      if (end <= minEnd) {
+        const msg = 'End time must be at least 1 hour in the future';
+        setFormData({ ...formData, mint_end_at_error: msg });
+        toast.error(msg);
+        return;
+      }
+    }
+
+    await guardedAction(async () => {
+      setIsMinting(true);
+      setMintingError(null);
+      try {
+        console.log('Creating collection with form data:', formData);
+        
+        const { collection, error: collectionError } = await createCollection(formData);
+        
+        if (collectionError) {
+          throw new Error(collectionError);
+        }
+        
+        if (!collection?.id) {
+          throw new Error('Collection created but ID not returned');
+        }
+        
+        console.log('Collection created successfully:', collection);
+        setStep3Collection(collection);
+
+        if (mintNow) {
+          console.log('Proceeding with on-chain minting...');
+          toast.success('Collection created! Now minting on-chain...');
+          
+          try {
+            // Prepare metadata for on-chain mint
+            const collectionMetadata: CollectionMetadata = {
+              name: formData.name,
+              symbol: formData.symbol || 'COLLECTION',
+              description: formData.onchain_description || formData.site_description,
+              image: collection.image_url || '',
+              sellerFeeBasisPoints: Math.round((formData.royalty_percentage || 0) * 100),
+              creators: [{
+                address: publicKey,
+                verified: true,
+                share: 100,
+              }],
+              attributes: formData.attributes.map(attr => ({
+                trait_type: attr.trait_type || '',
+                value: attr.value || '',
+              })),
+            };
+            
+            // Upload metadata to our storage
+            const metadataUri = await uploadMetadataToStorage(collectionMetadata, 'collection', formData.name);
+            
+            // Mint on-chain with Metaplex
+            const mintResult = await metaplexService.mintCollection({
+              metadata: { ...collectionMetadata, image: metadataUri },
+              creatorWallet: publicKey,
+            });
+
+            if (mintResult.success) {
+              const explorerUrl = createExplorerUrl(mintResult.signature || '', 'devnet');
+              setCollectionMintResult({
+                signature: mintResult.signature,
+                mintAddress: mintResult.mintAddress,
+                explorerUrl
+              });
+              
+              console.log('Collection minted on-chain:', mintResult);
+              toast.success('Collection minted successfully on Solana Devnet! 🎉');
+            } else {
+              console.error('On-chain minting failed:', mintResult.error);
+              toast.error('Collection created but on-chain minting failed. You can retry minting later.');
+            }
+          } catch (mintError) {
+            console.error('On-chain minting failed:', mintError);
+            toast.error('Collection created but on-chain minting failed. You can retry minting later.');
+          }
+        }
+
+        setActiveStep(4);
+        toast.success('Collection created successfully!');
+        
+      } catch (error) {
+        console.error('Collection creation failed:', error);
+        
+        let errorMessage = 'Failed to create collection';
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        
+        setMintingError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setIsMinting(false);
+      }
+    }, "create collection")();
+  };
+
   const handleCreateAnother = () => {
     // Reset form and go back to step 1
     setFormData({
@@ -455,6 +612,36 @@ export const UnifiedMintInterface = () => {
   return (
     <div ref={containerRef} className="w-full px-2 sm:px-4 lg:px-8">
       {activeStep <= TOTAL_STEPS && <StepIndicator />}
+      
+      {/* Link Wallet Dialog */}
+      <Dialog open={showLinkWalletDialog} onOpenChange={setShowLinkWalletDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Link className="h-5 w-5" />
+              Link Your Wallet
+            </DialogTitle>
+            <DialogDescription>
+              To create collections, you need to link this wallet ({publicKey?.slice(0, 4)}...{publicKey?.slice(-4)}) to your account. This establishes you as the verified creator.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowLinkWalletDialog(false)}
+              disabled={isLinkingWallet}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleLinkWallet}
+              disabled={isLinkingWallet}
+            >
+              {isLinkingWallet ? 'Linking...' : 'Link Wallet Now'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {activeStep === 1 && (
         <CollectionBasicsStep
