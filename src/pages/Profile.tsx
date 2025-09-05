@@ -23,6 +23,7 @@ import { useLikedNFTs } from '@/hooks/useLikedNFTs';
 import { useLikedCollections } from '@/hooks/useLikedCollections';
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
+import { useRealtimeNFTStats } from '@/hooks/useRealtimeNFTStats';
 import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData";
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { Progress } from '@/components/ui/progress';
@@ -116,8 +117,17 @@ const Profile = () => {
   const { likedNFTs } = useLikedNFTs();
   const { likedCollections } = useLikedCollections();
   const { followedCreators, isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
-  const { getLikeCount: getNFTLikeCount } = useNFTLikeCounts();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
+  
+  // Get all NFT IDs for real-time stats
+  const allNFTIds = useMemo(() => {
+    const userNFTIds = nfts.map(nft => nft.id);
+    const likedNFTIds = likedNFTs.map(nft => nft.id);
+    return [...new Set([...userNFTIds, ...likedNFTIds])];
+  }, [nfts, likedNFTs]);
+  
+  // Use real-time NFT stats instead of the old static version
+  const { getNFTLikeCount } = useRealtimeNFTStats(allNFTIds);
   
   // Real-time creator stats - use user-based stats if profile has user_id
   const { getCreatorFollowerCount, getCreatorFollowingCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
