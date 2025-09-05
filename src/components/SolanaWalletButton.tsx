@@ -141,38 +141,6 @@ export const SolanaWalletButton = () => {
 
   return (
     <div className="space-y-3">
-      {/* Quick Connect Buttons */}
-      {providers.installed.length > 0 && (
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground text-center">Quick Connect</div>
-          <div className="grid grid-cols-2 gap-2">
-            {providers.installed.includes('Phantom') && (
-              <Button
-                onClick={() => handleWalletConnect('Phantom')}
-                disabled={connecting}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                {connecting ? '...' : 'Phantom'}
-              </Button>
-            )}
-            {providers.installed.includes('Solflare') && (
-              <Button
-                onClick={() => handleWalletConnect('Solflare')}
-                disabled={connecting}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                {connecting ? '...' : 'Solflare'}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-
       {/* Main Connect Button */}
       <Button 
         onClick={handleConnect}

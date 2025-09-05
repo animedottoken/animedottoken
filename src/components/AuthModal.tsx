@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Chrome, Loader2, Info } from 'lucide-react';
+import { Mail, Chrome, Loader2, Info, ArrowLeft } from 'lucide-react';
 import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
 
 interface AuthModalProps {
@@ -138,7 +138,18 @@ export default function AuthModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center mb-2">{title.split(' ')[0]} {title.split(' ')[1]}</DialogTitle>
+          <div className="flex items-center justify-between mb-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onOpenChange(false)}
+              className="p-2 h-8 w-8"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <DialogTitle className="text-center">{title.split(' ')[0]} {title.split(' ')[1]}</DialogTitle>
+            <div className="w-8" /> {/* Spacer for centering */}
+          </div>
           <div className="flex items-center justify-center gap-2 mb-2">
             <img src="/lovable-uploads/77cf628c-3ad8-4364-b7d8-4c7e381fe6be.png" alt="ANIME Token" className="h-6 w-6" />
             <span className="text-lg font-bold">ANIME.TOKEN</span>
