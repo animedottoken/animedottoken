@@ -72,7 +72,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showSourceFilter = true,
   showTypeFilter = false,
   placeholder = "Full-text search...",
-  categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other'],
+  categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other', 'No category'],
   collapsible = false,
   currentPriceRange,
   currentRoyaltyRange
@@ -759,13 +759,15 @@ const CategoryFilterSelect = ({
       <Label className="text-sm font-medium">Category</Label>
       <MenuSelect onOpenChange={() => {}}>
         <MenuSelectTrigger>
-          <MenuSelectValue>{value === 'all' ? 'All categories' : value}</MenuSelectValue>
+          <MenuSelectValue>
+            {value === 'all' ? 'All categories' : value === 'no-category' ? 'No category' : value}
+          </MenuSelectValue>
         </MenuSelectTrigger>
         <MenuSelectContent>
           <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
             All categories
           </MenuSelectItem>
-          {categories.map((category) => (
+          {categories.filter(cat => cat !== 'No category').map((category) => (
             <MenuSelectItem 
               key={category} 
               value={category} 
@@ -774,6 +776,9 @@ const CategoryFilterSelect = ({
               {category}
             </MenuSelectItem>
           ))}
+          <MenuSelectItem value="no-category" onSelect={() => selectState.onValueChange('no-category')}>
+            No category
+          </MenuSelectItem>
         </MenuSelectContent>
       </MenuSelect>
     </div>

@@ -79,8 +79,20 @@ export const useFilteredNFTs = (
       }
 
       // Category filter
-      if (filters.category !== 'all' && nft.category !== filters.category) {
-        return false;
+      if (filters.category !== 'all') {
+        if (filters.category === 'no-category') {
+          // Show NFTs with no category (null, undefined, empty string)
+          if (nft.category && nft.category.trim() !== '') {
+            return false;
+          }
+        } else {
+          // Case-insensitive category matching
+          const nftCategory = nft.category?.toLowerCase().trim() || '';
+          const filterCategory = filters.category.toLowerCase().trim();
+          if (nftCategory !== filterCategory) {
+            return false;
+          }
+        }
       }
 
       // Explicit content filter
@@ -165,8 +177,20 @@ export const useFilteredCollections = (
       }
 
       // Category filter
-      if (filters.category !== 'all' && collection.category !== filters.category) {
-        return false;
+      if (filters.category !== 'all') {
+        if (filters.category === 'no-category') {
+          // Show collections with no category (null, undefined, empty string)
+          if (collection.category && collection.category.trim() !== '') {
+            return false;
+          }
+        } else {
+          // Case-insensitive category matching
+          const collectionCategory = collection.category?.toLowerCase().trim() || '';
+          const filterCategory = filters.category.toLowerCase().trim();
+          if (collectionCategory !== filterCategory) {
+            return false;
+          }
+        }
       }
 
       // Explicit content filter
