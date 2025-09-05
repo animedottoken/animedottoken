@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -1146,8 +1146,11 @@ const Profile = () => {
               <Card className="opacity-60">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Newsletter Settings</span>
-                    <Badge variant="secondary">Coming Soon</Badge>
+                    <span className="flex items-center gap-2">
+                      <Mail className="h-5 w-5" />
+                      Newsletter
+                    </span>
+                    <Badge variant="outline">Coming Soon</Badge>
                   </CardTitle>
                   <CardDescription>
                     Newsletter subscription and management features are coming soon.
