@@ -14,6 +14,8 @@ import { CollectionSettingsStep } from './CollectionSettingsStep';
 import { CollectionReviewStep } from './CollectionReviewStep';
 import { CollectionSuccessStep } from './CollectionSuccessStep';
 import type { Property } from '@/components/PropertiesEditor';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserWallets } from '@/hooks/useUserWallets';
 
 interface FormData {
   name: string;
@@ -50,8 +52,11 @@ export const UnifiedMintInterface = () => {
   const [mintNow, setMintNow] = useState(true);
   const [collectionMintResult, setCollectionMintResult] = useState<{signature?: string; mintAddress?: string; explorerUrl?: string} | null>(null);
   const [pendingMintAfterConnect, setPendingMintAfterConnect] = useState(false);
+  const [hasShownWalletConnectedToast, setHasShownWalletConnectedToast] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey, connect, connecting } = useSolanaWallet();
+  const { user } = useAuth();
+  const { getPrimaryWallet } = useUserWallets();
   const { checkAccess, guardedAction } = useCircuitBreaker();
   const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,8 +68,12 @@ export const UnifiedMintInterface = () => {
       if (!formData.treasury_wallet) {
         setFormData(prev => ({ ...prev, treasury_wallet: publicKey }));
       }
-      // Show success toast only when wallet is actually connected
-      toast.success('Wallet connected successfully!');
+      
+      // Show success toast only once when wallet actually connects (not on initial load)
+      if (!hasShownWalletConnectedToast) {
+        setHasShownWalletConnectedToast(true);
+        toast.success('Wallet connected successfully!');
+      }
       
       // If we were waiting to mint after connection, do it now
       if (pendingMintAfterConnect) {
@@ -72,10 +81,11 @@ export const UnifiedMintInterface = () => {
         handleSubmit();
       }
     } else {
-      // Clear treasury wallet when wallet is disconnected
+      // Reset the toast flag and clear treasury wallet when wallet is disconnected
+      setHasShownWalletConnectedToast(false);
       setFormData(prev => ({ ...prev, treasury_wallet: '' }));
     }
-  }, [publicKey, pendingMintAfterConnect]);
+  }, [publicKey, pendingMintAfterConnect, hasShownWalletConnectedToast]);
 
   // Scroll to top when step changes
   useEffect(() => {
@@ -177,6 +187,35 @@ export const UnifiedMintInterface = () => {
   }, [formData.image_file, formData.banner_file, formData.image_preview_url, formData.banner_preview_url]);
 
   const handleSubmit = async () => {
+    // Check authentication and wallet linking first
+    if (!user) {
+      toast.error('Please sign in to create collections', {
+        action: {
+          label: 'Sign In',
+          onClick: () => navigate('/auth')
+        }
+      });
+      return;
+    }
+
+    if (!publicKey) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    // Check if user has linked this wallet to their account
+    const primaryWallet = await getPrimaryWallet();
+    if (!primaryWallet || primaryWallet.wallet_address !== publicKey) {
+      toast.error('Please link this wallet to your account first', {
+        description: 'You need to link your connected wallet to your account to create collections',
+        action: {
+          label: 'Go to Profile',
+          onClick: () => navigate('/profile')
+        }
+      });
+      return;
+    }
+
     // Circuit breaker check
     if (!checkAccess("create collections")) {
       return;
@@ -370,6 +409,7 @@ export const UnifiedMintInterface = () => {
   const handleConnectWallet = async () => {
     try {
       setPendingMintAfterConnect(true);
+      setHasShownWalletConnectedToast(false); // Reset so we can show toast after connection
       await connect();
     } catch (error) {
       setPendingMintAfterConnect(false);
