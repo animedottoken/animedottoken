@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -1132,22 +1132,22 @@ const Profile = () => {
             <section>
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    Security & Privacy
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <Shield className="h-5 w-5" />
+                      Security & Privacy
+                    </span>
+                    <SecuritySettingsDialog>
+                      <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        <span className="hidden sm:inline">Settings</span>
+                      </Button>
+                    </SecuritySettingsDialog>
                   </CardTitle>
                   <CardDescription>
                     Manage your account security, session preferences, and wallet settings.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <SecuritySettingsDialog>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Open Security Settings
-                    </Button>
-                  </SecuritySettingsDialog>
-                </CardContent>
               </Card>
             </section>
 
