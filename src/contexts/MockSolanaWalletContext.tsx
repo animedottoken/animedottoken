@@ -157,6 +157,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         console.log('✅ Attempting inline wallet connection...');
         
         try {
+          setConnectAfterSelection(true);
           setVisible(true);
           console.log('🎉 Wallet modal opened successfully');
           
@@ -396,12 +397,10 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       new TrustWalletAdapter(),
     ];
 
-    // Conditionally add Preview Wallet (Unsafe Burner) only when explicitly enabled via ?preview=1
+    // Conditionally add Preview Wallet (Unsafe Burner) when in iframe on Devnet as a fallback
     const isInIframe = typeof window !== 'undefined' && window !== window.parent;
     const isDevnet = network === WalletAdapterNetwork.Devnet;
-    const previewEnabled = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
-    
-    if (isInIframe && isDevnet && previewEnabled) {
+    if (isInIframe && isDevnet) {
       baseWallets.push(new UnsafeBurnerWalletAdapter());
     }
 
