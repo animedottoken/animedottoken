@@ -117,6 +117,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
   };
 
   const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (likeLoading) return;
     

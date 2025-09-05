@@ -5,7 +5,7 @@ import AuthModal from '@/components/AuthModal';
 interface SocialActionWrapperProps {
   children: React.ReactNode;
   action: string;
-  onAction: () => void | Promise<void>;
+  onAction: (e?: React.MouseEvent) => void | Promise<void>;
   requireAuth?: boolean;
 }
 
@@ -18,7 +18,13 @@ export default function SocialActionWrapper({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user } = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = async (e?: React.MouseEvent) => {
+    // Prevent Link navigation bubbling
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     if (requireAuth && !user) {
       setShowAuthModal(true);
       return;

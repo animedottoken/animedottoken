@@ -716,6 +716,7 @@ export default function CreatorProfile() {
                       {/* Heart button for liking NFTs */}
                       <button
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           handleToggleLike(nft.id);
                         }}
