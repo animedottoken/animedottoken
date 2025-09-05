@@ -92,6 +92,7 @@ serve(async (req) => {
       .update({
         status: 'confirmed',
         confirmed_at: new Date().toISOString(),
+        unsubscribed_at: null,
         updated_at: new Date().toISOString()
       })
       .eq('opt_in_token', token)

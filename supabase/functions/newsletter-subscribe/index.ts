@@ -123,6 +123,8 @@ serve(async (req) => {
         .update({ 
           opt_in_token: optInToken,
           status: 'pending',
+          confirmed_at: null,
+          unsubscribed_at: null,
           updated_at: new Date().toISOString()
         })
         .eq('email', email)
