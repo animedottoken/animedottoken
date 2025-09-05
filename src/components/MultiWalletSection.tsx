@@ -76,7 +76,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
 
   return (
     <>
-      <Card>
+      <Card className={disabledActions ? "opacity-60" : ""}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
