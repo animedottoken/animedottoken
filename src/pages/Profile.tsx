@@ -451,23 +451,42 @@ const Profile = () => {
   }, [userCollections, followedCreators]);
 
   // Apply filters - Convert UserNFT to NFT format
-  const nftsForFiltering = nfts.map(nft => ({
-    id: nft.id,
-    name: nft.name,
-    description: nft.description,
-    is_listed: nft.is_listed || false,
-    creator_address: nft.creator_address || targetWallet || '',
-    created_at: nft.created_at || new Date().toISOString(),
-    category: undefined,
-    price: nft.price,
-    attributes: undefined
-  }));
+  const nftsForFiltering = nfts.map(nft => {
+    // Extract royalty from NFT metadata or default to 0
+    let royalty_percentage = 0;
+    if (nft.metadata?.royalty_percentage !== undefined) {
+      royalty_percentage = nft.metadata.royalty_percentage;
+    }
+    // Could also derive from parent collection, but we don't have that data easily accessible
+    
+    return {
+      id: nft.id,
+      name: nft.name,
+      description: nft.description,
+      is_listed: nft.is_listed || false,
+      creator_address: nft.creator_address || targetWallet || '',
+      created_at: nft.created_at || new Date().toISOString(),
+      category: undefined, // UserNFT doesn't have category field
+      price: nft.price,
+      attributes: nft.metadata,
+      royalty_percentage
+    };
+  });
 
-  // Also map likedNFTs to include created_at
-  const likedNFTsForFiltering = likedNFTs.map(nft => ({
-    ...nft,
-    created_at: new Date().toISOString()
-  }));
+  // Also map likedNFTs to include created_at and royalty
+  const likedNFTsForFiltering = likedNFTs.map(nft => {
+    // Extract royalty from NFT attributes or default to 0
+    let royalty_percentage = 0;
+    if (nft.attributes?.royalty_percentage !== undefined) {
+      royalty_percentage = nft.attributes.royalty_percentage;
+    }
+    
+    return {
+      ...nft,
+      created_at: new Date().toISOString(),
+      royalty_percentage
+    };
+  });
 
   // Map nftsFromLikedCreators to NFT format
   const nftsFromLikedCreatorsForFiltering = nftsFromLikedCreators.map(nft => ({

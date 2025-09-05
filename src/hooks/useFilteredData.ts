@@ -13,6 +13,7 @@ interface NFT {
   attributes?: any;
   created_at: string;
   creator_address: string;
+  royalty_percentage?: number;
 }
 
 interface Collection {
@@ -112,6 +113,14 @@ export const useFilteredNFTs = (
         return false;
       }
       if (filters.maxPrice && (nft.price || 0) > parseFloat(filters.maxPrice)) {
+        return false;
+      }
+
+      // Royalty filters
+      if (filters.minRoyalty && (nft.royalty_percentage || 0) < parseFloat(filters.minRoyalty)) {
+        return false;
+      }
+      if (filters.maxRoyalty && (nft.royalty_percentage || 0) > parseFloat(filters.maxRoyalty)) {
         return false;
       }
 

@@ -169,6 +169,22 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   };
 
   const handlePriceBlur = (field: 'minPrice' | 'maxPrice', value: string) => {
+    // Validate price values to ensure min <= max
+    if (value !== '') {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue >= 0) {
+        // Ensure min <= max
+        const currentMin = parseFloat(localFilters.minPrice || '0');
+        const currentMax = parseFloat(localFilters.maxPrice || '999999');
+        
+        if (field === 'minPrice' && numValue > currentMax && localFilters.maxPrice) {
+          updateFilter('maxPrice', numValue.toString());
+        } else if (field === 'maxPrice' && numValue < currentMin && localFilters.minPrice) {
+          updateFilter('minPrice', numValue.toString());
+        }
+      }
+    }
+    
     // Re-enable auto-sync only if field is completely empty
     if (value === '') {
       if (field === 'minPrice') {
@@ -190,6 +206,28 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   };
 
   const handleRoyaltyBlur = (field: 'minRoyalty' | 'maxRoyalty', value: string) => {
+    // Validate and clamp royalty values
+    if (value !== '') {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue)) {
+        // Clamp between 0-50
+        const clampedValue = Math.max(0, Math.min(50, numValue));
+        if (clampedValue !== numValue) {
+          updateFilter(field, clampedValue.toString());
+        }
+        
+        // Ensure min <= max
+        const currentMin = parseFloat(localFilters.minRoyalty || '0');
+        const currentMax = parseFloat(localFilters.maxRoyalty || '50');
+        
+        if (field === 'minRoyalty' && clampedValue > currentMax && localFilters.maxRoyalty) {
+          updateFilter('maxRoyalty', clampedValue.toString());
+        } else if (field === 'maxRoyalty' && clampedValue < currentMin && localFilters.minRoyalty) {
+          updateFilter('minRoyalty', clampedValue.toString());
+        }
+      }
+    }
+    
     // Re-enable auto-sync only if field is completely empty
     if (value === '') {
       if (field === 'minRoyalty') {
