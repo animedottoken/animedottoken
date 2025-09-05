@@ -1143,7 +1143,7 @@ const Profile = () => {
             
             {/* Newsletter Management */}
             <section>
-              <Card>
+              <Card className="opacity-60">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
@@ -1153,6 +1153,7 @@ const Profile = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      disabled={true}
                       className="flex items-center gap-2"
                       title="Coming soon — stay tuned"
                     >
@@ -1161,7 +1162,7 @@ const Profile = () => {
                     </Button>
                   </CardTitle>
                   <CardDescription>
-                    Subscribe to receive updates about new features, NFT drops, and community highlights directly in your inbox.
+                    Coming soon — stay tuned
                   </CardDescription>
                 </CardHeader>
               </Card>
