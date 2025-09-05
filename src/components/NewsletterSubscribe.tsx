@@ -75,63 +75,60 @@ export function NewsletterSubscribe() {
 
   return (
     <>
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-2">
-            <Mail className="h-8 w-8 text-primary" />
-          </div>
-          <CardTitle>Stay Updated</CardTitle>
-          <CardDescription>
-            Subscribe to our newsletter for the latest NFT drops, marketplace updates, and exclusive content.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {user ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  type="email"
-                  value={user.email || ''}
-                  disabled
-                  className="w-full bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Using your account email address
-                </p>
-              </div>
-              <Button 
-                onClick={handleSubmit}
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Subscribing...
-                  </>
-                ) : (
-                  'Subscribe to Newsletter'
-                )}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center">
-                Sign in to subscribe to our newsletter with your account email.
-              </p>
-              <Button 
-                onClick={() => setShowAuthModal(true)}
-                className="w-full"
-              >
-                Sign in to Subscribe
-              </Button>
-            </div>
-          )}
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            We respect your privacy. Unsubscribe at any time.
+      <div className="w-full">
+        <div className="text-center mb-3">
+          <h4 className="text-sm font-medium mb-1 flex items-center justify-center gap-2">
+            <Mail className="h-4 w-4 text-primary" />
+            Stay Updated
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            Subscribe for the latest NFT drops, marketplace updates, and exclusive content.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+        
+        {user ? (
+          <div className="space-y-2">
+            <Input
+              type="email"
+              value={user.email || ''}
+              disabled
+              className="w-full bg-muted h-8 text-sm"
+            />
+            <p className="text-xs text-muted-foreground">
+              Using your account email address
+            </p>
+            <Button 
+              onClick={handleSubmit}
+              className="w-full h-8" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                  Subscribing...
+                </>
+              ) : (
+                'Subscribe to Newsletter'
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground text-center">
+              Sign in to subscribe with your account email.
+            </p>
+            <Button 
+              onClick={() => setShowAuthModal(true)}
+              className="w-full h-8"
+            >
+              Sign in to Subscribe
+            </Button>
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground mt-2 text-center">
+          We respect your privacy. Unsubscribe at any time.
+        </p>
+      </div>
       
       <AuthModal
         open={showAuthModal}

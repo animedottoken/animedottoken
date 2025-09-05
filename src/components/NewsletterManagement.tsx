@@ -167,85 +167,71 @@ export function NewsletterManagement() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="h-5 w-5" />
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Mail className="h-4 w-4" />
           Newsletter Subscription
         </CardTitle>
-        <CardDescription>
-          Stay updated with our latest news and updates.
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {status ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <p className="text-sm font-medium">Email: {status.email}</p>
-                  {getStatusBadge(status.status)}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {getStatusDescription(status.status)}
-                </p>
-                {status.status === 'confirmed' && status.subscribedAt && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Subscribed on {new Date(status.subscribedAt).toLocaleDateString()}
-                  </p>
-                )}
-                {status.status === 'unsubscribed' && status.unsubscribedAt && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Unsubscribed on {new Date(status.unsubscribedAt).toLocaleDateString()}
-                  </p>
-                )}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <p className="text-sm font-medium truncate">Email: {status.email}</p>
+                {getStatusBadge(status.status)}
               </div>
-            </div>
-            
-            <div className="flex gap-2">
-              {(status.status === 'confirmed' || status.status === 'pending') && (
-                <Button
-                  onClick={handleUnsubscribe}
-                  disabled={unsubscribing}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                >
-                  {unsubscribing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {status.status === 'pending' ? 'Cancelling...' : 'Unsubscribing...'}
-                    </>
-                  ) : (
-                    <>
-                      <MailX className="h-4 w-4 mr-2" />
-                      {status.status === 'pending' ? 'Cancel Subscription' : 'Unsubscribe'}
-                    </>
-                  )}
-                </Button>
-              )}
-              
               <Button
                 onClick={handleRefresh}
                 disabled={refreshing}
                 variant="ghost"
                 size="sm"
+                className="h-7 w-7 p-0"
               >
                 {refreshing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw className="h-3 w-3" />
                 )}
               </Button>
             </div>
             
+            {(status.status === 'unsubscribed' && status.unsubscribedAt) && (
+              <p className="text-xs text-muted-foreground">
+                Unsubscribed on {new Date(status.unsubscribedAt).toLocaleDateString()}
+              </p>
+            )}
+            
+            {(status.status === 'confirmed' || status.status === 'pending') && (
+              <Button
+                onClick={handleUnsubscribe}
+                disabled={unsubscribing}
+                variant="outline"
+                size="sm"
+                className="w-full h-8"
+              >
+                {unsubscribing ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                    {status.status === 'pending' ? 'Cancelling...' : 'Unsubscribing...'}
+                  </>
+                ) : (
+                  <>
+                    <MailX className="h-3 w-3 mr-2" />
+                    {status.status === 'pending' ? 'Cancel' : 'Unsubscribe'}
+                  </>
+                )}
+              </Button>
+            )}
+            
             {(status.status === 'not_subscribed' || status.status === 'unsubscribed') && (
-              <div className="pt-2 border-t space-y-4">
+              <div className="pt-2 border-t space-y-3">
                 <NewsletterSubscribe />
                 
                 <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
                   <CollapsibleTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Bug className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm" className="w-full h-8">
+                      <Bug className="h-3 w-3 mr-2" />
                       {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
                     </Button>
                   </CollapsibleTrigger>
@@ -257,7 +243,7 @@ export function NewsletterManagement() {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
@@ -268,8 +254,8 @@ export function NewsletterManagement() {
             
             <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
               <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Bug className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="w-full h-8">
+                  <Bug className="h-3 w-3 mr-2" />
                   {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
                 </Button>
               </CollapsibleTrigger>
