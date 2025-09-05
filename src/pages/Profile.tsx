@@ -1143,12 +1143,17 @@ const Profile = () => {
             
             {/* Newsletter Management */}
             <section>
-              <ComingSoonFeature
-                title="Newsletter Settings"
-                description="Newsletter subscription and management features are coming soon."
-              >
-                <NewsletterManagement />
-              </ComingSoonFeature>
+              <Card className="opacity-60">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Newsletter Settings</span>
+                    <Badge variant="secondary">Coming Soon</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Newsletter subscription and management features are coming soon.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             </section>
           </TabsContent>
         )}
