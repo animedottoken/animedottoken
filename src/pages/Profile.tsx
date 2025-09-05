@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail, Sparkles } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -917,24 +917,11 @@ const Profile = () => {
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <Heart className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{nft_likes_count}</span>
+                        <span className="font-medium">{total_likes_count}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">NFT Likes - likes received on this creator's NFTs</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-1 cursor-help">
-                        <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{collection_likes_count}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Collection Likes - likes received on this creator's collections</p>
+                      <p className="text-xs">Likes - total likes on this creator's NFTs and collections</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
