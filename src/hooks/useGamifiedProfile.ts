@@ -55,16 +55,17 @@ export function useGamifiedProfile() {
   };
 
   const fetchUserNFTs = async () => {
-    if (!publicKey) {
+    // Require authenticated user (for RLS policies to work)
+    if (!user) {
       setUserNFTs([]);
       return;
     }
 
     try {
+      // Query for NFTs visible to the authenticated user (RLS handles filtering)
       const { data, error } = await supabase
         .from('nfts')
-        .select('mint_address, name, image_url, symbol')
-        .eq('owner_address', publicKey.toString());
+        .select('mint_address, name, image_url, symbol');
 
       if (error) throw error;
       setUserNFTs(data || []);

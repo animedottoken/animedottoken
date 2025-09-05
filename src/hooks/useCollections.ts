@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import type { Collection, CreateCollectionData } from '@/types/collection';
 
@@ -13,17 +14,20 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const { publicKey } = useSolanaWallet();
+  const { user } = useAuth();
 
   // Load user's collections
   const loadCollections = useCallback(async (silent: boolean = false) => {
-    if (!publicKey) return;
+    // Require authenticated user for RLS policies to work
+    if (!user) return;
 
     if (!silent) setLoading(true);
     try {
+      // Query for collections visible to authenticated user (RLS handles filtering)
+      // This will show collections where: creator_user_id = auth.uid() OR linked wallets match creator
       const { data, error } = await supabase
         .from('collections')
         .select('*')
-        .eq('creator_address', publicKey)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -43,7 +47,7 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [publicKey]);
+  }, [user]);
 
   // Upload collection images to storage
   const uploadCollectionImage = async (file: File, collectionId: string, type: 'avatar' | 'banner' = 'avatar'): Promise<string | null> => {
@@ -223,14 +227,14 @@ export const useCollections = (options: { autoLoad?: boolean; suppressErrors?: b
     }
   };
 
-  // Load collections on wallet connection
+  // Load collections on user authentication
   useEffect(() => {
-    if (publicKey && autoLoad) {
+    if (user && autoLoad) {
       loadCollections();
     } else {
       setCollections([]);
     }
-  }, [publicKey, loadCollections, autoLoad]);
+  }, [user, loadCollections, autoLoad]);
 
   return {
     collections,

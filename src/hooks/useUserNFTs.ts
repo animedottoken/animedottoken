@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -26,9 +27,11 @@ export const useUserNFTs = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { publicKey, connected } = useSolanaWallet();
+  const { user } = useAuth();
 
   const fetchUserNFTs = async () => {
-    if (!connected || !publicKey) {
+    // Require authenticated user (for RLS policies to work)
+    if (!user) {
       setNfts([]);
       return;
     }
@@ -37,7 +40,8 @@ export const useUserNFTs = () => {
     setError(null);
 
     try {
-      // Query for NFTs owned by the user
+      // Query for NFTs visible to the authenticated user (RLS handles filtering)
+      // This will show NFTs where: creator_user_id = auth.uid() OR linked wallets match owner/creator
       const { data, error: queryError } = await supabase
         .from('nfts')
         .select(`
@@ -59,7 +63,6 @@ export const useUserNFTs = () => {
             name
           )
         `)
-        .eq('owner_address', publicKey)
         .order('created_at', { ascending: false });
 
       if (queryError) {
@@ -101,10 +104,10 @@ export const useUserNFTs = () => {
     }
   };
 
-  // Auto-fetch when wallet connects
+  // Auto-fetch when user is authenticated
   useEffect(() => {
     fetchUserNFTs();
-  }, [connected, publicKey]);
+  }, [user]);
 
   const refreshNFTs = () => {
     fetchUserNFTs();
