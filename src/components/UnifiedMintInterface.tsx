@@ -49,6 +49,7 @@ export const UnifiedMintInterface = () => {
   const [mintingError, setMintingError] = useState(null);
   const [mintNow, setMintNow] = useState(true);
   const [collectionMintResult, setCollectionMintResult] = useState<{signature?: string; mintAddress?: string; explorerUrl?: string} | null>(null);
+  const [pendingMintAfterConnect, setPendingMintAfterConnect] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey, connect, connecting } = useSolanaWallet();
   const { checkAccess, guardedAction } = useCircuitBreaker();
@@ -64,11 +65,17 @@ export const UnifiedMintInterface = () => {
       }
       // Show success toast only when wallet is actually connected
       toast.success('Wallet connected successfully!');
+      
+      // If we were waiting to mint after connection, do it now
+      if (pendingMintAfterConnect) {
+        setPendingMintAfterConnect(false);
+        handleSubmit();
+      }
     } else {
       // Clear treasury wallet when wallet is disconnected
       setFormData(prev => ({ ...prev, treasury_wallet: '' }));
     }
-  }, [publicKey]);
+  }, [publicKey, pendingMintAfterConnect]);
 
   // Scroll to top when step changes
   useEffect(() => {
@@ -360,6 +367,17 @@ export const UnifiedMintInterface = () => {
     }, "create collection")();
   };
 
+  const handleConnectWallet = async () => {
+    try {
+      setPendingMintAfterConnect(true);
+      await connect();
+    } catch (error) {
+      setPendingMintAfterConnect(false);
+      toast.error('Failed to connect wallet');
+      throw error;
+    }
+  };
+
   const handleCreateAnother = () => {
     // Reset form and go back to step 1
     setFormData({
@@ -433,8 +451,11 @@ export const UnifiedMintInterface = () => {
           isMinting={isMinting}
           mintNow={mintNow}
           setMintNow={setMintNow}
+          publicKey={publicKey}
+          connecting={connecting}
           onBack={() => setActiveStep(2)}
           onSubmit={handleSubmit}
+          onConnectWallet={handleConnectWallet}
         />
       )}
 

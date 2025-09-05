@@ -46,8 +46,11 @@ interface CollectionReviewStepProps {
   isMinting: boolean;
   mintNow: boolean;
   setMintNow: (value: boolean) => void;
+  publicKey: string | null;
+  connecting: boolean;
   onBack: () => void;
   onSubmit: () => void;
+  onConnectWallet: () => Promise<void>;
 }
 
 export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
@@ -55,9 +58,22 @@ export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
   isMinting,
   mintNow,
   setMintNow,
+  publicKey,
+  connecting,
   onBack,
-  onSubmit
+  onSubmit,
+  onConnectWallet
 }) => {
+  const isWalletConnected = !!publicKey;
+
+  const handleConnectAndMint = async () => {
+    try {
+      await onConnectWallet();
+      // onSubmit will be called automatically when wallet connects via useEffect in parent
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader className="pb-4">
@@ -145,15 +161,27 @@ export const CollectionReviewStep: React.FC<CollectionReviewStepProps> = ({
           <Button variant="outline" onClick={onBack} className="w-full sm:w-auto">
             Back to Settings
           </Button>
-          <Button 
-            onClick={onSubmit} 
-            size="lg"
-            disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
-            className="w-full sm:w-auto"
-          >
-            {isMinting ? (mintNow ? 'Creating & Minting...' : 'Creating...') : (mintNow ? 'Create + Mint' : 'Create Off-Chain')}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          {!isWalletConnected ? (
+            <Button 
+              onClick={handleConnectAndMint}
+              size="lg"
+              disabled={connecting || !formData.image_file}
+              className="w-full sm:w-auto"
+            >
+              {connecting ? 'Connecting...' : 'Connect Wallet + Mint'}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button 
+              onClick={onSubmit} 
+              size="lg"
+              disabled={!!formData.mint_end_at_error || isMinting || !formData.image_file}
+              className="w-full sm:w-auto"
+            >
+              {isMinting ? (mintNow ? 'Creating & Minting...' : 'Creating...') : (mintNow ? 'Create + Mint' : 'Create Off-Chain')}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
