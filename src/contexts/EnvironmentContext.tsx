@@ -35,6 +35,7 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
                     hostname.includes('localhost') || 
                     hostname.includes('127.0.0.1');
   
+  // Live is true when domain is production and not forced beta
   const isLive = !isBetaMode;
 
   const canUseFeature = (feature: string): boolean => {
