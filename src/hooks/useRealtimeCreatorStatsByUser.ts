@@ -72,27 +72,39 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
   const handleCreatorStatsUpdate = useCallback((event: CustomEvent) => {
     const { userId, type, delta } = event.detail;
     if (userIds.includes(userId)) {
-      setCreatorStats(prev => ({
-        ...prev,
-        [userId]: {
-          follower_count: type === 'follower' 
-            ? Math.max(0, (prev[userId]?.follower_count || 0) + delta)
-            : (prev[userId]?.follower_count || 0),
-          following_count: type === 'following' 
-            ? Math.max(0, (prev[userId]?.following_count || 0) + delta)
-            : (prev[userId]?.following_count || 0),
-          nft_likes_count: type === 'nft_like' 
-            ? Math.max(0, (prev[userId]?.nft_likes_count || 0) + delta)
-            : (prev[userId]?.nft_likes_count || 0),
-          collection_likes_count: type === 'collection_like' 
-            ? Math.max(0, (prev[userId]?.collection_likes_count || 0) + delta)
-            : (prev[userId]?.collection_likes_count || 0),
-          total_likes_count: Math.max(0, 
-            (type === 'nft_like' ? (prev[userId]?.nft_likes_count || 0) + delta : (prev[userId]?.nft_likes_count || 0)) +
-            (type === 'collection_like' ? (prev[userId]?.collection_likes_count || 0) + delta : (prev[userId]?.collection_likes_count || 0))
-          ),
-        }
-      }));
+      setCreatorStats(prev => {
+        const currentStats = prev[userId] || {
+          follower_count: 0,
+          following_count: 0,
+          nft_likes_count: 0,
+          collection_likes_count: 0,
+          total_likes_count: 0
+        };
+        
+        // Calculate new individual counts
+        const newNftLikesCount = type === 'nft_like' 
+          ? Math.max(0, currentStats.nft_likes_count + delta)
+          : currentStats.nft_likes_count;
+          
+        const newCollectionLikesCount = type === 'collection_like' 
+          ? Math.max(0, currentStats.collection_likes_count + delta)
+          : currentStats.collection_likes_count;
+        
+        return {
+          ...prev,
+          [userId]: {
+            follower_count: type === 'follower' 
+              ? Math.max(0, currentStats.follower_count + delta)
+              : currentStats.follower_count,
+            following_count: type === 'following' 
+              ? Math.max(0, currentStats.following_count + delta)
+              : currentStats.following_count,
+            nft_likes_count: newNftLikesCount,
+            collection_likes_count: newCollectionLikesCount,
+            total_likes_count: newNftLikesCount + newCollectionLikesCount,
+          }
+        };
+      });
     }
   }, [userIdsKey]);
 
