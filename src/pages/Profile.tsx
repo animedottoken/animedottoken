@@ -1193,10 +1193,11 @@ const Profile = () => {
                             }}
                             likeCount={getNFTLikeCount(nft.id)}
                             showOwnerInfo={false}
+                            navigationQuery="from=nfts"
                             onNavigate={() => setNavContext({ 
                               type: 'nft', 
                               items: filteredCombinedNFTs.map(n => n.id), 
-                              source: 'profile',
+                              source: 'nfts',
                               tab: 'collections-nfts'
                             })}
                           />

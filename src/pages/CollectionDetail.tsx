@@ -704,6 +704,7 @@ export default function CollectionDetail() {
                        showOwnerInfo={false}
                        verified={displayCollection?.verified}
                        mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
+                       navigationQuery="from=collection"
                        onNavigate={() => setNavContext({ 
                          type: 'nft', 
                          items: mints.map(m => m.id), 

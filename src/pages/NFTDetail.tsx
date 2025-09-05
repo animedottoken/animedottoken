@@ -234,22 +234,24 @@ export default function NFTDetail() {
               The NFT you're looking for doesn't exist or has been removed.
             </p>
             <Button asChild>
-              <Link to={searchParams.get('from') === 'collection' && nft?.collection_id
-                ? `/collection/${nft.collection_id}`
+              <Link to={searchParams.get('from') === 'collection' || navigation.source === 'collection'
+                ? nft?.collection_id 
+                  ? `/collection/${nft.collection_id}`
+                  : "/profile"
                 : navigation.source === 'marketplace' 
                 ? "/marketplace" 
                 : navigation.source === 'favorites' 
                 ? "/profile?tab=favorites" 
                 : navigation.source === 'nfts' 
-                ? "/profile?tab=nfts" 
-                : "/profile?tab=nfts"}>
-                Back to {searchParams.get('from') === 'collection' 
+                ? "/profile" 
+                : "/profile"}>
+                Back to {searchParams.get('from') === 'collection' || navigation.source === 'collection'
                   ? 'Collection' 
                   : navigation.source === 'marketplace' 
                   ? 'Marketplace' 
                   : navigation.source === 'favorites' 
                   ? 'Favorites' 
-                  : 'My NFTs'}
+                  : 'Profile'}
               </Link>
             </Button>
           </CardContent>
@@ -268,23 +270,25 @@ export default function NFTDetail() {
       {/* Back Button and Navigation */}
       <div className="flex items-center gap-4 mb-6">
         <Button variant="outline" asChild>
-          <Link to={searchParams.get('from') === 'collection' && nft?.collection_id
-            ? `/collection/${nft.collection_id}`
+          <Link to={searchParams.get('from') === 'collection' || navigation.source === 'collection'
+            ? nft?.collection_id 
+              ? `/collection/${nft.collection_id}`
+              : "/profile"
             : navigation.source === 'marketplace' 
             ? `/marketplace?tab=${searchParams.get('tab') || 'nfts'}` 
             : navigation.source === 'favorites' 
             ? "/profile?tab=favorites" 
             : navigation.source === 'nfts' 
-            ? "/profile?tab=nfts" 
-            : "/profile?tab=nfts"}>
+            ? "/profile" 
+            : "/profile"}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {searchParams.get('from') === 'collection' 
+            Back to {searchParams.get('from') === 'collection' || navigation.source === 'collection'
               ? 'Collection' 
               : navigation.source === 'marketplace' 
               ? 'Marketplace' 
               : navigation.source === 'favorites' 
               ? 'Favorites' 
-              : 'My NFTs'}
+              : 'Profile'}
           </Link>
         </Button>
         
