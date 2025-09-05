@@ -34,6 +34,8 @@ interface CollectionSettingsStepProps {
   onBack: () => void;
   onNext: () => void;
   onConnectWallet?: () => void;
+  royaltyInput?: string;
+  setRoyaltyInput?: (value: string) => void;
 }
 
 export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
@@ -42,7 +44,9 @@ export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
   publicKey,
   onBack,
   onNext,
-  onConnectWallet
+  onConnectWallet,
+  royaltyInput = '',
+  setRoyaltyInput
 }) => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -116,17 +120,35 @@ export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
             />
             <div className="flex items-center gap-2">
               <Input
-                type="number"
-                min="0"
-                max="50"
-                step="0.01"
-                value={formData.royalty_percentage.toFixed(2)}
+                type="text"
+                placeholder="0.00"
+                value={royaltyInput || formData.royalty_percentage.toString()}
                 onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  const clamped = Math.max(0, Math.min(50, value));
-                  setFormData({ ...formData, royalty_percentage: clamped });
+                  const inputValue = e.target.value;
+                  if (setRoyaltyInput) {
+                    setRoyaltyInput(inputValue);
+                  }
+                  
+                  // Parse and validate the number
+                  const numValue = parseFloat(inputValue);
+                  if (!isNaN(numValue) && numValue >= 0 && numValue <= 50) {
+                    setFormData({ ...formData, royalty_percentage: numValue });
+                  }
                 }}
-                className="w-20 text-center text-sm sm:text-base"
+                onBlur={() => {
+                  // Ensure valid number on blur
+                  const numValue = parseFloat(royaltyInput || formData.royalty_percentage.toString());
+                  if (isNaN(numValue) || numValue < 0) {
+                    const finalValue = 0;
+                    setFormData({ ...formData, royalty_percentage: finalValue });
+                    if (setRoyaltyInput) setRoyaltyInput(finalValue.toString());
+                  } else if (numValue > 50) {
+                    const finalValue = 50;
+                    setFormData({ ...formData, royalty_percentage: finalValue });
+                    if (setRoyaltyInput) setRoyaltyInput(finalValue.toString());
+                  }
+                }}
+                className="w-24 text-center text-sm sm:text-base"
               />
               <span className="text-sm text-muted-foreground">%</span>
             </div>

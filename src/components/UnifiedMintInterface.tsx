@@ -132,6 +132,9 @@ export const UnifiedMintInterface = () => {
 
   // Keep raw string for price input to allow typing values like "0.1"
   const [mintPriceInput, setMintPriceInput] = useState<string>('');
+  
+  // Keep raw string for royalty input to allow typing values like "2.5"
+  const [royaltyInput, setRoyaltyInput] = useState<string>('');
 
   // Cleanup preview URLs on unmount
   useEffect(() => {
@@ -375,6 +378,7 @@ export const UnifiedMintInterface = () => {
       banner_preview_url: null,
     });
     setMintPriceInput('');
+    setRoyaltyInput('');
     setStep3Collection(null);
     setCollectionMintResult(null);
     setActiveStep(1);
@@ -400,6 +404,8 @@ export const UnifiedMintInterface = () => {
           formData={formData}
           setFormData={setFormData}
           publicKey={publicKey || ''}
+          royaltyInput={royaltyInput}
+          setRoyaltyInput={setRoyaltyInput}
           onBack={() => setActiveStep(1)}
           onNext={() => setActiveStep(3)}
           onConnectWallet={async () => {
