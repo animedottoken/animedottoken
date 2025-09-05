@@ -34,6 +34,7 @@ export default function Auth() {
       if (hasOAuthParams || hasMagicLinkTokens) {
         setCompleting(true);
         console.log('Handling auth callback with URL:', url);
+        console.log('Safe redirect target:', safeRedirect);
         
         try {
           // Handle OAuth callback errors in query params

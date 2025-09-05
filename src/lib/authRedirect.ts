@@ -18,7 +18,7 @@ function getCanonicalDomain(): string {
     if (match) {
       const projectId = match[1];
       console.log(`Normalizing id-preview domain to sandbox for project: ${projectId}`);
-      return `https://${projectId}.lovable.app`;
+      return `https://${projectId}.sandbox.lovable.dev`;
     }
   }
   
