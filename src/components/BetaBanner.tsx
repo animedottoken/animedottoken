@@ -28,11 +28,11 @@ export const BetaBanner = () => {
       <div className="h-16 w-full" aria-hidden="true" />
       
       <Alert 
-        className="fixed top-0 left-0 right-0 z-50 bg-amber-500 text-amber-950 border-0 rounded-none shadow-lg animate-in slide-in-from-top duration-300"
+        className="fixed top-0 left-0 right-0 z-50 bg-warning text-warning-foreground border-0 rounded-none shadow-lg animate-in slide-in-from-top duration-300"
         role="banner"
         aria-live="polite"
       >
-        <FlaskConical className="h-4 w-4 text-amber-950" />
+        <FlaskConical className="h-4 w-4 text-warning-foreground" />
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
@@ -40,7 +40,7 @@ export const BetaBanner = () => {
               <Button 
                 variant="link" 
                 size="sm" 
-                className="text-amber-950 underline p-0 ml-1 h-auto font-semibold hover:text-amber-800 focus:text-amber-800"
+                className="text-warning-foreground underline p-0 ml-1 h-auto font-semibold hover:text-foreground/90"
                 onClick={() => window.open('https://animedottoken.com', '_blank')}
                 aria-label="Visit live production site"
               >
@@ -53,7 +53,7 @@ export const BetaBanner = () => {
             variant="ghost" 
             size="sm" 
             onClick={handleDismiss}
-            className="h-8 w-8 p-0 ml-4 text-amber-950 hover:bg-amber-400/20 focus:bg-amber-400/20 hover:text-amber-900 shrink-0"
+            className="h-8 w-8 p-0 ml-4 hover:bg-warning/20 focus:bg-warning/20 text-warning-foreground shrink-0"
             aria-label="Dismiss beta banner"
           >
             <X className="h-4 w-4" />
