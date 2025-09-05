@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail, ChevronDown } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -61,6 +61,26 @@ const Profile = () => {
   
   // Newsletter banner state
   const [newsletterBanner, setNewsletterBanner] = useState<{ type: 'confirmed' | 'unsubscribed' | null; show: boolean }>({ type: null, show: false });
+  
+  // Collapsible sections state with localStorage persistence
+  const [collectionsOpen, setCollectionsOpen] = useState(() => {
+    const saved = localStorage.getItem('profile-collections-open');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  
+  const [nftsOpen, setNftsOpen] = useState(() => {
+    const saved = localStorage.getItem('profile-nfts-open');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Save to localStorage when state changes
+  useEffect(() => {
+    localStorage.setItem('profile-collections-open', JSON.stringify(collectionsOpen));
+  }, [collectionsOpen]);
+
+  useEffect(() => {
+    localStorage.setItem('profile-nfts-open', JSON.stringify(nftsOpen));
+  }, [nftsOpen]);
 
   // Check for newsletter query parameters and show both toast and banner
   useEffect(() => {
@@ -1067,72 +1087,104 @@ const Profile = () => {
               {/* Collections Section */}
               {filteredCombinedCollections.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Collections ({filteredCombinedCollections.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredCombinedCollections.map((collection) => {
-                      const realCollection = collectionsById.get(collection.id);
-                      return (
-                        <CollectionCard
-                          key={collection.id}
-                          collection={{
-                            id: collection.id,
-                            name: collection.name,
-                            image_url: realCollection?.image_url || '/placeholder.svg',
-                            creator_address_masked: collection.creator_address || '',
-                            mint_price: collection.mint_price,
-                            items_redeemed: realCollection?.items_redeemed || 0,
-                            verified: realCollection?.verified || false,
-                            description: collection.description
-                          }}
-                          onNavigate={() => setNavContext({ 
-                            type: 'collection', 
-                            items: filteredCombinedCollections.map(c => c.id), 
-                            source: 'profile',
-                            tab: 'collections-nfts'
-                          })}
-                        />
-                      );
-                    })}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Collections ({filteredCombinedCollections.length})</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCollectionsOpen(!collectionsOpen)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronDown 
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          collectionsOpen ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </Button>
                   </div>
+                  {collectionsOpen && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {filteredCombinedCollections.map((collection) => {
+                        const realCollection = collectionsById.get(collection.id);
+                        return (
+                          <CollectionCard
+                            key={collection.id}
+                            collection={{
+                              id: collection.id,
+                              name: collection.name,
+                              image_url: realCollection?.image_url || '/placeholder.svg',
+                              creator_address_masked: collection.creator_address || '',
+                              mint_price: collection.mint_price,
+                              items_redeemed: realCollection?.items_redeemed || 0,
+                              verified: realCollection?.verified || false,
+                              description: collection.description
+                            }}
+                            onNavigate={() => setNavContext({ 
+                              type: 'collection', 
+                              items: filteredCombinedCollections.map(c => c.id), 
+                              source: 'profile',
+                              tab: 'collections-nfts'
+                            })}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* NFTs Section */}
               {filteredCombinedNFTs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">NFTs ({filteredCombinedNFTs.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredCombinedNFTs.map((nft) => {
-                      const realNFT = nftsById.get(nft.id);
-                      return (
-                        <NFTCard
-                          key={nft.id}
-                          nft={{
-                            id: nft.id,
-                            name: nft.name,
-                            image_url: realNFT?.image_url || '/placeholder.svg',
-                            owner_address: realNFT?.owner_address || targetWallet || '',
-                            mint_address: realNFT?.mint_address || nft.id,
-                            creator_address: realNFT?.creator_address || targetWallet || '',
-                            price: nft.price,
-                            is_listed: nft.is_listed || false,
-                            collection_id: realNFT?.collection_id,
-                            description: nft.description,
-                            attributes: realNFT?.metadata,
-                            collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
-                          }}
-                          likeCount={getNFTLikeCount(nft.id)}
-                          showOwnerInfo={false}
-                          onNavigate={() => setNavContext({ 
-                            type: 'nft', 
-                            items: filteredCombinedNFTs.map(n => n.id), 
-                            source: 'profile',
-                            tab: 'collections-nfts'
-                          })}
-                        />
-                      );
-                    })}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">NFTs ({filteredCombinedNFTs.length})</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setNftsOpen(!nftsOpen)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronDown 
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          nftsOpen ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </Button>
                   </div>
+                  {nftsOpen && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {filteredCombinedNFTs.map((nft) => {
+                        const realNFT = nftsById.get(nft.id);
+                        return (
+                          <NFTCard
+                            key={nft.id}
+                            nft={{
+                              id: nft.id,
+                              name: nft.name,
+                              image_url: realNFT?.image_url || '/placeholder.svg',
+                              owner_address: realNFT?.owner_address || targetWallet || '',
+                              mint_address: realNFT?.mint_address || nft.id,
+                              creator_address: realNFT?.creator_address || targetWallet || '',
+                              price: nft.price,
+                              is_listed: nft.is_listed || false,
+                              collection_id: realNFT?.collection_id,
+                              description: nft.description,
+                              attributes: realNFT?.metadata,
+                              collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
+                            }}
+                            likeCount={getNFTLikeCount(nft.id)}
+                            showOwnerInfo={false}
+                            onNavigate={() => setNavContext({ 
+                              type: 'nft', 
+                              items: filteredCombinedNFTs.map(n => n.id), 
+                              source: 'profile',
+                              tab: 'collections-nfts'
+                            })}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
