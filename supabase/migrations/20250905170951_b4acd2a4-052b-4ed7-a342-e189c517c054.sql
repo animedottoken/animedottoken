@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_follows DROP CONSTRAINT IF EXISTS creator_follows_no_self_follow;
