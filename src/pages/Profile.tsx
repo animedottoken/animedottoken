@@ -407,10 +407,15 @@ const Profile = () => {
 
   // Get collections created by this user
   const userCollections = useMemo(() => {
+    // If viewing own profile (no wallet param), show all user's collections
+    // If viewing another user's profile, filter by their wallet
+    if (isOwnProfile && !targetWallet) {
+      return collections.filter(collection => collection.is_active);
+    }
     return collections.filter(collection => 
       collection.creator_address === targetWallet && collection.is_active
     );
-  }, [collections, targetWallet]);
+  }, [collections, targetWallet, isOwnProfile]);
 
   // Get NFTs and Collections from liked creators - need to map wallet addresses to user IDs
   const nftsFromLikedCreators = useMemo(() => {
@@ -485,6 +490,19 @@ const Profile = () => {
     combinedFilters,
     getCollectionLikeCount
   );
+
+  // Create lookup maps for real data
+  const nftsById = useMemo(() => {
+    const map = new Map();
+    nfts.forEach(nft => map.set(nft.id, nft));
+    return map;
+  }, [nfts]);
+
+  const collectionsById = useMemo(() => {
+    const map = new Map();
+    userCollections.forEach(collection => map.set(collection.id, collection));
+    return map;
+  }, [userCollections]);
 
   // Filter by type for the combined view
   const filteredCombinedNFTs = combinedFilters.type === 'collections' ? [] : filteredNFTs;
@@ -1051,27 +1069,30 @@ const Profile = () => {
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Collections ({filteredCombinedCollections.length})</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredCombinedCollections.map((collection) => (
-                       <CollectionCard
-                         key={collection.id}
-                         collection={{
-                           id: collection.id,
-                           name: collection.name,
-                           image_url: '/placeholder.svg',
-                           creator_address_masked: collection.creator_address || '',
-                           mint_price: collection.mint_price,
-                           items_redeemed: 0,
-                           verified: false,
-                           description: collection.description
-                         }}
-                         onNavigate={() => setNavContext({ 
-                           type: 'collection', 
-                           items: filteredCombinedCollections.map(c => c.id), 
-                           source: 'profile',
-                           tab: 'collections-nfts'
-                         })}
-                       />
-                    ))}
+                    {filteredCombinedCollections.map((collection) => {
+                      const realCollection = collectionsById.get(collection.id);
+                      return (
+                        <CollectionCard
+                          key={collection.id}
+                          collection={{
+                            id: collection.id,
+                            name: collection.name,
+                            image_url: realCollection?.image_url || '/placeholder.svg',
+                            creator_address_masked: collection.creator_address || '',
+                            mint_price: collection.mint_price,
+                            items_redeemed: realCollection?.items_redeemed || 0,
+                            verified: realCollection?.verified || false,
+                            description: collection.description
+                          }}
+                          onNavigate={() => setNavContext({ 
+                            type: 'collection', 
+                            items: filteredCombinedCollections.map(c => c.id), 
+                            source: 'profile',
+                            tab: 'collections-nfts'
+                          })}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1081,33 +1102,36 @@ const Profile = () => {
                 <div>
                   <h3 className="text-lg font-semibold mb-4">NFTs ({filteredCombinedNFTs.length})</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredCombinedNFTs.map((nft) => (
-                       <NFTCard
-                         key={nft.id}
-                         nft={{
-                           id: nft.id,
-                           name: nft.name,
-                           image_url: '/placeholder.svg',
-                           owner_address: targetWallet || '',
-                           mint_address: nft.id,
-                           creator_address: targetWallet || '',
-                           price: nft.price,
-                           is_listed: nft.is_listed || false,
-                           collection_id: undefined,
-                           description: nft.description,
-                           attributes: undefined,
-                           collections: undefined
-                         }}
-                         likeCount={getNFTLikeCount(nft.id)}
-                         showOwnerInfo={false}
-                         onNavigate={() => setNavContext({ 
-                           type: 'nft', 
-                           items: filteredCombinedNFTs.map(n => n.id), 
-                           source: 'profile',
-                           tab: 'collections-nfts'
-                         })}
-                       />
-                    ))}
+                    {filteredCombinedNFTs.map((nft) => {
+                      const realNFT = nftsById.get(nft.id);
+                      return (
+                        <NFTCard
+                          key={nft.id}
+                          nft={{
+                            id: nft.id,
+                            name: nft.name,
+                            image_url: realNFT?.image_url || '/placeholder.svg',
+                            owner_address: realNFT?.owner_address || targetWallet || '',
+                            mint_address: realNFT?.mint_address || nft.id,
+                            creator_address: realNFT?.creator_address || targetWallet || '',
+                            price: nft.price,
+                            is_listed: nft.is_listed || false,
+                            collection_id: realNFT?.collection_id,
+                            description: nft.description,
+                            attributes: realNFT?.metadata,
+                            collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
+                          }}
+                          likeCount={getNFTLikeCount(nft.id)}
+                          showOwnerInfo={false}
+                          onNavigate={() => setNavContext({ 
+                            type: 'nft', 
+                            items: filteredCombinedNFTs.map(n => n.id), 
+                            source: 'profile',
+                            tab: 'collections-nfts'
+                          })}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               )}

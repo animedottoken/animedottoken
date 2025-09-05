@@ -58,10 +58,7 @@ export const useUserNFTs = () => {
           is_listed,
           creator_address,
           created_at,
-          updated_at,
-          collections (
-            name
-          )
+          updated_at
         `)
         .order('created_at', { ascending: false });
 
@@ -69,29 +66,24 @@ export const useUserNFTs = () => {
         throw queryError;
       }
 
-      // Transform the data to include collection name
-      const transformedNFTs: UserNFT[] = (data || []).map(nft => {
-        // Handle the case where nft might have joined collections data
-        const collectionName = (nft as any).collections?.name || undefined;
-        
-        return {
-          id: nft.id,
-          name: nft.name,
-          symbol: nft.symbol,
-          description: nft.description,
-          image_url: nft.image_url,
-          mint_address: nft.mint_address,
-          collection_id: nft.collection_id,
-          owner_address: nft.owner_address,
-          creator_address: nft.creator_address,
-          price: nft.price,
-          is_listed: nft.is_listed,
-          metadata: nft.attributes,
-          created_at: nft.created_at,
-          updated_at: nft.updated_at,
-          collection_name: collectionName
-        };
-      });
+      // Transform the data
+      const transformedNFTs: UserNFT[] = (data || []).map(nft => ({
+        id: nft.id,
+        name: nft.name,
+        symbol: nft.symbol,
+        description: nft.description,
+        image_url: nft.image_url,
+        mint_address: nft.mint_address,
+        collection_id: nft.collection_id,
+        owner_address: nft.owner_address,
+        creator_address: nft.creator_address,
+        price: nft.price,
+        is_listed: nft.is_listed,
+        metadata: nft.attributes,
+        created_at: nft.created_at,
+        updated_at: nft.updated_at,
+        collection_name: undefined // Removed to avoid JOIN complexity
+      }));
 
       setNfts(transformedNFTs);
     } catch (err) {
