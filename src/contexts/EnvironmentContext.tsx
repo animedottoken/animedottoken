@@ -24,8 +24,13 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   // Consider staging domains (.staging.yourdomain.com) as beta
   const isStagingDomain = hostname.includes('.staging.') || hostname.includes('-staging.');
   
+  // Mark specific domains as beta even if they're "production"
+  const betaProductionDomains = ['animedottoken.com'];
+  const isProductionBeta = betaProductionDomains.some(domain => hostname.includes(domain));
+  
   const isBetaMode = forceBeta || 
                     isStagingDomain ||
+                    isProductionBeta ||
                     hostname.includes('lovable.app') || 
                     hostname.includes('localhost') || 
                     hostname.includes('127.0.0.1');
