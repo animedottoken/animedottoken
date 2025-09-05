@@ -37,15 +37,7 @@ export const BetaBanner = () => {
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
-              {isLive ? (
-                <>
-                  <strong className="font-bold">LIVE PRODUCTION SITE</strong> - Updates may take a few minutes to appear due to CDN and social caches.
-                </>
-              ) : (
-                <>
-                  <strong className="font-bold">🧪 BETA/DEVELOPMENT SITE</strong> - You are viewing our test environment.
-                </>
-              )}
+              <strong className="font-bold">🧪 BETA TESTING</strong> - You are viewing our beta test environment.
             </AlertDescription>
           </div>
           <Button 
