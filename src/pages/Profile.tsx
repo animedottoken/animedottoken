@@ -1153,6 +1153,7 @@ const Profile = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={undefined}
                       disabled={true}
                       className="flex items-center gap-2"
                       title="Coming soon — stay tuned"
