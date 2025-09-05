@@ -1,6 +1,6 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { FlaskConical, ExternalLink, X } from 'lucide-react';
+import { FlaskConical, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 
@@ -8,7 +8,7 @@ const STORAGE_KEY = 'beta-banner-dismissed';
 
 export const BetaBanner = () => {
   const [dismissed, setDismissed] = useState(false);
-  const { isBetaMode, isLive } = useEnvironment();
+  const { isLive } = useEnvironment();
 
   useEffect(() => {
     const isDismissed = localStorage.getItem(STORAGE_KEY) === 'true';
@@ -39,31 +39,11 @@ export const BetaBanner = () => {
             <AlertDescription className="text-sm font-medium">
               {isLive ? (
                 <>
-                  <strong className="font-bold">LIVE PRODUCTION SITE</strong> — Updates may take a few minutes to appear due to CDN and social caches.
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="text-warning-foreground underline p-0 ml-1 h-auto font-semibold hover:text-foreground/90"
-                    onClick={() => window.open('https://animedottoken.lovable.app', '_blank')}
-                    aria-label="Visit beta test site"
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    Visit Test Version
-                  </Button>
+                  <strong className="font-bold">LIVE PRODUCTION SITE</strong> - Updates may take a few minutes to appear due to CDN and social caches.
                 </>
               ) : (
                 <>
-                  <strong className="font-bold">🧪 BETA/DEVELOPMENT SITE</strong> — You're viewing our test environment.
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="text-warning-foreground underline p-0 ml-1 h-auto font-semibold hover:text-foreground/90"
-                    onClick={() => window.open('https://animedottoken.com', '_blank')}
-                    aria-label="Visit live production site"
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    Visit Live Version
-                  </Button>
+                  <strong className="font-bold">🧪 BETA/DEVELOPMENT SITE</strong> - You are viewing our test environment.
                 </>
               )}
             </AlertDescription>
