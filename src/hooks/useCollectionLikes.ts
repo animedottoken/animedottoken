@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-// Debounce timer map for per-collection debouncing
-const debounceTimers = new Map<string, NodeJS.Timeout>();
 
 export const useCollectionLikes = () => {
   const { user } = useAuth();
@@ -12,6 +10,10 @@ export const useCollectionLikes = () => {
   const [likedCollections, setLikedCollections] = useState<string[]>([]);
   const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
   const [pendingLikes, setPendingLikes] = useState<Set<string>>(new Set());
+  
+  // Per-instance debounce and watchdog timers
+  const debounceTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const watchdogTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const loadLikedCollections = async () => {
     if (!user) return;
@@ -42,21 +44,22 @@ export const useCollectionLikes = () => {
     }
   };
 
-  const toggleLike = async (collectionId: string) => {
-    if (!user) return;
-    
-    // Check if we have pending requests for this collection to prevent double clicks
-    if (debounceTimers.has(collectionId)) {
-      return;
+  const toggleLike = async (collectionId: string): Promise<boolean> => {
+    if (!user) return false;
+
+    // Prevent double clicks for this collection
+    if (debounceTimers.current.has(collectionId)) {
+      return false;
     }
 
     const isCurrentlyLiked = isLiked(collectionId);
     const action = isCurrentlyLiked ? 'unlike' : 'like';
-    
+
     console.log(`Toggling collection like: ${action} for collection ${collectionId}`);
-    
+
+    // Mark pending
     setPendingLikes(prev => new Set([...prev, collectionId]));
-    
+
     // Optimistic UI update
     setOptimisticLikes(prev => {
       const newSet = new Set(prev);
@@ -68,7 +71,7 @@ export const useCollectionLikes = () => {
       return newSet;
     });
 
-    // Dispatch optimistic update event for creator stats
+    // Optimistic creator stats event
     const optimisticDelta = isCurrentlyLiked ? -1 : 1;
     window.dispatchEvent(new CustomEvent('optimistic-creator-stats-update', {
       detail: {
@@ -78,98 +81,101 @@ export const useCollectionLikes = () => {
       }
     }));
 
-    // Set debounce timer
-    const timeoutId = setTimeout(async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('like-collection', {
-          body: {
-            collection_id: collectionId,
-            action: action
-          }
+    // Start watchdog to recover from stuck pending
+    if (watchdogTimers.current.has(collectionId)) {
+      clearTimeout(watchdogTimers.current.get(collectionId)!);
+      watchdogTimers.current.delete(collectionId);
+    }
+    const watchdogId = setTimeout(() => {
+      if (pendingLikes.has(collectionId)) {
+        console.warn('Watchdog clearing stuck pending like for collection:', collectionId);
+        setPendingLikes(prev => { const ns = new Set(prev); ns.delete(collectionId); return ns; });
+        // Revert optimistic state since backend didn't confirm in time
+        setOptimisticLikes(prev => {
+          const ns = new Set(prev);
+          if (action === 'like') { ns.delete(collectionId); } else { ns.add(collectionId); }
+          return ns;
         });
+        // Revert creator stats
+        window.dispatchEvent(new CustomEvent('optimistic-creator-stats-update', {
+          detail: { collectionId, type: 'collection_likes', delta: -optimisticDelta }
+        }));
+        toast({ title: 'Network slow', description: 'Please try again.', variant: 'destructive' });
+      }
+      watchdogTimers.current.delete(collectionId);
+    }, 4000);
+    watchdogTimers.current.set(collectionId, watchdogId);
 
-        if (error || !data?.success) {
-          console.error('Error toggling collection like:', error);
-          
-          // Revert optimistic update
-          setOptimisticLikes(prev => {
-            const newSet = new Set(prev);
-            if (isCurrentlyLiked) {
-              newSet.add(collectionId);
-            } else {
-              newSet.delete(collectionId);
-            }
-            return newSet;
+    // Debounce and perform server call
+    return new Promise<boolean>((resolve) => {
+      const timeoutId = setTimeout(async () => {
+        // Remove this timer from our map
+        debounceTimers.current.delete(collectionId);
+        try {
+          const { data, error } = await supabase.functions.invoke('like-collection', {
+            body: { collection_id: collectionId, action }
           });
 
-          // Revert creator stats
-          window.dispatchEvent(new CustomEvent('optimistic-creator-stats-update', {
-            detail: {
-              collectionId,
-              type: 'collection_likes',
-              delta: -optimisticDelta
-            }
-          }));
-          
-          toast({
-            title: "Error",
-            description: `Failed to ${action} collection`,
-            variant: "destructive",
-          });
-        } else {
+          if (error || !data?.success) {
+            console.error('Error toggling collection like:', error || data);
+
+            // Revert optimistic update
+            setOptimisticLikes(prev => {
+              const newSet = new Set(prev);
+              if (isCurrentlyLiked) {
+                newSet.add(collectionId);
+              } else {
+                newSet.delete(collectionId);
+              }
+              return newSet;
+            });
+
+            // Revert creator stats
+            window.dispatchEvent(new CustomEvent('optimistic-creator-stats-update', {
+              detail: { collectionId, type: 'collection_likes', delta: -optimisticDelta }
+            }));
+
+            toast({ title: 'Error', description: `Failed to ${action} collection`, variant: 'destructive' });
+            throw new Error('Toggle like failed');
+          }
+
           // Success - update actual liked collections
           if (action === 'like') {
             setLikedCollections(prev => [...prev, collectionId]);
           } else {
             setLikedCollections(prev => prev.filter(id => id !== collectionId));
           }
-          
+
           // Clear optimistic state since it's now reflected in actual state
-          setOptimisticLikes(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(collectionId);
-            return newSet;
-          });
+          setOptimisticLikes(prev => { const ns = new Set(prev); ns.delete(collectionId); return ns; });
+
+          // Clear pending state
+          setPendingLikes(prev => { const ns = new Set(prev); ns.delete(collectionId); return ns; });
+
+          // Clear watchdog
+          if (watchdogTimers.current.has(collectionId)) {
+            clearTimeout(watchdogTimers.current.get(collectionId)!);
+            watchdogTimers.current.delete(collectionId);
+          }
+
+          resolve(true);
+        } catch (err) {
+          // Clear pending state on error too
+          setPendingLikes(prev => { const ns = new Set(prev); ns.delete(collectionId); return ns; });
+
+          // Clear watchdog on error
+          if (watchdogTimers.current.has(collectionId)) {
+            clearTimeout(watchdogTimers.current.get(collectionId)!);
+            watchdogTimers.current.delete(collectionId);
+          }
+
+          resolve(false);
         }
-      } catch (error) {
-        console.error('Error calling like-collection function:', error);
-        
-        // Revert optimistic update
-        setOptimisticLikes(prev => {
-          const newSet = new Set(prev);
-          if (isCurrentlyLiked) {
-            newSet.add(collectionId);
-          } else {
-            newSet.delete(collectionId);
-          }
-          return newSet;
-        });
+      }, 300);
 
-        // Revert creator stats
-        window.dispatchEvent(new CustomEvent('optimistic-creator-stats-update', {
-          detail: {
-            collectionId,
-            type: 'collection_likes',
-            delta: -optimisticDelta
-          }
-        }));
-        
-        toast({
-          title: "Error",
-          description: "Network error occurred",
-          variant: "destructive",
-        });
-      } finally {
-        setPendingLikes(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(collectionId);
-          return newSet;
-        });
-        debounceTimers.delete(collectionId);
-      }
-    }, 300);
-
-    debounceTimers.set(collectionId, timeoutId);
+      // Store debounce timer for this collection
+      debounceTimers.current.set(collectionId, timeoutId);
+    });
   };
 
   const isLiked = (collectionId: string): boolean => {

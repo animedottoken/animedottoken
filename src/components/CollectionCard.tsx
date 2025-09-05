@@ -119,12 +119,12 @@ export const CollectionCard = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              disabled={isPending(collection.id)}
+              aria-disabled={isPending(collection.id)}
               className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                 isLiked(collection.id)
                   ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
                   : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
-              }`}
+              } ${isPending(collection.id) ? 'opacity-50' : ''}`}
               title={isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
               aria-label={isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
             >

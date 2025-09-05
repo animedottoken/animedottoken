@@ -9,6 +9,7 @@ export const useNFTLikes = () => {
   const [pendingLikes, setPendingLikes] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const debounceTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const watchdogTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const loadLikedNFTs = useCallback(async () => {
     if (!user) {
@@ -48,12 +49,7 @@ export const useNFTLikes = () => {
       return false;
     }
 
-    // Validate UUID
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(nftId)) {
-      toast.error('Invalid NFT ID - only NFTs can be liked');
-      return false;
-    }
+    // Accept any nftId format; backend will validate permissions and existence
 
     // Clear any existing debounce timer for this specific NFT
     if (debounceTimers.current.has(nftId)) {
@@ -77,6 +73,27 @@ export const useNFTLikes = () => {
 
     // Set pending state for this specific NFT
     setPendingLikes(prev => new Set(prev).add(nftId));
+
+    // Start watchdog timer to clear stuck pending state
+    if (watchdogTimers.current.has(nftId)) {
+      clearTimeout(watchdogTimers.current.get(nftId)!);
+      watchdogTimers.current.delete(nftId);
+    }
+    const watchdogId = setTimeout(() => {
+      if (pendingLikes.has(nftId)) {
+        console.warn('Watchdog clearing stuck pending like for NFT:', nftId);
+        setPendingLikes(prev => { const ns = new Set(prev); ns.delete(nftId); return ns; });
+        // Revert optimistic change since backend didn't confirm in time
+        setOptimisticLikes(prev => {
+          const ns = new Set(prev);
+          if (action === 'like') { ns.delete(nftId); } else { ns.add(nftId); }
+          return ns;
+        });
+        toast.warning('Network is slow. Please try liking again.');
+      }
+      watchdogTimers.current.delete(nftId);
+    }, 4000);
+    watchdogTimers.current.set(nftId, watchdogId);
 
     // Dispatch optimistic update signals for stats
     const nftDelta = wasLiked ? -1 : 1;
@@ -157,6 +174,12 @@ export const useNFTLikes = () => {
             return newSet;
           });
           
+          // Clear watchdog timer if present
+          if (watchdogTimers.current.has(nftId)) {
+            clearTimeout(watchdogTimers.current.get(nftId)!);
+            watchdogTimers.current.delete(nftId);
+          }
+          
           resolve(true);
         } catch (err: any) {
           console.error('Error toggling like:', err);
@@ -205,6 +228,12 @@ export const useNFTLikes = () => {
             newSet.delete(nftId);
             return newSet;
           });
+          
+          // Clear watchdog timer if present
+          if (watchdogTimers.current.has(nftId)) {
+            clearTimeout(watchdogTimers.current.get(nftId)!);
+            watchdogTimers.current.delete(nftId);
+          }
           
           resolve(false);
         }

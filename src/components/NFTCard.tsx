@@ -146,7 +146,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
            <Button 
              variant="ghost" 
              size="sm" 
-             disabled={isPending(nft.id)}
+             aria-disabled={isPending(nft.id)}
              className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 flex items-center gap-1 min-w-[50px] ${
                isLiked(nft.id)
                  ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
