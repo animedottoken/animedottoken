@@ -21,16 +21,26 @@ export const useNFTLikes = () => {
     try {
       const { data, error } = await supabase.functions.invoke('get-liked-nfts');
 
-      if (error) throw error;
+      if (error || !data?.success) {
+        console.warn('Edge function failed, falling back to direct query:', error);
+        // Fallback to direct database query with RLS
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('nft_likes')
+          .select('nft_id')
+          .eq('user_id', user.id);
+        
+        if (!fallbackError && fallbackData) {
+          setLikedNFTs(fallbackData.map(l => l.nft_id));
+        }
+        return;
+      }
       
-      if (data?.success && data.liked_nft_ids) {
+      if (data?.liked_nft_ids) {
         setLikedNFTs(data.liked_nft_ids);
-      } else {
-        setLikedNFTs([]);
       }
     } catch (err) {
       console.error('Error loading liked NFTs:', err);
-      setLikedNFTs([]);
+      // Keep existing state on error instead of wiping it
     }
   }, [user]);
 

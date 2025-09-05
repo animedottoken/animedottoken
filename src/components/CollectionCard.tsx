@@ -42,7 +42,7 @@ export const CollectionCard = ({
   showCreatorInfo = true,
   onNavigate
 }: CollectionCardProps) => {
-  const { isLiked, toggleLike, loading: likeLoading } = useCollectionLikes();
+  const { isLiked, toggleLike, isPending } = useCollectionLikes();
   const navigate = useNavigate();
   const [creatorNickname, setCreatorNickname] = useState<string>('');
   const [creatorVerified, setCreatorVerified] = useState<boolean>(false);
@@ -81,7 +81,7 @@ export const CollectionCard = ({
     e.preventDefault();
     e.stopPropagation();
     
-    if (likeLoading) return;
+    if (isPending(collection.id)) return;
     
     console.log('Toggling like for collection:', collection.id);
     const success = await toggleLike(collection.id);
@@ -119,7 +119,7 @@ export const CollectionCard = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              disabled={likeLoading}
+              disabled={isPending(collection.id)}
               className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
                 isLiked(collection.id)
                   ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
