@@ -62,7 +62,31 @@ serve(async (req) => {
       );
     }
 
-    const { wallet_address, signature, message, wallet_type = 'secondary' }: LinkWalletRequest = await req.json();
+    // Parse JSON body safely
+    const contentType = req.headers.get('content-type') || '';
+    const contentLength = req.headers.get('content-length') || '';
+
+    const rawBody = await req.text();
+    let body: LinkWalletRequest | null = null;
+    try {
+      body = rawBody ? JSON.parse(rawBody) as LinkWalletRequest : null;
+    } catch (parseErr) {
+      console.error('Body parse error:', { contentType, contentLength, rawSample: rawBody?.slice(0, 200) }, parseErr);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { status: 200, headers: corsHeaders }
+      );
+    }
+
+    if (!body) {
+      console.error('Empty body received for link-secondary-wallet', { contentType, contentLength });
+      return new Response(
+        JSON.stringify({ success: false, error: 'Request body is required' }),
+        { status: 200, headers: corsHeaders }
+      );
+    }
+
+    const { wallet_address, signature, message, wallet_type = 'secondary' } = body;
 
     console.log('link-secondary-wallet request:', { 
       user_id: user.id,
