@@ -115,14 +115,17 @@ export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
               value={[formData.royalty_percentage]}
               max={50}
               step={0.01}
-              onValueChange={(value) => setFormData({ ...formData, royalty_percentage: value[0] })}
+              onValueChange={(value) => {
+                setFormData({ ...formData, royalty_percentage: value[0] });
+                if (setRoyaltyInput) setRoyaltyInput(value[0].toString());
+              }}
               className="w-full"
             />
             <div className="flex items-center gap-2">
               <Input
                 type="text"
                 placeholder="0.00"
-                value={royaltyInput || formData.royalty_percentage.toString()}
+                value={royaltyInput}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   if (setRoyaltyInput) {
