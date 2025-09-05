@@ -29,6 +29,7 @@ interface CollectionCardProps {
     verified?: boolean;
     description?: string;
   };
+  likeCount?: number;
   navigationQuery?: string;
   overlayActions?: OverlayAction[];
   showCreatorInfo?: boolean;
@@ -37,6 +38,7 @@ interface CollectionCardProps {
 
 export const CollectionCard = ({ 
   collection, 
+  likeCount,
   navigationQuery, 
   overlayActions, 
   showCreatorInfo = true,
@@ -134,6 +136,9 @@ export const CollectionCard = ({
               aria-label={isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
             >
               <Heart className={`h-4 w-4 ${isLiked(collection.id) ? "fill-current" : ""}`} />
+              {likeCount !== undefined && likeCount > 0 && (
+                <span className="ml-1 text-xs font-medium">{likeCount}</span>
+              )}
             </Button>
           </SocialActionWrapper>
           

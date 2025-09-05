@@ -15,6 +15,7 @@ import { NFTCard } from "@/components/NFTCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { hasRequiredListingFields } from '@/lib/attributeHelpers';
 import { setNavContext } from "@/lib/navContext";
+import { useCollectionLikeCounts } from '@/hooks/useLikeCounts';
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +29,7 @@ const Marketplace = () => {
 
   const { nfts, loading: nftsLoading } = useNFTs();
   const { collections, loading: collectionsLoading } = usePublicCollections();
+  const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
 
   // Filter NFTs to only show listed items with required fields
   const filteredNFTs = useMemo(() => {
@@ -267,6 +269,7 @@ const Marketplace = () => {
                     creator_address_masked: collection.creator_address,
                     items_redeemed: collection.items_redeemed || 0
                   }}
+                  likeCount={getCollectionLikeCount(collection.id)}
                   onNavigate={() => setNavContext({ type: 'collection', items: filteredCollections.map(c => c.id), source: 'marketplace' })}
                 />
               ))

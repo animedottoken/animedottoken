@@ -1139,6 +1139,7 @@ const Profile = () => {
                               verified: realCollection?.verified || false,
                               description: collection.description
                             }}
+                            likeCount={getCollectionLikeCount(collection.id)}
                             onNavigate={() => setNavContext({ 
                               type: 'collection', 
                               items: filteredCombinedCollections.map(c => c.id), 
