@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
+import { useRealtimeNFTStats } from '@/hooks/useRealtimeNFTStats';
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useCollectionLikes } from "@/hooks/useCollectionLikes";
 import SocialActionWrapper from '@/components/SocialActionWrapper';
@@ -94,6 +95,10 @@ export default function CreatorProfile() {
   const { getCreatorFollowerCount: getCurrentCreatorFollowerCount, getCreatorNFTLikeCount } = useRealtimeCreatorStatsByUser(
     currentCreatorUserId ? [currentCreatorUserId] : []
   );
+
+  // Get real-time NFT stats for displaying accurate like counts
+  const creatorNFTIds = creatorNFTs.map(nft => nft.id);
+  const { getNFTLikeCount } = useRealtimeNFTStats(creatorNFTIds);
 
   // Listen for cross-page creator stats updates to refresh current creator
   useEffect(() => {
@@ -299,17 +304,18 @@ export default function CreatorProfile() {
           console.log('CreatorProfile: No profile found for wallet:', wallet);
         }
 
-        // Process NFTs data with like counts
+        // Process NFTs data with like counts using RLS-safe RPC
         if (nfts) {
           const nftIds = nfts.map(n => n.id);
-          const { data: likeRows } = await supabase
-            .from('nft_likes')
-            .select('nft_id')
-            .in('nft_id', nftIds);
-
+          
+          // Use RLS-safe RPC function to get like counts
+          const { data: likeCounts } = await supabase.rpc('get_nft_like_counts_public');
+          
           const counts: Record<string, number> = {};
-          (likeRows || []).forEach((r: any) => {
-            counts[r.nft_id] = (counts[r.nft_id] || 0) + 1;
+          (likeCounts || []).forEach((item: any) => {
+            if (nftIds.includes(item.nft_id)) {
+              counts[item.nft_id] = Number(item.like_count) || 0;
+            }
           });
 
           setCreatorNFTs(nfts.map(nft => ({
@@ -723,9 +729,9 @@ export default function CreatorProfile() {
                       {nft.price && (
                         <span className="text-sm font-medium">{nft.price} SOL</span>
                       )}
-                      <div className="flex items-center space-x-1">
-                        <span className="text-xs text-muted-foreground">{nft.likes_count} likes</span>
-                      </div>
+                       <div className="flex items-center space-x-1">
+                         <span className="text-xs text-muted-foreground">{getNFTLikeCount(nft.id)} likes</span>
+                       </div>
                     </div>
                   </CardContent>
                 </Card>

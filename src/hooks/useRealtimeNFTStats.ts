@@ -34,31 +34,28 @@ export const useRealtimeNFTStats = (nftIds: string[] = []) => {
     try {
       setLoading(true);
       
-      // Load like counts for each NFT
-      const statsPromises = nftIds.map(async (nftId) => {
-        const { count } = await supabase
-          .from('nft_likes')
-          .select('*', { count: 'exact', head: true })
-          .eq('nft_id', nftId);
-        
-        return {
-          nftId,
-          likes_count: count || 0
-        };
-      });
-
-      const stats = await Promise.all(statsPromises);
+      // Use RLS-safe RPC function to get like counts
+      const { data: likeCounts, error } = await supabase.rpc('get_nft_like_counts_public');
       
-      const statsMap = stats.reduce((acc, stat) => ({
-        ...acc,
-        [stat.nftId]: {
-          likes_count: stat.likes_count
-        }
-      }), {});
+      if (error) {
+        console.error('Error loading NFT like counts:', error);
+        setNFTStats({});
+        return;
+      }
+
+      // Create stats map for requested NFT IDs
+      const statsMap = nftIds.reduce((acc, nftId) => {
+        const likeData = (likeCounts || []).find((item: any) => item.nft_id === nftId);
+        acc[nftId] = {
+          likes_count: likeData ? Number(likeData.like_count) : 0
+        };
+        return acc;
+      }, {} as NFTStats);
 
       setNFTStats(statsMap);
     } catch (error) {
       console.error('Error loading NFT stats:', error);
+      setNFTStats({});
     } finally {
       setLoading(false);
     }

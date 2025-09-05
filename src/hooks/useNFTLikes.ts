@@ -8,7 +8,7 @@ let toggleDebounceTimeout: NodeJS.Timeout | null = null;
 export const useNFTLikes = () => {
   const [likedNFTs, setLikedNFTs] = useState<string[]>([]);
   const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(false);
+  const [pendingLikes, setPendingLikes] = useState<Set<string>>(new Set());
   const { user } = useAuth();
 
   const loadLikedNFTs = useCallback(async () => {
@@ -65,6 +65,9 @@ export const useNFTLikes = () => {
       return newSet;
     });
 
+    // Set pending state for this specific NFT
+    setPendingLikes(prev => new Set(prev).add(nftId));
+
     // Dispatch optimistic update signals for stats
     const nftDelta = wasLiked ? -1 : 1;
     window.dispatchEvent(new CustomEvent('nft-stats-update', {
@@ -97,7 +100,6 @@ export const useNFTLikes = () => {
 
     return new Promise<boolean>((resolve) => {
       toggleDebounceTimeout = setTimeout(async () => {
-        setLoading(true);
         try {
           const { data, error } = await supabase.functions.invoke('like-nft', {
             body: { 
@@ -131,6 +133,13 @@ export const useNFTLikes = () => {
           
           // Clear optimistic state - actual state now matches
           setOptimisticLikes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(nftId);
+            return newSet;
+          });
+
+          // Clear pending state
+          setPendingLikes(prev => {
             const newSet = new Set(prev);
             newSet.delete(nftId);
             return newSet;
@@ -177,10 +186,15 @@ export const useNFTLikes = () => {
           };
           
           revertCreatorStats();
+
+          // Clear pending state on error too
+          setPendingLikes(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(nftId);
+            return newSet;
+          });
           
           resolve(false);
-        } finally {
-          setLoading(false);
         }
       }, 75); // 75ms debounce
     });
@@ -189,6 +203,10 @@ export const useNFTLikes = () => {
   const isLiked = useCallback((nftId: string) => {
     return likedNFTs.includes(nftId) || optimisticLikes.has(nftId);
   }, [likedNFTs, optimisticLikes]);
+
+  const isPending = useCallback((nftId: string) => {
+    return pendingLikes.has(nftId);
+  }, [pendingLikes]);
 
   useEffect(() => {
     loadLikedNFTs();
@@ -224,9 +242,10 @@ export const useNFTLikes = () => {
 
   return {
     likedNFTs,
-    loading,
+    loading: pendingLikes.size > 0, // Global loading only if any NFT is pending
     toggleLike,
     isLiked,
+    isPending,
     refreshLikes: loadLikedNFTs,
   };
 };
