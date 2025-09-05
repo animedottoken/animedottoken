@@ -182,7 +182,7 @@ export const useNFTLikes = () => {
         } finally {
           setLoading(false);
         }
-      }, 300); // 300ms debounce
+      }, 75); // 75ms debounce
     });
   }, [user, likedNFTs]);
 

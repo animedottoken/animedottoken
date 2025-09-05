@@ -206,8 +206,8 @@ export default function CreatorProfile() {
         // Use RPC function for creator stats
         const { data: stats } = await supabase.rpc('get_creators_public_stats');
 
-        // Find stats for this specific wallet
-        const creatorStats = (stats || []).find((s: any) => s.wallet_address === wallet);
+        // Find stats for this specific creator by user_id
+        const creatorStats = (stats || []).find((s: any) => s.creator_user_id === profile?.user_id);
 
         // Fetch creator's NFTs using secure RPC function
         const { data: allNfts } = await supabase.rpc('get_nfts_public');
@@ -579,7 +579,7 @@ export default function CreatorProfile() {
               <div className="flex items-center justify-center mb-2">
                 <Heart className="w-5 h-5 text-destructive mr-1" />
                 <span className="text-2xl font-bold text-foreground">
-                  {getCurrentCreatorFollowerCount(wallet || '')} / {getCreatorNFTLikeCount(wallet || '')}
+                  {getCurrentCreatorFollowerCount(creator.user_id || '')} / {getCreatorNFTLikeCount(creator.user_id || '')}
                 </span>
               </div>
               <TooltipProvider>
