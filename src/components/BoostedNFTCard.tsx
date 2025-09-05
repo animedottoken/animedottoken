@@ -118,12 +118,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (likeLoading || connecting) return;
-    
-    if (!publicKey) {
-      await connect();
-      return;
-    }
+    if (likeLoading) return;
     
     // We need the unmasked creator address for optimistic updates
     // For now, we'll pass null as a fallback - ideally we'd fetch the real address

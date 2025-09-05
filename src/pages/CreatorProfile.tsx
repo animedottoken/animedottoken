@@ -173,10 +173,6 @@ export default function CreatorProfile() {
 
   // Toggle NFT like with real-time stats
   const handleToggleLike = async (nftId: string) => {
-    if (!publicKey) {
-      await connect();
-      return;
-    }
     const nft = creatorNFTs.find(n => n.id === nftId);
     if (!nft) return;
 

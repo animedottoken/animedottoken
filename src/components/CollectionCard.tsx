@@ -82,12 +82,7 @@ export const CollectionCard = ({
     e.preventDefault();
     e.stopPropagation();
     
-    if (likeLoading || connecting) return;
-    
-    if (!publicKey) {
-      await connect();
-      return;
-    }
+    if (likeLoading) return;
     
     console.log('Toggling like for collection:', collection.id);
     const success = await toggleLike(collection.id);
