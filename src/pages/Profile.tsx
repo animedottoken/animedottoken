@@ -1143,7 +1143,7 @@ const Profile = () => {
             
             {/* Newsletter Management */}
             <section>
-              <Card className="opacity-60">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
@@ -1153,7 +1153,6 @@ const Profile = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={true}
                       className="flex items-center gap-2"
                       title="Coming soon — stay tuned"
                     >

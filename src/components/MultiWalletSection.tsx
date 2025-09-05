@@ -96,11 +96,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
             </Button>
           </CardTitle>
           <CardDescription>
-            {disabledActions ? (
-              "Coming soon — stay tuned"
-            ) : (
-              "Link multiple wallets to create a unified profile that displays all your NFTs and collections in one place."
-            )}
+            Link multiple wallets to create a unified profile that displays all your NFTs and collections in one place.
           </CardDescription>
         </CardHeader>
         {isExpanded && (
