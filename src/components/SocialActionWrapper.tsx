@@ -19,6 +19,7 @@ export default function SocialActionWrapper({
   const { user } = useAuth();
 
   const handleClick = async (e?: React.MouseEvent) => {
+    console.info('[SocialActionWrapper] click', { action, requireAuth, authed: !!user });
     // Prevent Link navigation bubbling
     if (e) {
       e.preventDefault();
@@ -38,6 +39,7 @@ export default function SocialActionWrapper({
   };
 
   const handleAuthSuccess = () => {
+    console.info('[SocialActionWrapper] auth success', { action });
     setShowAuthModal(false);
     // Try the action again after successful auth
     setTimeout(() => {
@@ -47,9 +49,9 @@ export default function SocialActionWrapper({
 
   return (
     <>
-      <div onClick={handleClick}>
+      <span style={{ display: 'contents' }} onClickCapture={handleClick}>
         {children}
-      </div>
+      </span>
       
       <AuthModal
         open={showAuthModal}
