@@ -101,12 +101,16 @@ serve(async (req) => {
     console.log('📋 Existing subscription:', existing ? {
       status: existing.status,
       created_at: existing.created_at,
-      confirmed_at: existing.confirmed_at
+      confirmed_at: existing.confirmed_at,
+      unsubscribed_at: existing.unsubscribed_at
     } : 'None found')
 
     if (existing) {
-      if (existing.status === 'confirmed') {
-        console.log('✅ Already confirmed subscription found')
+      // Check if truly subscribed (confirmed AND not unsubscribed)
+      const isTrulySubscribed = existing.status === 'confirmed' && !existing.unsubscribed_at;
+      
+      if (isTrulySubscribed) {
+        console.log('✅ Already confirmed and active subscription found')
         return new Response(JSON.stringify({ 
           message: 'You are already subscribed to our newsletter!',
           status: 'already_subscribed'
@@ -114,6 +118,13 @@ serve(async (req) => {
           status: 200,
           headers: { 'Content-Type': 'application/json', ...corsHeaders }
         })
+      }
+      
+      // Handle inconsistent state recovery
+      if (existing.status === 'confirmed' && existing.unsubscribed_at) {
+        console.log('🔄 State recovery: User was confirmed but has unsubscribed_at - treating as unsubscribed, allowing re-subscription')
+      } else if (existing.status === 'pending') {
+        console.log('🔄 Existing pending subscription found - will update with new token')
       }
       
       // Update existing pending subscription with new token
