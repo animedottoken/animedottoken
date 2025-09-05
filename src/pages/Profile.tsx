@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail, Sparkles } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -24,6 +24,7 @@ import { useLikedCollections } from '@/hooks/useLikedCollections';
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { useNFTLikeCounts, useCollectionLikeCounts } from '@/hooks/useLikeCounts';
 import { useRealtimeNFTStats } from '@/hooks/useRealtimeNFTStats';
+import { useProfileLikeStats } from '@/hooks/useProfileLikeStats';
 import { useFilteredNFTs, useFilteredCollections } from "@/hooks/useFilteredData";
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { Progress } from '@/components/ui/progress';
@@ -118,6 +119,9 @@ const Profile = () => {
   const { likedCollections } = useLikedCollections();
   const { followedCreators, isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
+  
+  // Get like stats for this profile by wallet address
+  const { nft_likes_count, collection_likes_count, total_likes_count } = useProfileLikeStats(targetWallet);
   
   // Get all NFT IDs for real-time stats
   const allNFTIds = useMemo(() => {
@@ -913,11 +917,24 @@ const Profile = () => {
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <Heart className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{getCreatorTotalLikeCount(profile?.user_id || '')}</span>
+                        <span className="font-medium">{nft_likes_count}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">Total Likes - likes received on NFTs and collections (includes self-likes)</p>
+                      <p className="text-xs">NFT Likes - likes received on this creator's NFTs</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="font-medium">{collection_likes_count}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Collection Likes - likes received on this creator's collections</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
