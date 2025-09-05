@@ -124,6 +124,39 @@ export const useFilteredNFTs = (
         return false;
       }
 
+      // Media type filter
+      if (filters.mediaType && filters.mediaType !== 'all') {
+        const hasAnimationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
+        const mediaType = nft.attributes?.media_type || nft.attributes?.metadata?.media_type;
+        
+        switch (filters.mediaType) {
+          case 'static':
+            // Static images: no animation_url or media_type
+            if (hasAnimationUrl) return false;
+            break;
+          case 'video':
+            // Video: has animation_url and media_type starts with 'video/'
+            if (!hasAnimationUrl || !mediaType?.startsWith('video/')) return false;
+            break;
+          case 'audio':
+            // Audio: has animation_url and media_type starts with 'audio/'
+            if (!hasAnimationUrl || !mediaType?.startsWith('audio/')) return false;
+            break;
+          case '3d':
+            // 3D: has animation_url and media_type contains 'gltf' or 'glb'
+            if (!hasAnimationUrl || (!mediaType?.includes('gltf') && !mediaType?.includes('glb'))) return false;
+            break;
+          case 'animated':
+            // Animated: has animation_url but not video/audio/3D
+            if (!hasAnimationUrl || 
+                mediaType?.startsWith('video/') || 
+                mediaType?.startsWith('audio/') ||
+                mediaType?.includes('gltf') ||
+                mediaType?.includes('glb')) return false;
+            break;
+        }
+      }
+
       return true;
     });
 

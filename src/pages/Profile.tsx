@@ -1079,6 +1079,7 @@ const Profile = () => {
               showMarketplaceFilter={isOwnProfile}
               showSourceFilter={isOwnProfile}
               showTypeFilter={true}
+              showMediaTypeFilter={combinedFilters.type !== 'collections'} // Show only when viewing NFTs or all
               showPriceFilters={true}
               showRoyaltyFilters={true}
               placeholder="Search..."

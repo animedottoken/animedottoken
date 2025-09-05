@@ -46,7 +46,8 @@ export const ProfileFiltersProvider: React.FC<ProfileFiltersProviderProps> = ({ 
     minRoyalty: '',
     maxRoyalty: '',
     marketplace: 'all',
-    type: 'all'
+    type: 'all',
+    mediaType: 'all'
   });
 
   const [currentPriceRange, setCurrentPriceRange] = useState<PriceRange | undefined>();

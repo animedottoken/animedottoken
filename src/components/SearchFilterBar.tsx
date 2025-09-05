@@ -36,6 +36,7 @@ export interface FilterState {
   maxRoyalty: string;
   marketplace?: 'all' | 'yes' | 'no'; // Only for profile NFTs
   type?: 'all' | 'collections' | 'nfts'; // New type filter for combined tab
+  mediaType?: 'all' | 'static' | 'video' | 'audio' | '3d' | 'animated'; // Media type filter for NFTs
 }
 
 interface PriceRange {
@@ -56,6 +57,7 @@ interface SearchFilterBarProps {
   showRoyaltyFilters?: boolean;
   showSourceFilter?: boolean;
   showTypeFilter?: boolean;
+  showMediaTypeFilter?: boolean;
   placeholder?: string;
   categories?: string[];
   collapsible?: boolean;
@@ -71,6 +73,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   showRoyaltyFilters = true,
   showSourceFilter = true,
   showTypeFilter = false,
+  showMediaTypeFilter = false,
   placeholder = "Full-text search...",
   categories = ['Art', 'Gaming', 'Music', 'Photography', 'Sports', 'Utility', 'Other', 'No category'],
   collapsible = false,
@@ -151,7 +154,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       minRoyalty: '',
       maxRoyalty: '',
       ...(showMarketplaceFilter && { marketplace: 'all' }),
-      ...(showTypeFilter && { type: 'all' })
+      ...(showTypeFilter && { type: 'all' }),
+      ...(showMediaTypeFilter && { mediaType: 'all' })
     };
     setLocalFilters(clearedFilters);
     setAutoPriceSync({ min: false, max: false });
@@ -261,6 +265,9 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       case 'type':
         updateFilter('type', 'all');
         break;
+      case 'mediaType':
+        updateFilter('mediaType', 'all');
+        break;
       case 'minPrice':
         updateFilter('minPrice', '');
         setAutoPriceSync(prev => ({ ...prev, min: false }));
@@ -289,7 +296,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     localFilters.minRoyalty || 
     localFilters.maxRoyalty ||
     (showMarketplaceFilter && localFilters.marketplace !== 'all') ||
-    (showTypeFilter && localFilters.type !== 'all');
+    (showTypeFilter && localFilters.type !== 'all') ||
+    (showMediaTypeFilter && localFilters.mediaType !== 'all');
 
   // Always show selected filters section since we always show sort
   const shouldShowSelectedFilters = hasActiveFilters || true;
@@ -418,6 +426,20 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
+            {showMediaTypeFilter && localFilters.mediaType !== 'all' && (
+              <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                Media: {localFilters.mediaType === 'static' ? 'Static Images' : 
+                        localFilters.mediaType === 'video' ? 'Video' :
+                        localFilters.mediaType === 'audio' ? 'Audio' :
+                        localFilters.mediaType === '3d' ? '3D/AR' : 'Animated'}
+                <button 
+                  onClick={() => clearIndividualFilter('mediaType')}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
             {localFilters.minPrice && !autoPriceSync.min && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Min Price: {localFilters.minPrice} SOL
@@ -516,6 +538,13 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           onValueChange={(value) => updateFilter('category', value)}
           categories={categories}
         />
+
+        {showMediaTypeFilter && (
+          <MediaTypeFilterSelect 
+            value={localFilters.mediaType || 'all'}
+            onValueChange={(value) => updateFilter('mediaType', value)}
+          />
+        )}
 
         <div className="flex items-center space-x-2">
           <Switch
@@ -816,6 +845,52 @@ const CategoryFilterSelect = ({
           ))}
           <MenuSelectItem value="no-category" onSelect={() => selectState.onValueChange('no-category')}>
             No category
+          </MenuSelectItem>
+        </MenuSelectContent>
+      </MenuSelect>
+    </div>
+  );
+};
+
+const MediaTypeFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
+  const selectState = useMenuSelect({ value, onValueChange });
+  
+  const getDisplayText = (val: string) => {
+    switch (val) {
+      case 'static': return 'Static Images';
+      case 'video': return 'Video';
+      case 'audio': return 'Audio';
+      case '3d': return '3D/AR';
+      case 'animated': return 'Animated';
+      default: return 'All Media Types';
+    }
+  };
+  
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">Media Type</Label>
+      <MenuSelect onOpenChange={() => {}}>
+        <MenuSelectTrigger>
+          <MenuSelectValue>{getDisplayText(value)}</MenuSelectValue>
+        </MenuSelectTrigger>
+        <MenuSelectContent>
+          <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
+            All Media Types
+          </MenuSelectItem>
+          <MenuSelectItem value="static" onSelect={() => selectState.onValueChange('static')}>
+            Static Images
+          </MenuSelectItem>
+          <MenuSelectItem value="video" onSelect={() => selectState.onValueChange('video')}>
+            Video
+          </MenuSelectItem>
+          <MenuSelectItem value="audio" onSelect={() => selectState.onValueChange('audio')}>
+            Audio
+          </MenuSelectItem>
+          <MenuSelectItem value="3d" onSelect={() => selectState.onValueChange('3d')}>
+            3D/AR
+          </MenuSelectItem>
+          <MenuSelectItem value="animated" onSelect={() => selectState.onValueChange('animated')}>
+            Animated
           </MenuSelectItem>
         </MenuSelectContent>
       </MenuSelect>

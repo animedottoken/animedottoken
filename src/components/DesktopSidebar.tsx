@@ -155,6 +155,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
                 showRoyaltyFilters={true}
                 showSourceFilter={true}
                 showTypeFilter={true}
+                showMediaTypeFilter={combinedFilters.type !== 'collections'} // Show only when viewing NFTs or all
                 placeholder="Search..."
                 collapsible={false}
                 currentPriceRange={currentPriceRange}
