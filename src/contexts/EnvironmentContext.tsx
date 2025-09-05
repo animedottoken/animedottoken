@@ -13,9 +13,23 @@ const BETA_FEATURES = [
 ];
 
 export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
-  // Detect environment based on URL
+  // Detect environment based on URL and params
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-  const isBetaMode = hostname.includes('lovable.app') || hostname.includes('localhost') || hostname.includes('127.0.0.1');
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  
+  // Force beta mode via URL param or env var
+  const forceBeta = searchParams.has('beta') || 
+                   (typeof process !== 'undefined' && process.env.VITE_FORCE_BETA === '1');
+  
+  // Consider staging domains (.staging.yourdomain.com) as beta
+  const isStagingDomain = hostname.includes('.staging.') || hostname.includes('-staging.');
+  
+  const isBetaMode = forceBeta || 
+                    isStagingDomain ||
+                    hostname.includes('lovable.app') || 
+                    hostname.includes('localhost') || 
+                    hostname.includes('127.0.0.1');
+  
   const isLive = !isBetaMode;
 
   const canUseFeature = (feature: string): boolean => {
