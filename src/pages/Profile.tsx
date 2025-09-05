@@ -1094,6 +1094,7 @@ const Profile = () => {
                            attributes: undefined,
                            collections: undefined
                          }}
+                         likeCount={getNFTLikeCount(nft.id)}
                          showOwnerInfo={false}
                          onNavigate={() => setNavContext({ 
                            type: 'nft', 

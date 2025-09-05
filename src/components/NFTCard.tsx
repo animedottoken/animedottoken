@@ -44,9 +44,10 @@ interface NFTCardProps {
   verified?: boolean;
   mintedProgress?: string;
   onNavigate?: () => void;
+  likeCount?: number; // Add like count prop
 }
 
-export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress, onNavigate }: NFTCardProps) => {
+export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress, onNavigate, likeCount = 0 }: NFTCardProps) => {
   const { isLiked, toggleLike, isPending } = useNFTLikes();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -142,20 +143,23 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
             handleLike(e);
           }}
         >
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            disabled={isPending(nft.id)}
-            className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-              isLiked(nft.id)
-                ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
-                : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
-            } ${isPending(nft.id) ? 'opacity-50' : ''}`}
-            title={isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
-            aria-label={isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
-          >
-            <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
-          </Button>
+           <Button 
+             variant="ghost" 
+             size="sm" 
+             disabled={isPending(nft.id)}
+             className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 flex items-center gap-1 min-w-[50px] ${
+               isLiked(nft.id)
+                 ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
+                 : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
+             } ${isPending(nft.id) ? 'opacity-50' : ''}`}
+             title={isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
+             aria-label={isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
+           >
+             <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
+             {likeCount > 0 && (
+               <span className="text-xs font-medium ml-1">{likeCount}</span>
+             )}
+           </Button>
         </SocialActionWrapper>
         
         {/* Hover overlay */}
