@@ -120,8 +120,8 @@ const Profile = () => {
   const { followedCreators, isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
   
-  // Get like stats for this profile by wallet address
-  const { nft_likes_count, collection_likes_count, total_likes_count } = useProfileLikeStats(targetWallet);
+  // Get like stats for this profile by user_id
+  const { nft_likes_count, collection_likes_count, total_likes_count } = useProfileLikeStats(profile?.user_id || null);
   
   // Get all NFT IDs for real-time stats
   const allNFTIds = useMemo(() => {

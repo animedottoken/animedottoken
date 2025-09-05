@@ -7,7 +7,7 @@ interface LikeStats {
   total_likes_count: number;
 }
 
-export const useProfileLikeStats = (walletAddress: string | null) => {
+export const useProfileLikeStats = (userId: string | null) => {
   const [likeStats, setLikeStats] = useState<LikeStats>({
     nft_likes_count: 0,
     collection_likes_count: 0,
@@ -16,7 +16,7 @@ export const useProfileLikeStats = (walletAddress: string | null) => {
   const [loading, setLoading] = useState(true);
 
   const loadLikeStats = async () => {
-    if (!walletAddress) {
+    if (!userId) {
       setLikeStats({
         nft_likes_count: 0,
         collection_likes_count: 0,
@@ -29,9 +29,9 @@ export const useProfileLikeStats = (walletAddress: string | null) => {
     try {
       setLoading(true);
       
-      // Use the RPC function to get like stats by wallet
-      const { data, error } = await supabase.rpc('get_creator_like_stats_by_wallet', {
-        p_wallet: walletAddress
+      // Use the RPC function to get like stats by user_id
+      const { data, error } = await supabase.rpc('get_creator_like_stats_by_user_id', {
+        p_user_id: userId
       });
 
       if (error) {
@@ -105,7 +105,7 @@ export const useProfileLikeStats = (walletAddress: string | null) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [walletAddress]);
+  }, [userId]);
 
   return {
     ...likeStats,

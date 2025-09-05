@@ -1111,8 +1111,8 @@ export type Database = {
           follower_count: number
         }[]
       }
-      get_creator_like_stats_by_wallet: {
-        Args: { p_wallet: string }
+      get_creator_like_stats_by_user_id: {
+        Args: { p_user_id: string }
         Returns: {
           collection_likes_count: number
           nft_likes_count: number
