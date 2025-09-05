@@ -55,10 +55,19 @@ export const UnifiedMintInterface = () => {
   const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Set wallet on metaplex service when connected
+  // Auto-fill treasury wallet when wallet is connected and show success toast
   useEffect(() => {
-    // For now, we'll handle wallet integration in individual mint calls
-    // metaplexService.setWallet(wallet);
+    if (publicKey) {
+      // Auto-fill treasury wallet if it's empty
+      if (!formData.treasury_wallet) {
+        setFormData(prev => ({ ...prev, treasury_wallet: publicKey }));
+      }
+      // Show success toast only when wallet is actually connected
+      toast.success('Wallet connected successfully!');
+    } else {
+      // Clear treasury wallet when wallet is disconnected
+      setFormData(prev => ({ ...prev, treasury_wallet: '' }));
+    }
   }, [publicKey]);
 
   // Scroll to top when step changes
@@ -411,7 +420,6 @@ export const UnifiedMintInterface = () => {
           onConnectWallet={async () => {
             try {
               await connect();
-              toast.success('Wallet connected successfully!');
             } catch (error) {
               toast.error('Failed to connect wallet');
             }
