@@ -1150,10 +1150,19 @@ const Profile = () => {
                       <Mail className="h-5 w-5" />
                       Newsletter
                     </span>
-                    <Badge variant="outline">Coming Soon</Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={true}
+                      className="flex items-center gap-2"
+                      title="Coming soon — stay tuned"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span className="hidden sm:inline">Coming Soon</span>
+                    </Button>
                   </CardTitle>
                   <CardDescription>
-                    Newsletter subscription and management features are coming soon.
+                    Coming soon — stay tuned
                   </CardDescription>
                 </CardHeader>
               </Card>
