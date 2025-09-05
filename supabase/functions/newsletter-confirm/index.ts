@@ -103,7 +103,7 @@ serve(async (req) => {
       throw updateError
     }
 
-    // Add confirmed subscriber to Resend audience
+    // Add confirmed subscriber to Resend audience (optional)
     const audienceId = Deno.env.get('RESEND_NEWSLETTER_AUDIENCE_ID')
     if (audienceId && subscription?.email) {
       try {
@@ -116,8 +116,13 @@ serve(async (req) => {
           })
           console.log('Successfully added to Resend audience')
         }
-      } catch (resendError) {
-        console.error('Error adding to Resend audience:', resendError)
+      } catch (resendError: any) {
+        // Handle restricted API key gracefully
+        if (resendError?.statusCode === 401 && resendError?.name === 'restricted_api_key') {
+          console.log('ℹ️ Resend API key is restricted to email sending only - skipping audience management')
+        } else {
+          console.error('Error adding to Resend audience:', resendError)
+        }
         // Don't fail the confirmation if Resend sync fails
       }
     }
