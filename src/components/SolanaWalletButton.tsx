@@ -55,6 +55,15 @@ export const SolanaWalletButton = () => {
     }
   };
 
+  const handleWalletConnect = async (walletName: string) => {
+    try {
+      await connectWith(walletName);
+    } catch (error) {
+      console.error(`${walletName} connection failed:`, error);
+      toast.error(`Failed to connect ${walletName}`);
+    }
+  };
+
   const connectPreviewWallet = async () => {
     try {
       await connectWith('Unsafe');
@@ -139,7 +148,7 @@ export const SolanaWalletButton = () => {
           <div className="grid grid-cols-2 gap-2">
             {providers.installed.includes('Phantom') && (
               <Button
-                onClick={handleConnect}
+                onClick={() => handleWalletConnect('Phantom')}
                 disabled={connecting}
                 variant="outline"
                 size="sm"
@@ -150,7 +159,7 @@ export const SolanaWalletButton = () => {
             )}
             {providers.installed.includes('Solflare') && (
               <Button
-                onClick={handleConnect}
+                onClick={() => handleWalletConnect('Solflare')}
                 disabled={connecting}
                 variant="outline"
                 size="sm"
