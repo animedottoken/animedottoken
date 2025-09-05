@@ -7,8 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -104,62 +102,74 @@ serve(async (req) => {
       throw updateError
     }
 
-    // Add confirmed subscriber to Resend audience (optional)
-    const audienceId = Deno.env.get('RESEND_NEWSLETTER_AUDIENCE_ID')
-    if (audienceId && subscription?.email) {
-      try {
-        console.log('Adding subscriber to Resend audience:', subscription.email)
-        if (resend.contacts) {
-          await resend.contacts.create({
-            email: subscription.email,
-            unsubscribed: false,
-            audienceId: audienceId,
-          })
-          console.log('Successfully added to Resend audience')
-        }
-      } catch (resendError: any) {
-        // Handle restricted API key gracefully
-        if (resendError?.statusCode === 401 && resendError?.name === 'restricted_api_key') {
-          console.log('ℹ️ Resend API key is restricted to email sending only - skipping audience management')
-        } else {
-          console.error('Error adding to Resend audience:', resendError)
-        }
-        // Don't fail the confirmation if Resend sync fails
-      }
-    }
-
     console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)
 
-    // Send confirmation email
-    try {
-      console.log('📧 Sending subscription confirmed email...');
-      
-      // Validate and use RESEND_FROM_EMAIL with fallback
-      const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
-      const validatedFrom = fromEmail && fromEmail.includes('@') ? fromEmail : 'ANIME.TOKEN Newsletter <onboarding@resend.dev>';
-      
-      console.log('📧 Using from address:', validatedFrom);
-      
-      const emailResponse = await resend.emails.send({
-        from: validatedFrom,
-        to: [subscription.email],
-        subject: 'Newsletter subscription confirmed!',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #2563eb; text-align: center;">Welcome to ANIME.TOKEN Newsletter! 🎉</h1>
-            <p style="font-size: 16px; line-height: 1.6;">Thank you for confirming your subscription to our newsletter.</p>
-            <p style="font-size: 16px; line-height: 1.6;">You'll now receive updates about the latest NFT drops, community events, and exclusive announcements.</p>
-            <div style="text-align: center; margin-top: 30px;">
-              <p style="color: #666; font-size: 14px;">Visit your profile to manage your newsletter preferences anytime.</p>
-            </div>
-          </div>
-        `,
-      });
-      
-      console.log('✅ Subscription confirmed email sent:', emailResponse);
-    } catch (emailError) {
-      console.error('❌ Error sending confirmation email:', emailError);
-      // Don't fail the entire operation if email fails
+    // Add confirmed subscriber to Resend audience and send confirmation email (optional)
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const audienceId = Deno.env.get('RESEND_NEWSLETTER_AUDIENCE_ID');
+    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
+    
+    if (resendApiKey && (audienceId || fromEmail)) {
+      try {
+        const resend = new Resend(resendApiKey);
+        
+        // Add to audience if configured
+        if (audienceId && subscription?.email) {
+          try {
+            console.log('Adding subscriber to Resend audience:', subscription.email)
+            if (resend.contacts) {
+              await resend.contacts.create({
+                email: subscription.email,
+                unsubscribed: false,
+                audienceId: audienceId,
+              })
+              console.log('Successfully added to Resend audience')
+            }
+          } catch (resendError: any) {
+            // Handle restricted API key gracefully
+            if (resendError?.statusCode === 401 && resendError?.name === 'restricted_api_key') {
+              console.log('ℹ️ Resend API key is restricted to email sending only - skipping audience management')
+            } else {
+              console.error('Error adding to Resend audience:', resendError)
+            }
+            // Don't fail the confirmation if Resend sync fails
+          }
+        }
+
+        // Send confirmation email if configured
+        if (fromEmail && fromEmail.includes('@')) {
+          try {
+            console.log('📧 Sending subscription confirmed email...');
+            console.log('📧 Using from address:', fromEmail);
+            
+            const emailResponse = await resend.emails.send({
+              from: fromEmail,
+              to: [subscription.email],
+              subject: 'Newsletter subscription confirmed!',
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <h1 style="color: #2563eb; text-align: center;">Welcome to ANIME.TOKEN Newsletter! 🎉</h1>
+                  <p style="font-size: 16px; line-height: 1.6;">Thank you for confirming your subscription to our newsletter.</p>
+                  <p style="font-size: 16px; line-height: 1.6;">You'll now receive updates about the latest NFT drops, community events, and exclusive announcements.</p>
+                  <div style="text-align: center; margin-top: 30px;">
+                    <p style="color: #666; font-size: 14px;">Visit your profile to manage your newsletter preferences anytime.</p>
+                  </div>
+                </div>
+              `,
+            });
+            
+            console.log('✅ Subscription confirmed email sent:', emailResponse);
+          } catch (emailError) {
+            console.error('❌ Error sending confirmation email:', emailError);
+            // Don't fail the entire operation if email fails
+          }
+        }
+      } catch (resendInitError) {
+        console.error('❌ Failed to initialize Resend:', resendInitError);
+        // Don't fail the confirmation if Resend fails
+      }
+    } else {
+      console.log('⚠️ Resend not configured - skipping email and audience sync');
     }
     
     // Return HTTP redirect to profile with success message
