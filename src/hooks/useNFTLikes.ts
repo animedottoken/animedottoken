@@ -71,7 +71,29 @@ export const useNFTLikes = () => {
       detail: { nftId, delta: nftDelta }
     }));
     
-    // Note: Creator stats updates are now handled by user-ID based system
+    // Try to get creator user_id for stats update
+    const getCreatorUserId = async () => {
+      try {
+        const { data: nftData } = await supabase
+          .from('nfts')
+          .select('creator_user_id')
+          .eq('id', nftId)
+          .maybeSingle();
+        
+        if (nftData?.creator_user_id) {
+          // Dispatch creator stats update with proper user_id
+          window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+            detail: { userId: nftData.creator_user_id, type: 'nft_like', delta: nftDelta }
+          }));
+          console.log('Updated creator NFT like stats for user:', nftData.creator_user_id);
+        }
+      } catch (error) {
+        console.error('Error getting creator user_id for stats update:', error);
+      }
+    };
+    
+    // Run async to not block the main like operation
+    getCreatorUserId();
 
     return new Promise<boolean>((resolve) => {
       toggleDebounceTimeout = setTimeout(async () => {
@@ -134,7 +156,27 @@ export const useNFTLikes = () => {
             detail: { nftId, delta: revertDelta }
           }));
           
-          // Note: Creator stats updates are now handled by user-ID based system
+          // Revert creator stats if needed
+          const revertCreatorStats = async () => {
+            try {
+              const { data: nftData } = await supabase
+                .from('nfts')
+                .select('creator_user_id')
+                .eq('id', nftId)
+                .maybeSingle();
+              
+              if (nftData?.creator_user_id) {
+                window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+                  detail: { userId: nftData.creator_user_id, type: 'nft_like', delta: revertDelta }
+                }));
+                console.log('Reverted creator NFT like stats for user:', nftData.creator_user_id);
+              }
+            } catch (error) {
+              console.error('Error reverting creator stats:', error);
+            }
+          };
+          
+          revertCreatorStats();
           
           resolve(false);
         } finally {

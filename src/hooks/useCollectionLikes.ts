@@ -65,6 +65,30 @@ export const useCollectionLikes = () => {
       return newSet;
     });
 
+    // Dispatch creator stats update
+    const dispatchCreatorStatsUpdate = async () => {
+      try {
+        const { data: collectionData } = await supabase
+          .from('collections')
+          .select('creator_user_id')
+          .eq('id', collectionId)
+          .maybeSingle();
+        
+        if (collectionData?.creator_user_id) {
+          const delta = action === 'like' ? 1 : -1;
+          window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+            detail: { userId: collectionData.creator_user_id, type: 'collection_like', delta }
+          }));
+          console.log('Updated creator collection like stats for user:', collectionData.creator_user_id);
+        }
+      } catch (error) {
+        console.error('Error updating creator collection stats:', error);
+      }
+    };
+    
+    // Run async to not block the main like operation
+    dispatchCreatorStatsUpdate();
+
     return new Promise<boolean>((resolve) => {
       toggleDebounceTimeout = setTimeout(async () => {
         setLoading(true);
@@ -120,6 +144,29 @@ export const useCollectionLikes = () => {
             }
             return newSet;
           });
+          
+          // Revert creator stats
+          const revertCreatorStats = async () => {
+            try {
+              const { data: collectionData } = await supabase
+                .from('collections')
+                .select('creator_user_id')
+                .eq('id', collectionId)
+                .maybeSingle();
+              
+              if (collectionData?.creator_user_id) {
+                const revertDelta = action === 'like' ? -1 : 1;
+                window.dispatchEvent(new CustomEvent('creator-stats-update-by-user', {
+                  detail: { userId: collectionData.creator_user_id, type: 'collection_like', delta: revertDelta }
+                }));
+                console.log('Reverted creator collection like stats for user:', collectionData.creator_user_id);
+              }
+            } catch (error) {
+              console.error('Error reverting creator collection stats:', error);
+            }
+          };
+          
+          revertCreatorStats();
           
           resolve(false);
         } finally {
