@@ -4,11 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Shield, LogOut, Clock, Wallet, AlertTriangle } from 'lucide-react';
+import { Shield, LogOut, Clock } from 'lucide-react';
 import { useSessionSecurity } from '@/hooks/useSessionSecurity';
-import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SecuritySettingsDialogProps {
   children: React.ReactNode;
@@ -17,7 +15,6 @@ interface SecuritySettingsDialogProps {
 export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const { rememberSession, setRememberSession, signOutFromAllDevices, lastActivity } = useSessionSecurity();
-  const { rememberWallet, setRememberWallet } = useSolanaWallet();
   const { user } = useAuth();
 
   const handleSignOutAllDevices = async () => {
@@ -64,7 +61,7 @@ export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps
                 <div className="space-y-0.5">
                   <Label htmlFor="remember-session">Remember my login</Label>
                   <p className="text-sm text-muted-foreground">
-                    Stay signed in for extended periods (less secure on shared devices)
+                    If OFF, you'll be signed out after ~30 minutes of inactivity
                   </p>
                 </div>
                 <Switch
@@ -96,40 +93,6 @@ export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps
             </CardContent>
           </Card>
 
-          {/* Wallet Security */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Wallet className="h-4 w-4" />
-                Wallet Security
-              </CardTitle>
-              <CardDescription>
-                Configure how wallet connections are handled for better security.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="remember-wallet">Remember wallet connection</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Auto-reconnect to your wallet on future visits
-                  </p>
-                </div>
-                <Switch
-                  id="remember-wallet"
-                  checked={rememberWallet}
-                  onCheckedChange={setRememberWallet}
-                />
-              </div>
-
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  For maximum security, disable "remember" options when using shared or public devices.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
 
           {/* Account Info */}
           <Card>
