@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useCollection } from "@/hooks/useCollection";
 import { StandaloneMintWizard } from "@/components/StandaloneMintWizard";
 import { NetworkSafetyBanner } from "@/components/NetworkSafetyBanner";
+import { MintAccessGate } from "@/components/MintAccessGate";
 
 export default function MintNFT() {
   const [searchParams] = useSearchParams();
@@ -37,18 +38,20 @@ export default function MintNFT() {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <NetworkSafetyBanner />
           
-          {currentStep === 1 && (
-            <div className="text-center mb-8 pt-4">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-                {heading}
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                {subheading}
-              </p>
-            </div>
-          )}
+          <MintAccessGate>
+            {currentStep === 1 && (
+              <div className="text-center mb-8 pt-4">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
+                  {heading}
+                </h1>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+                  {subheading}
+                </p>
+              </div>
+            )}
 
-          <StandaloneMintWizard onStepChange={setCurrentStep} />
+            <StandaloneMintWizard onStepChange={setCurrentStep} />
+          </MintAccessGate>
         </div>
       </main>
     </>
