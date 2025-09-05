@@ -149,6 +149,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
              aria-disabled={isPending(nft.id)}
              onClickCapture={(e) => { console.info('[NFTCard] heart click capture', { id: nft.id, pending: isPending(nft.id) }); if (e.defaultPrevented) return; handleLike(e); }}
              className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 flex items-center gap-1 min-w-[50px] pointer-events-auto ${
+               isLiked(nft.id)
                  ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
                  : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
              } ${isPending(nft.id) ? 'opacity-50' : ''}`}

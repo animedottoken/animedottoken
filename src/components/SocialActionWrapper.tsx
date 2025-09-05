@@ -49,7 +49,7 @@ export default function SocialActionWrapper({
 
   return (
     <>
-      <span style={{ display: 'contents' }} onClickCapture={handleClick}>
+      <span style={{ display: 'contents' }} onClick={handleClick}>
         {children}
       </span>
       
