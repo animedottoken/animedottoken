@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, MailCheck, MailX, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Mail, MailCheck, MailX, Loader2, AlertCircle, RefreshCw, Bug } from 'lucide-react';
 import { useNewsletterStatus } from '@/hooks/useNewsletterStatus';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
+import { NewsletterDebugPanel } from '@/components/NewsletterDebugPanel';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export function NewsletterManagement() {
   const { status, loading, error, unsubscribe, refetch } = useNewsletterStatus();
   const [unsubscribing, setUnsubscribing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
   const { toast } = useToast();
 
   const handleUnsubscribe = async () => {
@@ -142,8 +145,20 @@ export function NewsletterManagement() {
             )}
           </Button>
           
-          <div className="pt-2 border-t">
+          <div className="pt-2 border-t space-y-4">
             <NewsletterSubscribe />
+            
+            <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full">
+                  <Bug className="h-4 w-4 mr-2" />
+                  {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 pt-2">
+                <NewsletterDebugPanel />
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </CardContent>
       </Card>
@@ -224,8 +239,20 @@ export function NewsletterManagement() {
             </div>
             
             {(status.status === 'not_subscribed' || status.status === 'unsubscribed') && (
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t space-y-4">
                 <NewsletterSubscribe />
+                
+                <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Bug className="h-4 w-4 mr-2" />
+                      {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-2 pt-2">
+                    <NewsletterDebugPanel />
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             )}
           </div>
@@ -238,6 +265,18 @@ export function NewsletterManagement() {
               </AlertDescription>
             </Alert>
             <NewsletterSubscribe />
+            
+            <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full">
+                  <Bug className="h-4 w-4 mr-2" />
+                  {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 pt-2">
+                <NewsletterDebugPanel />
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         )}
       </CardContent>

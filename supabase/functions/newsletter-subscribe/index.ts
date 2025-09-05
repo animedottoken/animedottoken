@@ -211,32 +211,63 @@ serve(async (req) => {
     
     // Get validated RESEND_FROM_EMAIL - no fallback
     const fromEmail = Deno.env.get('RESEND_FROM_EMAIL');
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
     let emailSent = false;
+    
+    console.log('🔧 Email configuration check:', {
+      fromEmailConfigured: !!fromEmail,
+      fromEmailValid: fromEmail && fromEmail.includes('@'),
+      apiKeyConfigured: !!resendApiKey,
+      apiKeyLength: resendApiKey ? resendApiKey.length : 0
+    });
     
     if (!fromEmail || !fromEmail.includes('@')) {
       console.error('❌ RESEND_FROM_EMAIL not configured or invalid:', fromEmail);
+      console.log('💡 Expected format: "ANIME.TOKEN Newsletter <newsletter@animedottoken.com>"');
+      console.log('⚠️ Skipping email send - will return confirmation URL for manual confirmation');
+    } else if (!resendApiKey) {
+      console.error('❌ RESEND_API_KEY not configured');
+      console.log('💡 Please set the RESEND_API_KEY in Supabase Edge Function secrets');
       console.log('⚠️ Skipping email send - will return confirmation URL for manual confirmation');
     } else {
       console.log('📧 Using from address:', fromEmail);
+      console.log('🔑 API key configured (length:', resendApiKey.length, ')');
       
       try {
-        const { error: emailError } = await resend.emails.send({
+        const emailPayload = {
           from: fromEmail,
           to: [email],
           subject: 'Please confirm your newsletter subscription',
           html,
           reply_to: 'support@animedottoken.com'
+        };
+        
+        console.log('📤 Sending email with payload:', {
+          from: fromEmail,
+          to: email,
+          subject: emailPayload.subject,
+          htmlLength: html.length,
+          replyTo: emailPayload.reply_to
         });
+        
+        const { error: emailError, data: emailData } = await resend.emails.send(emailPayload);
 
         if (emailError) {
           console.error('❌ Email send error:', emailError);
+          console.log('💡 Common issues:');
+          console.log('   - Domain not verified in Resend (check https://resend.com/domains)');
+          console.log('   - Invalid API key (check https://resend.com/api-keys)');
+          console.log('   - From email not matching verified domain');
+          console.log('   - Rate limits exceeded');
           console.log('⚠️ Email failed but subscription record was created/updated');
         } else {
           console.log(`✅ Confirmation email sent successfully to: ${email}`);
+          console.log('📧 Email response:', emailData);
           emailSent = true;
         }
       } catch (sendError) {
         console.error('❌ Email send exception:', sendError);
+        console.log('💡 This might indicate network issues or Resend service problems');
         console.log('⚠️ Email failed but subscription record was created/updated');
       }
     }
