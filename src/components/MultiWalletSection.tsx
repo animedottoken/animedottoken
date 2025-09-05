@@ -10,7 +10,11 @@ import { useUserWallets, UserWallet } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
 import { toast } from 'sonner';
 
-export const MultiWalletSection = () => {
+interface MultiWalletSectionProps {
+  disabledActions?: boolean;
+}
+
+export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSectionProps) => {
   const [linkWalletOpen, setLinkWalletOpen] = useState(false);
   const [unlinkWalletId, setUnlinkWalletId] = useState<string | null>(null);
   const [showCleanupDialog, setShowCleanupDialog] = useState(false);
@@ -91,6 +95,9 @@ export const MultiWalletSection = () => {
           </CardTitle>
           <CardDescription>
             Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
+            {disabledActions && (
+              <div className="text-xs text-muted-foreground mt-1 font-medium">Coming soon - Actions temporarily disabled</div>
+            )}
           </CardDescription>
         </CardHeader>
         {isExpanded && (
@@ -149,7 +156,8 @@ export const MultiWalletSection = () => {
                     <Button
                       variant="outline" 
                       size="sm"
-                      onClick={() => setShowCleanupDialog(true)}
+                      onClick={disabledActions ? undefined : () => setShowCleanupDialog(true)}
+                      disabled={disabledActions}
                       className="h-8 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                     >
                       Reset
@@ -168,7 +176,8 @@ export const MultiWalletSection = () => {
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
                 <div className="mt-3 space-y-2">
                   <Button
-                    onClick={() => setLinkWalletOpen(true)}
+                    onClick={disabledActions ? undefined : () => setLinkWalletOpen(true)}
+                    disabled={disabledActions}
                     variant="default" 
                     size="sm"
                     className="w-full sm:w-auto"
@@ -211,7 +220,8 @@ export const MultiWalletSection = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setUnlinkWalletId(wallet.id)}
+                            onClick={disabledActions ? undefined : () => setUnlinkWalletId(wallet.id)}
+                            disabled={disabledActions}
                             className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -229,8 +239,8 @@ export const MultiWalletSection = () => {
           {primaryWallet && (
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
-                onClick={() => setLinkWalletOpen(true)}
-                disabled={summary.remaining_secondary_slots === 0}
+                onClick={disabledActions ? undefined : () => setLinkWalletOpen(true)}
+                disabled={disabledActions || summary.remaining_secondary_slots === 0}
                 variant="outline"
                 className="flex-1"
               >

@@ -944,24 +944,11 @@ const Profile = () => {
 
       {/* Auto Primary Wallet Prompt - Show only on own profile */}
       {isOwnProfile && showPrimaryPrompt && connectedWallet && (
-        canUseFeature('wallet-linking') ? (
-          <AutoPrimaryWalletPrompt
-            walletAddress={connectedWallet}
-            onSetAsPrimary={handleSetAsPrimary}
-            onDismiss={handleDismiss}
-          />
-        ) : (
-          <ComingSoonFeature
-            title="Primary Wallet Linking"
-            description="Set up your primary wallet for identity verification and enhanced features."
-          >
-            <AutoPrimaryWalletPrompt
-              walletAddress={connectedWallet}
-              onSetAsPrimary={handleSetAsPrimary}
-              onDismiss={handleDismiss}
-            />
-          </ComingSoonFeature>
-        )
+        <AutoPrimaryWalletPrompt
+          walletAddress={connectedWallet}
+          onSetAsPrimary={handleSetAsPrimary}
+          onDismiss={handleDismiss}
+        />
       )}
 
       {/* Newsletter Banner */}
@@ -1152,16 +1139,7 @@ const Profile = () => {
             </section>
 
             {/* Wallet Management */}
-            {canUseFeature('wallet-linking') ? (
-              <MultiWalletSection />
-            ) : (
-              <ComingSoonFeature
-                title="Multi-Wallet Management"
-                description="Link multiple wallets to your account for seamless asset management and enhanced security."
-              >
-                <MultiWalletSection />
-              </ComingSoonFeature>
-            )}
+            <MultiWalletSection disabledActions={!canUseFeature('wallet-linking')} />
             
             {/* Newsletter Management */}
             <section>

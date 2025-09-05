@@ -7,12 +7,14 @@ interface AutoPrimaryWalletPromptProps {
   walletAddress: string;
   onSetAsPrimary: () => Promise<boolean>;
   onDismiss: () => void;
+  disabled?: boolean;
 }
 
 export const AutoPrimaryWalletPrompt = ({ 
   walletAddress, 
   onSetAsPrimary, 
-  onDismiss 
+  onDismiss,
+  disabled = false 
 }: AutoPrimaryWalletPromptProps) => {
   const handleSetAsPrimary = async () => {
     const success = await onSetAsPrimary();
@@ -34,7 +36,12 @@ export const AutoPrimaryWalletPrompt = ({
             as your primary identity wallet?
           </AlertDescription>
           <div className="flex gap-2 mt-3">
-            <Button size="sm" onClick={handleSetAsPrimary} className="h-8">
+            <Button 
+              size="sm" 
+              onClick={disabled ? undefined : handleSetAsPrimary} 
+              disabled={disabled}
+              className="h-8"
+            >
               <Crown className="h-3 w-3 mr-1" />
               Set as Primary
             </Button>
@@ -42,6 +49,9 @@ export const AutoPrimaryWalletPrompt = ({
               Maybe Later
             </Button>
           </div>
+          {disabled && (
+            <div className="text-xs text-muted-foreground mt-2">Coming soon - Feature temporarily disabled</div>
+          )}
         </div>
         <Button 
           variant="ghost" 
