@@ -1162,7 +1162,7 @@ const Profile = () => {
                     </Button>
                   </CardTitle>
                   <CardDescription>
-                    Coming soon — stay tuned
+                    Subscribe to receive updates about new features, NFT drops, and community highlights directly in your inbox.
                   </CardDescription>
                 </CardHeader>
               </Card>

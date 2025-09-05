@@ -99,7 +99,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
             {disabledActions ? (
               "Coming soon — stay tuned"
             ) : (
-              "Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets."
+              "Link multiple wallets to create a unified profile that displays all your NFTs and collections in one place."
             )}
           </CardDescription>
         </CardHeader>
