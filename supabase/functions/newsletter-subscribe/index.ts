@@ -287,8 +287,8 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       message: emailSent 
-        ? 'Please check your email to confirm your subscription!' 
-        : 'Please use the confirmation link below to complete your subscription.',
+        ? 'Confirmation email sent! Please check your inbox.' 
+        : 'Email delivery failed. Please use the confirmation link below.',
       status: 'confirmation_sent',
       email: email,
       emailSent: emailSent,

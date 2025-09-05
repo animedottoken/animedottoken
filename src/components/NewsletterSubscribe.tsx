@@ -42,13 +42,17 @@ export function NewsletterSubscribe() {
       console.log('Newsletter subscribe response:', data);
       
       if (data?.emailSent === false && data?.confirmUrl) {
-        // Email failed to send, show manual confirmation dialog
+        // Email failed to send, persist URL and show manual confirmation dialog
+        localStorage.setItem('newsletter_confirm_url', data.confirmUrl);
+        localStorage.setItem('newsletter_confirm_email', user.email);
         setConfirmUrl(data.confirmUrl);
         setShowConfirmDialog(true);
-        toast.warning(data.message || 'Email delivery failed. Please use the confirmation link.');
+        toast.warning('Email delivery failed. Please use the confirmation link below.');
       } else {
-        // Email sent successfully
-        toast.success(data.message || 'Please check your email to confirm your subscription!');
+        // Email sent successfully, clear any persisted confirmation data
+        localStorage.removeItem('newsletter_confirm_url');
+        localStorage.removeItem('newsletter_confirm_email');
+        toast.success('Confirmation email sent! Please check your inbox.');
       }
       
     } catch (error) {
