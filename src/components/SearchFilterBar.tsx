@@ -353,6 +353,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
+            {!localFilters.includeExplicit && (
+              <Badge variant="outline" className="text-xs">
+                Explicit hidden
+              </Badge>
+            )}
             {showListingFilter && localFilters.listing !== 'all' && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
@@ -397,7 +402,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
-            {localFilters.minRoyalty && (
+            {localFilters.minRoyalty && !autoRoyaltySync.min && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Min Royalty: {localFilters.minRoyalty}%
                 <button 
@@ -408,7 +413,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 </button>
               </Badge>
             )}
-            {localFilters.maxRoyalty && (
+            {localFilters.maxRoyalty && !autoRoyaltySync.max && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
                 Max Royalty: {localFilters.maxRoyalty}%
                 <button 
