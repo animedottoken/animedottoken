@@ -107,14 +107,20 @@ serve(async (req) => {
       unsubscribed_at: subscription.unsubscribed_at
     } : 'No record');
 
-    const status = subscription ? subscription.status : 'not_subscribed';
+    // Determine final status - if unsubscribed_at is set, user is unsubscribed regardless of status field
+    let finalStatus = subscription ? subscription.status : 'not_subscribed';
+    if (subscription?.unsubscribed_at) {
+      finalStatus = 'unsubscribed';
+      console.log('🔄 Status overridden to unsubscribed due to unsubscribed_at field');
+    }
+
     const subscribedAt = subscription?.confirmed_at || subscription?.created_at;
     const unsubscribedAt = subscription?.unsubscribed_at;
-    const isSubscribed = status === 'confirmed';
+    const isSubscribed = finalStatus === 'confirmed';
 
     console.log('✅ Final newsletter status:', { 
       email: userEmail, 
-      status, 
+      status: finalStatus, 
       isSubscribed,
       subscribedAt,
       unsubscribedAt 
@@ -122,7 +128,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       email: userEmail,
-      status,
+      status: finalStatus,
       subscribedAt,
       unsubscribedAt,
       isSubscribed

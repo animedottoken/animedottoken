@@ -81,7 +81,7 @@ export function NewsletterManagement() {
       case 'confirmed':
         return 'You are subscribed and will receive our newsletter updates.';
       case 'pending':
-        return 'Please check your email and click the confirmation link to complete your subscription.';
+        return 'Please check your email and click the confirmation link to complete your subscription. You can cancel anytime.';
       case 'unsubscribed':
         return 'You have unsubscribed from our newsletter.';
       default:
@@ -202,7 +202,7 @@ export function NewsletterManagement() {
             </div>
             
             <div className="flex gap-2">
-              {status.isSubscribed && (
+              {(status.status === 'confirmed' || status.status === 'pending') && (
                 <Button
                   onClick={handleUnsubscribe}
                   disabled={unsubscribing}
@@ -213,12 +213,12 @@ export function NewsletterManagement() {
                   {unsubscribing ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Unsubscribing...
+                      {status.status === 'pending' ? 'Cancelling...' : 'Unsubscribing...'}
                     </>
                   ) : (
                     <>
                       <MailX className="h-4 w-4 mr-2" />
-                      Unsubscribe
+                      {status.status === 'pending' ? 'Cancel Subscription' : 'Unsubscribe'}
                     </>
                   )}
                 </Button>
