@@ -86,17 +86,20 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={disabledActions ? undefined : () => setIsExpanded(!isExpanded)}
+              disabled={disabledActions}
               className="flex items-center gap-2"
+              title={disabledActions ? "Coming soon — stay tuned" : undefined}
             >
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <span className="hidden sm:inline">{disabledActions ? "Coming Soon" : "Settings"}</span>
             </Button>
           </CardTitle>
           <CardDescription>
-            Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
-            {disabledActions && (
-              <div className="text-xs text-muted-foreground mt-1 font-medium">Coming soon - Actions temporarily disabled</div>
+            {disabledActions ? (
+              "Coming soon — stay tuned"
+            ) : (
+              "Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets."
             )}
           </CardDescription>
         </CardHeader>
