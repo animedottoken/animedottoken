@@ -7,7 +7,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
-import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import SocialActionWrapper from '@/components/SocialActionWrapper';
 
 interface OverlayAction {
   label: string;
@@ -43,7 +43,6 @@ export const CollectionCard = ({
   onNavigate
 }: CollectionCardProps) => {
   const { isLiked, toggleLike, loading: likeLoading } = useCollectionLikes();
-  const { connect, connecting, publicKey } = useSolanaWallet();
   const navigate = useNavigate();
   const [creatorNickname, setCreatorNickname] = useState<string>('');
   const [creatorVerified, setCreatorVerified] = useState<boolean>(false);
@@ -113,21 +112,25 @@ export const CollectionCard = ({
           />
           
           {/* Heart button - moved to top right corner */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleLike}
-            disabled={likeLoading || connecting}
-            className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-              publicKey && isLiked(collection.id)
-                ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
-                : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
-            }`}
-            title={!publicKey ? "Connect to like" : isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
-            aria-label={!publicKey ? "Connect to like this collection" : isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
+          <SocialActionWrapper 
+            action="like this collection"
+            onAction={handleLike}
           >
-            <Heart className={`h-4 w-4 ${publicKey && isLiked(collection.id) ? "fill-current" : ""}`} />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              disabled={likeLoading}
+              className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                isLiked(collection.id)
+                  ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
+                  : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
+              }`}
+              title={isLiked(collection.id) ? "Unlike Collection" : "Like Collection"}
+              aria-label={isLiked(collection.id) ? "Unlike this collection" : "Like this collection"}
+            >
+              <Heart className={`h-4 w-4 ${isLiked(collection.id) ? "fill-current" : ""}`} />
+            </Button>
+          </SocialActionWrapper>
           
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">

@@ -9,13 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { FollowedAuthorCard } from '@/components/FollowedAuthorCard';
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { useNFTLikes } from "@/hooks/useNFTLikes";
 import { useCollectionLikes } from "@/hooks/useCollectionLikes";
+import SocialActionWrapper from '@/components/SocialActionWrapper';
 import { toast } from "sonner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
@@ -72,7 +72,6 @@ export default function CreatorProfile() {
   const { wallet } = useParams<{ wallet: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { publicKey, connect, connecting } = useSolanaWallet();
   const { isFollowingUserId, toggleFollowByUserId, loading: followLoading } = useCreatorFollowsByUser();
   const { isLiked, toggleLike, loading: nftLikeLoading } = useNFTLikes();
   const { isLiked: isCollectionLiked, toggleLike: toggleCollectionLike } = useCollectionLikes();
@@ -159,10 +158,6 @@ export default function CreatorProfile() {
 
   // Toggle follow with real-time stats
   const handleToggleFollow = async (creatorUserId: string) => {
-    if (!publicKey) {
-      await connect();
-      return;
-    }
     try {
       // Real-time stats will update automatically via cross-page signals
       await toggleFollowByUserId(creatorUserId);
@@ -304,8 +299,8 @@ export default function CreatorProfile() {
           console.log('CreatorProfile: No profile found for wallet:', wallet);
         }
 
-        // Process NFTs data with like counts (only for authenticated users)
-        if (nfts && publicKey) {
+        // Process NFTs data with like counts
+        if (nfts) {
           const nftIds = nfts.map(n => n.id);
           const { data: likeRows } = await supabase
             .from('nft_likes')
@@ -325,17 +320,6 @@ export default function CreatorProfile() {
             collection_address: nft.collection_id,
             collection_name: undefined,
             likes_count: counts[nft.id] || 0
-          })));
-        } else if (nfts) {
-          // For anonymous users, show NFTs without like counts
-          setCreatorNFTs(nfts.map(nft => ({
-            id: nft.id,
-            name: nft.name,
-            image_url: nft.image_url,
-            price: nft.price,
-            collection_address: nft.collection_id,
-            collection_name: undefined,
-            likes_count: 0
           })));
         }
 
@@ -504,19 +488,23 @@ export default function CreatorProfile() {
               <div className="flex items-center gap-2 mb-1">
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-bold">{creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}</h2>
-                    <button
-                      onClick={() => handleToggleFollow(creator.user_id!)}
-                      className="transition-colors duration-200"
-                      disabled={followLoading || connecting || !creator.user_id}
-                      aria-label={!publicKey ? 'Connect to follow' : isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
-                      title={!publicKey ? 'Connect to follow' : isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
-                    >
-                      <Heart className={`w-5 h-5 ${
-                        publicKey && creator.user_id && isFollowingUserId(creator.user_id)
-                          ? 'fill-red-500 text-red-500' 
-                          : 'text-muted-foreground hover:text-red-500'
-                      }`} />
-                    </button>
+                     <SocialActionWrapper 
+                       action="follow this creator"
+                       onAction={() => handleToggleFollow(creator.user_id!)}
+                     >
+                       <button
+                         className="transition-colors duration-200"
+                         disabled={followLoading || !creator.user_id}
+                         aria-label={isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
+                         title={isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
+                       >
+                         <Heart className={`w-5 h-5 ${
+                           creator.user_id && isFollowingUserId(creator.user_id)
+                             ? 'fill-red-500 text-red-500' 
+                             : 'text-muted-foreground hover:text-red-500'
+                         }`} />
+                       </button>
+                     </SocialActionWrapper>
                 </div>
               </div>
               
