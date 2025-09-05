@@ -146,10 +146,6 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
             variant="ghost" 
             size="sm" 
             disabled={likeLoading}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
             className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 ${
               isLiked(nft.id)
                 ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
