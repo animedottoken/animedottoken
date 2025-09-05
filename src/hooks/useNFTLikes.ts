@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-let toggleDebounceTimeout: NodeJS.Timeout | null = null;
 
 export const useNFTLikes = () => {
   const [likedNFTs, setLikedNFTs] = useState<string[]>([]);
   const [optimisticLikes, setOptimisticLikes] = useState<Set<string>>(new Set());
   const [pendingLikes, setPendingLikes] = useState<Set<string>>(new Set());
   const { user } = useAuth();
+  const debounceTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const loadLikedNFTs = useCallback(async () => {
     if (!user) {
@@ -56,9 +55,10 @@ export const useNFTLikes = () => {
       return false;
     }
 
-    // Debounce rapid clicks
-    if (toggleDebounceTimeout) {
-      clearTimeout(toggleDebounceTimeout);
+    // Clear any existing debounce timer for this specific NFT
+    if (debounceTimers.current.has(nftId)) {
+      clearTimeout(debounceTimers.current.get(nftId)!);
+      debounceTimers.current.delete(nftId);
     }
 
     const wasLiked = likedNFTs.includes(nftId) || optimisticLikes.has(nftId);
@@ -109,7 +109,9 @@ export const useNFTLikes = () => {
     getCreatorUserId();
 
     return new Promise<boolean>((resolve) => {
-      toggleDebounceTimeout = setTimeout(async () => {
+      const timeoutId = setTimeout(async () => {
+        // Remove this timer from our map
+        debounceTimers.current.delete(nftId);
         try {
           const { data, error } = await supabase.functions.invoke('like-nft', {
             body: { 
@@ -207,6 +209,9 @@ export const useNFTLikes = () => {
           resolve(false);
         }
       }, 75); // 75ms debounce
+      
+      // Store the timer for this specific NFT
+      debounceTimers.current.set(nftId, timeoutId);
     });
   }, [user, likedNFTs]);
 
