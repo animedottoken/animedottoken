@@ -1101,20 +1101,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: {
           collection_likes_count: number
-          creator_wallet: string
+          creator_user_id: string
         }[]
       }
       get_creator_follow_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
-          creator_wallet: string
+          creator_user_id: string
           follower_count: number
         }[]
       }
       get_creator_nft_like_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
-          creator_wallet: string
+          creator_user_id: string
           nft_likes_count: number
         }[]
       }
@@ -1122,10 +1122,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: {
           collection_likes_count: number
+          creator_user_id: string
           follower_count: number
           nft_likes_count: number
           total_likes_count: number
-          wallet_address: string
         }[]
       }
       get_marketplace_activities_authenticated: {
