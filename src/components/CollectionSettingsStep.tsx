@@ -33,6 +33,7 @@ interface CollectionSettingsStepProps {
   publicKey: string;
   onBack: () => void;
   onNext: () => void;
+  onConnectWallet?: () => void;
 }
 
 export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
@@ -40,7 +41,8 @@ export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
   setFormData,
   publicKey,
   onBack,
-  onNext
+  onNext,
+  onConnectWallet
 }) => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -138,17 +140,35 @@ export const CollectionSettingsStep: React.FC<CollectionSettingsStepProps> = ({
           <Label htmlFor="treasury_wallet" className="text-sm sm:text-base font-medium">
             Treasury Wallet <Badge variant="secondary" className="ml-1">On-Chain</Badge>
           </Label>
-          <Input
-            id="treasury_wallet"
-            type="text"
-            placeholder={publicKey || "Connect wallet"}
-            value={formData.treasury_wallet || publicKey || ''}
-            onChange={(e) => setFormData({ ...formData, treasury_wallet: e.target.value })}
-            disabled={!!publicKey}
-            className="text-xs sm:text-sm font-mono"
-          />
+          {!publicKey ? (
+            <div className="space-y-2">
+              <Input
+                id="treasury_wallet"
+                type="text"
+                placeholder="Enter wallet address or connect wallet"
+                value={formData.treasury_wallet || ''}
+                onChange={(e) => setFormData({ ...formData, treasury_wallet: e.target.value })}
+                className="text-xs sm:text-sm font-mono"
+              />
+              <div className="flex justify-start">
+                <Button variant="outline" size="sm" onClick={onConnectWallet}>
+                  Connect Wallet
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Input
+              id="treasury_wallet"
+              type="text"
+              placeholder={publicKey}
+              value={formData.treasury_wallet || publicKey || ''}
+              onChange={(e) => setFormData({ ...formData, treasury_wallet: e.target.value })}
+              disabled={!!publicKey}
+              className="text-xs sm:text-sm font-mono"
+            />
+          )}
           <div className="text-xs text-muted-foreground">
-            Wallet address to receive royalties
+            Wallet address to receive royalties {!publicKey && "(Connect wallet or enter manually)"}
           </div>
         </div>
 

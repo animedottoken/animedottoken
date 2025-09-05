@@ -164,8 +164,14 @@ export const UnifiedMintInterface = () => {
     }
 
     if (!publicKey) {
-      await connect();
-      return;
+      try {
+        await connect();
+        toast.info('Please connect your wallet and try again');
+        return;
+      } catch (error) {
+        toast.error('Failed to connect wallet. Please try again.');
+        return;
+      }
     }
 
     // Validate required fields
@@ -396,6 +402,14 @@ export const UnifiedMintInterface = () => {
           publicKey={publicKey || ''}
           onBack={() => setActiveStep(1)}
           onNext={() => setActiveStep(3)}
+          onConnectWallet={async () => {
+            try {
+              await connect();
+              toast.success('Wallet connected successfully!');
+            } catch (error) {
+              toast.error('Failed to connect wallet');
+            }
+          }}
         />
       )}
 
