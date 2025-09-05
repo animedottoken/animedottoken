@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, MailCheck, MailX, Loader2, AlertCircle, RefreshCw, Bug } from 'lucide-react';
+import { Mail, MailCheck, MailX, Loader2, AlertCircle, RefreshCw, Bug, Settings } from 'lucide-react';
 import { useNewsletterStatus } from '@/hooks/useNewsletterStatus';
 import { NewsletterSubscribe } from '@/components/NewsletterSubscribe';
 import { NewsletterDebugPanel } from '@/components/NewsletterDebugPanel';
@@ -15,6 +15,7 @@ export function NewsletterManagement() {
   const [unsubscribing, setUnsubscribing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
 
   const handleUnsubscribe = async () => {
@@ -93,17 +94,28 @@ export function NewsletterManagement() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Newsletter Subscription
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Newsletter
+            </span>
+            <Button variant="outline" size="sm" disabled className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
           </CardTitle>
+          <CardDescription>
+            Manage your newsletter subscription preferences and status.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Loading subscription status...</span>
-          </div>
-        </CardContent>
+        {isExpanded && (
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-muted-foreground">Loading subscription status...</span>
+            </div>
+          </CardContent>
+        )}
       </Card>
     );
   }
@@ -112,160 +124,192 @@ export function NewsletterManagement() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Newsletter Subscription
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Newsletter
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
           </CardTitle>
+          <CardDescription>
+            Manage your newsletter subscription preferences and status.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {error}
-            </AlertDescription>
-          </Alert>
-          
-          <Button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            variant="outline"
-            size="sm"
-            className="w-full"
-          >
-            {refreshing ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Refreshing...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Retry
-              </>
-            )}
-          </Button>
-          
-          <div className="pt-2 border-t space-y-4">
-            <NewsletterSubscribe />
+        {isExpanded && (
+          <CardContent className="space-y-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error}
+              </AlertDescription>
+            </Alert>
             
-            <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Bug className="h-4 w-4 mr-2" />
-                  {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <NewsletterDebugPanel />
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </CardContent>
+            <Button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              {refreshing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Refreshing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Retry
+                </>
+              )}
+            </Button>
+            
+            <div className="pt-2 border-t space-y-4">
+              <NewsletterSubscribe />
+              
+              <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Bug className="h-4 w-4 mr-2" />
+                    {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 pt-2">
+                  <NewsletterDebugPanel />
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          </CardContent>
+        )}
       </Card>
     );
   }
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Mail className="h-4 w-4" />
-          Newsletter Subscription
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Newsletter
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </Button>
         </CardTitle>
+        <CardDescription>
+          Manage your newsletter subscription preferences and status.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {status ? (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <p className="text-sm font-medium truncate">Email: {status.email}</p>
-                {getStatusBadge(status.status)}
-              </div>
-              <Button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0"
-              >
-                {refreshing ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-3 w-3" />
-                )}
-              </Button>
-            </div>
-            
-            {(status.status === 'unsubscribed' && status.unsubscribedAt) && (
-              <p className="text-xs text-muted-foreground">
-                Unsubscribed on {new Date(status.unsubscribedAt).toLocaleDateString()}
-              </p>
-            )}
-            
-            {(status.status === 'confirmed' || status.status === 'pending') && (
-              <Button
-                onClick={handleUnsubscribe}
-                disabled={unsubscribing}
-                variant="outline"
-                size="sm"
-                className="w-full h-8"
-              >
-                {unsubscribing ? (
-                  <>
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                    {status.status === 'pending' ? 'Cancelling...' : 'Unsubscribing...'}
-                  </>
-                ) : (
-                  <>
-                    <MailX className="h-3 w-3 mr-2" />
-                    {status.status === 'pending' ? 'Cancel' : 'Unsubscribe'}
-                  </>
-                )}
-              </Button>
-            )}
-            
-            {(status.status === 'not_subscribed' || status.status === 'unsubscribed') && (
-              <div className="pt-2 border-t space-y-3">
-                <NewsletterSubscribe />
-                
-                <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full h-8">
-                      <Bug className="h-3 w-3 mr-2" />
-                      {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-2 pt-2">
-                    <NewsletterDebugPanel />
-                  </CollapsibleContent>
-                </Collapsible>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Unable to load subscription status. You can still subscribe below.
-              </AlertDescription>
-            </Alert>
-            <NewsletterSubscribe />
-            
-            <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full h-8">
-                  <Bug className="h-3 w-3 mr-2" />
-                  {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+      {isExpanded && (
+        <CardContent className="space-y-3">
+          {status ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <p className="text-sm font-medium truncate">Email: {status.email}</p>
+                  {getStatusBadge(status.status)}
+                </div>
+                <Button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                >
+                  {refreshing ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3 w-3" />
+                  )}
                 </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <NewsletterDebugPanel />
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        )}
-      </CardContent>
+              </div>
+              
+              {(status.status === 'unsubscribed' && status.unsubscribedAt) && (
+                <p className="text-xs text-muted-foreground">
+                  Unsubscribed on {new Date(status.unsubscribedAt).toLocaleDateString()}
+                </p>
+              )}
+              
+              {(status.status === 'confirmed' || status.status === 'pending') && (
+                <Button
+                  onClick={handleUnsubscribe}
+                  disabled={unsubscribing}
+                  variant="outline"
+                  size="sm"
+                  className="w-full h-8"
+                >
+                  {unsubscribing ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                      {status.status === 'pending' ? 'Cancelling...' : 'Unsubscribing...'}
+                    </>
+                  ) : (
+                    <>
+                      <MailX className="h-3 w-3 mr-2" />
+                      {status.status === 'pending' ? 'Cancel' : 'Unsubscribe'}
+                    </>
+                  )}
+                </Button>
+              )}
+              
+              {(status.status === 'not_subscribed' || status.status === 'unsubscribed') && (
+                <div className="pt-2 border-t space-y-3">
+                  <NewsletterSubscribe />
+                  
+                  <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" size="sm" className="w-full h-8">
+                        <Bug className="h-3 w-3 mr-2" />
+                        {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-2 pt-2">
+                      <NewsletterDebugPanel />
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Unable to load subscription status. You can still subscribe below.
+                </AlertDescription>
+              </Alert>
+              <NewsletterSubscribe />
+              
+              <Collapsible open={showDebugPanel} onOpenChange={setShowDebugPanel}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full h-8">
+                    <Bug className="h-3 w-3 mr-2" />
+                    {showDebugPanel ? 'Hide' : 'Show'} Debug Panel
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 pt-2">
+                  <NewsletterDebugPanel />
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
+        </CardContent>
+      )}
     </Card>
   );
 }

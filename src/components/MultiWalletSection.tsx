@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { LinkWalletDialog } from '@/components/LinkWalletDialog';
-import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link, Settings } from 'lucide-react';
 import { useUserWallets, UserWallet } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
 import { toast } from 'sonner';
@@ -74,25 +74,24 @@ export const MultiWalletSection = () => {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-5 w-5" />
-                Multi-Wallet Profile
-              </CardTitle>
-              <CardDescription>
-                Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
-              </CardDescription>
-            </div>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              Multi-Wallet Management
+            </span>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="h-8 w-8 p-0"
+              className="flex items-center gap-2"
             >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Settings</span>
             </Button>
-          </div>
+          </CardTitle>
+          <CardDescription>
+            Manage your primary identity wallet and secondary wallets. Your profile displays NFTs from all linked wallets.
+          </CardDescription>
         </CardHeader>
         {isExpanded && (
           <CardContent className="space-y-6">
