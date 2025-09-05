@@ -158,6 +158,9 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col w-full">
         <SecurityBanner />
+        <div className="px-4 pt-2">
+          <BetaBanner />
+        </div>
         <div className="sticky top-0 z-20 bg-background border-b">
           <TopNav />
         </div>
@@ -190,7 +193,10 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen w-full">
       <SecurityBanner />
-      <DesktopSidebar 
+      <div className="px-4 pt-2">
+        <BetaBanner />
+      </div>
+      <DesktopSidebar
         className="fixed left-0 top-0 h-screen z-30" 
         onCollapseChange={setSidebarCollapsed}
       />
