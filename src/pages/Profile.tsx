@@ -1057,7 +1057,7 @@ const Profile = () => {
             <SearchFilterBar
               filters={combinedFilters}
               onFiltersChange={setCombinedFilters}
-              showListingFilter={isOwnProfile}
+              showMarketplaceFilter={isOwnProfile}
               showSourceFilter={isOwnProfile}
               showTypeFilter={true}
               showPriceFilters={true}
@@ -1192,7 +1192,7 @@ const Profile = () => {
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  {combinedFilters.searchQuery || combinedFilters.source !== 'all' || combinedFilters.type !== 'all' || combinedFilters.listing !== 'all'
+                  {combinedFilters.searchQuery || combinedFilters.source !== 'all' || combinedFilters.type !== 'all' || combinedFilters.marketplace !== 'all'
                     ? 'No items match your filters'
                     : isOwnProfile
                     ? 'You don\'t have any collections or NFTs yet'

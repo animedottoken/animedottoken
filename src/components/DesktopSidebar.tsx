@@ -150,7 +150,7 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
               <SearchFilterBar
                 filters={combinedFilters}
                 onFiltersChange={setCombinedFilters}
-                showListingFilter={true}
+                showMarketplaceFilter={true}
                 showPriceFilters={true}
                 showRoyaltyFilters={true}
                 showSourceFilter={true}

@@ -45,7 +45,7 @@ export const ProfileFiltersProvider: React.FC<ProfileFiltersProviderProps> = ({ 
     maxPrice: '',
     minRoyalty: '',
     maxRoyalty: '',
-    listing: 'all',
+    marketplace: 'all',
     type: 'all'
   });
 

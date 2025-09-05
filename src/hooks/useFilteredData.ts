@@ -1,7 +1,6 @@
 
 import { useMemo } from 'react';
 import { FilterState } from '@/components/SearchFilterBar';
-import { hasRequiredListingFields } from '@/lib/attributeHelpers';
 import { normalizeAttributes } from '@/lib/attributes';
 
 interface NFT {
@@ -24,6 +23,7 @@ interface Collection {
   category?: string;
   mint_price?: number;
   is_live: boolean;
+  is_active?: boolean;
   royalty_percentage?: number;
   explicit_content?: boolean;
   created_at: string;
@@ -88,11 +88,11 @@ export const useFilteredNFTs = (
         return false;
       }
 
-      // Listing filter (only for profile)
-      if (filters.listing && filters.listing !== 'all') {
-        const isListed = nft.is_listed && hasRequiredListingFields(nft);
-        if (filters.listing === 'listed' && !isListed) return false;
-        if (filters.listing === 'not-listed' && isListed) return false;
+      // Marketplace filter (only for profile)
+      if (filters.marketplace && filters.marketplace !== 'all') {
+        const isOnMarketplace = nft.is_listed === true;
+        if (filters.marketplace === 'yes' && !isOnMarketplace) return false;
+        if (filters.marketplace === 'no' && isOnMarketplace) return false;
       }
 
       // Price filters
@@ -172,6 +172,13 @@ export const useFilteredCollections = (
       // Explicit content filter
       if (!filters.includeExplicit && collection.explicit_content) {
         return false;
+      }
+
+      // Marketplace filter (only for profile)
+      if (filters.marketplace && filters.marketplace !== 'all') {
+        const isOnMarketplace = collection.is_live === true && collection.is_active === true;
+        if (filters.marketplace === 'yes' && !isOnMarketplace) return false;
+        if (filters.marketplace === 'no' && isOnMarketplace) return false;
       }
 
       // Price filters (mint price)

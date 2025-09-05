@@ -34,7 +34,7 @@ export interface FilterState {
   maxPrice: string;
   minRoyalty: string;
   maxRoyalty: string;
-  listing?: 'all' | 'listed' | 'not-listed'; // Only for profile NFTs
+  marketplace?: 'all' | 'yes' | 'no'; // Only for profile NFTs
   type?: 'all' | 'collections' | 'nfts'; // New type filter for combined tab
 }
 
@@ -51,7 +51,7 @@ interface RoyaltyRange {
 interface SearchFilterBarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
-  showListingFilter?: boolean;
+  showMarketplaceFilter?: boolean;
   showPriceFilters?: boolean;
   showRoyaltyFilters?: boolean;
   showSourceFilter?: boolean;
@@ -66,7 +66,7 @@ interface SearchFilterBarProps {
 export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   filters,
   onFiltersChange,
-  showListingFilter = false,
+  showMarketplaceFilter = false,
   showPriceFilters = true,
   showRoyaltyFilters = true,
   showSourceFilter = true,
@@ -150,7 +150,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       maxPrice: '',
       minRoyalty: '',
       maxRoyalty: '',
-      ...(showListingFilter && { listing: 'all' }),
+      ...(showMarketplaceFilter && { marketplace: 'all' }),
       ...(showTypeFilter && { type: 'all' })
     };
     setLocalFilters(clearedFilters);
@@ -217,8 +217,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
       case 'includeExplicit':
         updateFilter('includeExplicit', false);
         break;
-      case 'listing':
-        updateFilter('listing', 'all');
+      case 'marketplace':
+        updateFilter('marketplace', 'all');
         break;
       case 'type':
         updateFilter('type', 'all');
@@ -250,7 +250,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
     localFilters.maxPrice || 
     localFilters.minRoyalty || 
     localFilters.maxRoyalty ||
-    (showListingFilter && localFilters.listing !== 'all') ||
+    (showMarketplaceFilter && localFilters.marketplace !== 'all') ||
     (showTypeFilter && localFilters.type !== 'all');
 
   // Always show selected filters section since we always show sort
@@ -358,11 +358,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                 Explicit hidden
               </Badge>
             )}
-            {showListingFilter && localFilters.listing !== 'all' && (
+            {showMarketplaceFilter && localFilters.marketplace !== 'all' && (
               <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                {localFilters.listing === 'listed' ? 'Listed' : 'Not Listed'}
+                Marketplace: {localFilters.marketplace === 'yes' ? 'Yes' : 'No'}
                 <button 
-                  onClick={() => clearIndividualFilter('listing')}
+                  onClick={() => clearIndividualFilter('marketplace')}
                   className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
@@ -460,10 +460,10 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           />
         )}
 
-        {showListingFilter && (
-          <ListingFilterSelect 
-            value={localFilters.listing || 'all'}
-            onValueChange={(value) => updateFilter('listing', value)}
+        {showMarketplaceFilter && (
+          <MarketplaceFilterSelect 
+            value={localFilters.marketplace || 'all'}
+            onValueChange={(value) => updateFilter('marketplace', value)}
           />
         )}
 
@@ -647,20 +647,20 @@ const SourceFilterSelect = ({ value, onValueChange }: { value: string; onValueCh
   );
 };
 
-const ListingFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
+const MarketplaceFilterSelect = ({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) => {
   const selectState = useMenuSelect({ value, onValueChange });
   
   const getDisplayText = (val: string) => {
     switch (val) {
-      case 'listed': return 'Listed';
-      case 'not-listed': return 'Not Listed';
+      case 'yes': return 'Yes';
+      case 'no': return 'No';
       default: return 'All';
     }
   };
   
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium">Listing Status</Label>
+      <Label className="text-sm font-medium">Marketplace</Label>
       <MenuSelect onOpenChange={() => {}}>
         <MenuSelectTrigger>
           <MenuSelectValue>{getDisplayText(value)}</MenuSelectValue>
@@ -669,11 +669,11 @@ const ListingFilterSelect = ({ value, onValueChange }: { value: string; onValueC
           <MenuSelectItem value="all" onSelect={() => selectState.onValueChange('all')}>
             All
           </MenuSelectItem>
-          <MenuSelectItem value="listed" onSelect={() => selectState.onValueChange('listed')}>
-            Listed
+          <MenuSelectItem value="yes" onSelect={() => selectState.onValueChange('yes')}>
+            Yes
           </MenuSelectItem>
-          <MenuSelectItem value="not-listed" onSelect={() => selectState.onValueChange('not-listed')}>
-            Not Listed
+          <MenuSelectItem value="no" onSelect={() => selectState.onValueChange('no')}>
+            No
           </MenuSelectItem>
         </MenuSelectContent>
       </MenuSelect>
