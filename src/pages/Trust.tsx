@@ -42,7 +42,7 @@ export default function Trust() {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Security Section
+            Back to Security Section (Main Page)
           </Button>
         </div>
 
@@ -209,7 +209,7 @@ export default function Trust() {
             className="flex items-center gap-2 mx-auto"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Security Section
+            Back to Security Section (Main Page)
           </Button>
         </div>
       </div>
