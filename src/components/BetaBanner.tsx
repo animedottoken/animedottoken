@@ -38,7 +38,7 @@ export const BetaBanner = () => {
           <AlertDescription className="text-sm font-medium">
             You're early. ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
             <a 
-              href="https://discord.gg/anime-token" 
+              href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
               rel="noopener noreferrer"
               className="underline hover:no-underline font-semibold"
