@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,20 @@ const navigationItems: NavigationItem[] = [
 export const TopNav = () => {
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
+  const topNavRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const logTopNavInfo = () => {
+      if (topNavRef.current) {
+        const computed = getComputedStyle(topNavRef.current);
+        console.log(`[TopNav Debug] Width: ${topNavRef.current.offsetWidth}px, Right: ${computed.right}`);
+      }
+    };
+    
+    setTimeout(logTopNavInfo, 100);
+    window.addEventListener('resize', logTopNavInfo);
+    return () => window.removeEventListener('resize', logTopNavInfo);
+  }, []);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -105,7 +119,7 @@ export const TopNav = () => {
   // For tablet and desktop, show top navigation
   if (!isMobile) {
     return (
-      <header className="fixed top-16 left-0 fixed-avoid-scrollbar h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm z-50">
+      <header ref={topNavRef} className="fixed top-16 left-0 w-auto clip-avoid-scrollbar h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm z-50">
         <Link 
           to="/"
           onClick={(e) => {
@@ -210,7 +224,7 @@ export const TopNav = () => {
 
   // Mobile view - hamburger menu in left corner, same options as desktop
   return (
-    <header className="fixed top-16 left-0 fixed-avoid-scrollbar h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm z-50">
+    <header className="fixed top-16 left-0 w-auto clip-avoid-scrollbar h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm z-50">
       <div className="flex items-center gap-2">
         {/* Hamburger menu in far left corner */}
         <Sheet open={open} onOpenChange={setOpen}>
