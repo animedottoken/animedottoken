@@ -1,5 +1,5 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { FlaskConical } from 'lucide-react';
+import { FlaskConical, AlertTriangle } from 'lucide-react';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { useEffect, useRef } from 'react';
 
@@ -36,7 +36,7 @@ export const BetaBanner = () => {
       <div className="flex items-center w-full">
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
-            <span className="font-bold">You're early.</span> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
+            <AlertTriangle className="inline-block mr-2 h-4 w-4 text-warning-foreground" aria-hidden="true" /> <span className="font-bold">You're early.</span> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
             <a 
               href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
