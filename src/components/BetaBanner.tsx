@@ -36,7 +36,16 @@ export const BetaBanner = () => {
       <div className="flex items-center w-full">
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
-            <strong className="font-bold">🧪 You're early.</strong> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor. <strong className="font-bold">Be one of the first.</strong>
+            You're early. ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
+            <a 
+              href="https://discord.gg/anime-token" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline hover:no-underline font-semibold"
+              aria-label="Join ANIME.TOKEN Discord server"
+            >
+              Click here to join our Discord.
+            </a>
           </AlertDescription>
         </div>
       </div>
