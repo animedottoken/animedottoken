@@ -36,7 +36,7 @@ export const BetaBanner = () => {
       <div className="flex items-center w-full">
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
-            You're early. ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
+            <span className="font-bold">You're early.</span> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor.{' '}
             <a 
               href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
