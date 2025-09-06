@@ -6,21 +6,36 @@ import { Button } from '@/components/ui/button';
 import { CURRENT_UPDATE, UPDATE_MESSAGES } from '@/constants/updates';
 
 export const BetaBanner = () => {
-  const { isLive } = useEnvironment();
   const bannerRef = useRef<HTMLDivElement>(null);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Check if user has already seen this update
+  // Check if user has already seen this update with error handling
   useEffect(() => {
-    const lastSeenUpdate = localStorage.getItem('lastSeenUpdate');
-    if (lastSeenUpdate && parseInt(lastSeenUpdate) >= CURRENT_UPDATE) {
-      setIsDismissed(true);
+    try {
+      const lastSeenUpdate = localStorage.getItem('lastSeenUpdate');
+      if (lastSeenUpdate && parseInt(lastSeenUpdate) >= CURRENT_UPDATE) {
+        setIsDismissed(true);
+      }
+    } catch (error) {
+      console.warn('Error reading localStorage:', error);
+      // Clear potentially corrupted localStorage and show banner
+      try {
+        localStorage.removeItem('lastSeenUpdate');
+      } catch (clearError) {
+        console.warn('Error clearing localStorage:', clearError);
+      }
     }
   }, []);
 
   const handleDismiss = () => {
-    localStorage.setItem('lastSeenUpdate', CURRENT_UPDATE.toString());
-    setIsDismissed(true);
+    try {
+      localStorage.setItem('lastSeenUpdate', CURRENT_UPDATE.toString());
+      setIsDismissed(true);
+    } catch (error) {
+      console.warn('Error saving to localStorage:', error);
+      // Still dismiss the banner even if localStorage fails
+      setIsDismissed(true);
+    }
   };
 
   if (isDismissed) return null;
