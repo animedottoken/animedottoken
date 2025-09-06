@@ -26,7 +26,7 @@ export const BetaBanner = () => {
   return (
     <>
       {/* Spacer to prevent content overlap when banner is fixed */}
-      <div className="h-16 w-full" aria-hidden="true" />
+      <div className="h-16 sm:h-20 w-full" aria-hidden="true" />
       
       <Alert 
         className="fixed top-0 left-0 right-0 z-50 bg-warning text-warning-foreground border-0 rounded-none shadow-lg animate-in slide-in-from-top duration-300"
@@ -37,7 +37,16 @@ export const BetaBanner = () => {
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
-              <strong className="font-bold">🧪 BETA TESTING</strong> - You are viewing our beta test environment.
+              <strong className="font-bold">BETA PHASE:</strong> Become part of our ARMY! We're looking for co-creators and testers to help shape the future of ANIME.TOKEN.{' '}
+              <a 
+                href="https://discord.gg/HmSJdT5MRX" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:no-underline font-semibold"
+              >
+                Get involved here
+              </a>
+              .
             </AlertDescription>
           </div>
           <Button 
