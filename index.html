@@ -37,8 +37,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Explicit favicon and icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/animetoken.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/animetoken.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
     <!-- Security headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.dexscreener.com https://solscan.io https://*.supabase.co wss://*.supabase.co https://*.phantom.app https://*.solflare.com https://*.solflare.xyz https://*.coinbase.com https://*.solana.com wss://*.solana.com https://api.mainnet-beta.solana.com https://api.devnet.solana.com blob: chrome-extension: moz-extension:; frame-src 'self' https://dexscreener.com https://*.phantom.app https://*.solflare.com https://*.solflare.xyz https://*.coinbase.com blob: chrome-extension: moz-extension:; frame-ancestors 'self' https://*.lovable.dev https://*.lovable.app;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.dexscreener.com https://solscan.io https://*.supabase.co wss://*.supabase.co https://*.phantom.app https://*.solflare.com https://*.solflare.xyz https://*.coinbase.com https://*.solana.com wss://*.solana.com https://api.mainnet-beta.solana.com https://api.devnet.solana.com blob: chrome-extension: moz-extension:; frame-src 'self' https://dexscreener.com https://*.phantom.app https://*.solflare.com https://*.solflare.xyz https://*.coinbase.com blob: chrome-extension: moz-extension:; frame-ancestors 'self';"
     <!-- X-Frame-Options removed; controlled via CSP frame-ancestors to allow Lovable admin preview -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -67,7 +74,7 @@
     <script>
       // Add noindex for staging/beta environments
       const hostname = window.location.hostname;
-      const isStaging = hostname.includes('.staging.') || hostname.includes('-staging.') || hostname.includes('lovable.app');
+      const isStaging = hostname.includes('.staging.') || hostname.includes('-staging.');
       if (isStaging) {
         const meta = document.createElement('meta');
         meta.name = 'robots';

@@ -162,7 +162,7 @@ const ShareNFT = () => {
           <h1 className="text-4xl font-bold mb-4">{nft.name} by {nft.creator}</h1>
           <p className="text-xl text-muted-foreground mb-8">{nft.description}</p>
           <p className="mb-8">
-            View more on our site: <a href="/" className="text-primary hover:underline">animedottoken.lovable.app</a>
+            View more on our site: <a href="https://animedottoken.com/" className="text-primary hover:underline">animedottoken.com</a>
           </p>
           <img 
             src={nft.image} 
