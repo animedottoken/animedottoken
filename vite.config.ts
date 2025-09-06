@@ -12,11 +12,15 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: 'globalThis',
-    __APP_VERSION__: JSON.stringify(
-      packageJson.version !== '0.0.0' 
-        ? packageJson.version 
-        : `0.2.0-beta.${Date.now().toString().slice(-8)}`
-    ),
+    __APP_VERSION__: JSON.stringify((() => {
+      const now = new Date();
+      const year = now.getUTCFullYear().toString().slice(-2);
+      const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+      const day = now.getUTCDate().toString().padStart(2, '0');
+      const hours = now.getUTCHours().toString().padStart(2, '0');
+      const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+      return `${year}.${month}.${day}.${hours}${minutes}`;
+    })()),
   },
   resolve: {
     alias: {
