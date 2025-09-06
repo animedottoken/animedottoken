@@ -6,11 +6,15 @@ export const BetaBanner = () => {
   const bannerRef = useRef<HTMLDivElement>(null);
   const [dynamicVersion, setDynamicVersion] = useState('');
 
-  // Generate dynamic version number
+  // Generate dynamic version number - fully automated using year.month.day.hourminute
   useEffect(() => {
     const now = new Date();
-    const dateVersion = `${now.getMonth() + 1}.${now.getDate()}.${now.getHours()}${now.getMinutes()}`;
-    setDynamicVersion(`0.2.${dateVersion}`);
+    const year = now.getFullYear().toString().slice(-2); // Last 2 digits of year
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    setDynamicVersion(`${year}.${month}.${day}.${hours}${minutes}`);
   }, []);
 
   // Clear any existing localStorage keys that might cause issues
