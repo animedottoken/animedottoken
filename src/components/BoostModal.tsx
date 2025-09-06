@@ -9,6 +9,7 @@ import { Loader2, TrendingUp, Crown, Rocket } from 'lucide-react';
 import { useBoostedListings } from '@/hooks/useBoostedListings';
 import { useToast } from '@/hooks/use-toast';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { NFTPreviewMeta } from '@/components/NFTPreviewMeta';
 
 interface BoostModalProps {
   isOpen: boolean;
@@ -105,24 +106,16 @@ export const BoostModal = ({ isOpen, onClose, nftId, nftName, nftImage, onBoostC
 
         <div className="space-y-6">
           {/* NFT Preview */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <img 
-                  src={nftImage} 
-                  alt={nftName}
-                  className="w-16 h-16 rounded-lg object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/images/og-anime.jpg';
-                  }}
-                />
-                <div>
-                  <h3 className="font-semibold">{nftName}</h3>
-                  <p className="text-sm text-muted-foreground">Get premium visibility for 24 hours</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <NFTPreviewMeta 
+            nftId={nftId}
+            nftName={nftName}
+            nftImage={nftImage}
+            className="max-w-sm mx-auto"
+          />
+          
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Get premium visibility for 24 hours</p>
+          </div>
 
           {/* Bid Input */}
           <div className="space-y-4">

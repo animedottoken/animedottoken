@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Gavel, DollarSign } from "lucide-react";
 import { toast } from "sonner";
+import { NFTPreviewMeta } from '@/components/NFTPreviewMeta';
 
 interface BidModalProps {
   isOpen: boolean;
   onClose: () => void;
+  nftId: string;
   nftName: string;
   nftImage: string;
   currency?: string;
@@ -19,6 +21,7 @@ interface BidModalProps {
 export function BidModal({
   isOpen,
   onClose,
+  nftId,
   nftName,
   nftImage,
   currency = "SOL",
@@ -74,27 +77,20 @@ export function BidModal({
 
         <div className="space-y-4">
           {/* NFT Preview */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-            <img
-              src={nftImage}
-              alt={nftName}
-              className="w-12 h-12 rounded object-cover"
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement;
-                if (img.src !== "/placeholder.svg") {
-                  img.src = "/placeholder.svg";
-                }
-              }}
-            />
-            <div>
-              <h4 className="font-medium text-sm">{nftName}</h4>
-              {currentPrice && (
-                <p className="text-xs text-muted-foreground">
-                  Current price: {currentPrice} {currency}
-                </p>
-              )}
+          <NFTPreviewMeta 
+            nftId={nftId}
+            nftName={nftName}
+            nftImage={nftImage}
+            className="max-w-sm mx-auto"
+          />
+          
+          {currentPrice && (
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Current price: {currentPrice} {currency}
+              </p>
             </div>
-          </div>
+          )}
 
           {/* Bid Amount Input */}
           <div className="space-y-2">

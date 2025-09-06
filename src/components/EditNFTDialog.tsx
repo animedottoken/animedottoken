@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PropertiesEditor, type Property } from "@/components/PropertiesEditor";
 import { systemFields } from "@/lib/attributes";
 import type { UserNFT } from "@/hooks/useUserNFTs";
+import { NFTPreviewMeta } from "@/components/NFTPreviewMeta";
 
 interface EditNFTDialogProps {
   nft: UserNFT;
@@ -197,22 +198,13 @@ export function EditNFTDialog({ nft, onUpdate, open: externalOpen, onOpenChange:
 
         <div className="space-y-6">
 
-          {/* NFT Image Preview */}
-          <div className="flex justify-center">
-            <div className="w-32 h-32 bg-muted rounded-lg overflow-hidden">
-              <img
-                src={nft.image_url || "/placeholder.svg"}
-                alt={nft.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const img = e.currentTarget as HTMLImageElement;
-                  if (img.src !== "/placeholder.svg") {
-                    img.src = "/placeholder.svg";
-                  }
-                }}
-              />
-            </div>
-          </div>
+          {/* NFT Preview */}
+          <NFTPreviewMeta 
+            nftId={nft.id}
+            nftName={nft.name}
+            nftImage={nft.image_url}
+            className="max-w-sm mx-auto"
+          />
 
           {/* Read-only Details Section */}
           <Card>

@@ -727,6 +727,7 @@ export default function NFTDetail() {
         <BidModal
           isOpen={isBidModalOpen}
           onClose={() => setIsBidModalOpen(false)}
+          nftId={nft.id}
           nftName={nft.name}
           nftImage={nft.image_url || "/placeholder.svg"}
           currency={nft.currency}
