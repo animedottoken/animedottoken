@@ -94,7 +94,13 @@ export const TopNav = () => {
   const handleProfileAction = () => {
     setOpen(false);
     if (user) {
-      navigate('/profile');
+      if (location.pathname === '/profile') {
+        // Already on profile page - refresh it
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.dispatchEvent(new CustomEvent('refresh-profile'));
+      } else {
+        navigate('/profile');
+      }
     } else {
       navigate('/auth?redirect=/profile');
     }

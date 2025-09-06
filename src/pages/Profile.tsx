@@ -403,6 +403,20 @@ const Profile = () => {
     debouncedFetchProfile();
   }, [debouncedFetchProfile]);
 
+  // Listen for profile refresh events
+  useEffect(() => {
+    const handleRefreshProfile = () => {
+      fetchProfile();
+      toast({
+        title: "Profile refreshed",
+        description: "Profile data has been updated",
+      });
+    };
+
+    window.addEventListener('refresh-profile', handleRefreshProfile);
+    return () => window.removeEventListener('refresh-profile', handleRefreshProfile);
+  }, [fetchProfile, toast]);
+
   // Get collections created by this user
   const userCollections = useMemo(() => {
     // If viewing own profile (no wallet param), show all user's collections
