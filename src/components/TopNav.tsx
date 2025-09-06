@@ -105,7 +105,7 @@ export const TopNav = () => {
   // For tablet and desktop, show top navigation
   if (!isMobile) {
     return (
-      <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm z-50">
+      <header className="fixed top-16 left-0 right-0 h-14 flex items-center justify-between border-b pl-4 pr-6 md:pr-8 bg-background/95 backdrop-blur-sm z-50">
         <Link 
           to="/"
           onClick={(e) => {
@@ -210,7 +210,7 @@ export const TopNav = () => {
 
   // Mobile view - hamburger menu in left corner, same options as desktop
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm z-50">
+    <header className="fixed top-16 left-0 right-0 h-14 flex items-center justify-between border-b px-4 bg-background/95 backdrop-blur-sm z-50">
       <div className="flex items-center gap-2">
         {/* Hamburger menu in far left corner */}
         <Sheet open={open} onOpenChange={setOpen}>

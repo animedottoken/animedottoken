@@ -156,12 +156,9 @@ const AppLayout = () => {
 
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col w-full">
+      <div className="min-h-screen flex flex-col w-full pt-16">
         <TopNav />
         <SecurityBanner />
-        <div className="px-4 pt-2">
-          <BetaBanner />
-        </div>
         <main className="flex-1 overflow-x-hidden pb-20 md:pb-0 pt-14">
           <Routes>
             <Route path="/" element={<Index />} />
@@ -189,14 +186,11 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full pt-16">
       <TopNav />
       <SecurityBanner />
-      <div className="px-4 pt-2">
-        <BetaBanner />
-      </div>
       <DesktopSidebar
-        className="fixed left-0 top-14 h-[calc(100vh-3.5rem)] z-30" 
+        className="fixed left-0 top-30 h-[calc(100vh-7.5rem)] z-30" 
         onCollapseChange={setSidebarCollapsed}
       />
       <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'} pt-14`}>
@@ -240,6 +234,7 @@ const App = () => {
                   <SolanaWalletProvider>
                   <ProfileFiltersProvider>
                   <TooltipProvider>
+                  <BetaBanner />
                   <Toaster />
                   <Sonner />
                   <ScrollToTopOnRoute />
