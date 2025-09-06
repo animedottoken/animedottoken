@@ -64,22 +64,40 @@ const Profile = () => {
   
   // Collapsible sections state with localStorage persistence
   const [collectionsOpen, setCollectionsOpen] = useState(() => {
-    const saved = localStorage.getItem('profile-collections-open');
-    return saved !== null ? JSON.parse(saved) : true;
+    try {
+      const saved = localStorage.getItem('profile-collections-open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch (error) {
+      console.warn('Error reading profile-collections-open from localStorage:', error);
+      return true;
+    }
   });
   
   const [nftsOpen, setNftsOpen] = useState(() => {
-    const saved = localStorage.getItem('profile-nfts-open');
-    return saved !== null ? JSON.parse(saved) : true;
+    try {
+      const saved = localStorage.getItem('profile-nfts-open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch (error) {
+      console.warn('Error reading profile-nfts-open from localStorage:', error);
+      return true;
+    }
   });
 
   // Save to localStorage when state changes
   useEffect(() => {
-    localStorage.setItem('profile-collections-open', JSON.stringify(collectionsOpen));
+    try {
+      localStorage.setItem('profile-collections-open', JSON.stringify(collectionsOpen));
+    } catch (error) {
+      console.warn('Error saving profile-collections-open to localStorage:', error);
+    }
   }, [collectionsOpen]);
 
   useEffect(() => {
-    localStorage.setItem('profile-nfts-open', JSON.stringify(nftsOpen));
+    try {
+      localStorage.setItem('profile-nfts-open', JSON.stringify(nftsOpen));
+    } catch (error) {
+      console.warn('Error saving profile-nfts-open to localStorage:', error);
+    }
   }, [nftsOpen]);
 
   // Check for newsletter query parameters and show both toast and banner
@@ -594,7 +612,7 @@ const Profile = () => {
     return profile?.user_id ? followedCreators.includes(profile.user_id) : false;
   }, [followedCreators, profile?.user_id]);
 
-  if (loading) {
+  if (loading && !profile) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">
