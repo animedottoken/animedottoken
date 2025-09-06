@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { metaplexService, type NFTMetadata } from '@/services/metaplexService';
 import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { toast } from 'sonner';
 
 const BATCH_SIZE = 50;
@@ -27,7 +28,8 @@ export interface StandaloneNFTData {
 
 export const useStandaloneMint = () => {
   const [minting, setMinting] = useState(false);
-  const { publicKey } = useSolanaWallet();
+  const { publicKey, wallet } = useSolanaWallet();
+  const { cluster } = useEnvironment();
 
   const uploadFile = async (file: File, prefix: string = 'nft-media'): Promise<string | null> => {
     try {
@@ -168,6 +170,12 @@ export const useStandaloneMint = () => {
   const realMintNFTs = async (nftData: StandaloneNFTData, quantity: number, imageUrl: string | null, mediaUrl: string | null, mediaType: string, publicKey: string) => {
     const results = [];
     
+    // Set cluster and wallet for Metaplex
+    metaplexService.setCluster(cluster);
+    if (wallet) {
+      metaplexService.setWallet(wallet);
+    }
+    
     // For real on-chain minting with Metaplex
     for (let i = 0; i < quantity; i++) {
       const nftName = quantity > 1 ? `${nftData.name} #${i + 1}` : nftData.name;
@@ -258,7 +266,7 @@ export const useStandaloneMint = () => {
     }
     
     if (results.length > 0) {
-      toast.success(`Successfully minted ${results.length} NFT${results.length > 1 ? 's' : ''} on Solana Devnet! 🎉`);
+      toast.success(`Successfully minted ${results.length} NFT${results.length > 1 ? 's' : ''} on Solana ${cluster === 'mainnet' ? 'Mainnet' : 'Devnet'}! 🎉`);
     }
     
     return { 

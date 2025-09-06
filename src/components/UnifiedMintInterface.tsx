@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { metaplexService, type CollectionMetadata } from '@/services/metaplexService';
 import { uploadMetadataToStorage, createExplorerUrl } from '@/services/devnetHelpers';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { CollectionBasicsStep } from './CollectionBasicsStep';
 import { CollectionSettingsStep } from './CollectionSettingsStep';
 import { CollectionReviewStep } from './CollectionReviewStep';
@@ -57,7 +58,8 @@ export const UnifiedMintInterface = () => {
   const [showLinkWalletDialog, setShowLinkWalletDialog] = useState(false);
   const [isLinkingWallet, setIsLinkingWallet] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
-  const { publicKey, connect, connecting, signMessage } = useSolanaWallet();
+  const { publicKey, connect, connecting, signMessage, wallet } = useSolanaWallet();
+  const { cluster } = useEnvironment();
   const { user } = useAuth();
   const { getPrimaryWallet, linkWallet, generateLinkingMessage } = useUserWallets();
   const { checkAccess, guardedAction } = useCircuitBreaker();
@@ -321,6 +323,12 @@ export const UnifiedMintInterface = () => {
             // Mint the Collection NFT on-chain using Metaplex
             toast.success('Collection created! Now minting on-chain...');
             
+            // Set cluster and wallet for Metaplex
+            metaplexService.setCluster(cluster);
+            if (wallet) {
+              metaplexService.setWallet(wallet);
+            }
+            
             // Prepare metadata for on-chain mint
             const collectionMetadata: CollectionMetadata = {
               name: formData.name,
@@ -364,7 +372,7 @@ export const UnifiedMintInterface = () => {
                 })
                 .eq('id', result.collection.id);
               
-              toast.success('Collection minted successfully on Solana Devnet! 🎉');
+              toast.success(`Collection minted successfully on Solana ${cluster === 'mainnet' ? 'Mainnet' : 'Devnet'}! 🎉`);
             } else {
               setMintingError(mintResult.error || 'Failed to mint collection on-chain');
               toast.error('Collection created but failed to mint on-chain', {

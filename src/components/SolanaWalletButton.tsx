@@ -1,130 +1,177 @@
-import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { LogIn, LogOut, AlertTriangle, Coins, Zap } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useEffect, useState } from 'react';
-import { requestDevnetAirdrop } from '@/services/devnetHelpers';
+import { Wallet, ExternalLink, Zap, Shuffle, LogOut, AlertTriangle, Eye } from 'lucide-react';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
+import { metaplexService } from '@/services/metaplexService';
 import { toast } from 'sonner';
 
 export const SolanaWalletButton = () => {
-  const { connected, connecting, publicKey, balance, walletName, connectWith, disconnect, connectPaymentWallet, openWalletSelector, listProviders, error } = useSolanaWallet();
-  const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ installed: [], hasPreview: false });
+  const { 
+    connected, 
+    connecting, 
+    publicKey, 
+    balance, 
+    walletName, 
+    connect, 
+    disconnect, 
+    error,
+    connectWith,
+    listProviders,
+    wallet
+  } = useSolanaWallet();
+  const { cluster } = useEnvironment();
   const [requestingAirdrop, setRequestingAirdrop] = useState(false);
-  
-  const isPreviewWallet = walletName && /unsafe|burner/i.test(walletName);
+  const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ 
+    installed: [], 
+    hasPreview: false 
+  });
 
-  const handleAirdrop = async () => {
-    if (!publicKey) return;
+  // Set Metaplex cluster and wallet when environment or wallet changes
+  useEffect(() => {
+    metaplexService.setCluster(cluster);
+    if (wallet) {
+      metaplexService.setWallet(wallet);
+    }
+  }, [cluster, wallet]);
+
+  useEffect(() => {
+    const availableProviders = listProviders();
+    setProviders(availableProviders);
+  }, [listProviders]);
+
+  const handleAirdrop = useCallback(async () => {
+    if (!publicKey || cluster !== 'devnet') return;
     
     setRequestingAirdrop(true);
     try {
-      const result = await requestDevnetAirdrop(publicKey);
+      const result = await metaplexService.requestAirdrop(publicKey);
       if (result.success) {
-        toast.success('Airdrop successful! 💰', {
-          description: '2 SOL added to your wallet',
+        toast.success('Airdrop successful! 🎉', {
+          description: 'Received 1 SOL on Devnet'
         });
       } else {
         toast.error('Airdrop failed', {
-          description: result.error,
+          description: result.error || 'Unknown error'
         });
       }
     } catch (error) {
       toast.error('Airdrop failed', {
-        description: 'Please try again later',
+        description: 'Please try again later'
       });
     } finally {
       setRequestingAirdrop(false);
     }
-  };
+  }, [publicKey, cluster]);
 
-  useEffect(() => {
-    setProviders(listProviders());
-  }, [listProviders]);
-
-  
-
-
-  const handleConnect = async () => {
+  const handleConnect = useCallback(async () => {
     try {
-      await connectPaymentWallet();
+      await connect();
     } catch (error) {
-      console.error('Wallet connection failed:', error);
-      toast.error('Failed to connect wallet');
+      console.error('Connection error:', error);
     }
-  };
+  }, [connect]);
 
-  const handleWalletConnect = async (walletName: string) => {
+  const handleWalletConnect = useCallback(async (walletName: string) => {
     try {
       await connectWith(walletName);
     } catch (error) {
-      console.error(`${walletName} connection failed:`, error);
-      toast.error(`Failed to connect ${walletName}`);
+      console.error('Wallet connection error:', error);
     }
-  };
+  }, [connectWith]);
 
-  const connectPreviewWallet = async () => {
+  const connectPreviewWallet = useCallback(async () => {
     try {
       await connectWith('Unsafe');
     } catch (error) {
-      console.error('Preview wallet connection failed:', error);
-      toast.error('Failed to connect preview wallet');
+      console.error('Preview wallet error:', error);
     }
-  };
+  }, [connectWith]);
 
+  // Connected state
   if (connected && publicKey) {
+    const truncatedKey = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+    const isPreviewWallet = walletName?.toLowerCase().includes('unsafe') || walletName?.toLowerCase().includes('burner');
+    const isDevnet = cluster === 'devnet';
+    
     return (
-      <TooltipProvider>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">
-              {publicKey.slice(0, 4)}...{publicKey.slice(-4)}
-            </div>
-            <div className="text-sm font-medium">
-              {balance.toFixed(3)} SOL
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+          <div className="flex items-center gap-3">
+            <Wallet className="h-4 w-4 text-primary" />
+            <div>
+              <div className="font-mono text-sm">{truncatedKey}</div>
+              <div className="text-xs text-muted-foreground">
+                {balance.toFixed(4)} SOL
+              </div>
             </div>
           </div>
-          {walletName && (
-            <div className="flex items-center gap-1">
-              <Badge variant={isPreviewWallet ? "outline" : "secondary"} className="text-xs">
-                {isPreviewWallet && <Zap className="w-3 h-3 mr-1" />}
-                {isPreviewWallet ? "Preview" : walletName}
-              </Badge>
-              {isPreviewWallet && (
-                <Tooltip>
-                  <TooltipTrigger>
-                    <AlertTriangle className="w-3 h-3 text-amber-500" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Preview Wallet - For testing only<br />Switch to a real wallet for production</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
+          <div className="flex items-center gap-2">
+            {walletName && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-muted-foreground">{walletName}</span>
+                {isPreviewWallet && (
+                  <>
+                    <Badge variant="outline" className="text-xs">Preview</Badge>
+                    <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {isPreviewWallet && (
+          <Alert className="border-yellow-200 bg-yellow-50 text-yellow-700">
+            <Eye className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              Preview wallet active. Perfect for testing, but remember real wallets are needed for mainnet.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <div className="flex flex-wrap gap-2">
+          {/* Only show airdrop on devnet */}
+          {isDevnet && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAirdrop}
+              disabled={requestingAirdrop}
+              className="flex items-center gap-2"
+            >
+              <Zap className="h-4 w-4" />
+              {requestingAirdrop ? 'Getting SOL...' : 'Get SOL'}
+            </Button>
           )}
-          <Button 
-            onClick={handleAirdrop}
-            disabled={requestingAirdrop || balance >= 5}
-            variant="ghost" 
+          
+          <Button
+            variant="outline"
             size="sm"
-            className="flex items-center gap-1 text-xs"
+            onClick={handleConnect}
+            className="flex items-center gap-2"
           >
-            {requestingAirdrop ? '...' : <Coins className="w-3 h-3" />}
-            Get SOL
-          </Button>
-          <Button onClick={openWalletSelector} variant="ghost" size="sm">
+            <Shuffle className="h-4 w-4" />
             Switch
           </Button>
-          <Button onClick={disconnect} variant="outline" size="sm" className="flex items-center gap-2">
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={disconnect}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
             Disconnect
-            <LogOut className="h-4 w-4 text-destructive" />
           </Button>
         </div>
-      </TooltipProvider>
+      </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="space-y-3">
@@ -132,48 +179,36 @@ export const SolanaWalletButton = () => {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-        <Button onClick={openWalletSelector} variant="outline" className="w-full">
+        <Button onClick={handleConnect} disabled={connecting} className="w-full">
           Try Again
         </Button>
       </div>
     );
   }
 
+  // Disconnected state
   return (
     <div className="space-y-3">
-      {/* Main Connect Button */}
       <Button 
-        onClick={handleConnect}
+        onClick={handleConnect} 
         disabled={connecting}
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+        className="w-full"
       >
-        {connecting ? (
-          'Connecting...'
-        ) : (
-          <>
-            Connect Wallet
-            <LogIn className="h-4 w-4" />
-          </>
-        )}
+        <Wallet className="mr-2 h-4 w-4" />
+        {connecting ? 'Connecting...' : 'Connect Wallet'}
       </Button>
-
-      {/* Preview Wallet Option */}
-      {providers.hasPreview && (
-        <div className="pt-2 border-t space-y-2">
-          <Button 
-            onClick={connectPreviewWallet}
-            disabled={connecting}
-            variant="ghost"
-            size="sm"
-            className="w-full flex items-center gap-2 text-muted-foreground"
-          >
-            <Zap className="h-4 w-4" />
-            Use Preview Wallet (Devnet)
-          </Button>
-          <div className="text-xs text-muted-foreground text-center">
-            For quick testing only
-          </div>
-        </div>
+      
+      {/* Only show preview wallet option on devnet */}
+      {providers.hasPreview && cluster === 'devnet' && (
+        <Button
+          variant="outline"
+          onClick={connectPreviewWallet}
+          disabled={connecting}
+          className="w-full"
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          Use Preview Wallet (Devnet)
+        </Button>
       )}
     </div>
   );

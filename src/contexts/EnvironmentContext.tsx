@@ -3,13 +3,14 @@ import { createContext, useContext, ReactNode } from 'react';
 interface EnvironmentContextType {
   isBetaMode: boolean;
   isLive: boolean;
+  cluster: 'mainnet' | 'devnet';
   canUseFeature: (feature: string) => boolean;
 }
 
 const EnvironmentContext = createContext<EnvironmentContextType | null>(null);
 
 const BETA_FEATURES = [
-  'wallet-linking'
+  // Remove wallet-linking from beta features - now available live
 ];
 
 export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
@@ -24,8 +25,8 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   // Consider staging domains (.staging.yourdomain.com) as beta
   const isStagingDomain = hostname.includes('.staging.') || hostname.includes('-staging.');
   
-  // Mark specific domains as beta even if they're "production"
-  const betaProductionDomains = ['animedottoken.com'];
+  // Mark specific domains as beta even if they're "production" 
+  const betaProductionDomains: string[] = []; // Remove animedottoken.com - now live
   const isProductionBeta = betaProductionDomains.some(domain => hostname.includes(domain));
   
   const isBetaMode = forceBeta || 
@@ -37,6 +38,9 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   
   // Live is true when domain is production and not forced beta
   const isLive = !isBetaMode;
+  
+  // Cluster: mainnet for live, devnet for beta/testing
+  const cluster: 'mainnet' | 'devnet' = isLive ? 'mainnet' : 'devnet';
 
   const canUseFeature = (feature: string): boolean => {
     // In beta mode, all features are available
@@ -47,7 +51,7 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <EnvironmentContext.Provider value={{ isBetaMode, isLive, canUseFeature }}>
+    <EnvironmentContext.Provider value={{ isBetaMode, isLive, cluster, canUseFeature }}>
       {children}
     </EnvironmentContext.Provider>
   );

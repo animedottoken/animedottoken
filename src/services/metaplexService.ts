@@ -72,17 +72,24 @@ export interface NFTMetadata {
 
 class MetaplexService {
   private umi: Umi | null = null;
-  private isDevnet = true; // Always use devnet for testing
+  private cluster: 'mainnet' | 'devnet' = 'devnet';
 
   private getUmi(): Umi {
     if (!this.umi) {
-      const endpoint = this.isDevnet 
-        ? 'https://api.devnet.solana.com'
-        : 'https://api.mainnet-beta.solana.com';
+      const endpoint = this.cluster === 'mainnet' 
+        ? 'https://api.mainnet-beta.solana.com'
+        : 'https://api.devnet.solana.com';
       
       this.umi = createUmi(endpoint).use(mplTokenMetadata());
     }
     return this.umi;
+  }
+
+  public setCluster(cluster: 'mainnet' | 'devnet') {
+    this.cluster = cluster;
+    // Reset UMI instance to use new cluster
+    this.umi = null;
+    console.log(`🌐 Metaplex cluster set to ${cluster}`);
   }
 
   public setWallet(wallet: any) {
@@ -92,10 +99,16 @@ class MetaplexService {
   }
 
   public async createMetadataJson(metadata: CollectionMetadata | NFTMetadata): Promise<string> {
-    // In a real implementation, this would upload to IPFS or Arweave
-    // For testing, we'll use a mock metadata URL
-    const mockMetadataHash = Math.random().toString(36).substr(2, 9);
-    return `https://devnet-metadata.mockapi.com/${mockMetadataHash}.json`;
+    // Upload real metadata to Supabase Storage
+    console.log('📝 Creating metadata JSON:', metadata);
+    
+    const { uploadMetadataToStorage } = await import('@/services/devnetHelpers');
+    const name = 'name' in metadata ? metadata.name : 'Unknown';
+    // Use 'nft' as default type since both collections and NFTs can use this
+    const metadataUri = await uploadMetadataToStorage(metadata, 'nft', name);
+    console.log('✅ Metadata uploaded to:', metadataUri);
+    
+    return metadataUri;
   }
 
   public async mintCollection(params: {
@@ -130,7 +143,7 @@ class MetaplexService {
       const result = await createCollectionTx.sendAndConfirm(umi);
       const signature = String(result.signature);
       
-      const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+      const explorerUrl = this.createExplorerUrl(signature);
       
       return {
         success: true,
@@ -183,7 +196,7 @@ class MetaplexService {
       const result = await createNftTx.sendAndConfirm(umi);
       const signature = String(result.signature);
       
-      const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+      const explorerUrl = this.createExplorerUrl(signature);
       
       return {
         success: true,
@@ -198,6 +211,11 @@ class MetaplexService {
         error: error.message || 'Failed to mint NFT',
       };
     }
+  }
+
+  private createExplorerUrl(signature: string): string {
+    const clusterParam = this.cluster === 'mainnet' ? '' : `?cluster=${this.cluster}`;
+    return `https://explorer.solana.com/tx/${signature}${clusterParam}`;
   }
 
   public async requestAirdrop(walletAddress: string): Promise<{success: boolean; signature?: string; error?: string}> {

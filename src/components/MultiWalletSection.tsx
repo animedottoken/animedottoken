@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { LinkWalletDialog } from '@/components/LinkWalletDialog';
 import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link, Settings } from 'lucide-react';
 import { useUserWallets, UserWallet } from '@/hooks/useUserWallets';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { truncateAddress } from '@/utils/addressUtils';
 import { toast } from 'sonner';
 
@@ -23,6 +24,10 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
     return saved !== null ? JSON.parse(saved) : false;
   });
   const { wallets, summary, loading, error, unlinkWallet, cleanupPrimaryWallets } = useUserWallets();
+  const { canUseFeature } = useEnvironment();
+  
+  // Override disabledActions - wallet linking is now always available
+  const actuallyDisabled = false;
 
   useEffect(() => {
     localStorage.setItem('multiWalletSectionExpanded', JSON.stringify(isExpanded));
@@ -76,7 +81,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
 
   return (
     <>
-      <Card className={disabledActions ? "opacity-60" : ""}>
+      <Card className={actuallyDisabled ? "opacity-60" : ""}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
@@ -86,13 +91,13 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
             <Button
               variant="outline"
               size="sm"
-              onClick={disabledActions ? undefined : () => setIsExpanded(!isExpanded)}
-              disabled={disabledActions}
+              onClick={actuallyDisabled ? undefined : () => setIsExpanded(!isExpanded)}
+              disabled={actuallyDisabled}
               className="flex items-center gap-2"
-              title={disabledActions ? "Coming soon — stay tuned" : undefined}
+              title={actuallyDisabled ? "Coming soon — stay tuned" : undefined}
             >
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">{disabledActions ? "Coming Soon" : "Settings"}</span>
+              <span className="hidden sm:inline">{actuallyDisabled ? "Coming Soon" : "Settings"}</span>
             </Button>
           </CardTitle>
           <CardDescription>
@@ -155,8 +160,8 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                     <Button
                       variant="outline" 
                       size="sm"
-                      onClick={disabledActions ? undefined : () => setShowCleanupDialog(true)}
-                      disabled={disabledActions}
+                      onClick={actuallyDisabled ? undefined : () => setShowCleanupDialog(true)}
+                      disabled={actuallyDisabled}
                       className="h-8 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                     >
                       Reset
@@ -175,8 +180,8 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
                 <div className="mt-3 space-y-2">
                   <Button
-                    onClick={disabledActions ? undefined : () => setLinkWalletOpen(true)}
-                    disabled={disabledActions}
+                    onClick={actuallyDisabled ? undefined : () => setLinkWalletOpen(true)}
+                    disabled={actuallyDisabled}
                     variant="default" 
                     size="sm"
                     className="w-full sm:w-auto"
@@ -216,11 +221,11 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                           <Badge variant={getWalletBadgeVariant(wallet.wallet_type)} className="text-xs">
                             Secondary
                           </Badge>
-                          <Button
+                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={disabledActions ? undefined : () => setUnlinkWalletId(wallet.id)}
-                            disabled={disabledActions}
+                            onClick={actuallyDisabled ? undefined : () => setUnlinkWalletId(wallet.id)}
+                            disabled={actuallyDisabled}
                             className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -238,8 +243,8 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
           {primaryWallet && (
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
-                onClick={disabledActions ? undefined : () => setLinkWalletOpen(true)}
-                disabled={disabledActions || summary.remaining_secondary_slots === 0}
+                onClick={actuallyDisabled ? undefined : () => setLinkWalletOpen(true)}
+                disabled={actuallyDisabled || summary.remaining_secondary_slots === 0}
                 variant="outline"
                 className="flex-1"
               >

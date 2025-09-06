@@ -13,6 +13,7 @@ import { WalletModalProvider, useWalletModal } from '@solana/wallet-adapter-reac
 import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 
 // Import wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -23,9 +24,11 @@ interface SolanaWalletContextType {
   publicKey: string | null;
   balance: number;
   network: string;
+  cluster: 'mainnet' | 'devnet';
   walletName: string | null;
   walletIcon: string | null;
   rememberWallet: boolean;
+  wallet: any; // Expose wallet adapter for Metaplex
   connect: () => Promise<void>;
   connectPaymentWallet: () => Promise<void>;
   openWalletSelector: () => void;
@@ -44,9 +47,11 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   publicKey: null,
   balance: 0,
   network: 'devnet',
+  cluster: 'devnet',
   walletName: null,
   walletIcon: null,
   rememberWallet: false,
+  wallet: null,
   connect: async () => {},
   connectPaymentWallet: async () => {},
   openWalletSelector: () => {},
@@ -72,13 +77,14 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
   const { user } = useAuth();
+  const { cluster } = useEnvironment();
   const [balance, setBalance] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [connectAfterSelection, setConnectAfterSelection] = useState(false);
   const [rememberWallet, setRememberWallet] = useState(() => {
     return localStorage.getItem('remember-wallet') === 'true';
   });
-  const network = 'devnet';
+  const network = cluster === 'mainnet' ? 'mainnet-beta' : 'devnet';
 
   // Note: We no longer auto-link wallets on connect
   // Wallets are now connected temporarily for payments or explicitly linked for identity
@@ -145,7 +151,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
       
       const isInIframe = window !== window.parent;
-      const isDevnet = network === 'devnet';
+      const isDevnet = cluster === 'devnet';
       const hasInstalledWallets = wallets.some(w => (w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable) && !/unsafe|burner/i.test(w.adapter.name));
       const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
       
@@ -364,9 +370,11 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     publicKey: publicKey?.toBase58() || null,
     balance,
     network,
+    cluster,
     walletName: wallet?.adapter.name || null,
     walletIcon: wallet?.adapter.icon || null,
     rememberWallet,
+    wallet, // Expose wallet adapter for Metaplex
     connect,
     connectPaymentWallet,
     openWalletSelector,
@@ -387,7 +395,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 };
 
 export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const network = WalletAdapterNetwork.Devnet;
+  const { cluster } = useEnvironment();
+  const network = cluster === 'mainnet' ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(() => {
@@ -397,7 +406,7 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
       new TrustWalletAdapter(),
     ];
 
-    // Conditionally add Preview Wallet (Unsafe Burner) when in iframe on Devnet as a fallback
+    // Only add Preview Wallet (Unsafe Burner) when in iframe on Devnet as a fallback
     const isInIframe = typeof window !== 'undefined' && window !== window.parent;
     const isDevnet = network === WalletAdapterNetwork.Devnet;
     if (isInIframe && isDevnet) {
