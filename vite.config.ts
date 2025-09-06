@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: 'globalThis',
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.1'),
   },
   resolve: {
     alias: {
