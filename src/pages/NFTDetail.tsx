@@ -38,6 +38,7 @@ export default function NFTDetail() {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
+  const [videoError, setVideoError] = useState(false);
   const { publicKey, connect } = useSolanaWallet();
   
   // Navigation context for moving between NFTs
@@ -167,6 +168,8 @@ export default function NFTDetail() {
 
   useEffect(() => {
     fetchNFT();
+    // Reset video error state when NFT changes
+    setVideoError(false);
   }, [fetchNFT]);
 
   const handleFullscreenToggle = () => {
@@ -323,14 +326,14 @@ export default function NFTDetail() {
         {/* Left Column - NFT Image and Properties */}
         <div className="space-y-4">
           {/* NFT Image */}
-          <div>
+          <div key={nft.id}>
             <Card>
               <div 
                 className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
                 onClick={handleFullscreenToggle}
               >
                 {/* Render different media types */}
-                {nft.metadata?.animation_url && nft.metadata?.media_type ? (
+                {nft.metadata?.animation_url && nft.metadata?.media_type && !videoError ? (
                   nft.metadata.media_type.startsWith('video/') ? (
                     <video
                       src={nft.metadata.animation_url}
@@ -339,13 +342,9 @@ export default function NFTDetail() {
                       loop
                       muted
                       playsInline
-                      onError={(e) => {
-                        console.error('Video load error, falling back to poster/image');
-                        e.currentTarget.style.display = 'none';
-                        const imgFallback = document.createElement('img');
-                        imgFallback.src = nft.image_url || '/placeholder.svg';
-                        imgFallback.className = 'w-full h-full object-cover';
-                        e.currentTarget.parentNode?.appendChild(imgFallback);
+                      onError={() => {
+                        console.error('Video load error, falling back to image');
+                        setVideoError(true);
                       }}
                     />
                   ) : nft.metadata.media_type.startsWith('audio/') ? (

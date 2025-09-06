@@ -5,6 +5,7 @@ import { Badge } from './badge';
 interface MediaPreviewProps {
   file: File;
   previewUrl?: string;
+  posterUrl?: string;
   className?: string;
   aspectRatio?: number;
   showBadge?: boolean;
@@ -15,6 +16,7 @@ interface MediaPreviewProps {
 export const MediaPreview: React.FC<MediaPreviewProps> = ({
   file,
   previewUrl,
+  posterUrl,
   className = '',
   aspectRatio = 1,
   showBadge = true,
@@ -57,6 +59,7 @@ export const MediaPreview: React.FC<MediaPreviewProps> = ({
         <div className="relative w-full h-full bg-black rounded-lg overflow-hidden">
           <video
             src={previewUrl}
+            poster={posterUrl}
             className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
             muted={!enablePlayback}
             loop

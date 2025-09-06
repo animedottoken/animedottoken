@@ -59,6 +59,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
   const imageRef = useRef<HTMLImageElement | HTMLVideoElement>(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [forceFallback, setForceFallback] = useState(false);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -168,7 +169,8 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
   useEffect(() => {
     setIsImageLoaded(false);
     setImageError(false);
-  }, [nftImage, mediaUrl]);
+    setForceFallback(false);
+  }, [nftImage, mediaUrl, nftId]);
 
   if (!isOpen) return null;
 
@@ -333,10 +335,14 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
 
       {/* Media Container */}
       <div className="absolute inset-0 flex items-center justify-center p-2 pt-24 pb-16">
-        <div className="relative flex items-center justify-center" style={{ 
-          width: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6), 
-          height: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6) 
-        }}>
+        <div 
+          key={`${nftId}-${mediaUrl || nftImage}`}
+          className="relative flex items-center justify-center" 
+          style={{ 
+            width: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6), 
+            height: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6) 
+          }}
+        >
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-black/50 rounded-lg p-6">
@@ -347,7 +353,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
           )}
 
           {/* Render different media types */}
-          {mediaUrl && mediaType ? (
+          {mediaUrl && mediaType && !forceFallback ? (
             mediaType.startsWith('video/') ? (
               <video
                 ref={imageRef as React.RefObject<HTMLVideoElement>}
@@ -362,17 +368,10 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                 playsInline
                 onLoadedData={() => setIsImageLoaded(true)}
                 onError={(e) => {
-                  console.error('Video load error:', e);
-                  // Try to fallback to cover image on video error
-                  if (coverImageUrl || nftImage) {
-                    setImageError(false);
-                    setIsImageLoaded(false);
-                    // Force re-render as image
-                    const target = e.currentTarget;
-                    target.style.display = 'none';
-                  } else {
-                    setImageError(true);
-                  }
+                  console.error('Video load error, falling back to image:', e);
+                  setForceFallback(true);
+                  setIsImageLoaded(false);
+                  setImageError(false);
                 }}
               />
             ) : mediaType.startsWith('audio/') ? (
@@ -427,10 +426,10 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
               />
             )
           ) : (
-            // Standard image display
+            // Standard image display or fallback from video error
             <img
               ref={imageRef as React.RefObject<HTMLImageElement>}
-              src={nftImage}
+              src={coverImageUrl || nftImage}
               alt={nftName}
               className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
