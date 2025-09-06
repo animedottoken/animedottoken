@@ -12,7 +12,11 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     global: 'globalThis',
-    __APP_VERSION__: JSON.stringify(packageJson.version),
+    __APP_VERSION__: JSON.stringify(
+      packageJson.version !== '0.0.0' 
+        ? packageJson.version 
+        : `0.2.0-beta.${Date.now().toString().slice(-8)}`
+    ),
   },
   resolve: {
     alias: {
