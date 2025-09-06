@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Shield, LogOut, Clock } from 'lucide-react';
 import { useSessionSecurity } from '@/hooks/useSessionSecurity';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 
 interface SecuritySettingsDialogProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps
   const [open, setOpen] = useState(false);
   const { rememberSession, setRememberSession, signOutFromAllDevices, lastActivity } = useSessionSecurity();
   const { user } = useAuth();
+  const { rememberWallet, setRememberWallet } = useSolanaWallet();
 
   const handleSignOutAllDevices = async () => {
     try {
@@ -33,7 +35,7 @@ export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
@@ -93,6 +95,33 @@ export const SecuritySettingsDialog = ({ children }: SecuritySettingsDialogProps
             </CardContent>
           </Card>
 
+          {/* Wallet Preferences */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Shield className="h-4 w-4" />
+                Wallet Preferences
+              </CardTitle>
+              <CardDescription>
+                Control how your wallet connections are managed in the app.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="remember-wallet">Remember my wallet choice</Label>
+                  <p className="text-sm text-muted-foreground">
+                    If ON, your selected wallet will be remembered for future connections
+                  </p>
+                </div>
+                <Switch
+                  id="remember-wallet"
+                  checked={rememberWallet}
+                  onCheckedChange={setRememberWallet}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Account Info */}
           <Card>
