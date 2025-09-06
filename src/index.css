@@ -240,9 +240,9 @@ body {
     right: max(0px, calc(100vw - 100%));
   }
 
-  /* JS-driven scrollbar avoidance - uses --scrollbar-width set in main.tsx */
+  /* JS+CSS driven scrollbar avoidance - shrinks fixed bars to content width */
   .fixed-avoid-scrollbar {
-    right: var(--scrollbar-width, 0px);
+    right: max(var(--scrollbar-width, 0px), calc(100vw - 100%));
     width: auto !important;
   }
 }
