@@ -116,13 +116,18 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         .then(() => {
           console.log('✅ Auto-connect successful');
           toast.success(`Connected to ${wallet.adapter.name}`);
+          
+          // Save wallet preference if remember is enabled
+          if (rememberWallet) {
+            localStorage.setItem('walletName', wallet.adapter.name);
+          }
         })
         .catch((error) => {
           console.error('❌ Auto-connect failed:', error);
           toast.error('Failed to connect wallet');
         });
     }
-  }, [connectAfterSelection, wallet, connected, connecting, walletConnect]);
+  }, [connectAfterSelection, wallet, connected, connecting, walletConnect, rememberWallet]);
 
   // Fetch balance when wallet connects
   useEffect(() => {
@@ -146,47 +151,40 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setError(null);
     try {
       console.log('🔗 Attempting wallet connection...');
-      console.log('🖼️ Is in iframe:', window !== window.parent);
-      console.log('🌐 Origin:', window.location.origin);
-      console.log('💼 Available wallets:', wallets.map(w => ({ name: w.adapter.name, ready: w.readyState })));
       
-      const isInIframe = window !== window.parent;
-      const isDevnet = cluster === 'devnet';
-      const hasInstalledWallets = wallets.some(w => (w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable) && !/unsafe|burner/i.test(w.adapter.name));
-      const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
-      
-      console.log('🎯 Has installed wallets:', hasInstalledWallets);
-      console.log('🎭 Preview wallet available:', !!previewWallet);
-      
-      // Try installed wallets first
-      if (hasInstalledWallets) {
-        console.log('✅ Attempting inline wallet connection...');
-        
-        try {
-          setConnectAfterSelection(true);
-          setVisible(true);
-          console.log('🎉 Wallet modal opened successfully');
-          
-          return;
-        } catch (inlineError) {
-          console.error('❌ Inline connection failed:', inlineError);
-          if (!isInIframe) {
-            throw inlineError;
+      // Check for remembered wallet preference
+      const lastWallet = localStorage.getItem('walletName');
+      if (lastWallet && rememberWallet) {
+        const savedWallet = wallets.find(w => w.adapter.name === lastWallet);
+        if (savedWallet && (savedWallet.readyState === WalletReadyState.Installed || savedWallet.readyState === WalletReadyState.Loadable)) {
+          console.log('🎯 Auto-connecting to remembered wallet:', lastWallet);
+          try {
+            select(savedWallet.adapter.name);
+            setTimeout(async () => {
+              try {
+                await walletConnect();
+                toast.success(`Connected to ${lastWallet}`);
+              } catch (error) {
+                console.error('❌ Auto-connect failed, opening modal:', error);
+                setVisible(true);
+              }
+            }, 100);
+            return;
+          } catch (error) {
+            console.error('❌ Remembered wallet connection failed:', error);
           }
         }
       }
       
-      // Fallback: open wallet selection modal inline
-      console.log('ℹ️ Opening wallet modal for selection...');
+      // Open wallet selection modal
+      console.log('🎯 Opening wallet selection modal...');
       setVisible(true);
-      return;
       
-      throw new Error('Unable to connect wallet');
     } catch (error) {
       console.error('Wallet connection error:', error);
       setError(error instanceof Error ? error.message : 'Failed to connect wallet');
     }
-  }, [setVisible, wallets, network, connected, connecting]);
+  }, [setVisible, wallets, rememberWallet, select, walletConnect]);
 
   const disconnect = useCallback(() => {
     console.log('🔌 Disconnecting wallet...');
@@ -230,14 +228,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       console.log('💳 Attempting payment wallet connection...');
       
-      // Always clear selected wallet to force modal selection
+      // Clear selected wallet to force modal selection
       select(null);
       
-      // Always open the wallet modal and set auto-connect flag
-      console.log('🎯 Opening wallet modal for selection with auto-connect...');
+      // Open the wallet modal with auto-connect flag
+      console.log('🎯 Opening wallet modal for payment...');
       setConnectAfterSelection(true);
       setVisible(true);
-      toast.info('Select a wallet to continue');
       
     } catch (error) {
       console.error('💳 Payment wallet connection error:', error);

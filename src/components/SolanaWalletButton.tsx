@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Wallet, ExternalLink, Zap, Shuffle, LogOut, AlertTriangle, Eye } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
@@ -20,7 +21,9 @@ export const SolanaWalletButton = () => {
     error,
     connectWith,
     listProviders,
-    wallet
+    wallet,
+    rememberWallet,
+    setRememberWallet
   } = useSolanaWallet();
   const { cluster } = useEnvironment();
   const [requestingAirdrop, setRequestingAirdrop] = useState(false);
@@ -197,6 +200,21 @@ export const SolanaWalletButton = () => {
         <Wallet className="mr-2 h-4 w-4" />
         {connecting ? 'Connecting...' : 'Connect Wallet'}
       </Button>
+      
+      {/* Remember wallet checkbox */}
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="remember-wallet" 
+          checked={rememberWallet}
+          onCheckedChange={setRememberWallet}
+        />
+        <label 
+          htmlFor="remember-wallet" 
+          className="text-sm text-muted-foreground cursor-pointer"
+        >
+          Remember my wallet choice
+        </label>
+      </div>
       
       {/* Only show preview wallet option on devnet */}
       {providers.hasPreview && cluster === 'devnet' && (
