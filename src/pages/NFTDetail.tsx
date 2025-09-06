@@ -321,8 +321,8 @@ export default function NFTDetail() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left Column - NFT Image and Properties */}
         <div className="space-y-4">
-          {/* NFT Image - Sticky */}
-          <div className="sticky top-6">
+          {/* NFT Image */}
+          <div>
             <Card>
               <div 
                 className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"

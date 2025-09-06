@@ -23,7 +23,16 @@ export const systemFields = new Set([
   'metadata_uri',
   'mint_address',
   'created_at',
-  'updated_at'
+  'updated_at',
+  'category',
+  'royalty_percentage',
+  'has_media',
+  'media_type',
+  'animation_url',
+  'image',
+  'image_url',
+  'cover_image',
+  'preview_image'
 ]);
 
 export const normalizeTraitType = (traitType: string): string => {
