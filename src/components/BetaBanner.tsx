@@ -23,12 +23,15 @@ export const BetaBanner = () => {
   }, []);
 
   return (
-    <Alert 
+    <div 
       ref={bannerRef}
-      className="fixed top-0 left-0 w-auto clip-avoid-scrollbar z-[60] bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
-      role="banner"
-      aria-live="polite"
+      className="fixed top-0 left-0 fixed-avoid-scrollbar z-[60]"
     >
+      <Alert 
+        className="w-full bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
+        role="banner"
+        aria-live="polite"
+      >
       <FlaskConical className="h-4 w-4 text-warning-foreground" />
       <div className="flex items-center w-full">
         <div className="flex-1 min-w-0">
@@ -38,5 +41,6 @@ export const BetaBanner = () => {
         </div>
       </div>
     </Alert>
+    </div>
   );
 };

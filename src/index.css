@@ -240,8 +240,8 @@ body {
     right: max(0px, calc(100vw - 100%));
   }
 
-  /* Utility class to clip fixed elements at viewport edge */
-  .clip-avoid-scrollbar {
-    clip-path: inset(0 max(var(--scrollbar-width, 0px), calc(100vw - 100%)) 0 0);
+  /* JS+CSS driven scrollbar avoidance - shrinks fixed bars to avoid scrollbar */
+  .fixed-avoid-scrollbar {
+    right: max(var(--scrollbar-width, 0px), calc(100vw - 100%));
   }
 }
