@@ -1,5 +1,5 @@
 // Service worker with network-first strategy for navigation and proper cache management
-const CACHE_NAME = 'anime-token-v5-' + Date.now();
+const CACHE_NAME = 'anime-token-v8-' + Date.now();
 const STATIC_CACHE_URLS = [
   '/src/assets/hero-optimized.webp',
   '/images/og-anime.jpg'
