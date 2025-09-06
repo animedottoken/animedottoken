@@ -1,13 +1,8 @@
 // Service worker with network-first strategy for navigation and proper cache management
-const CACHE_NAME = 'anime-token-v14-' + Date.now();
+const CACHE_NAME = 'anime-token-v13-' + Date.now();
 const STATIC_CACHE_URLS = [
   '/src/assets/hero-optimized.webp',
-  '/images/og-anime.jpg',
-  '/favicon-16x16.png',
-  '/favicon-32x32.png',
-  '/apple-touch-icon.png',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/images/og-anime.jpg'
 ];
 
 self.addEventListener('install', (event) => {
