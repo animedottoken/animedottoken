@@ -35,7 +35,10 @@ const setScrollbarWidthVar = () => {
   try {
     const width = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
     document.documentElement.style.setProperty('--scrollbar-width', `${width}px`);
-  } catch {}
+    console.log(`[Scrollbar Fix] Set --scrollbar-width to ${width}px (innerWidth: ${window.innerWidth}, clientWidth: ${document.documentElement.clientWidth})`);
+  } catch (e) {
+    console.error('[Scrollbar Fix] Error setting scrollbar width:', e);
+  }
 };
 
 // Initialize and listen for changes

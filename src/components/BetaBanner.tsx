@@ -1,12 +1,30 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FlaskConical } from 'lucide-react';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
+import { useEffect, useRef } from 'react';
 
 export const BetaBanner = () => {
   const { isLive } = useEnvironment();
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const logBannerInfo = () => {
+      if (bannerRef.current) {
+        const computed = getComputedStyle(bannerRef.current);
+        const scrollbarWidth = getComputedStyle(document.documentElement).getPropertyValue('--scrollbar-width');
+        console.log(`[BetaBanner Debug] Width: ${bannerRef.current.offsetWidth}px, Right: ${computed.right}, --scrollbar-width: ${scrollbarWidth}`);
+        console.log(`[BetaBanner Debug] Classes: ${bannerRef.current.className}`);
+      }
+    };
+    
+    setTimeout(logBannerInfo, 100);
+    window.addEventListener('resize', logBannerInfo);
+    return () => window.removeEventListener('resize', logBannerInfo);
+  }, []);
 
   return (
     <Alert 
+      ref={bannerRef}
       className="fixed top-0 left-0 fixed-avoid-scrollbar z-[60] bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
       role="banner"
       aria-live="polite"
