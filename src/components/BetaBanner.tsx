@@ -1,9 +1,17 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FlaskConical } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const BetaBanner = () => {
   const bannerRef = useRef<HTMLDivElement>(null);
+  const [dynamicVersion, setDynamicVersion] = useState('');
+
+  // Generate dynamic version number
+  useEffect(() => {
+    const baseVersion = __APP_VERSION__ !== '0.0.0' ? __APP_VERSION__ : '0.2.0';
+    const timestamp = Date.now().toString().slice(-8);
+    setDynamicVersion(`${baseVersion}-beta.${timestamp}`);
+  }, []);
 
   // Clear any existing localStorage keys that might cause issues
   useEffect(() => {
@@ -43,7 +51,7 @@ export const BetaBanner = () => {
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
             <FlaskConical className="inline-block mr-2 h-4 w-4 text-warning-foreground" aria-hidden="true" /> 
-            <span className="font-bold">You're early. ANIME.TOKEN - Open Beta v{__APP_VERSION__}.</span> We&apos;re just starting, expect bugs. Your feedback is crucial for development.{' '}
+            <span className="font-bold">You're early. ANIME.TOKEN - Open Beta v{dynamicVersion}.</span> We&apos;re just starting, expect bugs. Your feedback is crucial for development.{' '}
             <a 
               href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
