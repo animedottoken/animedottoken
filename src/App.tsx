@@ -157,14 +157,12 @@ const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col w-full">
+        <TopNav />
         <SecurityBanner />
         <div className="px-4 pt-2">
           <BetaBanner />
         </div>
-        <div className="sticky top-0 z-20 bg-background border-b">
-          <TopNav />
-        </div>
-        <main className="flex-1 overflow-x-hidden pb-20 md:pb-0">
+        <main className="flex-1 overflow-x-hidden pb-20 md:pb-0 pt-14">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
@@ -192,18 +190,16 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen w-full">
+      <TopNav />
       <SecurityBanner />
       <div className="px-4 pt-2">
         <BetaBanner />
       </div>
       <DesktopSidebar
-        className="fixed left-0 top-0 h-screen z-30" 
+        className="fixed left-0 top-14 h-[calc(100vh-3.5rem)] z-30" 
         onCollapseChange={setSidebarCollapsed}
       />
-      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <div className="sticky top-0 z-20 bg-background border-b">
-          <TopNav />
-        </div>
+      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'} pt-14`}>
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Index />} />
