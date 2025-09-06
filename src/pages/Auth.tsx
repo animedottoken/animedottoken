@@ -19,7 +19,14 @@ export default function Auth() {
   const [completing, setCompleting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const rawRedirect = searchParams.get('redirect');
-  const safeRedirect = rawRedirect && rawRedirect.startsWith('/') ? rawRedirect : '/';
+  
+  // Get final redirect URL using query param or stored fallback
+  const getFinalRedirect = () => {
+    const { getFinalRedirectUrl } = require('@/lib/authRedirect');
+    return getFinalRedirectUrl(rawRedirect);
+  };
+  
+  const safeRedirect = getFinalRedirect();
 
   useEffect(() => {
     const handleAuthCallback = async () => {

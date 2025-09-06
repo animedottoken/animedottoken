@@ -76,10 +76,13 @@ const AppLayout = () => {
         console.log('Processing auth tokens from root path...');
         
         try {
-          // Parse redirect target from query params
+          // Parse redirect target from query params with fallback to stored value
           const searchParams = new URLSearchParams(location.search);
           const rawRedirect = searchParams.get('redirect');
-          const safeRedirect = rawRedirect && rawRedirect.startsWith('/') ? rawRedirect : '/profile';
+          
+          // Get final redirect URL using helper function
+          const { getFinalRedirectUrl } = await import('@/lib/authRedirect');
+          const safeRedirect = getFinalRedirectUrl(rawRedirect);
           
           // Handle Magic Link tokens in hash fragment
           if (location.hash.includes('access_token')) {

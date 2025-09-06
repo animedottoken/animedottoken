@@ -13,8 +13,17 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
 
   useEffect(() => {
     if (!loading && !user) {
-      // Redirect to auth with return path
-      const returnTo = encodeURIComponent(location.pathname + location.search + location.hash);
+      // Store current path and redirect to auth
+      const currentPath = location.pathname + location.search + location.hash;
+      console.log('RequireAuth: Storing redirect path before auth:', currentPath);
+      
+      try {
+        sessionStorage.setItem('auth:redirect', currentPath);
+      } catch (error) {
+        console.warn('Failed to store redirect path:', error);
+      }
+      
+      const returnTo = encodeURIComponent(currentPath);
       navigate(`/auth?redirect=${returnTo}`);
     }
   }, [user, loading, navigate, location]);

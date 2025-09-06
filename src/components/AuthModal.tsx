@@ -42,6 +42,15 @@ export default function AuthModal({
     try {
       const { getOAuthRedirectUrl } = await import('@/lib/authRedirect');
       const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      console.log('AuthModal: Storing current path for OAuth redirect:', currentPath);
+      
+      // Store current context for later retrieval
+      try {
+        sessionStorage.setItem('auth:redirect', currentPath);
+      } catch (error) {
+        console.warn('Failed to store current path:', error);
+      }
+      
       const redirectUrl = getOAuthRedirectUrl(currentPath);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -86,6 +95,15 @@ export default function AuthModal({
     try {
       const { getAuthRedirectUrl } = await import('@/lib/authRedirect');
       const currentPath = window.location.pathname + window.location.search + window.location.hash;
+      console.log('AuthModal: Storing current path for magic link:', currentPath);
+      
+      // Store current context for later retrieval
+      try {
+        sessionStorage.setItem('auth:redirect', currentPath);
+      } catch (error) {
+        console.warn('Failed to store current path:', error);
+      }
+      
       const redirectUrl = getAuthRedirectUrl(currentPath);
       
       const { error } = await supabase.auth.signInWithOtp({
