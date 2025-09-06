@@ -190,13 +190,6 @@ export default function NFTDetail() {
       } else {
         navigation.navigateNext();
       }
-      
-      // Keep fullscreen mode after navigation
-      setTimeout(() => {
-        const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set('view', 'fs');
-        window.history.replaceState(null, '', `${window.location.pathname}?${newSearchParams.toString()}`);
-      }, 0);
     }
   };
 

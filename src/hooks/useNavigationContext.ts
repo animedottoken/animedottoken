@@ -57,12 +57,14 @@ export const useNavigationContext = (currentId: string, itemType: 'collection' |
 
     const targetItem = items[newIndex];
     if (targetItem) {
-      // Keep minimal URL - no view param preservation  
+      // Preserve view=fs parameter if present
+      const isFullscreen = searchParams.get('view') === 'fs';
       const targetUrl = itemType === 'collection' 
         ? `/collection/${targetItem.id}`
         : `/nft/${targetItem.id}`;
       
-      navigate(targetUrl);
+      const finalUrl = isFullscreen ? `${targetUrl}?view=fs` : targetUrl;
+      navigate(finalUrl);
     }
   }, [items, currentIndex, searchParams, itemType, navigate]);
 
