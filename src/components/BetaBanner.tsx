@@ -37,7 +37,7 @@ export const BetaBanner = () => {
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
-              <strong className="font-bold">BETA PHASE:</strong> Become part of our ARMY! We're looking for co-creators and testers to help shape the future of ANIME.TOKEN.{' '}
+              <strong className="font-bold">🧪 BETA PHASE:</strong> Become part of our ARMY! We're looking for co-creators and testers to help shape the future of ANIME.TOKEN.{' '}
               <a 
                 href="https://discord.gg/HmSJdT5MRX" 
                 target="_blank" 
