@@ -1210,7 +1210,7 @@ const Profile = () => {
                               collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
                             }}
                             likeCount={getNFTLikeCount(nft.id)}
-                            showOwnerInfo={false}
+                            showOwnerInfo={true}
                             navigationQuery="from=nfts"
                             onNavigate={() => setNavContext({ 
                               type: 'nft', 

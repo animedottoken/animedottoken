@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { FilterState } from '@/components/SearchFilterBar';
 import { normalizeAttributes } from '@/lib/attributes';
+import { detectMediaKind, MediaKind } from '@/lib/media';
 
 interface NFT {
   id: string;
@@ -124,36 +125,16 @@ export const useFilteredNFTs = (
         return false;
       }
 
-      // Media type filter
+      // Media type filter - using file extension detection
       if (filters.mediaType && filters.mediaType !== 'all') {
-        const hasAnimationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
+        const imageUrl = nft.attributes?.image_url || nft.attributes?.image;
+        const animationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
         const mediaType = nft.attributes?.media_type || nft.attributes?.metadata?.media_type;
         
-        switch (filters.mediaType) {
-          case 'static':
-            // Static images: no animation_url or media_type, or explicit static type
-            if (hasAnimationUrl && mediaType) return false;
-            break;
-          case 'video':
-            // Video: MUST have both animation_url AND media_type starting with 'video/'
-            if (!hasAnimationUrl || !mediaType?.startsWith('video/')) return false;
-            break;
-          case 'audio':
-            // Audio: MUST have both animation_url AND media_type starting with 'audio/'
-            if (!hasAnimationUrl || !mediaType?.startsWith('audio/')) return false;
-            break;
-          case '3d':
-            // 3D: MUST have both animation_url AND media_type containing 'gltf' or 'glb'
-            if (!hasAnimationUrl || (!mediaType?.includes('gltf') && !mediaType?.includes('glb'))) return false;
-            break;
-          case 'animated':
-            // Animated: has animation_url but not video/audio/3D
-            if (!hasAnimationUrl || 
-                mediaType?.startsWith('video/') || 
-                mediaType?.startsWith('audio/') ||
-                mediaType?.includes('gltf') ||
-                mediaType?.includes('glb')) return false;
-            break;
+        const detectedKind = detectMediaKind(imageUrl, animationUrl, mediaType);
+        
+        if (filters.mediaType !== detectedKind) {
+          return false;
         }
       }
 

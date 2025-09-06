@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, CheckCircle, Eye, Play, Volume2, Maximize2 } from 'lucide-react';
+import { Heart, CheckCircle, Eye, Play, Volume2, Maximize2, Image } from 'lucide-react';
+import { detectMediaKind, getMediaTypeDisplay } from '@/lib/media';
 import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -110,35 +111,40 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           }}
         />
         
-        {/* Media type indicator - consistent with filter logic */}
+        {/* Media type indicator - using file detection */}
         {(() => {
-          const hasAnimationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
+          const imageUrl = nft.image_url || nft.attributes?.image_url || nft.attributes?.image;
+          const animationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
           const mediaType = nft.attributes?.media_type || nft.attributes?.metadata?.media_type;
           
-          if (!hasAnimationUrl || !mediaType) return null;
+          const detectedKind = detectMediaKind(imageUrl, animationUrl, mediaType);
+          const displayInfo = getMediaTypeDisplay(detectedKind);
+          
+          if (!displayInfo) return null;
+          
+          let IconComponent;
+          switch (displayInfo.icon) {
+            case 'Play':
+              IconComponent = Play;
+              break;
+            case 'Volume2':
+              IconComponent = Volume2;
+              break;
+            case 'Maximize2':
+              IconComponent = Maximize2;
+              break;
+            case 'Image':
+            default:
+              IconComponent = Image;
+              break;
+          }
           
           return (
             <div className="absolute top-2 left-2">
-              {mediaType.startsWith('video/') ? (
-                <Badge className="bg-red-500 text-white text-xs">
-                  <Play className="w-3 h-3 mr-1" />
-                  Video
-                </Badge>
-              ) : mediaType.startsWith('audio/') ? (
-                <Badge className="bg-green-500 text-white text-xs">
-                  <Volume2 className="w-3 h-3 mr-1" />
-                  Audio
-                </Badge>
-              ) : (mediaType.includes('gltf') || mediaType.includes('glb')) ? (
-                <Badge className="bg-orange-500 text-white text-xs">
-                  <Maximize2 className="w-3 h-3 mr-1" />
-                  3D
-                </Badge>
-              ) : (
-                <Badge className="bg-blue-500 text-white text-xs">
-                  Media
-                </Badge>
-              )}
+              <Badge className={`${displayInfo.color} text-white text-xs`}>
+                <IconComponent className="w-3 h-3 mr-1" />
+                {displayInfo.label}
+              </Badge>
             </div>
           );
         })()}
