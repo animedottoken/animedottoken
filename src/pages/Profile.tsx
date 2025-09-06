@@ -53,7 +53,7 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showRankInfo, setShowRankInfo] = useState(false);
   const location = useLocation();
@@ -307,6 +307,7 @@ const Profile = () => {
   };
 
   const fetchProfileRef = useRef<(() => Promise<void>) | null>(null);
+  const isFetchingRef = useRef(false);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -326,8 +327,9 @@ const Profile = () => {
 
   // Memoized fetch profile function to prevent duplicate calls
   const fetchProfile = useCallback(async () => {
-    if (loading) return; // Prevent concurrent calls
+    if (isFetchingRef.current) return; // Prevent concurrent calls
     
+    isFetchingRef.current = true;
     setLoading(true);
     try {
       const walletToFetch = targetWallet || (publicKey && !user ? publicKey : null);
@@ -382,8 +384,9 @@ const Profile = () => {
       });
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [targetWallet, user, wallet, publicKey, loading, toast]);
+  }, [targetWallet, user, wallet, publicKey, toast]);
 
   // Store reference for other functions to use
   useEffect(() => {
