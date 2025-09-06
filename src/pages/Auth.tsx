@@ -323,7 +323,7 @@ export default function Auth() {
           </div>
           <CardTitle className="text-2xl font-bold mb-2">Welcome to</CardTitle>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <img src="/lovable-uploads/7de207ca-ae91-4bde-a6c9-9b75512489bf.png" alt="ANIME Token logo" className="h-8 w-8" />
+            <img src="/icon-192.png" alt="ANIME Token logo" className="h-8 w-8" />
             <span className="text-2xl font-bold">ANIME.TOKEN</span>
           </div>
           <CardDescription>
