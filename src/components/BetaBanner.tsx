@@ -8,9 +8,9 @@ export const BetaBanner = () => {
 
   // Generate dynamic version number
   useEffect(() => {
-    const baseVersion = __APP_VERSION__ !== '0.0.0' ? __APP_VERSION__ : '0.2.0';
-    const timestamp = Date.now().toString().slice(-8);
-    setDynamicVersion(`${baseVersion}-beta.${timestamp}`);
+    const now = new Date();
+    const dateVersion = `${now.getMonth() + 1}.${now.getDate()}.${now.getHours()}${now.getMinutes()}`;
+    setDynamicVersion(`0.2.${dateVersion}`);
   }, []);
 
   // Clear any existing localStorage keys that might cause issues
