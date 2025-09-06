@@ -126,7 +126,6 @@ All colors MUST be HSL. */
 @layer base {
   html {
     height: 100%;
-    scrollbar-gutter: stable both-edges;
     scrollbar-width: thin;
     scroll-behavior: smooth;
     overflow-y: scroll; /* Only html manages the main scrollbar */
