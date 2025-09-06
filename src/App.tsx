@@ -227,7 +227,7 @@ const AppLayout = () => {
 const App = () => {
   const queryClient = new QueryClient();
   
-  // Measure and set header heights dynamically
+  // Measure and set header heights dynamically with ResizeObserver
   useEffect(() => {
     const updateHeaderHeights = () => {
       const betaBanner = document.querySelector('[role="banner"]') as HTMLElement;
@@ -239,8 +239,26 @@ const App = () => {
       document.documentElement.style.setProperty('--header-total-height', `${betaHeight + topNavHeight}px`);
     };
 
-    // Update on mount and resize
-    updateHeaderHeights();
+    // Wait for fonts to load before measuring
+    document.fonts.ready.then(() => {
+      updateHeaderHeights();
+      
+      // Set up ResizeObserver for more accurate tracking
+      const betaBanner = document.querySelector('[role="banner"]') as HTMLElement;
+      if (betaBanner) {
+        const resizeObserver = new ResizeObserver(() => {
+          updateHeaderHeights();
+        });
+        resizeObserver.observe(betaBanner);
+        
+        // Cleanup function
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }
+    });
+
+    // Fallback resize listener
     window.addEventListener('resize', updateHeaderHeights);
     
     return () => window.removeEventListener('resize', updateHeaderHeights);

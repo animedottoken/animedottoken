@@ -35,7 +35,7 @@ export const BetaBanner = () => {
       className="fixed top-0 left-0 fixed-avoid-scrollbar clip-avoid-scrollbar z-[60]"
     >
       <Alert 
-        className="w-full bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
+        className="w-full bg-warning text-warning-foreground border-0 rounded-none border-b border-warning-foreground/20"
         role="banner"
         aria-live="polite"
       >
