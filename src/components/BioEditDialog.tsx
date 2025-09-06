@@ -6,8 +6,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { DollarSign, Coins } from 'lucide-react';
-import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { EDIT_FEE_ANIME } from '@/constants/pricing';
 
 interface ProfileLike {
   wallet_address: string;
@@ -25,7 +25,6 @@ interface BioEditDialogProps {
 
 export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentBio }: BioEditDialogProps) {
   const [bio, setBio] = useState('');
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, openWalletSelector } = useSolanaWallet();
   
   const isFirstChange = !profile?.bio;
@@ -98,9 +97,9 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
            ) : (
             <Alert className="bg-primary/10 border-primary/30 text-primary">
               <Coins className="h-4 w-4" />
-              <AlertDescription>
-                Your first bio was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
-              </AlertDescription>
+               <AlertDescription>
+                 Your first bio was <strong>FREE</strong>. Further changes require a fixed price of 1 ANIME. Connect your wallet to continue.
+               </AlertDescription>
             </Alert>
           )}
 
@@ -117,13 +116,11 @@ export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading,
               onPaymentComplete={async (txSignature) => {
                 await handleConfirm();
               }}
-              disabled={!bio.trim() || loading || (connected && pricingLoading)}
-              amount={animeAmount}
+              disabled={!bio.trim() || loading}
+              amount={EDIT_FEE_ANIME}
               currency="ANIME"
             >
-               {loading ? 'Updating...' : 
-                pricingLoading ? 'Calculating Price...' :
-                `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Bio`}
+               {loading ? 'Updating...' : `Pay ${EDIT_FEE_ANIME} ANIME & Update Bio`}
             </PaymentWalletButton>
           )}
         </div>

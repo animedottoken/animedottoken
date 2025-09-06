@@ -10,13 +10,13 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
-import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
 import { useRealtimeCreatorStatsByUser } from '@/hooks/useRealtimeCreatorStatsByUser';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { EDIT_FEE_ANIME } from '@/constants/pricing';
 export const GamifiedProfileCard = () => {
   const { publicKey } = useSolanaWallet();
   const {
@@ -41,10 +41,6 @@ export const GamifiedProfileCard = () => {
   
   const [nftCount, setNftCount] = useState(0);
   const [collectionCount, setCollectionCount] = useState(0);
-
-  const nicknamePricing = useAnimePricing(0.00004); // ~1 ANIME for testing
-  const pfpPricing = useAnimePricing(0.00004); // ~1 ANIME for testing
-  const bioPricing = useAnimePricing(0.00004); // ~1 ANIME for testing
 
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);
@@ -120,7 +116,7 @@ export const GamifiedProfileCard = () => {
       
       // Show payment simulation
       toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-      toast.info(`Paying: ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME ≈ ${nicknamePricing.usdPrice.toFixed(2)} USDT`, {
+      toast.info(`Paying: ${EDIT_FEE_ANIME} $ANIME`, {
         duration: 3000
       });
       
@@ -167,7 +163,7 @@ export const GamifiedProfileCard = () => {
       
       // Show payment simulation
       toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-      toast.info(`Paying: ${formatTokenAmount(pfpPricing.animeAmount)} $ANIME ≈ ${pfpPricing.usdPrice.toFixed(2)} USDT`, {
+      toast.info(`Paying: ${EDIT_FEE_ANIME} $ANIME`, {
         duration: 3000
       });
       
@@ -218,7 +214,7 @@ export const GamifiedProfileCard = () => {
       
       // Show payment simulation
       toast.success(`🎯 TEST PAYMENT SIMULATION 🎯`);
-      toast.info(`Paying: ${formatTokenAmount(bioPricing.animeAmount)} $ANIME ≈ ${bioPricing.usdPrice.toFixed(2)} USDT`, {
+      toast.info(`Paying: ${EDIT_FEE_ANIME} $ANIME`, {
         duration: 3000
       });
       
@@ -435,19 +431,16 @@ export const GamifiedProfileCard = () => {
                         <span className="font-medium">Payment Required</span>
                         <DollarSign className="w-4 h-4 text-primary" />
                       </div>
-                      {nicknamePricing.loading ? (
-                        <div className="animate-pulse">Loading pricing...</div>
-                      ) : (
-                        <div>
-                          <div className="text-lg font-bold">{formatTokenAmount(nicknamePricing.animeAmount)} $ANIME</div>
-                          <div className="text-sm text-muted-foreground">
-                            ≈ {nicknamePricing.usdPrice.toFixed(2)} USDT
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Price updated every 30 seconds
-                          </div>
+                      {/* Fixed pricing display */}
+                      <div>
+                        <div className="text-lg font-bold">{EDIT_FEE_ANIME} $ANIME</div>
+                        <div className="text-sm text-muted-foreground">
+                          Fixed price
                         </div>
-                      )}
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Price fixed at 1 ANIME
+                        </div>
+                      </div>
                     </div>
                   )}
                   <Separator />
@@ -467,11 +460,11 @@ export const GamifiedProfileCard = () => {
                   <Button 
                     onClick={handleSetNickname} 
                     className="w-full"
-                    disabled={loading || (!profile.nickname ? false : nicknamePricing.loading)}
+                    disabled={loading}
                   >
                     {loading ? 'Processing...' : 
                      !profile.nickname ? 'Set Nickname (FREE)' : 
-                     `Pay ${formatTokenAmount(nicknamePricing.animeAmount)} $ANIME`}
+                     `Pay ${EDIT_FEE_ANIME} $ANIME`}
                   </Button>
                 </div>
               </DialogContent>
@@ -516,7 +509,7 @@ export const GamifiedProfileCard = () => {
                       </p>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      <p>Cost: {(!profile.pfp_unlock_status && !profile.profile_image_url) ? 'FREE for first time!' : `${formatTokenAmount(pfpPricing.animeAmount)} ANIME ($${pfpPricing.usdPrice})`}</p>
+                      <p>Cost: {(!profile.pfp_unlock_status && !profile.profile_image_url) ? 'FREE for first time!' : `${EDIT_FEE_ANIME} ANIME`}</p>
                       <p className="mt-1">Select an NFT from your collection below</p>
                     </div>
                   </div>
@@ -577,7 +570,7 @@ export const GamifiedProfileCard = () => {
                       <span className="text-muted-foreground">Price:</span>
                       <span className="font-medium">
                         {(!profile.pfp_unlock_status && !profile.profile_image_url) ? 'FREE' : 
-                         `${formatTokenAmount(pfpPricing.animeAmount)} ANIME ($${pfpPricing.usdPrice.toFixed(2)})`
+                         `${EDIT_FEE_ANIME} ANIME`
                         }
                       </span>
                     </div>
@@ -628,19 +621,16 @@ export const GamifiedProfileCard = () => {
                       <span className="font-medium">Payment Required</span>
                       <DollarSign className="w-4 h-4 text-primary" />
                     </div>
-                    {bioPricing.loading ? (
-                      <div className="animate-pulse">Loading pricing...</div>
-                    ) : (
-                      <div>
-                        <div className="text-lg font-bold">{formatTokenAmount(bioPricing.animeAmount)} $ANIME</div>
-                        <div className="text-sm text-muted-foreground">
-                          ≈ {bioPricing.usdPrice.toFixed(2)} USDT
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Price updated every 30 seconds
-                        </div>
+                    {/* Fixed pricing display */}
+                    <div>
+                      <div className="text-lg font-bold">{EDIT_FEE_ANIME} $ANIME</div>
+                      <div className="text-sm text-muted-foreground">
+                        Fixed price
                       </div>
-                    )}
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Price fixed at 1 ANIME
+                      </div>
+                    </div>
                   </div>
                 )}
                 <Separator />
@@ -666,7 +656,7 @@ export const GamifiedProfileCard = () => {
                 >
                   {loading ? 'Processing...' : 
                     (!profile.bio && !profile.bio_unlock_status) ? 'Set Bio (Free!)' : 
-                    (bioPricing.loading ? 'Confirm' : `Pay ${formatTokenAmount(bioPricing.animeAmount)} $ANIME`)
+                    `Pay ${EDIT_FEE_ANIME} $ANIME`
                   }
                 </Button>
               </div>

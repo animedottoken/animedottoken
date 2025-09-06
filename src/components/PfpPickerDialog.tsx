@@ -5,8 +5,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileUpload } from '@/components/ui/file-upload';
 import { PaymentWalletButton } from '@/components/PaymentWalletButton';
 import { DollarSign, Coins, Info } from 'lucide-react';
-import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { EDIT_FEE_ANIME } from '@/constants/pricing';
 
 interface ProfileLike {
   wallet_address: string;
@@ -27,7 +27,6 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, connect } = useSolanaWallet();
 
   // Set current avatar as preview when dialog opens
@@ -145,9 +144,9 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                     /* Wallet connection overlay when not connected AND not first change */
                     <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                       <div className="text-center space-y-3 max-w-[240px]">
-                        <p className="text-white text-sm font-medium leading-snug">
-                          Avatar updates require payment in ANIME (~2 USDT) at live rates.
-                        </p>
+                       <p className="text-white text-sm font-medium leading-snug">
+                         Avatar updates require a fixed price of 1 ANIME.
+                       </p>
                         <div className="text-white/90 text-sm leading-snug">
                           Please connect your wallet to upload
                         </div>
@@ -191,9 +190,9 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
             ) : (
               <Alert className="bg-primary/10 border-primary/30 text-primary">
                 <Coins className="h-4 w-4" />
-                <AlertDescription className="text-sm">
-                  Your first profile picture was <strong>FREE</strong>. Further changes require payment in ANIME at live rates (~2.00 USDT). Connect your wallet to continue.
-                </AlertDescription>
+               <AlertDescription className="text-sm">
+                 Your first profile picture was <strong>FREE</strong>. Further changes require a fixed price of 1 ANIME. Connect your wallet to continue.
+               </AlertDescription>
               </Alert>
             )}
           </div>
@@ -215,13 +214,11 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
                   await handleConfirm();
                 }
               }}
-              disabled={!selectedFile || loading || submitting || (connected && pricingLoading)}
-              amount={animeAmount}
+              disabled={!selectedFile || loading || submitting}
+              amount={EDIT_FEE_ANIME}
               currency="ANIME"
             >
-               {(loading || submitting) ? 'Updating...' : 
-                pricingLoading ? 'Calculating Price...' :
-                `Pay ${animeAmount.toLocaleString()} ANIME (~2.00 USDT) & Update Picture`}
+               {(loading || submitting) ? 'Updating...' : `Pay ${EDIT_FEE_ANIME} ANIME & Update Picture`}
             </PaymentWalletButton>
           )}
         </div>

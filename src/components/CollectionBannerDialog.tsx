@@ -7,9 +7,9 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAnimePricing } from '@/hooks/useAnimePricing';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { Info, Coins } from 'lucide-react';
+import { EDIT_FEE_ANIME, EDIT_FEE_USDT } from '@/constants/pricing';
 
 interface CollectionBannerDialogProps {
   open: boolean;
@@ -33,9 +33,6 @@ export const CollectionBannerDialog = ({
   const [uploading, setUploading] = useState(false);
   
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  
-  const requiredUSDT = 0.00004; // ~1 ANIME for testing
-  const { animeAmount: requiredANIME, animePrice, loading: priceLoading } = useAnimePricing(requiredUSDT);
   const { publicKey } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
@@ -94,9 +91,9 @@ export const CollectionBannerDialog = ({
       if (isMinted) {
         updatePayload.payment = {
           tx_signature: 'simulated_banner_transaction',
-          amount_usdt: requiredUSDT,
-          amount_anime: requiredANIME,
-          anime_price: animePrice
+          amount_usdt: EDIT_FEE_USDT,
+          amount_anime: EDIT_FEE_ANIME,
+          anime_price: 1.0 // Fixed price
         };
       }
 
@@ -201,9 +198,9 @@ export const CollectionBannerDialog = ({
             {isMinted && (
               <Alert className="bg-primary/10 border-primary/30 text-primary">
                 <Coins className="h-4 w-4" />
-                <AlertDescription>
-                  Banner change requires payment in ANIME. Price updates live from DexScreener (~2.00 USDT).
-                </AlertDescription>
+               <AlertDescription>
+                 Banner change requires a fixed price of 1 ANIME.
+               </AlertDescription>
               </Alert>
             )}
 
@@ -229,12 +226,11 @@ export const CollectionBannerDialog = ({
           
           <Button
             className="w-full"
-            disabled={!selectedFile || uploading || (isMinted && !paymentConfirmed) || priceLoading}
+            disabled={!selectedFile || uploading || (isMinted && !paymentConfirmed)}
             onClick={handleConfirm}
           >
             {uploading ? 'Updating...' : 
-             priceLoading ? 'Calculating Price...' :
-             isMinted ? `Confirm & Pay ${requiredANIME.toLocaleString()} ANIME` : 'Save Banner'}
+             isMinted ? `Confirm & Pay ${EDIT_FEE_ANIME} ANIME` : 'Save Banner'}
           </Button>
         </div>
       </DialogContent>
