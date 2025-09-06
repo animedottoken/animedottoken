@@ -353,6 +353,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                 ref={imageRef as React.RefObject<HTMLVideoElement>}
                 src={mediaUrl}
                 poster={coverImageUrl || nftImage}
+                crossOrigin="anonymous"
                 className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
                   isImageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -360,9 +361,18 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                 loop
                 playsInline
                 onLoadedData={() => setIsImageLoaded(true)}
-                onError={() => {
-                  console.error('Video load error');
-                  setImageError(true);
+                onError={(e) => {
+                  console.error('Video load error:', e);
+                  // Try to fallback to cover image on video error
+                  if (coverImageUrl || nftImage) {
+                    setImageError(false);
+                    setIsImageLoaded(false);
+                    // Force re-render as image
+                    const target = e.currentTarget;
+                    target.style.display = 'none';
+                  } else {
+                    setImageError(true);
+                  }
                 }}
               />
             ) : mediaType.startsWith('audio/') ? (
@@ -436,7 +446,20 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
               <div className="text-center bg-black/50 rounded-lg p-6">
                 <Maximize2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p className="text-lg mb-2">Media not available</p>
-                <p className="text-sm text-gray-300">The media file could not be displayed</p>
+                <p className="text-sm text-gray-300 mb-4">The media file could not be displayed</p>
+                {(mediaUrl || nftImage) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const url = mediaUrl || nftImage;
+                      window.open(url, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="text-white border-white/20 hover:bg-white/10"
+                  >
+                    Open media in new tab
+                  </Button>
+                )}
               </div>
             </div>
           )}

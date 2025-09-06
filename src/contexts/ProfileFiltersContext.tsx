@@ -35,28 +35,49 @@ interface ProfileFiltersProviderProps {
 }
 
 export const ProfileFiltersProvider: React.FC<ProfileFiltersProviderProps> = ({ children }) => {
-  const [filters, setFilters] = useState<FilterState>({
-    searchQuery: '',
-    source: 'all',
-    sortBy: 'newest',
-    includeExplicit: false,
-    category: 'all',
-    minPrice: '',
-    maxPrice: '',
-    minRoyalty: '',
-    maxRoyalty: '',
-    marketplace: 'all',
-    type: 'all',
-    mediaType: 'all'
+  // Load filters from sessionStorage on initial render
+  const [filters, setFilters] = useState<FilterState>(() => {
+    try {
+      const saved = sessionStorage.getItem('profileFilters');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.warn('Failed to load filters from sessionStorage:', error);
+    }
+    return {
+      searchQuery: '',
+      source: 'all',
+      sortBy: 'newest',
+      includeExplicit: false,
+      category: 'all',
+      minPrice: '',
+      maxPrice: '',
+      minRoyalty: '',
+      maxRoyalty: '',
+      marketplace: 'all',
+      type: 'all',
+      mediaType: 'all'
+    };
   });
 
   const [currentPriceRange, setCurrentPriceRange] = useState<PriceRange | undefined>();
   const [currentRoyaltyRange, setCurrentRoyaltyRange] = useState<RoyaltyRange | undefined>();
 
+  // Save filters to sessionStorage whenever they change
+  const updateFilters = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    try {
+      sessionStorage.setItem('profileFilters', JSON.stringify(newFilters));
+    } catch (error) {
+      console.warn('Failed to save filters to sessionStorage:', error);
+    }
+  };
+
   return (
     <ProfileFiltersContext.Provider value={{ 
       filters, 
-      setFilters, 
+      setFilters: updateFilters, 
       currentPriceRange, 
       setCurrentPriceRange,
       currentRoyaltyRange,

@@ -131,19 +131,19 @@ export const useFilteredNFTs = (
         
         switch (filters.mediaType) {
           case 'static':
-            // Static images: no animation_url or media_type
-            if (hasAnimationUrl) return false;
+            // Static images: no animation_url or media_type, or explicit static type
+            if (hasAnimationUrl && mediaType) return false;
             break;
           case 'video':
-            // Video: has animation_url and media_type starts with 'video/'
+            // Video: MUST have both animation_url AND media_type starting with 'video/'
             if (!hasAnimationUrl || !mediaType?.startsWith('video/')) return false;
             break;
           case 'audio':
-            // Audio: has animation_url and media_type starts with 'audio/'
+            // Audio: MUST have both animation_url AND media_type starting with 'audio/'
             if (!hasAnimationUrl || !mediaType?.startsWith('audio/')) return false;
             break;
           case '3d':
-            // 3D: has animation_url and media_type contains 'gltf' or 'glb'
+            // 3D: MUST have both animation_url AND media_type containing 'gltf' or 'glb'
             if (!hasAnimationUrl || (!mediaType?.includes('gltf') && !mediaType?.includes('glb'))) return false;
             break;
           case 'animated':

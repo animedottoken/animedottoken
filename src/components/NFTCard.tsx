@@ -110,27 +110,38 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           }}
         />
         
-        {/* Media type indicator */}
-        {nft.attributes?.has_media && (
-          <div className="absolute top-2 left-2">
-            {nft.attributes.media_type?.startsWith('video/') ? (
-              <Badge className="bg-red-500 text-white text-xs">
-                <Play className="w-3 h-3 mr-1" />
-                Video
-              </Badge>
-            ) : nft.attributes.media_type?.startsWith('audio/') ? (
-              <Badge className="bg-green-500 text-white text-xs">
-                <Volume2 className="w-3 h-3 mr-1" />
-                Audio
-              </Badge>
-            ) : (nft.attributes.media_type?.includes('gltf') || nft.attributes.media_type?.includes('glb')) ? (
-              <Badge className="bg-orange-500 text-white text-xs">
-                <Maximize2 className="w-3 h-3 mr-1" />
-                3D
-              </Badge>
-            ) : null}
-          </div>
-        )}
+        {/* Media type indicator - consistent with filter logic */}
+        {(() => {
+          const hasAnimationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
+          const mediaType = nft.attributes?.media_type || nft.attributes?.metadata?.media_type;
+          
+          if (!hasAnimationUrl || !mediaType) return null;
+          
+          return (
+            <div className="absolute top-2 left-2">
+              {mediaType.startsWith('video/') ? (
+                <Badge className="bg-red-500 text-white text-xs">
+                  <Play className="w-3 h-3 mr-1" />
+                  Video
+                </Badge>
+              ) : mediaType.startsWith('audio/') ? (
+                <Badge className="bg-green-500 text-white text-xs">
+                  <Volume2 className="w-3 h-3 mr-1" />
+                  Audio
+                </Badge>
+              ) : (mediaType.includes('gltf') || mediaType.includes('glb')) ? (
+                <Badge className="bg-orange-500 text-white text-xs">
+                  <Maximize2 className="w-3 h-3 mr-1" />
+                  3D
+                </Badge>
+              ) : (
+                <Badge className="bg-blue-500 text-white text-xs">
+                  Media
+                </Badge>
+              )}
+            </div>
+          );
+        })()}
         
         {/* Heart button with auth wrapper */}
         <SocialActionWrapper 

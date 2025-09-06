@@ -85,6 +85,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   const [autoPriceSync, setAutoPriceSync] = useState({ min: true, max: true });
   const [autoRoyaltySync, setAutoRoyaltySync] = useState({ min: true, max: true });
 
+  // Sync with external filter changes (from context)
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
   // Auto-sync price and royalty values when ranges change and clear when no results
   useEffect(() => {
     if (currentPriceRange === undefined) {
@@ -139,7 +144,14 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   }, [localFilters, debouncedUpdate]);
 
   const updateFilter = (key: keyof FilterState, value: any) => {
-    setLocalFilters(prev => ({ ...prev, [key]: value }));
+    setLocalFilters(prev => {
+      const newFilters = { ...prev, [key]: value };
+      // Auto-adjust type filter when media type is selected
+      if (key === 'mediaType' && value !== 'all' && showTypeFilter && newFilters.type === 'collections') {
+        newFilters.type = 'nfts';
+      }
+      return newFilters;
+    });
   };
 
   const clearFilters = () => {
