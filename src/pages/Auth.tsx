@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Chrome, Loader2, Info, ArrowLeft } from 'lucide-react';
 import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
+import { getFinalRedirectUrl } from '@/lib/authRedirect';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -21,12 +22,7 @@ export default function Auth() {
   const rawRedirect = searchParams.get('redirect');
   
   // Get final redirect URL using query param or stored fallback
-  const getFinalRedirect = () => {
-    const { getFinalRedirectUrl } = require('@/lib/authRedirect');
-    return getFinalRedirectUrl(rawRedirect);
-  };
-  
-  const safeRedirect = getFinalRedirect();
+  const safeRedirect = getFinalRedirectUrl(rawRedirect);
 
   useEffect(() => {
     const handleAuthCallback = async () => {
