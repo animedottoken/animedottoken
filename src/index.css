@@ -244,4 +244,9 @@ body {
   .fixed-avoid-scrollbar {
     right: max(var(--scrollbar-width, 0px), calc(100vw - 100%));
   }
+
+  /* Clip content on the right to avoid bleed into scrollbar area (adds up to 2px buffer only when scrollbar exists) */
+  .clip-avoid-scrollbar {
+    clip-path: inset(0 calc(max(var(--scrollbar-width, 0px), calc(100vw - 100%)) + min(max(var(--scrollbar-width, 0px), calc(100vw - 100%)), 2px)) 0 0);
+  }
 }

@@ -25,7 +25,7 @@ export const BetaBanner = () => {
   return (
     <div 
       ref={bannerRef}
-      className="fixed top-0 left-0 fixed-avoid-scrollbar z-[60]"
+      className="fixed top-0 left-0 fixed-avoid-scrollbar clip-avoid-scrollbar z-[60]"
     >
       <Alert 
         className="w-full bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
