@@ -169,6 +169,7 @@ export default function AuthModal({
             <div className="w-8" /> {/* Spacer for centering */}
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
+            <img src="/lovable-uploads/7de207ca-ae91-4bde-a6c9-9b75512489bf.png" alt="ANIME Token logo" className="h-6 w-6" />
             <span className="text-lg font-bold">ANIME.TOKEN</span>
           </div>
           <DialogDescription>{description}</DialogDescription>
