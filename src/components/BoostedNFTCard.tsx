@@ -226,7 +226,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             {listed && nftPrice !== null ? (
               <PriceTag amount={nftPrice} currency="SOL" size="sm" />
             ) : (
-              <div className="text-sm text-muted-foreground">Price: TBD SOL</div>
+              <PriceTag tbd currency="SOL" size="sm" />
             )}
           </div>
         </div>

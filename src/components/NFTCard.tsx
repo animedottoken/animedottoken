@@ -260,9 +260,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           {nft.is_listed && nft.price ? (
             <PriceTag amount={nft.price} currency="SOL" size="sm" />
           ) : (
-            <div className="text-sm text-muted-foreground">
-              Price: TBD SOL
-            </div>
+            <PriceTag tbd currency="SOL" size="sm" />
           )}
         </div>
       </CardContent>

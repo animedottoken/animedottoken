@@ -184,14 +184,11 @@ export const NFTPreviewMeta = ({ nftId, nftName, nftImage, className = "" }: NFT
       </div>
 
       {/* Price Info */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">Price:</span>
+      <div>
         {nftDetails.is_listed && nftDetails.price !== null && nftDetails.price !== undefined ? (
           <PriceTag amount={nftDetails.price} currency="SOL" size="sm" />
         ) : (
-          <div className="text-sm font-medium text-muted-foreground">
-            TBD SOL
-          </div>
+          <PriceTag tbd currency="SOL" size="sm" />
         )}
       </div>
     </div>
