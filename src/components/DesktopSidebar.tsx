@@ -91,7 +91,6 @@ export const DesktopSidebar = ({ className, style, onCollapseChange }: DesktopSi
               }}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
             >
-              <img src="/brand/mark.png" alt="ANIME Token logo" className="h-8 w-8" />
               <span className="font-bold text-lg">ANIME.TOKEN</span>
             </Link>
           )}
@@ -106,7 +105,7 @@ export const DesktopSidebar = ({ className, style, onCollapseChange }: DesktopSi
               }}
               className="hover:opacity-80 transition-opacity cursor-pointer"
             >
-              <img src="/brand/mark.png" alt="ANIME Token logo" className="h-8 w-8" />
+              <span className="font-bold text-sm">ANIME</span>
             </Link>
           )}
           <Button

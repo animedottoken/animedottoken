@@ -140,7 +140,6 @@ export const TopNav = () => {
           }}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <img src="/brand/mark.png" alt="ANIME Token logo" className="h-8 w-8" />
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
@@ -253,7 +252,6 @@ export const TopNav = () => {
           <SheetContent side="left" className="w-72 sm:w-80 max-h-[100dvh] overflow-y-auto overscroll-contain touch-pan-y pb-[env(safe-area-inset-bottom)]">
             <div className="flex flex-col gap-4 mt-8">
               <div className="flex items-center gap-2 px-2 mb-6">
-                <img src="/brand/mark.png" alt="ANIME Token logo" className="h-10 w-10" />
                 <div>
                   <h2 className="font-bold text-lg">ANIME.TOKEN</h2>
                 </div>
@@ -318,7 +316,7 @@ export const TopNav = () => {
           }}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <img src="/brand/mark.png" alt="ANIME Token logo" className="h-8 w-8" />
+          <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
       </div>
       <nav className="flex items-center">
