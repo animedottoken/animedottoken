@@ -37,7 +37,7 @@ export const BetaBanner = () => {
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
-              <strong className="font-bold">🧪 You're early.</strong> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor. Be one of the first.
+              <strong className="font-bold">🧪 You're early.</strong> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor. <strong className="font-bold">Be one of the first.</strong>
             </AlertDescription>
           </div>
           <Button 
