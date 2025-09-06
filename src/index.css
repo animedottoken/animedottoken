@@ -52,6 +52,11 @@ All colors MUST be HSL. */
 
     /* Layout vars */
     --scrollbar-width: 0px;
+    
+    /* Header height variables for consistent spacing */
+    --beta-banner-height: 64px;
+    --top-nav-height: 56px;
+    --header-total-height: calc(var(--beta-banner-height) + var(--top-nav-height));
 
     /* Sidebar tokens */
     --sidebar-background: 240 10% 8%;

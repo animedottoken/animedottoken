@@ -27,10 +27,11 @@ const sections: SectionItem[] = homeSections.map(section => ({
 
 interface DesktopSidebarProps {
   className?: string;
+  style?: React.CSSProperties;
   onCollapseChange?: (collapsed: boolean) => void;
 }
 
-export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarProps) => {
+export const DesktopSidebar = ({ className, style, onCollapseChange }: DesktopSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,11 +70,14 @@ export const DesktopSidebar = ({ className, onCollapseChange }: DesktopSidebarPr
 
   return (
     
-      <aside className={cn(
-        "flex flex-col border-r bg-sidebar-background text-sidebar-foreground transition-[width] duration-300",
-        collapsed ? "w-16" : "w-64",
-        className
-      )}>
+      <aside 
+        className={cn(
+          "flex flex-col border-r bg-sidebar-background text-sidebar-foreground transition-[width] duration-300",
+          collapsed ? "w-16" : "w-64",
+          className
+        )}
+        style={style}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           {!collapsed && (

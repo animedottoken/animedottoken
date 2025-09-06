@@ -156,10 +156,10 @@ const AppLayout = () => {
 
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col w-full pt-16">
+      <div className="min-h-screen flex flex-col w-full" style={{ paddingTop: 'var(--header-total-height, 120px)' }}>
         <TopNav />
         <SecurityBanner />
-        <main className="flex-1 overflow-x-hidden pb-20 md:pb-0 pt-14">
+        <main className="flex-1 overflow-x-hidden pb-20 md:pb-0">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/share/nft/:nftId" element={<ShareNFT />} />
@@ -186,14 +186,18 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen w-full pt-16">
+    <div className="min-h-screen w-full" style={{ paddingTop: 'var(--header-total-height, 120px)' }}>
       <TopNav />
       <SecurityBanner />
       <DesktopSidebar
-        className="fixed left-0 top-30 h-[calc(100vh-7.5rem)] z-30" 
+        className="fixed left-0 z-30" 
+        style={{ 
+          top: 'var(--header-total-height, 120px)', 
+          height: 'calc(100vh - var(--header-total-height, 120px))' 
+        }}
         onCollapseChange={setSidebarCollapsed}
       />
-      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'} pt-14`}>
+      <div className={`flex flex-col min-h-screen transition-[margin] duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Index />} />
@@ -222,6 +226,25 @@ const AppLayout = () => {
 
 const App = () => {
   const queryClient = new QueryClient();
+  
+  // Measure and set header heights dynamically
+  useEffect(() => {
+    const updateHeaderHeights = () => {
+      const betaBanner = document.querySelector('[role="banner"]') as HTMLElement;
+      const betaHeight = betaBanner?.offsetHeight || 64;
+      const topNavHeight = 56; // Fixed height from h-14
+      
+      document.documentElement.style.setProperty('--beta-banner-height', `${betaHeight}px`);
+      document.documentElement.style.setProperty('--top-nav-height', `${topNavHeight}px`);
+      document.documentElement.style.setProperty('--header-total-height', `${betaHeight + topNavHeight}px`);
+    };
+
+    // Update on mount and resize
+    updateHeaderHeights();
+    window.addEventListener('resize', updateHeaderHeights);
+    
+    return () => window.removeEventListener('resize', updateHeaderHeights);
+  }, []);
   
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
