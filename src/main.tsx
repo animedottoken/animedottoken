@@ -30,6 +30,20 @@ const initMobile = async () => {
   }
 };
 
+// Compute and set CSS var for scrollbar width
+const setScrollbarWidthVar = () => {
+  try {
+    const width = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    document.documentElement.style.setProperty('--scrollbar-width', `${width}px`);
+  } catch {}
+};
+
+// Initialize and listen for changes
+const initScrollbarWidthVar = () => {
+  setScrollbarWidthVar();
+  window.addEventListener('resize', setScrollbarWidthVar);
+};
+
 // Debug scrollbar behavior
 const initScrollbarDebug = () => {
   const observer = new MutationObserver((mutations) => {
@@ -52,6 +66,9 @@ const initScrollbarDebug = () => {
 
 // Run mobile initialization after a short delay to ensure React is ready
 setTimeout(initMobile, 100);
+
+// Initialize computed scrollbar width var ASAP
+setTimeout(initScrollbarWidthVar, 0);
 
 // Initialize scrollbar debugging
 setTimeout(initScrollbarDebug, 200);

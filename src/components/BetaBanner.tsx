@@ -7,7 +7,7 @@ export const BetaBanner = () => {
 
   return (
     <Alert 
-      className="fixed top-0 left-0 fixed-edge-safe z-[60] bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
+      className="fixed top-0 left-0 fixed-avoid-scrollbar z-[60] bg-warning text-warning-foreground border-0 rounded-none shadow-lg"
       role="banner"
       aria-live="polite"
     >

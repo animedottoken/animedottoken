@@ -50,6 +50,9 @@ All colors MUST be HSL. */
 
     --radius: 0.8rem;
 
+    /* Layout vars */
+    --scrollbar-width: 0px;
+
     /* Sidebar tokens */
     --sidebar-background: 240 10% 8%;
     --sidebar-foreground: 0 0% 100%;
@@ -130,6 +133,7 @@ All colors MUST be HSL. */
     scrollbar-width: thin;
     scroll-behavior: smooth;
     overflow-y: scroll; /* Only html manages the main scrollbar */
+    background-color: hsl(var(--background));
   }
   
   * {
@@ -234,5 +238,11 @@ body {
   /* Fixed edge safe utility - prevents overlapping scrollbars */
   .fixed-edge-safe {
     right: max(0px, calc(100vw - 100%));
+  }
+
+  /* JS-driven scrollbar avoidance - uses --scrollbar-width set in main.tsx */
+  .fixed-avoid-scrollbar {
+    right: var(--scrollbar-width, 0px);
+    width: auto !important;
   }
 }
