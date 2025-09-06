@@ -463,33 +463,33 @@ export default function NFTDetail() {
               <div className="flex items-center gap-2 mb-3">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge variant="secondary" className="text-xs cursor-help">NFT</Badge>
+                    <Badge variant="secondary" className="text-xs cursor-help" title="Non-Fungible Token - unique digital asset">NFT</Badge>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>This is a Non-Fungible Token</p>
+                    <p>Non-Fungible Token - This is a unique digital asset stored on the blockchain</p>
                   </TooltipContent>
                 </Tooltip>
                 {nft.symbol && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge variant="outline" className="text-xs cursor-help">
+                      <Badge variant="outline" className="text-xs cursor-help" title={`Collection symbol: ${nft.symbol}`}>
                         {nft.symbol}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Collection symbol</p>
+                      <p>Collection Symbol - A short identifier for the NFT collection this item belongs to</p>
                     </TooltipContent>
                   </Tooltip>
                 )}
                 {nft.is_listed && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge variant="default" className="text-xs bg-green-600 cursor-help">
+                      <Badge variant="default" className="text-xs bg-green-600 cursor-help" title="Available for Purchase">
                         Listed
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>This NFT is currently for sale</p>
+                      <p>Available for Purchase - This NFT is currently listed on the marketplace and can be bought</p>
                     </TooltipContent>
                   </Tooltip>
                 )}
