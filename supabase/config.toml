@@ -38,7 +38,7 @@ verify_jwt = true  # Requires authenticated user
 verify_jwt = true  # Requires authenticated user
 
 [functions.get-profile]
-verify_jwt = false  # Public read function
+verify_jwt = true  # Now requires authentication for security
 
 [functions.set-nickname]
 verify_jwt = false  # Public function with wallet validation and rate limiting

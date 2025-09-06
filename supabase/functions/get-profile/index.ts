@@ -20,6 +20,7 @@ serve(async (req) => {
     // Get user from JWT (Web2 identity)
     const authHeader = req.headers.get('authorization');
     let userId = null;
+    let currentUserWallet = null;
     
     if (authHeader) {
       const jwt = authHeader.replace('Bearer ', '');
@@ -34,14 +35,21 @@ serve(async (req) => {
       const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
       if (!authError && user) {
         userId = user.id;
+        // Extract wallet from JWT payload if available
+        try {
+          const payload = JSON.parse(atob(jwt.split('.')[1]));
+          currentUserWallet = payload.wallet_address;
+        } catch (e) {
+          // JWT parsing failed, continue without wallet
+        }
       }
     }
 
-    // Require either wallet_address or authenticated user
-    if (!wallet_address && !userId) {
-      console.log('get-profile error: Missing wallet address and no authenticated user');
-      return new Response(JSON.stringify({ error: "Wallet address or authentication is required" }), {
-        status: 400,
+    // For security: require authentication for any profile access
+    if (!userId) {
+      console.log('get-profile error: Authentication required');
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
         headers: corsHeaders,
       });
     }
@@ -101,9 +109,9 @@ serve(async (req) => {
     // Create default profile if doesn't exist
     if (!profile) {
       const defaultProfile = {
-        id: userId ? crypto.randomUUID() : null, // Generate a UUID for the default profile
+        id: userId ? crypto.randomUUID() : null,
         user_id: userId,
-        wallet_address: wallet_address || null,
+        wallet_address: wallet_address || currentUserWallet || null,
         nickname: null,
         bio: null,
         profile_image_url: null,
@@ -126,7 +134,42 @@ serve(async (req) => {
       });
     }
 
-    console.log('get-profile returning existing profile:', profile);
+    // Determine if this is the user's own profile
+    const isOwnProfile = (profile.user_id === userId) || 
+                        (profile.wallet_address === currentUserWallet) ||
+                        (wallet_address === currentUserWallet);
+
+    // For security: return limited data for other users' profiles
+    if (!isOwnProfile) {
+      const publicProfile = {
+        id: profile.id,
+        user_id: profile.user_id,
+        wallet_address: profile.wallet_address ? 
+          `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}` : null,
+        nickname: profile.nickname,
+        profile_image_url: profile.profile_image_url,
+        profile_rank: profile.profile_rank,
+        trade_count: profile.trade_count,
+        nft_count: profile.nft_count,
+        collection_count: profile.collection_count,
+        created_at: profile.created_at,
+        // Hide sensitive fields
+        bio: null,
+        banner_image_url: null,
+        pfp_unlock_status: false,
+        current_pfp_nft_mint_address: null,
+        bio_unlock_status: false,
+        updated_at: profile.updated_at
+      };
+      
+      console.log('get-profile returning public profile for other user:', publicProfile);
+      return new Response(JSON.stringify(publicProfile), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
+    console.log('get-profile returning full profile for own user:', profile);
     return new Response(JSON.stringify(profile), {
       status: 200,
       headers: corsHeaders,
