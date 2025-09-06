@@ -57,11 +57,10 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
 
   useEffect(() => {
     let cancelled = false;
-    supabase
-      .from('user_profiles')
-      .select('display_name,verified')
-      .eq('wallet_address', nft.owner_address)
-      .maybeSingle()
+    supabase.functions
+      .invoke('get-profile', {
+        body: { wallet_address: nft.owner_address }
+      })
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
@@ -70,7 +69,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           setOwnerVerified(false);
           return;
         }
-        setOwnerNickname(data?.display_name || '');
+        setOwnerNickname(data?.nickname || data?.display_name || '');
         setOwnerVerified(!!data?.verified);
       });
     return () => { cancelled = true; };
@@ -225,8 +224,8 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
       
       <CardContent className="p-4">
         <div className="flex-1">
-          <div className="flex items-center gap-1 mb-1">
-            <h3 className="font-semibold truncate">{nft.name}</h3>
+          <div className="flex items-center gap-1 mb-1 min-h-[1.5rem]">
+            <h3 className="font-semibold truncate">{nft.name || 'No Name'}</h3>
             {verified && (
               <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
             )}
@@ -262,7 +261,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
             <PriceTag amount={nft.price} currency="SOL" size="sm" />
           ) : (
             <div className="text-sm text-muted-foreground">
-              Not Listed
+              Price: TBD SOL
             </div>
           )}
         </div>

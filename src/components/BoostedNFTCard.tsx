@@ -197,7 +197,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         {/* Content */}
         <div className="p-4 flex flex-col h-full">
           <div className="flex-1">
-            <h3 className="font-semibold line-clamp-1 mb-1">{listing.nft_name}</h3>
+            <h3 className="font-semibold line-clamp-1 mb-1 min-h-[1.5rem]">{listing.nft_name || 'No Name'}</h3>
             
             {/* Description */}
             {description && (
@@ -226,7 +226,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             {listed && nftPrice !== null ? (
               <PriceTag amount={nftPrice} currency="SOL" size="sm" />
             ) : (
-              <div className="text-sm text-muted-foreground">Not Listed</div>
+              <div className="text-sm text-muted-foreground">Price: TBD SOL</div>
             )}
           </div>
         </div>

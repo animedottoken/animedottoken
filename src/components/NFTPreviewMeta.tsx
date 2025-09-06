@@ -72,18 +72,17 @@ export const NFTPreviewMeta = ({ nftId, nftName, nftImage, className = "" }: NFT
 
         // Fetch owner profile
         if (nftData?.owner_address) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('user_profiles')
-            .select('display_name, verified')
-            .eq('wallet_address', nftData.owner_address)
-            .maybeSingle();
+          const { data: profileData, error: profileError } = await supabase.functions
+            .invoke('get-profile', {
+              body: { wallet_address: nftData.owner_address }
+            });
 
           if (profileError) {
             console.error('Error fetching owner profile:', profileError);
             setOwnerProfile({ verified: false });
           } else {
             setOwnerProfile({
-              display_name: profileData?.display_name,
+              display_name: profileData?.nickname || profileData?.display_name,
               verified: !!profileData?.verified
             });
           }
@@ -144,7 +143,7 @@ export const NFTPreviewMeta = ({ nftId, nftName, nftImage, className = "" }: NFT
       {/* NFT Name */}
       <div>
         <h3 className="font-semibold text-lg truncate" title={displayName}>
-          {displayName}
+          {displayName || 'No Name'}
         </h3>
       </div>
 
@@ -191,7 +190,7 @@ export const NFTPreviewMeta = ({ nftId, nftName, nftImage, className = "" }: NFT
           <PriceTag amount={nftDetails.price} currency="SOL" size="sm" />
         ) : (
           <div className="text-sm font-medium text-muted-foreground">
-            TBD
+            TBD SOL
           </div>
         )}
       </div>
