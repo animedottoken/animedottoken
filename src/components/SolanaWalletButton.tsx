@@ -1,9 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Wallet, ExternalLink, Shuffle, LogOut, AlertTriangle } from 'lucide-react';
+import { Wallet, Shuffle, LogOut, AlertTriangle } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { metaplexService } from '@/services/metaplexService';
@@ -18,17 +17,11 @@ export const SolanaWalletButton = () => {
     connect, 
     disconnect, 
     error,
-    connectWith,
-    listProviders,
     wallet,
     rememberWallet,
     setRememberWallet
   } = useSolanaWallet();
   const { cluster } = useEnvironment();
-  const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ 
-    installed: [], 
-    hasPreview: false 
-  });
 
   // Set Metaplex cluster and wallet when environment or wallet changes
   useEffect(() => {
@@ -38,11 +31,6 @@ export const SolanaWalletButton = () => {
     }
   }, [cluster, wallet]);
 
-  useEffect(() => {
-    const availableProviders = listProviders();
-    setProviders(availableProviders);
-  }, [listProviders]);
-
   const handleConnect = useCallback(async () => {
     try {
       await connect();
@@ -51,18 +39,9 @@ export const SolanaWalletButton = () => {
     }
   }, [connect]);
 
-  const handleWalletConnect = useCallback(async (walletName: string) => {
-    try {
-      await connectWith(walletName);
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-    }
-  }, [connectWith]);
-
   // Connected state
   if (connected && publicKey) {
     const truncatedKey = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
-    const isPreviewWallet = walletName?.toLowerCase().includes('unsafe') || walletName?.toLowerCase().includes('burner');
     
     return (
       <div className="flex flex-col gap-3">
@@ -76,21 +55,10 @@ export const SolanaWalletButton = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {walletName && (
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-muted-foreground">{walletName}</span>
-                {isPreviewWallet && (
-                  <>
-                    <Badge variant="outline" className="text-xs">Preview</Badge>
-                    <AlertTriangle className="h-3 w-3 text-yellow-500" />
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+          {walletName && (
+            <span className="text-xs text-muted-foreground">{walletName}</span>
+          )}
         </div>
-        
         
         <div className="flex flex-wrap gap-2">
           <Button
@@ -144,7 +112,6 @@ export const SolanaWalletButton = () => {
         {connecting ? 'Connecting...' : 'Connect Wallet'}
       </Button>
       
-      {/* Remember wallet checkbox */}
       <div className="flex items-center space-x-2">
         <Checkbox 
           id="remember-wallet" 
@@ -158,46 +125,6 @@ export const SolanaWalletButton = () => {
           Remember my wallet choice
         </label>
       </div>
-      
-      {/* Direct provider buttons for better iframe support */}
-      {providers.installed.length > 0 && (
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground text-center">Or connect directly:</div>
-          <div className="grid grid-cols-1 gap-2">
-            {providers.installed.map((providerName) => (
-              <Button
-                key={providerName}
-                variant="outline"
-                size="sm"
-                onClick={() => handleWalletConnect(providerName)}
-                disabled={connecting}
-                className="w-full justify-start"
-              >
-                <Wallet className="mr-2 h-4 w-4" />
-                {providerName}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Iframe detection and new tab option */}
-      {typeof window !== 'undefined' && window !== window.parent && (
-        <Alert className="border-blue-200 bg-blue-50 text-blue-700">
-          <ExternalLink className="h-4 w-4" />
-          <AlertDescription className="text-xs">
-            For best wallet experience, 
-            <Button 
-              variant="link" 
-              size="sm" 
-              className="px-1 h-auto text-blue-700 underline"
-              onClick={() => window.open(window.location.href, '_blank')}
-            >
-              open in new tab
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
     </div>
   );
 };
