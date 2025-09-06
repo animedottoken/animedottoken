@@ -43,7 +43,7 @@ export const BetaBanner = () => {
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
             <FlaskConical className="inline-block mr-2 h-4 w-4 text-warning-foreground" aria-hidden="true" /> 
-            <span className="font-bold">ANIME.TOKEN - Open Beta v{__APP_VERSION__}.</span> We&apos;re just starting, expect bugs. Your feedback is crucial for development.{' '}
+            <span className="font-bold">You're early. ANIME.TOKEN - Open Beta v{__APP_VERSION__}.</span> We&apos;re just starting, expect bugs. Your feedback is crucial for development.{' '}
             <a 
               href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
