@@ -27,7 +27,7 @@ export function PfpPickerDialog({ open, onOpenChange, profile, onConfirmUpload, 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, connect } = useSolanaWallet();
 
   // Set current avatar as preview when dialog opens

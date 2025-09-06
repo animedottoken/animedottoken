@@ -208,10 +208,10 @@ serve(async (req) => {
 
         const { tx_signature, amount_usdt, amount_anime, anime_price } = payment
         
-        // Verify payment amount (should be 2 USDT worth)
-        if (amount_usdt < 2) {
+        // Verify payment amount (should be very small for testing - ~1 ANIME)
+        if (amount_usdt < 0.00001) {
           return new Response(
-            JSON.stringify({ error: 'Insufficient payment amount. Required: 2 USDT' }),
+            JSON.stringify({ error: 'Insufficient payment amount. Required: ~1 ANIME token' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           )
         }

@@ -25,7 +25,7 @@ interface BioEditDialogProps {
 
 export function BioEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentBio }: BioEditDialogProps) {
   const [bio, setBio] = useState('');
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00); // 2 USDT for bio
+  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, openWalletSelector } = useSolanaWallet();
   
   const isFirstChange = !profile?.bio;

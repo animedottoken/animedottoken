@@ -34,7 +34,7 @@ export const CollectionBannerDialog = ({
   
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   
-  const requiredUSDT = 2;
+  const requiredUSDT = 0.00004; // ~1 ANIME for testing
   const { animeAmount: requiredANIME, animePrice, loading: priceLoading } = useAnimePricing(requiredUSDT);
   const { publicKey } = useSolanaWallet();
 

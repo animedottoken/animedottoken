@@ -42,9 +42,9 @@ export const GamifiedProfileCard = () => {
   const [nftCount, setNftCount] = useState(0);
   const [collectionCount, setCollectionCount] = useState(0);
 
-  const nicknamePricing = useAnimePricing(1.00); // $1.00 USD for nickname
-  const pfpPricing = useAnimePricing(2.00); // $2.00 USD for PFP unlock
-  const bioPricing = useAnimePricing(2.00); // $2.00 USD for bio changes after first time
+  const nicknamePricing = useAnimePricing(0.00004); // ~1 ANIME for testing
+  const pfpPricing = useAnimePricing(0.00004); // ~1 ANIME for testing
+  const bioPricing = useAnimePricing(0.00004); // ~1 ANIME for testing
 
   const [nicknameDialogOpen, setNicknameDialogOpen] = useState(false);
   const [pfpDialogOpen, setPfpDialogOpen] = useState(false);

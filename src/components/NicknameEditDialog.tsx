@@ -25,7 +25,7 @@ interface NicknameEditDialogProps {
 
 export function NicknameEditDialog({ open, onOpenChange, profile, onConfirm, loading, currentNickname }: NicknameEditDialogProps) {
   const [nickname, setNickname] = useState('');
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(1.00); // 1 USDT for nickname
+  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, openWalletSelector } = useSolanaWallet();
   
   const isFirstChange = !profile?.nickname;

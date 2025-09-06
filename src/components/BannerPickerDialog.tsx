@@ -27,7 +27,7 @@ interface BannerPickerDialogProps {
 export function BannerPickerDialog({ open, onOpenChange, profile, onConfirm, loading, isFirstChange = true }: BannerPickerDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const { animeAmount, loading: pricingLoading } = useAnimePricing(2.00);
+  const { animeAmount, loading: pricingLoading } = useAnimePricing(0.00004); // ~1 ANIME for testing
   const { connected, connect } = useSolanaWallet();
 
   // Set current banner as preview when dialog opens
