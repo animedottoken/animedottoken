@@ -126,6 +126,7 @@ All colors MUST be HSL. */
 @layer base {
   html {
     height: 100%;
+    scrollbar-gutter: stable;
     scrollbar-width: thin;
     scroll-behavior: smooth;
     overflow-y: scroll; /* Only html manages the main scrollbar */
@@ -228,5 +229,10 @@ body {
   
   .wallet-adapter-modal .wallet-adapter-modal-container {
     z-index: 10001 !important;
+  }
+
+  /* Fixed edge safe utility - prevents overlapping scrollbars */
+  .fixed-edge-safe {
+    right: max(0px, calc(100vw - 100%));
   }
 }
