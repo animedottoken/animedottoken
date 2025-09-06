@@ -37,16 +37,7 @@ export const BetaBanner = () => {
         <div className="flex items-center justify-between w-full">
           <div className="flex-1 min-w-0">
             <AlertDescription className="text-sm font-medium">
-              <strong className="font-bold">🧪 BETA PHASE:</strong> Become part of our ARMY! We're looking for co-creators and testers to help shape the future of ANIME.TOKEN.{' '}
-              <a 
-                href="https://discord.gg/HmSJdT5MRX" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline hover:no-underline font-semibold"
-              >
-                Get involved here
-              </a>
-              .
+              <strong className="font-bold">🧪 You're early.</strong> ANIME.TOKEN is just starting its new era. This is your chance to get in on the ground floor. Be one of the first.
             </AlertDescription>
           </div>
           <Button 
