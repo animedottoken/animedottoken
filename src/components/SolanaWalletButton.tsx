@@ -216,17 +216,44 @@ export const SolanaWalletButton = () => {
         </label>
       </div>
       
-      {/* Only show preview wallet option on devnet */}
-      {providers.hasPreview && cluster === 'devnet' && (
-        <Button
-          variant="outline"
-          onClick={connectPreviewWallet}
-          disabled={connecting}
-          className="w-full"
-        >
-          <Eye className="mr-2 h-4 w-4" />
-          Use Preview Wallet (Devnet)
-        </Button>
+      {/* Direct provider buttons for better iframe support */}
+      {providers.installed.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-xs text-muted-foreground text-center">Or connect directly:</div>
+          <div className="grid grid-cols-1 gap-2">
+            {providers.installed.map((providerName) => (
+              <Button
+                key={providerName}
+                variant="outline"
+                size="sm"
+                onClick={() => handleWalletConnect(providerName)}
+                disabled={connecting}
+                className="w-full justify-start"
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                {providerName}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Iframe detection and new tab option */}
+      {typeof window !== 'undefined' && window !== window.parent && (
+        <Alert className="border-blue-200 bg-blue-50 text-blue-700">
+          <ExternalLink className="h-4 w-4" />
+          <AlertDescription className="text-xs">
+            For best wallet experience, 
+            <Button 
+              variant="link" 
+              size="sm" 
+              className="px-1 h-auto text-blue-700 underline"
+              onClick={() => window.open(window.location.href, '_blank')}
+            >
+              open in new tab
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

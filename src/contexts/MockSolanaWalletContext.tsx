@@ -208,14 +208,14 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     select(null);
     // Clear auto-connect flag when disconnecting
     setConnectAfterSelection(false);
-    // Clear ALL wallet-related storage when manually disconnecting
-    localStorage.removeItem('remember-wallet');
-    localStorage.removeItem('walletName');
-    localStorage.removeItem('walletAdapter');
-    setRememberWallet(false);
+    // Only clear storage if remember is OFF
+    if (!rememberWallet) {
+      localStorage.removeItem('walletName');
+      localStorage.removeItem('walletAdapter');
+    }
     toast.info('Wallet disconnected');
-    console.log('✅ Wallet disconnected and all adapters cleared');
-  }, [walletDisconnect, select]);
+    console.log('✅ Wallet disconnected');
+  }, [walletDisconnect, select, rememberWallet]);
 
   const handleSetRememberWallet = useCallback((remember: boolean) => {
     setRememberWallet(remember);
@@ -238,23 +238,28 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [connected, walletDisconnect, select]);
 
   const listProviders = useCallback(() => {
-    const installedWallets = wallets
-      .filter(w => 
-        // Always expose primary wallets in UI regardless of readyState
-        !/unsafe|burner/i.test(w.adapter.name)
-      )
-      .map(w => w.adapter.name);
+    const installedWallets = wallets.map(w => w.adapter.name);
     
-    const previewWallet = wallets.find(w => /unsafe|burner/i.test(w.adapter.name));
     return {
       installed: installedWallets,
-      hasPreview: !!previewWallet
+      hasPreview: false // No preview wallet available
     };
   }, [wallets]);
 
   const connectPaymentWallet = useCallback(async () => {
     try {
       console.log('💳 Attempting payment wallet connection...');
+      
+      // Check if we're in an iframe and suggest opening in new tab
+      const isInIframe = typeof window !== 'undefined' && window !== window.parent;
+      if (isInIframe) {
+        toast.info('For best wallet experience, open in new tab', {
+          action: {
+            label: 'Open in New Tab',
+            onClick: () => window.open(window.location.href, '_blank')
+          }
+        });
+      }
       
       // Clear selected wallet to force modal selection
       select(null);
@@ -425,18 +430,12 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(() => {
+    // Only real wallets - no preview/burner wallets
     const baseWallets: Adapter[] = [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
       new TrustWalletAdapter(),
     ];
-
-    // Only add Preview Wallet (Unsafe Burner) when in iframe on Devnet as a fallback
-    const isInIframe = typeof window !== 'undefined' && window !== window.parent;
-    const isDevnet = network === WalletAdapterNetwork.Devnet;
-    if (isInIframe && isDevnet) {
-      baseWallets.push(new UnsafeBurnerWalletAdapter());
-    }
 
     return baseWallets;
   }, [network]);
