@@ -184,28 +184,19 @@ export default function NFTDetail() {
 
   const handleFullscreenNavigate = (direction: 'prev' | 'next') => {
     if (navigation.canNavigate) {
-      let newIndex: number;
+      // Use the navigation hook's built-in navigation functions
       if (direction === 'prev') {
-        newIndex = navigation.currentIndex > 1 ? navigation.currentIndex - 2 : navigation.totalItems - 1;
+        navigation.navigatePrev();
       } else {
-        newIndex = navigation.currentIndex < navigation.totalItems ? navigation.currentIndex : 0;
+        navigation.navigateNext();
       }
       
-      // Get the navigation items from search params
-      const navItems = searchParams.get('nav');
-      if (navItems) {
-        try {
-          const parsedItems = JSON.parse(decodeURIComponent(navItems));
-          const targetId = parsedItems[newIndex];
-          if (targetId) {
-            const newParams = new URLSearchParams(searchParams);
-            newParams.set('view', 'fs'); // Keep fullscreen mode
-            navigate(`/nft/${targetId}?${newParams.toString()}`, { replace: true });
-          }
-        } catch (error) {
-          console.error('Error parsing navigation items:', error);
-        }
-      }
+      // Keep fullscreen mode after navigation
+      setTimeout(() => {
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set('view', 'fs');
+        window.history.replaceState(null, '', `${window.location.pathname}?${newSearchParams.toString()}`);
+      }, 0);
     }
   };
 

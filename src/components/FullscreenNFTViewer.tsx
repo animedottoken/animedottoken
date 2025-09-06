@@ -365,6 +365,8 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                 }`}
                 controls
                 loop
+                muted
+                autoPlay
                 playsInline
                 onLoadedData={() => setIsImageLoaded(true)}
                 onError={(e) => {
