@@ -15,6 +15,7 @@ import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
 import { EditNFTDialog } from "@/components/EditNFTDialog";
 import { normalizeAttributes } from '@/lib/attributes';
+import { detectMediaKind, getMediaTypeDisplay } from '@/lib/media';
 import { truncateAddress } from "@/utils/addressUtils";
 import { PriceTag } from '@/components/ui/price-tag';
 
@@ -460,16 +461,37 @@ export default function NFTDetail() {
           <TooltipProvider>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Badge variant="secondary" className="text-xs">NFT</Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="secondary" className="text-xs cursor-help">NFT</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This is a Non-Fungible Token</p>
+                  </TooltipContent>
+                </Tooltip>
                 {nft.symbol && (
-                  <Badge variant="outline" className="text-xs">
-                    {nft.symbol}
-                  </Badge>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="text-xs cursor-help">
+                        {nft.symbol}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Collection symbol</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
                 {nft.is_listed && (
-                  <Badge variant="default" className="text-xs bg-green-600">
-                    Listed
-                  </Badge>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="default" className="text-xs bg-green-600 cursor-help">
+                        Listed
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>This NFT is currently for sale</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
               <h1 className="text-3xl font-bold mb-2">{nft.name}</h1>
@@ -643,6 +665,43 @@ export default function NFTDetail() {
                     </div>
                   </div>
                 )}
+
+                {/* Media Information */}
+                {(() => {
+                  const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
+                  const mediaTypeDisplay = getMediaTypeDisplay(mediaKind);
+                  const mediaUrl = nft.metadata?.animation_url || nft.image_url;
+                  const fileExtension = mediaUrl ? mediaUrl.split('.').pop()?.toUpperCase() : null;
+                  const mimeType = nft.metadata?.media_type;
+                  
+                  return (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Image className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Media</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2">
+                          {mediaTypeDisplay && (
+                            <Badge variant="outline" className="text-xs">
+                              {mediaTypeDisplay.label}
+                            </Badge>
+                          )}
+                          {fileExtension && (
+                            <Badge variant="secondary" className="text-xs">
+                              {fileExtension}
+                            </Badge>
+                          )}
+                        </div>
+                        {mimeType && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {mimeType}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
