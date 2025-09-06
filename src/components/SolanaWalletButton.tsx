@@ -3,11 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Wallet, ExternalLink, Zap, Shuffle, LogOut, AlertTriangle, Eye } from 'lucide-react';
+import { Wallet, ExternalLink, Shuffle, LogOut, AlertTriangle } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { metaplexService } from '@/services/metaplexService';
-import { toast } from 'sonner';
 
 export const SolanaWalletButton = () => {
   const { 
@@ -26,7 +25,6 @@ export const SolanaWalletButton = () => {
     setRememberWallet
   } = useSolanaWallet();
   const { cluster } = useEnvironment();
-  const [requestingAirdrop, setRequestingAirdrop] = useState(false);
   const [providers, setProviders] = useState<{ installed: string[]; hasPreview: boolean }>({ 
     installed: [], 
     hasPreview: false 
@@ -45,30 +43,6 @@ export const SolanaWalletButton = () => {
     setProviders(availableProviders);
   }, [listProviders]);
 
-  const handleAirdrop = useCallback(async () => {
-    if (!publicKey || cluster !== 'devnet') return;
-    
-    setRequestingAirdrop(true);
-    try {
-      const result = await metaplexService.requestAirdrop(publicKey);
-      if (result.success) {
-        toast.success('Airdrop successful! 🎉', {
-          description: 'Received 1 SOL on Devnet'
-        });
-      } else {
-        toast.error('Airdrop failed', {
-          description: result.error || 'Unknown error'
-        });
-      }
-    } catch (error) {
-      toast.error('Airdrop failed', {
-        description: 'Please try again later'
-      });
-    } finally {
-      setRequestingAirdrop(false);
-    }
-  }, [publicKey, cluster]);
-
   const handleConnect = useCallback(async () => {
     try {
       await connect();
@@ -85,19 +59,10 @@ export const SolanaWalletButton = () => {
     }
   }, [connectWith]);
 
-  const connectPreviewWallet = useCallback(async () => {
-    try {
-      await connectWith('Unsafe');
-    } catch (error) {
-      console.error('Preview wallet error:', error);
-    }
-  }, [connectWith]);
-
   // Connected state
   if (connected && publicKey) {
     const truncatedKey = `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
     const isPreviewWallet = walletName?.toLowerCase().includes('unsafe') || walletName?.toLowerCase().includes('burner');
-    const isDevnet = cluster === 'devnet';
     
     return (
       <div className="flex flex-col gap-3">
@@ -126,30 +91,8 @@ export const SolanaWalletButton = () => {
           </div>
         </div>
         
-        {isPreviewWallet && (
-          <Alert className="border-yellow-200 bg-yellow-50 text-yellow-700">
-            <Eye className="h-4 w-4" />
-            <AlertDescription className="text-xs">
-              Preview wallet active. Perfect for testing, but remember real wallets are needed for mainnet.
-            </AlertDescription>
-          </Alert>
-        )}
         
         <div className="flex flex-wrap gap-2">
-          {/* Only show airdrop on devnet */}
-          {isDevnet && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAirdrop}
-              disabled={requestingAirdrop}
-              className="flex items-center gap-2"
-            >
-              <Zap className="h-4 w-4" />
-              {requestingAirdrop ? 'Getting SOL...' : 'Get SOL'}
-            </Button>
-          )}
-          
           <Button
             variant="outline"
             size="sm"

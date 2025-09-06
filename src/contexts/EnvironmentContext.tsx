@@ -39,8 +39,8 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   // Live is true when domain is production and not forced beta
   const isLive = !isBetaMode;
   
-  // Cluster: mainnet for live, devnet for beta/testing
-  const cluster: 'mainnet' | 'devnet' = isLive ? 'mainnet' : 'devnet';
+  // Always use mainnet for live NFT minting
+  const cluster: 'mainnet' | 'devnet' = 'mainnet';
 
   const canUseFeature = (feature: string): boolean => {
     // In beta mode, all features are available

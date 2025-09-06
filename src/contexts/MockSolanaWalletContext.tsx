@@ -97,23 +97,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Note: We no longer auto-link wallets on connect
   // Wallets are now connected temporarily for payments or explicitly linked for identity
 
-  const airdropSOL = useCallback(async (publicKey: any) => {
-    try {
-      console.log('💰 Airdropping 1 SOL to preview wallet...');
-      const signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
-      await connection.confirmTransaction(signature);
-      console.log('✅ Airdrop successful:', signature);
-      toast.success('Preview wallet funded with 1 SOL');
-      
-      // Refresh balance
-      const balance = await connection.getBalance(publicKey);
-      setBalance(balance / LAMPORTS_PER_SOL);
-    } catch (error) {
-      console.error('❌ Airdrop failed:', error);
-      // Don't show error toast - this is best effort
-    }
-  }, [connection]);
-
 
   // Auto-connect after wallet selection
   useEffect(() => {
