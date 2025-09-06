@@ -5,25 +5,10 @@
 
 /**
  * Get the canonical domain for authentication redirects
- * This ensures magic links always redirect to the main sandbox domain
- * even when initiated from id-preview helper domains
+ * Always uses the current origin for live domain operations
  */
 function getCanonicalDomain(): string {
-  const currentOrigin = window.location.origin;
-  
-  // If we're on an id-preview domain, normalize to sandbox domain
-  if (currentOrigin.includes('id-preview--')) {
-    // Extract project ID from id-preview URL
-    const match = currentOrigin.match(/id-preview--([^.]+)\.lovable\.app/);
-    if (match) {
-      const projectId = match[1];
-      console.log(`Normalizing id-preview domain to sandbox for project: ${projectId}`);
-      return `https://${projectId}.sandbox.lovable.dev`;
-    }
-  }
-  
-  // For other domains (local dev, custom domains, etc.), use as-is
-  return currentOrigin;
+  return window.location.origin;
 }
 
 /**

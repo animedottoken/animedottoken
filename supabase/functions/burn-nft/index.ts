@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": process.env.NODE_ENV === 'production' 
-    ? "https://*.lovable.app" 
+    ? "https://animedottoken.com" 
     : "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",

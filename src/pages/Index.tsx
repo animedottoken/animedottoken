@@ -233,7 +233,7 @@ const Index = () => {
         <meta name="twitter:description" content="$ANIME powers the Ownership Economy - a community-owned ecosystem where users become stakeholders." />
         <meta name="twitter:image" content={shareImage} />
         <meta name="twitter:image:alt" content="ANIME Token on Solana — community-driven project" />
-        <link rel="preconnect" href="https://073d74a6-99d5-42cc-8d2e-4144164f2d85.lovableproject.com" crossOrigin="" />
+        
         <link
           rel="preload"
           as="image"
