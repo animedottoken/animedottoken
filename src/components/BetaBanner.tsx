@@ -54,7 +54,7 @@ export const BetaBanner = () => {
         <div className="flex-1 min-w-0">
           <AlertDescription className="text-sm font-medium">
             <FlaskConical className="inline-block mr-2 h-4 w-4 text-warning-foreground" aria-hidden="true" /> 
-            <span className="font-bold">Update #{CURRENT_UPDATE}:</span> {UPDATE_MESSAGES[CURRENT_UPDATE as keyof typeof UPDATE_MESSAGES]}{' '}
+            <span className="font-bold">ANIME.TOKEN - Open Beta v0.1.</span> We&apos;re just starting, expect bugs. Your feedback is crucial for development.{' '}
             <a 
               href="https://discord.com/invite/HmSJdT5MRX" 
               target="_blank" 
@@ -62,7 +62,7 @@ export const BetaBanner = () => {
               className="underline hover:no-underline font-semibold"
               aria-label="Join ANIME.TOKEN Discord server"
             >
-              Click here to join our Discord.
+              Join the community here.
             </a>
           </AlertDescription>
         </div>
