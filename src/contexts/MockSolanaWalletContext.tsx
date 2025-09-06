@@ -82,7 +82,15 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [error, setError] = useState<string | null>(null);
   const [connectAfterSelection, setConnectAfterSelection] = useState(false);
   const [rememberWallet, setRememberWallet] = useState(() => {
-    return localStorage.getItem('remember-wallet') === 'true';
+    const remember = localStorage.getItem('remember-wallet') === 'true';
+    
+    // If remember is OFF, proactively clear any persisted wallet data
+    if (!remember) {
+      localStorage.removeItem('walletName');
+      localStorage.removeItem('walletAdapter');
+    }
+    
+    return remember;
   });
   const network = cluster === 'mainnet' ? 'mainnet-beta' : 'devnet';
 
@@ -152,28 +160,35 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       console.log('🔗 Attempting wallet connection...');
       
-      // Check for remembered wallet preference
-      const lastWallet = localStorage.getItem('walletName');
-      if (lastWallet && rememberWallet) {
-        const savedWallet = wallets.find(w => w.adapter.name === lastWallet);
-        if (savedWallet && (savedWallet.readyState === WalletReadyState.Installed || savedWallet.readyState === WalletReadyState.Loadable)) {
-          console.log('🎯 Auto-connecting to remembered wallet:', lastWallet);
-          try {
-            select(savedWallet.adapter.name);
-            setTimeout(async () => {
-              try {
-                await walletConnect();
-                toast.success(`Connected to ${lastWallet}`);
-              } catch (error) {
-                console.error('❌ Auto-connect failed, opening modal:', error);
-                setVisible(true);
-              }
-            }, 100);
-            return;
-          } catch (error) {
-            console.error('❌ Remembered wallet connection failed:', error);
+      // Only auto-connect to remembered wallet if remember setting is ON
+      if (rememberWallet) {
+        const lastWallet = localStorage.getItem('walletName');
+        if (lastWallet) {
+          const savedWallet = wallets.find(w => w.adapter.name === lastWallet);
+          if (savedWallet && (savedWallet.readyState === WalletReadyState.Installed || savedWallet.readyState === WalletReadyState.Loadable)) {
+            console.log('🎯 Auto-connecting to remembered wallet:', lastWallet);
+            try {
+              select(savedWallet.adapter.name);
+              setTimeout(async () => {
+                try {
+                  await walletConnect();
+                  toast.success(`Connected to ${lastWallet}`);
+                } catch (error) {
+                  console.error('❌ Auto-connect failed, opening modal:', error);
+                  setVisible(true);
+                }
+              }, 100);
+              return;
+            } catch (error) {
+              console.error('❌ Remembered wallet connection failed:', error);
+            }
           }
         }
+      } else {
+        // If remember is OFF, ensure no persisted wallet data exists
+        localStorage.removeItem('walletName');
+        localStorage.removeItem('walletAdapter');
+        console.log('🚫 Remember wallet is OFF - cleared persisted data');
       }
       
       // Open wallet selection modal
@@ -193,11 +208,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     select(null);
     // Clear auto-connect flag when disconnecting
     setConnectAfterSelection(false);
-    // Clear remember preference when manually disconnecting
+    // Clear ALL wallet-related storage when manually disconnecting
     localStorage.removeItem('remember-wallet');
+    localStorage.removeItem('walletName');
+    localStorage.removeItem('walletAdapter');
     setRememberWallet(false);
     toast.info('Wallet disconnected');
-    console.log('✅ Wallet disconnected and adapter cleared');
+    console.log('✅ Wallet disconnected and all adapters cleared');
   }, [walletDisconnect, select]);
 
   const handleSetRememberWallet = useCallback((remember: boolean) => {
@@ -205,9 +222,20 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (remember) {
       localStorage.setItem('remember-wallet', 'true');
     } else {
+      // When remember is OFF, clear ALL wallet-related storage
       localStorage.removeItem('remember-wallet');
+      localStorage.removeItem('walletName');
+      localStorage.removeItem('walletAdapter');
+      
+      // If currently connected, disconnect to prevent auto-reconnection
+      if (connected) {
+        console.log('🔌 Disconnecting wallet due to remember setting OFF');
+        walletDisconnect();
+        select(null);
+        toast.info('Wallet disconnected - remember setting is OFF');
+      }
     }
-  }, []);
+  }, [connected, walletDisconnect, select]);
 
   const listProviders = useCallback(() => {
     const installedWallets = wallets
