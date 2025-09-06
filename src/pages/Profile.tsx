@@ -1,6 +1,6 @@
 
 import defaultBanner from '@/assets/default-profile-banner.jpg';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,19 +143,21 @@ const Profile = () => {
   // Get like stats for this profile by user_id
   const { nft_likes_count, collection_likes_count, total_likes_count } = useProfileLikeStats(profile?.user_id || null);
   
-  // Get all NFT IDs for real-time stats
+  // Memoize expensive operations to prevent unnecessary re-renders
+  const userNFTIds = useMemo(() => nfts.map(nft => nft.id), [nfts]);
+  const likedNFTIds = useMemo(() => likedNFTs.map(nft => nft.id), [likedNFTs]);
+  
+  // Get all NFT IDs for real-time stats - memoized to prevent unnecessary re-calculations
   const allNFTIds = useMemo(() => {
-    const userNFTIds = nfts.map(nft => nft.id);
-    const likedNFTIds = likedNFTs.map(nft => nft.id);
     return [...new Set([...userNFTIds, ...likedNFTIds])];
-  }, [nfts, likedNFTs]);
+  }, [userNFTIds, likedNFTIds]);
   
   // Use real-time NFT stats instead of the old static version
   const { getNFTLikeCount } = useRealtimeNFTStats(allNFTIds);
   
   // Real-time creator stats - use user-based stats if profile has user_id
   const { getCreatorFollowerCount, getCreatorFollowingCount, getCreatorTotalLikeCount } = useRealtimeCreatorStatsByUser(
-    profile?.user_id ? [profile.user_id] : []
+    useMemo(() => profile?.user_id ? [profile.user_id] : [], [profile?.user_id])
   );
 
   // Get filters and ranges from context
@@ -197,7 +199,7 @@ const Profile = () => {
         });
         return false;
       }
-      await fetchProfile();
+      fetchProfileRef.current && await fetchProfileRef.current();
       toast({
         title: "Success",
         description: isFirstChange ? 'Nickname set successfully!' : 'Nickname updated successfully!',
@@ -226,7 +228,7 @@ const Profile = () => {
           });
           return false;
         }
-        await fetchProfile();
+        fetchProfileRef.current && await fetchProfileRef.current();
       } else {
         // Update auth metadata for users without wallets
         const { error } = await supabase.auth.updateUser({
@@ -256,7 +258,7 @@ const Profile = () => {
   const handlePfpConfirm = async (nftMintAddress: string) => {
     try {
       await setPFP(nftMintAddress, 'dummy-tx-signature');
-      await fetchProfile();
+      fetchProfileRef.current && await fetchProfileRef.current();
       toast({
         title: "Success",
         description: "Profile picture updated successfully!",
@@ -276,7 +278,7 @@ const Profile = () => {
   const handleBannerConfirm = async (bannerFile: File) => {
     const result = await setBanner(bannerFile);
     if (result) {
-      await fetchProfile();
+      fetchProfileRef.current && await fetchProfileRef.current();
     }
     return result;
   };
@@ -285,7 +287,7 @@ const Profile = () => {
     try {
       const result = await setAvatar(file);
       if (result) {
-        await fetchProfile();
+        fetchProfileRef.current && await fetchProfileRef.current();
         toast({
           title: "Success",
           description: "Profile picture updated successfully!",
@@ -304,37 +306,7 @@ const Profile = () => {
     }
   };
 
-  const fetchProfile = async () => {
-    try {
-      if (targetWallet) {
-        // Fetch profile for other users by wallet address
-        const { data, error } = await supabase.functions.invoke('get-profile', {
-          body: { wallet_address: targetWallet }
-        });
-        
-        if (error) {
-          console.error('Error fetching profile:', error);
-          return;
-        }
-        
-        setProfile(data || null);
-      } else if (user) {
-        // Fetch own profile using auth JWT (no wallet parameter)
-        const { data, error } = await supabase.functions.invoke('get-profile', {
-          body: {}
-        });
-        
-        if (error) {
-          console.error('Error fetching profile:', error);
-          return;
-        }
-        
-        setProfile(data || null);
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
+  const fetchProfileRef = useRef<(() => Promise<void>) | null>(null);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -352,78 +324,84 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        if (targetWallet) {
-          // Fetch profile for other users by wallet address
-          const { data, error } = await supabase.functions.invoke('get-profile', {
-            body: { wallet_address: targetWallet }
-          });
-          
-          if (error) {
-            console.error('Error fetching profile:', error);
-            toast({
-              title: "Error",
-              description: "Failed to load profile",
-              variant: "destructive",
-            });
-            return;
-          }
-          
-          setProfile(data || null);
-        } else if (user && !wallet) {
-          // Fetch own profile using auth JWT (no wallet parameter)
-          const { data, error } = await supabase.functions.invoke('get-profile', {
-            body: {}
-          });
-          
-          if (error) {
-            console.error('Error fetching profile:', error);
-            toast({
-              title: "Error",
-              description: "Failed to load profile",
-              variant: "destructive",
-            });
-            return;
-          }
-          
-          setProfile(data || null);
-        } else if (publicKey && !user && !wallet) {
-          // Fetch profile using just the connected wallet's public key
-          const { data, error } = await supabase.functions.invoke('get-profile', {
-            body: { wallet_address: publicKey }
-          });
-          
-          if (error) {
-            console.error('Error fetching profile:', error);
-            toast({
-              title: "Error",
-              description: "Failed to load profile",
-              variant: "destructive",
-            });
-            return;
-          }
-          
-          setProfile(data || null);
-        } else {
-          setProfile(null);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load profile", 
-          variant: "destructive",
+  // Memoized fetch profile function to prevent duplicate calls
+  const fetchProfile = useCallback(async () => {
+    if (loading) return; // Prevent concurrent calls
+    
+    setLoading(true);
+    try {
+      const walletToFetch = targetWallet || (publicKey && !user ? publicKey : null);
+      
+      if (walletToFetch) {
+        // Fetch profile by wallet address
+        const { data, error } = await supabase.functions.invoke('get-profile', {
+          body: { wallet_address: walletToFetch }
         });
-      } finally {
-        setLoading(false);
+        
+        if (error) {
+          console.error('Error fetching profile:', error);
+          if (error.message !== 'No profile found') {
+            toast({
+              title: "Error",
+              description: "Failed to load profile",
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+        
+        setProfile(data || null);
+      } else if (user && !wallet) {
+        // Fetch own profile using auth JWT
+        const { data, error } = await supabase.functions.invoke('get-profile', {
+          body: {}
+        });
+        
+        if (error) {
+          console.error('Error fetching profile:', error);
+          if (error.message !== 'No profile found') {
+            toast({
+              title: "Error",
+              description: "Failed to load profile",
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+        
+        setProfile(data || null);
+      } else {
+        setProfile(null);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile", 
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [targetWallet, user, wallet, publicKey, loading, toast]);
 
-    fetchProfile();
-  }, [targetWallet, user, wallet, publicKey]);
+  // Store reference for other functions to use
+  useEffect(() => {
+    fetchProfileRef.current = fetchProfile;
+  }, [fetchProfile]);
+
+  // Debounced profile fetch to prevent rapid successive calls
+  const debouncedFetchProfile = useMemo(() => {
+    let timeoutId: NodeJS.Timeout;
+    return () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(fetchProfile, 100);
+    };
+  }, [fetchProfile]);
+
+  useEffect(() => {
+    debouncedFetchProfile();
+  }, [debouncedFetchProfile]);
 
   // Get collections created by this user
   const userCollections = useMemo(() => {

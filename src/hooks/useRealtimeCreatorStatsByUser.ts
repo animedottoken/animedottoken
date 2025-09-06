@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface CreatorStats {
@@ -15,14 +15,20 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
   const [creatorStats, setCreatorStats] = useState<CreatorStats>({});
   const [loading, setLoading] = useState(true);
   const debounceRef = useRef<NodeJS.Timeout>();
-  const userIdsKey = userIds.sort().join(',');
+  const loadingRef = useRef(false);
+  const userIdsKey = useMemo(() => userIds.sort().join(','), [userIds]);
   
   const loadCreatorStats = useCallback(async () => {
-    if (userIds.length === 0) {
-      setCreatorStats({});
-      setLoading(false);
+    if (userIds.length === 0 || loadingRef.current) {
+      if (userIds.length === 0) {
+        setCreatorStats({});
+        setLoading(false);
+      }
       return;
     }
+
+    // Prevent concurrent calls
+    loadingRef.current = true;
 
     try {
       setLoading(true);
@@ -55,17 +61,22 @@ export const useRealtimeCreatorStatsByUser = (userIds: string[] = []) => {
       console.error('Error loading creator stats by user:', error);
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
   }, [userIdsKey]);
 
-  // Debounced refresh to prevent rapid successive updates
+  // Debounced refresh to prevent rapid successive updates - also check if already loading
   const debouncedRefresh = useCallback(() => {
+    if (loadingRef.current) return; // Skip if already loading
+    
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
     debounceRef.current = setTimeout(() => {
-      loadCreatorStats();
-    }, 100);
+      if (!loadingRef.current) { // Double-check before executing
+        loadCreatorStats();
+      }
+    }, 200); // Increased debounce time for better performance
   }, [loadCreatorStats]);
 
   // Optimistically update creator stats from cross-page signals

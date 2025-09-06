@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -21,12 +21,16 @@ export const useLikedNFTs = () => {
   const [likedNFTs, setLikedNFTs] = useState<LikedNFT[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const fetchInProgressRef = useRef(false);
 
   const fetchLikedNFTs = async (preserveScrollPosition = false) => {
-    if (!user) {
-      setLikedNFTs([]);
+    if (!user || fetchInProgressRef.current) {
+      if (!user) setLikedNFTs([]);
       return;
     }
+
+    // Prevent concurrent calls
+    fetchInProgressRef.current = true;
 
     // Save scroll position if requested
     const scrollY = preserveScrollPosition ? window.scrollY : 0;
@@ -105,17 +109,19 @@ export const useLikedNFTs = () => {
       console.error('Error fetching liked NFTs:', error);
     } finally {
       setLoading(false);
+      fetchInProgressRef.current = false; // Reset the flag
     }
   };
 
   useEffect(() => {
+    // Only fetch if user exists and we're not already loading
+    if (!user || loading) return;
+    
     fetchLikedNFTs();
-
-    if (!user) return;
 
     // Set up real-time subscription for liked NFTs
     const channel = supabase
-      .channel('liked-nfts-changes')
+      .channel(`liked-nfts-changes-${user.id}`) // Unique channel per user
       .on(
         'postgres_changes',
         {
@@ -125,7 +131,12 @@ export const useLikedNFTs = () => {
           filter: `user_id=eq.${user.id}`
         },
         () => {
-          fetchLikedNFTs(true); // Preserve scroll position on real-time updates
+          // Debounce real-time updates to prevent rapid successive calls
+          setTimeout(() => {
+            if (!loading) {
+              fetchLikedNFTs(true); // Preserve scroll position on real-time updates
+            }
+          }, 100);
         }
       )
       .subscribe();
@@ -133,7 +144,7 @@ export const useLikedNFTs = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id to prevent unnecessary re-subscriptions
 
   return {
     likedNFTs,
