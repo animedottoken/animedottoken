@@ -26,13 +26,6 @@
     </script>
     <!-- End Meta Pixel Code -->
     
-    <!-- Node.js polyfills for Metaplex -->
-    <script type="module">
-      import { Buffer } from "buffer";
-      import process from "process";
-      window.Buffer = Buffer;
-      window.process = process;
-    </script>
     
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -67,9 +60,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
-    <!-- Critical CSS hint -->
-    <link rel="preload" href="/src/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/src/index.css" /></noscript>
     <title>ANIME.TOKEN | Community-Driven Solana Anime Token | Join NFT Marketplace, Discord & More</title>
     <meta name="description" content="Join the ANIME token community on Solana! Learn how to earn with our live NFT marketplace. How to join Discord, Telegram, X, TikTok. 100% LP burned." />
     <!-- SEO: Conditionally add noindex for non-production -->

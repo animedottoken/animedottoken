@@ -2,6 +2,12 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
+// Node.js polyfills (moved from index.html for proper Vite bundling)
+import { Buffer } from 'buffer'
+import process from 'process'
+;(globalThis as any).Buffer = Buffer
+;(globalThis as any).process = process
+
 // Initialize React app first
 const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
