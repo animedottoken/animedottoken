@@ -4,9 +4,7 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork, WalletNotConnectedError, WalletReadyState, type Adapter } from '@solana/wallet-adapter-base';
 import { 
   PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TrustWalletAdapter,
-  Coin98WalletAdapter
+  SolflareWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-unsafe-burner';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -222,7 +220,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [connected, walletDisconnect, select]);
 
   const listProviders = useCallback(() => {
-    const installedWallets = wallets.map(w => w.adapter.name);
+    const installedWallets = wallets.filter(w => 
+      w.readyState === WalletReadyState.Installed
+    ).map(w => w.adapter.name);
     
     return {
       installed: installedWallets,
@@ -414,12 +414,10 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(() => {
-    // Enhanced wallet selection with available adapters
+    // Only include Phantom and Solflare as requested
     const baseWallets: Adapter[] = [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
-      new Coin98WalletAdapter(),
-      new TrustWalletAdapter(),
     ];
 
     return baseWallets;

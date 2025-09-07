@@ -29,30 +29,16 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
   const walletMeta = [
     {
       name: 'Phantom',
-      icon: '👻',
+      icon: 'https://phantom.app/img/phantom-icon-purple.svg',
       description: 'A friendly Solana wallet built for DeFi & NFTs',
       downloadUrl: 'https://phantom.app/',
       mobileSupported: true
     },
     {
       name: 'Solflare',
-      icon: '🔥',
+      icon: 'https://solflare.com/img/solflare-logo.svg',
       description: 'The Solana wallet you can trust',
       downloadUrl: 'https://solflare.com/',
-      mobileSupported: true
-    },
-    {
-      name: 'Coin98',
-      icon: '💎',
-      description: 'Multi-chain wallet & DeFi gateway',
-      downloadUrl: 'https://coin98.com/wallet',
-      mobileSupported: true
-    },
-    {
-      name: 'Trust Wallet',
-      icon: '🛡️',
-      description: 'The most trusted crypto wallet',
-      downloadUrl: 'https://trustwallet.com/',
       mobileSupported: true
     }
   ];
@@ -166,7 +152,23 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-2xl">{wallet.icon}</div>
+                    <div className="w-8 h-8 flex items-center justify-center">
+                      <img 
+                        src={wallet.icon} 
+                        alt={wallet.name} 
+                        className="w-6 h-6 object-contain"
+                        onError={(e) => {
+                          // Fallback to text if image fails to load
+                          const img = e.currentTarget;
+                          const fallback = img.nextElementSibling as HTMLElement;
+                          if (fallback) {
+                            img.style.display = 'none';
+                            fallback.style.display = 'block';
+                          }
+                        }}
+                      />
+                      <span className="hidden text-lg">{wallet.name[0]}</span>
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-sm">{wallet.name}</h4>
