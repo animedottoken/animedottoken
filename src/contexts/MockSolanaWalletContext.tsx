@@ -5,7 +5,8 @@ import { WalletAdapterNetwork, WalletNotConnectedError, WalletReadyState, type A
 import { 
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  TrustWalletAdapter
+  TrustWalletAdapter,
+  Coin98WalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-unsafe-burner';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -413,10 +414,11 @@ export const SolanaWalletProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   
   const wallets = useMemo(() => {
-    // Only real wallets - no preview/burner wallets
+    // Enhanced wallet selection with available adapters
     const baseWallets: Adapter[] = [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
+      new Coin98WalletAdapter(),
       new TrustWalletAdapter(),
     ];
 
