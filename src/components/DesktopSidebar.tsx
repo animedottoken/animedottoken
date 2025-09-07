@@ -148,19 +148,19 @@ export const DesktopSidebar = ({ className, style, onCollapseChange }: DesktopSi
             </div>
           </div>
 
-          {/* Search & Filter - Show only on profile page and desktop */}
-          {!isMobile && location.pathname === '/profile' && !collapsed && (
+          {/* Search & Filter - Show on profile and marketplace pages when desktop */}
+          {!isMobile && (location.pathname === '/profile' || location.pathname === '/marketplace') && !collapsed && (
             <div>
               <SearchFilterBar
                 filters={combinedFilters}
                 onFiltersChange={setCombinedFilters}
-                showMarketplaceFilter={true}
+                showMarketplaceFilter={location.pathname === '/profile'}
                 showPriceFilters={true}
-                showRoyaltyFilters={true}
-                showSourceFilter={true}
-                showTypeFilter={true}
-                showMediaTypeFilter={combinedFilters.type !== 'collections'} // Show only when viewing NFTs or all
-                placeholder="Search..."
+                showRoyaltyFilters={location.pathname === '/profile'}
+                showSourceFilter={location.pathname === '/profile'}
+                showTypeFilter={location.pathname === '/profile'}
+                showMediaTypeFilter={location.pathname === '/profile' && combinedFilters.type !== 'collections'} // Show only when viewing NFTs or all
+                placeholder={location.pathname === '/marketplace' ? "Search marketplace..." : "Search..."}
                 collapsible={false}
                 currentPriceRange={currentPriceRange}
                 currentRoyaltyRange={currentRoyaltyRange}
