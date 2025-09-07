@@ -238,13 +238,12 @@ const Index = () => {
           rel="preload"
           as="image"
           href="/lovable-uploads/35f96dc8-741f-4cfa-8d07-d0019a55a758.png"
-          fetchPriority="high"
         />
         <link
           rel="preload"
           as="image"
           href="/lovable-uploads/32b1e8d9-5985-42ca-9e1d-7d0b6a02ac81.png"
-          fetchPriority="high"
+          
         />
       </Helmet>
 

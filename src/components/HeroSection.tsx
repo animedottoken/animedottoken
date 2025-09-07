@@ -24,7 +24,6 @@ const HeroSection: React.FC = () => {
               className="w-full h-full object-cover block transition-opacity duration-500"
               loading="eager"
               decoding="sync"
-              fetchPriority="high"
               onLoad={(e) => {
                 const container = e.currentTarget.parentElement?.parentElement;
                 if (container) container.classList.remove('animate-pulse');
@@ -48,7 +47,7 @@ const HeroSection: React.FC = () => {
               className="h-16 w-16 md:h-20 md:w-20" 
               loading="eager" 
               decoding="sync"
-              fetchPriority="high"
+              
             />
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
               The Ownership Economy on Solana.
