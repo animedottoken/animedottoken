@@ -545,7 +545,7 @@ export const UnifiedMintInterface = () => {
             });
 
             if (mintResult.success) {
-              const explorerUrl = createExplorerUrl(mintResult.signature || '', 'devnet');
+              const explorerUrl = createExplorerUrl(mintResult.signature || '', cluster);
               setCollectionMintResult({
                 signature: mintResult.signature,
                 mintAddress: mintResult.mintAddress,
@@ -553,7 +553,7 @@ export const UnifiedMintInterface = () => {
               });
               
               console.log('Collection minted on-chain:', mintResult);
-              toast.success('Collection minted successfully on Solana Devnet! 🎉');
+              toast.success(`Collection minted successfully on Solana ${cluster === 'mainnet' ? 'Mainnet' : 'Devnet'}! 🎉`);
             } else {
               console.error('On-chain minting failed:', mintResult.error);
               toast.error('Collection created but on-chain minting failed. You can retry minting later.');

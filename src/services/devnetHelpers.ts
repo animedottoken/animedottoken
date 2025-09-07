@@ -33,12 +33,14 @@ export const uploadMetadataToStorage = async (
   }
 };
 
-export const createExplorerUrl = (signature: string, cluster: 'devnet' | 'mainnet' = 'devnet'): string => {
-  return `https://explorer.solana.com/tx/${signature}?cluster=${cluster}`;
+export const createExplorerUrl = (signature: string, cluster: 'devnet' | 'mainnet'): string => {
+  const clusterParam = cluster === 'mainnet' ? '' : `?cluster=${cluster}`;
+  return `https://explorer.solana.com/tx/${signature}${clusterParam}`;
 };
 
-export const createAddressUrl = (address: string, cluster: 'devnet' | 'mainnet' = 'devnet'): string => {
-  return `https://explorer.solana.com/address/${address}?cluster=${cluster}`;
+export const createAddressUrl = (address: string, cluster: 'devnet' | 'mainnet'): string => {
+  const clusterParam = cluster === 'mainnet' ? '' : `?cluster=${cluster}`;
+  return `https://explorer.solana.com/address/${address}${clusterParam}`;
 };
 
 export const requestDevnetAirdrop = async (walletAddress: string): Promise<{success: boolean; signature?: string; error?: string}> => {

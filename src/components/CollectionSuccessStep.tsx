@@ -8,6 +8,7 @@ import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { useEnvironment } from "@/contexts/EnvironmentContext";
 
 interface Collection {
   id: string;
@@ -45,6 +46,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
 }) => {
   const navigate = useNavigate();
   const { publicKey, connect, connecting } = useSolanaWallet();
+  const { cluster } = useEnvironment();
   const [isMintingOnChain, setIsMintingOnChain] = useState(false);
   const [showMintConfirm, setShowMintConfirm] = useState(false);
   const [mintFee, setMintFee] = useState<FeeEstimate | null>(null);
@@ -249,19 +251,19 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
         title="Confirm Minting Payment"
         description={
           loadingFee 
-            ? "Fetching current network fees from devnet..."
+            ? `Fetching current network fees from ${cluster}...`
             : feeError
-            ? `This will simulate creating your collection NFT on devnet. ${feeError} Note: This is for demonstration only - no real funds will be charged.`
+            ? `This will ${cluster === 'devnet' ? 'simulate creating' : 'create'} your collection NFT on ${cluster}. ${feeError}${cluster === 'devnet' ? ' Note: This is for demonstration only - no real funds will be charged.' : ''}`
             : mintFee
-            ? `This will simulate creating your collection NFT on devnet. Estimated devnet fee: ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. Note: This is for demonstration only - no real funds will be charged.`
-            : "This will simulate creating your collection NFT on devnet. Network fees will be estimated but no real funds will be charged."
+            ? `This will ${cluster === 'devnet' ? 'simulate creating' : 'create'} your collection NFT on ${cluster}. Estimated ${cluster} fee: ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}.${cluster === 'devnet' ? ' Note: This is for demonstration only - no real funds will be charged.' : ''}`
+            : `This will ${cluster === 'devnet' ? 'simulate creating' : 'create'} your collection NFT on ${cluster}. Network fees will be estimated${cluster === 'devnet' ? ' but no real funds will be charged' : ''}.`
         }
         confirmText={
           loadingFee || feeError
-            ? "Simulate Mint"
+            ? `${cluster === 'devnet' ? 'Simulate' : 'Confirm'} Mint`
             : mintFee
-            ? `Simulate Mint (${mintFee.totalSol.toFixed(4)} SOL estimate)`
-            : "Simulate Mint"
+            ? `${cluster === 'devnet' ? 'Simulate' : 'Confirm'} Mint (${mintFee.totalSol.toFixed(4)} SOL estimate)`
+            : `${cluster === 'devnet' ? 'Simulate' : 'Confirm'} Mint`
         }
         onConfirm={handleMintOnChain}
         loading={isMintingOnChain || loadingFee}

@@ -5,6 +5,7 @@ interface EnvironmentContextType {
   isLive: boolean;
   cluster: 'mainnet' | 'devnet';
   canUseFeature: (feature: string) => boolean;
+  canUseDevnetFeatures: () => boolean;
 }
 
 const EnvironmentContext = createContext<EnvironmentContextType | null>(null);
@@ -39,8 +40,8 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   // Live is true when domain is production and not forced beta
   const isLive = !isBetaMode;
   
-  // Always use mainnet for live NFT minting
-  const cluster: 'mainnet' | 'devnet' = 'mainnet';
+  // Use devnet for beta/testing, mainnet for production
+  const cluster: 'mainnet' | 'devnet' = isBetaMode ? 'devnet' : 'mainnet';
 
   const canUseFeature = (feature: string): boolean => {
     // In beta mode, all features are available
@@ -50,8 +51,13 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
     return !BETA_FEATURES.includes(feature);
   };
 
+  const canUseDevnetFeatures = (): boolean => {
+    // Devnet features like airdrop only available on devnet
+    return cluster === 'devnet';
+  };
+
   return (
-    <EnvironmentContext.Provider value={{ isBetaMode, isLive, cluster, canUseFeature }}>
+    <EnvironmentContext.Provider value={{ isBetaMode, isLive, cluster, canUseFeature, canUseDevnetFeatures }}>
       {children}
     </EnvironmentContext.Provider>
   );
