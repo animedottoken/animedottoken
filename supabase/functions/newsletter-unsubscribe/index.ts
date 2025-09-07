@@ -41,13 +41,13 @@ serve(async (req) => {
 
     console.log(`🔗 Processing newsletter unsubscribe for token: ${token}`)
 
-    // Create Supabase client
+    // Create Supabase client with service role
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Find the subscription by token
+    // Find the subscription by token (still need direct access for token lookup)
     const { data: subscription, error: findError } = await supabase
       .from('newsletter_subscribers')
       .select('*')
@@ -84,22 +84,20 @@ serve(async (req) => {
       });
     }
 
-    // Update subscription status to unsubscribed
-    const { error: updateError } = await supabase
-      .from('newsletter_subscribers')
-      .update({
-        status: 'unsubscribed',
-        unsubscribed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('opt_in_token', token)
+    // Use secure unsubscribe function
+    console.log('🔒 Using secure unsubscribe function...')
+    const { data: unsubscribeResult, error: unsubscribeError } = await supabase
+      .rpc('secure_newsletter_unsubscribe', {
+        p_email: subscription.email,
+        p_opt_in_token: token
+      });
 
-    if (updateError) {
-      console.error('Update error:', updateError)
-      throw updateError
+    if (unsubscribeError) {
+      console.error('❌ Secure unsubscribe error:', unsubscribeError);
+      throw unsubscribeError;
     }
 
-    console.log(`✅ Newsletter unsubscribed for: ${subscription.email}`)
+    console.log('✅ Secure unsubscribe successful:', unsubscribeResult);
 
     // Send confirmation email and update Resend audience (don't fail unsubscribe if these fail)
     try {

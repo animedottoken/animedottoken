@@ -468,6 +468,33 @@ export type Database = {
           },
         ]
       }
+      newsletter_rate_limits: {
+        Row: {
+          attempt_count: number | null
+          created_at: string | null
+          email_domain: string
+          id: string
+          operation_type: string
+          window_start: string | null
+        }
+        Insert: {
+          attempt_count?: number | null
+          created_at?: string | null
+          email_domain: string
+          id?: string
+          operation_type: string
+          window_start?: string | null
+        }
+        Update: {
+          attempt_count?: number | null
+          created_at?: string | null
+          email_domain?: string
+          id?: string
+          operation_type?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           confirmed_at: string | null
@@ -876,6 +903,15 @@ export type Database = {
         Args: { trade_count: number }
         Returns: string
       }
+      check_newsletter_rate_limit: {
+        Args: {
+          p_email: string
+          p_max_attempts?: number
+          p_operation: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_endpoint: string
@@ -888,6 +924,10 @@ export type Database = {
       cleanup_user_primary_wallets: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      encrypt_email: {
+        Args: { email_text: string }
+        Returns: string
       }
       generate_collection_slug: {
         Args: { collection_name: string }
@@ -1254,6 +1294,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_newsletter_subscriber_status: {
+        Args: { p_email: string }
+        Returns: Json
+      }
       get_nft_like_counts_public: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1404,6 +1448,18 @@ export type Database = {
       increment_user_trade_count: {
         Args: { user_wallet_address: string }
         Returns: undefined
+      }
+      secure_newsletter_confirm: {
+        Args: { p_email: string; p_opt_in_token: string }
+        Returns: Json
+      }
+      secure_newsletter_subscribe: {
+        Args: { p_email: string; p_opt_in_token?: string }
+        Returns: Json
+      }
+      secure_newsletter_unsubscribe: {
+        Args: { p_email: string; p_opt_in_token?: string }
+        Returns: Json
       }
       update_user_asset_counts: {
         Args: { p_wallet_address: string }

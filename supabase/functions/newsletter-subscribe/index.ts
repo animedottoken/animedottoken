@@ -79,85 +79,45 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Generate confirmation token
-    const optInToken = crypto.randomUUID()
-    console.log('🎫 Generated opt-in token:', optInToken)
+    // Use secure newsletter subscription function with rate limiting
+    console.log('🛡️ Checking rate limits...')
+    const { data: rateLimitResult, error: rateLimitError } = await supabaseAdmin
+      .rpc('check_newsletter_rate_limit', {
+        p_email: email,
+        p_operation: 'subscribe',
+        p_max_attempts: 3,
+        p_window_minutes: 60
+      });
 
-    // Check if email already exists
-    console.log('🔍 Checking for existing subscription...')
-    const { data: existing, error: existingError } = await supabaseAdmin
-      .from('newsletter_subscribers')
-      .select('*')
-      .eq('email', email)
-      .maybeSingle()
-
-    if (existingError) {
-      console.error('❌ Error checking existing subscription:', existingError)
-      throw existingError
+    if (rateLimitError || !rateLimitResult) {
+      console.error('Rate limit exceeded for:', email);
+      return new Response(JSON.stringify({ 
+        error: 'Too many subscription attempts. Please try again later.' 
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      })
     }
 
-    console.log('📋 Existing subscription:', existing ? {
-      status: existing.status,
-      created_at: existing.created_at,
-      confirmed_at: existing.confirmed_at,
-      unsubscribed_at: existing.unsubscribed_at
-    } : 'None found')
+    // Use secure subscription function
+    console.log('🔒 Using secure subscription function...')
+    const { data: subscribeResult, error: subscribeError } = await supabaseAdmin
+      .rpc('secure_newsletter_subscribe', {
+        p_email: email
+      });
 
-    if (existing) {
-      // Check if truly subscribed (confirmed AND not unsubscribed)
-      const isTrulySubscribed = existing.status === 'confirmed' && !existing.unsubscribed_at;
-      
-      if (isTrulySubscribed) {
-        console.log('✅ Already confirmed and active subscription found')
-        return new Response(JSON.stringify({ 
-          message: 'You are already subscribed to our newsletter!',
-          status: 'already_subscribed'
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        })
-      }
-      
-      // Handle inconsistent state recovery
-      if (existing.status === 'confirmed' && existing.unsubscribed_at) {
-        console.log('🔄 State recovery: User was confirmed but has unsubscribed_at - treating as unsubscribed, allowing re-subscription')
-      } else if (existing.status === 'pending') {
-        console.log('🔄 Existing pending subscription found - will update with new token')
-      }
-      
-      // Update existing pending subscription with new token
-      console.log('🔄 Updating existing pending subscription')
-      const { error: updateError } = await supabaseAdmin
-        .from('newsletter_subscribers')
-        .update({ 
-          opt_in_token: optInToken,
-          status: 'pending',
-          confirmed_at: null,
-          unsubscribed_at: null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('email', email)
-
-      if (updateError) {
-        console.error('❌ Error updating existing subscription:', updateError)
-        throw updateError
-      }
-    } else {
-      // Insert new subscription
-      console.log('➕ Creating new subscription record')
-      const { error: insertError } = await supabaseAdmin
-        .from('newsletter_subscribers')
-        .insert({
-          email,
-          opt_in_token: optInToken,
-          status: 'pending'
-        })
-
-      if (insertError) {
-        console.error('❌ Database insert error:', insertError)
-        throw insertError
-      }
+    if (subscribeError) {
+      console.error('❌ Secure subscription error:', subscribeError);
+      return new Response(JSON.stringify({ 
+        error: subscribeError.message || 'Failed to subscribe to newsletter' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      })
     }
+
+    const optInToken = subscribeResult.opt_in_token;
+    console.log('🎫 Generated secure opt-in token');
 
     // Create confirmation and unsubscribe URLs
     const confirmUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/newsletter-confirm?token=${optInToken}`
