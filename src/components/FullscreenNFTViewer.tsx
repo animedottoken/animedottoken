@@ -375,11 +375,12 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                   className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300 hover:bg-black/40"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-                    if (video.paused) {
-                      video.play();
-                      video.controls = true;
-                      e.currentTarget.style.display = 'none';
+                    const video = imageRef.current as HTMLVideoElement;
+                    if (video?.paused) {
+                      video.play().then(() => {
+                        video.controls = true;
+                        e.currentTarget.style.display = 'none';
+                      }).catch(console.error);
                     }
                   }}
                 >

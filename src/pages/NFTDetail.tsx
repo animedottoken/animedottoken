@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +39,7 @@ export default function NFTDetail() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { publicKey, connect } = useSolanaWallet();
   
   // Navigation context for moving between NFTs
@@ -372,6 +373,7 @@ export default function NFTDetail() {
                     return (
                       <div className="w-full h-full relative bg-black rounded-lg overflow-hidden">
                         <video
+                          ref={videoRef}
                           src={animationUrl}
                           poster={nft.image_url || "/placeholder.svg"}
                           className="w-full h-full object-cover"
@@ -386,13 +388,14 @@ export default function NFTDetail() {
                           }}
                         />
                         <div 
-                          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
+                          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer hover:bg-black/30 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-                            if (video.paused) {
-                              video.play();
-                              e.currentTarget.style.display = 'none';
+                            if (videoRef.current) {
+                              videoRef.current.play().then(() => {
+                                videoRef.current!.controls = true;
+                                e.currentTarget.style.display = 'none';
+                              }).catch(console.error);
                             }
                           }}
                         >
