@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Wallet, ExternalLink, AlertTriangle, Smartphone } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { toast } from 'sonner';
-
+import { useWallet } from '@solana/wallet-adapter-react';
 interface BrandedWalletModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,20 +23,29 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
     setIsInIframe(typeof window !== 'undefined' && window !== window.parent);
   }, []);
 
+  const { wallets: adapterWallets } = useWallet();
+  const iconMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    adapterWallets.forEach((w) => {
+      const name = w?.adapter?.name?.toLowerCase?.();
+      const icon = (w?.adapter as any)?.icon as string | undefined;
+      if (name && icon) map[name] = icon;
+    });
+    return map;
+  }, [adapterWallets]);
+
   const providers = listProviders();
 
-  // Define wallet metadata with proper branding
+// Define wallet metadata with proper branding
   const walletMeta = [
     {
       name: 'Phantom',
-      icon: 'https://phantom.app/img/phantom-icon-purple.svg',
       description: 'A friendly Solana wallet built for DeFi & NFTs',
       downloadUrl: 'https://phantom.app/',
       mobileSupported: true
     },
     {
       name: 'Solflare',
-      icon: 'https://solflare.com/img/solflare-logo.svg',
       description: 'The Solana wallet you can trust',
       downloadUrl: 'https://solflare.com/',
       mobileSupported: true
@@ -153,21 +162,15 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 flex items-center justify-center">
-                      <img 
-                        src={wallet.icon} 
-                        alt={wallet.name} 
-                        className="w-6 h-6 object-contain"
-                        onError={(e) => {
-                          // Fallback to text if image fails to load
-                          const img = e.currentTarget;
-                          const fallback = img.nextElementSibling as HTMLElement;
-                          if (fallback) {
-                            img.style.display = 'none';
-                            fallback.style.display = 'block';
-                          }
-                        }}
-                      />
-                      <span className="hidden text-lg">{wallet.name[0]}</span>
+                      {iconMap[wallet.name.toLowerCase()] ? (
+                        <img
+                          src={iconMap[wallet.name.toLowerCase()]}
+                          alt={wallet.name}
+                          className="w-6 h-6 object-contain"
+                        />
+                      ) : (
+                        <span className="text-lg">{wallet.name[0]}</span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
