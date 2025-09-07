@@ -2,7 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Zap, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { setNavContext } from "@/lib/navContext";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import { formatDistanceToNow, isPast } from "date-fns";
 
@@ -27,9 +28,20 @@ interface BoostedItemCardProps {
 }
 
 export const BoostedItemCard = ({ listing }: BoostedItemCardProps) => {
+  const navigate = useNavigate();
   const endTime = new Date(listing.end_time);
   const isExpired = isPast(endTime);
   const timeRemaining = isExpired ? 'Expired' : formatDistanceToNow(endTime, { addSuffix: true });
+
+  const handleViewNFT = () => {
+    // Set navigation context for boosted items
+    setNavContext({
+      type: 'nft',
+      items: [listing.nft_id], // Single item for now, could be extended
+      source: 'boosted'
+    });
+    navigate(`/nft/${listing.nft_id}`);
+  };
 
   const getStatusBadge = () => {
     if (isExpired) {
@@ -101,11 +113,9 @@ export const BoostedItemCard = ({ listing }: BoostedItemCardProps) => {
           
           {/* Actions */}
           <div className="flex gap-2 pt-2">
-            <Button size="sm" variant="outline" asChild className="flex-1">
-              <Link to={`/nft/${listing.nft_id}`}>
-                <ExternalLink className="w-3 h-3 mr-1" />
-                View NFT
-              </Link>
+            <Button size="sm" variant="outline" onClick={handleViewNFT} className="flex-1">
+              <ExternalLink className="w-3 h-3 mr-1" />
+              View NFT
             </Button>
           </div>
         </div>

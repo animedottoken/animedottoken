@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import profileBanner from '@/assets/profile-banner.jpg';
-import { getNavContext, clearNavContext } from "@/lib/navContext";
+import { getNavContext, clearNavContext, setNavContext } from "@/lib/navContext";
 
 interface Creator {
   wallet_address: string;
@@ -182,6 +182,17 @@ export default function CreatorProfile() {
     } catch (error) {
       console.error('Error toggling NFT like:', error);
     }
+  };
+
+  // Helper function to handle NFT navigation
+  const handleNFTClick = (nftId: string, nftList: NFT[]) => {
+    // Set navigation context for NFT browsing
+    setNavContext({
+      type: 'nft',
+      items: nftList.map(n => n.id),
+      source: 'creator',
+      tab: activeTab
+    });
   };
 
   // Fetch creator data
@@ -698,7 +709,10 @@ export default function CreatorProfile() {
                   <CardContent className="p-4">
                      <div 
                        className="aspect-square relative mb-3 overflow-hidden rounded-lg cursor-pointer"
-                       onClick={() => navigate(`/nft/${nft.id}`)}
+                       onClick={() => {
+                         handleNFTClick(nft.id, creatorNFTs);
+                         navigate(`/nft/${nft.id}`);
+                       }}
                      >
                        <ImageLazyLoad
                          src={nft.image_url}
@@ -753,7 +767,10 @@ export default function CreatorProfile() {
                   <CardContent className="p-4">
                      <div 
                        className="aspect-square relative mb-3 overflow-hidden rounded-lg cursor-pointer"
-                       onClick={() => navigate(`/nft/${nft.id}`)}
+                       onClick={() => {
+                         handleNFTClick(nft.id, likedNFTs);
+                         navigate(`/nft/${nft.id}`);
+                       }}
                      >
                        <ImageLazyLoad
                          src={nft.image_url}

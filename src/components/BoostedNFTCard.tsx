@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Crown, Rocket, TrendingUp, Eye, Heart, CheckCircle } from 'lucide-react';
 import { useNFTLikes } from '@/hooks/useNFTLikes';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { setNavContext } from '@/lib/navContext';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
@@ -126,19 +127,26 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
   };
 
   const handleViewDetails = () => {
+    // Set navigation context for boosted NFTs
+    setNavContext({
+      type: 'nft',
+      items: [listing.nft_id], // Single item for now, could be extended with full boosted list
+      source: 'boosted'
+    });
     navigate(`/nft/${listing.nft_id}?${navigationQuery || 'from=marketplace'}`);
   };
 
+  const handleCardClick = () => {
+    handleViewDetails();
+  };
+
   return (
-    <Link 
-      to={`/nft/${listing.nft_id}?${navigationQuery || 'from=marketplace'}`}
-      className="block"
+    <Card 
+      className={`group cursor-pointer hover:shadow-xl transition-all duration-300 ${getTierBorder()} ${
+        listing.tier === 'god' ? 'transform hover:scale-105' : 'hover:shadow-lg'
+      }`}
+      onClick={handleCardClick}
     >
-      <Card 
-        className={`group cursor-pointer hover:shadow-xl transition-all duration-300 ${getTierBorder()} ${
-          listing.tier === 'god' ? 'transform hover:scale-105' : 'hover:shadow-lg'
-        }`}
-      >
       <CardContent className="p-0 relative">
         {/* Boost Badge - Top Left */}
         <div className="absolute top-3 left-3 z-20">
@@ -207,9 +215,11 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             )}
             
             {/* Owner info */}
-            <Link 
-              to={`/creator/${listing.owner_address_masked}`}
-              onClick={(e) => e.stopPropagation()}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/creator/${listing.owner_address_masked}`);
+              }}
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               <span>
@@ -218,7 +228,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
               {ownerVerified && (
                 <CheckCircle className="h-3 w-3 text-primary" />
               )}
-            </Link>
+            </button>
           </div>
           
           {/* Price positioned bottom right */}
@@ -232,6 +242,5 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
         </div>
       </CardContent>
     </Card>
-    </Link>
   );
 };

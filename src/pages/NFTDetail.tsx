@@ -43,6 +43,36 @@ export default function NFTDetail() {
   
   // Navigation context for moving between NFTs
   const navigation = useNavigationContext(id!, 'nft');
+  
+  // Add fallback logic to rebuild navigation context if missing
+  useEffect(() => {
+    const buildFallbackNavigation = async () => {
+      if (navigation.canNavigate || !nft?.collection_id) return;
+      
+      try {
+        // Get all NFTs from the same collection as fallback navigation
+        const { data: allNfts } = await supabase.rpc('get_nfts_public');
+        const collectionNFTs = (allNfts || [])
+          .filter((n: any) => n.collection_id === nft.collection_id)
+          .map((n: any) => n.id);
+        
+        if (collectionNFTs.length > 1) {
+          // Import setNavContext dynamically to avoid circular imports
+          const { setNavContext } = await import('@/lib/navContext');
+          setNavContext({
+            type: 'nft',
+            items: collectionNFTs,
+            source: 'collection',
+            tab: 'nfts'
+          });
+        }
+      } catch (error) {
+        console.error('Failed to build fallback navigation:', error);
+      }
+    };
+    
+    buildFallbackNavigation();
+  }, [navigation.canNavigate, nft?.collection_id]);
 
   // Handle NFT burning
   const handleBurnNFT = async (nftId: string, mintAddress: string) => {
