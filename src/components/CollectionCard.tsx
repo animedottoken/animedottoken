@@ -23,7 +23,9 @@ interface CollectionCardProps {
     name: string;
     image_url: string;
     mint_price?: number;
-    creator_address_masked: string;
+    creator_address: string;
+    creator_nickname?: string;
+    creator_verified?: boolean;
     max_supply?: number;
     items_redeemed: number;
     verified?: boolean;
@@ -54,11 +56,11 @@ export const CollectionCard = ({
     
     let cancelled = false;
     // Only fetch creator info for non-masked addresses (authenticated users will see full addresses)
-    if (!collection.creator_address_masked.includes('...')) {
+    if (!collection.creator_address.includes('...')) {
       supabase
         .from('user_profiles')
         .select('display_name,verified')
-        .eq('wallet_address', collection.creator_address_masked)
+        .eq('wallet_address', collection.creator_address)
         .maybeSingle()
         .then(({ data, error }) => {
           if (cancelled) return;
@@ -73,7 +75,7 @@ export const CollectionCard = ({
         });
     }
     return () => { cancelled = true; };
-  }, [collection.creator_address_masked, showCreatorInfo]);
+  }, [collection.creator_address, showCreatorInfo]);
 
   const handleViewDetails = () => {
     navigate(`/collection/${collection.id}?${navigationQuery || 'from=marketplace'}`);
@@ -90,9 +92,7 @@ export const CollectionCard = ({
     console.log('Like toggle result:', success);
   };
 
-  const displayCreatorInfo = collection.creator_address_masked.includes('...') 
-    ? truncateAddress(collection.creator_address_masked)
-    : (creatorNickname || truncateAddress(collection.creator_address_masked));
+  const displayCreatorInfo = collection.creator_nickname || truncateAddress(collection.creator_address);
 
   return (
     <Link 
@@ -196,22 +196,16 @@ export const CollectionCard = ({
             
             {showCreatorInfo && (
               /* Creator info */
-              collection.creator_address_masked.includes('...') ? (
-                <div className="text-sm text-muted-foreground mb-2">
-                  {displayCreatorInfo}
-                </div>
-              ) : (
-                <Link 
-                  to={`/creator/${collection.creator_address_masked}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
-                >
-                  <span>{displayCreatorInfo}</span>
-                  {creatorVerified && (
-                    <CheckCircle className="h-3 w-3 text-primary" />
-                  )}
-                </Link>
-              )
+              <Link 
+                to={`/creator/${collection.creator_address}`}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
+              >
+                <span>{displayCreatorInfo}</span>
+                {collection.creator_verified && (
+                  <CheckCircle className="h-3 w-3 text-primary" />
+                )}
+              </Link>
             )}
           </div>
           

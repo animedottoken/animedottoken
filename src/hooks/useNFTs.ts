@@ -11,6 +11,10 @@ interface NFT {
   category?: string;
   creator_address: string;
   owner_address: string;
+  owner_nickname: string;
+  owner_verified: boolean;
+  creator_nickname: string;
+  creator_verified: boolean;
   mint_address: string;
   created_at: string;
   attributes?: any;
@@ -30,16 +34,7 @@ export const useNFTs = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
-        .from('nfts')
-        .select(`
-          *,
-          collections (
-            name
-          )
-        `)
-        .eq('is_listed', true)
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_nfts_public_explore');
 
       if (error) {
         console.error('Error fetching NFTs:', error);

@@ -28,6 +28,8 @@ interface NFTCardProps {
     image_url: string;
     price?: number;
     owner_address: string;
+    owner_nickname?: string;
+    owner_verified?: boolean;
     creator_address: string;
     mint_address: string;
     is_listed: boolean;
@@ -52,28 +54,6 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
   const { isLiked, toggleLike, isPending } = useNFTLikes();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [ownerNickname, setOwnerNickname] = useState<string>('');
-  const [ownerVerified, setOwnerVerified] = useState<boolean>(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    supabase.functions
-      .invoke('get-profile', {
-        body: { wallet_address: nft.owner_address }
-      })
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          console.error('Error loading owner profile:', error);
-          setOwnerNickname('');
-          setOwnerVerified(false);
-          return;
-        }
-        setOwnerNickname(data?.nickname || data?.display_name || '');
-        setOwnerVerified(!!data?.verified);
-      });
-    return () => { cancelled = true; };
-  }, [nft.owner_address]);
 
   const handleViewDetails = () => {
     navigate(`/nft/${nft.id}?${navigationQuery || 'from=marketplace'}`);
@@ -284,9 +264,9 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
             >
               <span>
-                {ownerNickname || truncateAddress(nft.owner_address)}
+                {nft.owner_nickname || truncateAddress(nft.owner_address)}
               </span>
-              {ownerVerified && (
+              {nft.owner_verified && (
                 <CheckCircle className="h-3 w-3 text-primary" />
               )}
             </Link>

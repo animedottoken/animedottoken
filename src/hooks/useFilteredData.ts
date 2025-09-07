@@ -14,6 +14,11 @@ interface NFT {
   attributes?: any;
   created_at: string;
   creator_address: string;
+  owner_address: string;
+  owner_nickname: string;
+  owner_verified: boolean;
+  creator_nickname: string;
+  creator_verified: boolean;
   royalty_percentage?: number;
 }
 
@@ -30,6 +35,8 @@ interface Collection {
   explicit_content?: boolean;
   created_at: string;
   creator_address: string;
+  creator_nickname: string;
+  creator_verified: boolean;
 }
 
 export const useFilteredNFTs = (

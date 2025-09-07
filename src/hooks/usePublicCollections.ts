@@ -9,6 +9,8 @@ export interface PublicCollection {
   image_url?: string | null;
   banner_image_url?: string | null;
   creator_address: string;
+  creator_nickname: string;
+  creator_verified: boolean;
   category?: string | null;
   mint_price?: number | null;
   max_supply?: number | null;
@@ -31,12 +33,7 @@ export const usePublicCollections = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
-        .from('collections')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_live', true)
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_collections_public_explore');
 
       if (error) {
         console.error('Error fetching public collections:', error);

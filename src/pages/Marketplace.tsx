@@ -236,15 +236,14 @@ const Marketplace = () => {
                   ))
                 ) : filteredCollections.length > 0 ? (
                   filteredCollections.map((collection) => (
-                    <CollectionCard
-                      key={collection.id}
-                      collection={{
-                        ...collection,
-                        image_url: collection.image_url || '/placeholder.svg',
-                        creator_address_masked: collection.creator_address,
-                        items_redeemed: collection.items_redeemed || 0
-                      }}
-                      likeCount={getCollectionLikeCount(collection.id)}
+                     <CollectionCard
+                       key={collection.id}
+                       collection={{
+                         ...collection,
+                         image_url: collection.image_url || '/placeholder.svg',
+                         items_redeemed: collection.items_redeemed || 0
+                       }}
+                       likeCount={getCollectionLikeCount(collection.id)}
                       onNavigate={() => setNavContext({ 
                         type: 'collection', 
                         items: filteredCollections.map(c => c.id), 

@@ -478,6 +478,11 @@ const Profile = () => {
       description: nft.description,
       is_listed: nft.is_listed || false,
       creator_address: nft.creator_address || targetWallet || '',
+      owner_address: nft.owner_address || targetWallet || '',
+      owner_nickname: profile?.nickname || '',
+      owner_verified: profile?.verified || false,
+      creator_nickname: profile?.nickname || '',
+      creator_verified: profile?.verified || false,
       created_at: nft.created_at || new Date().toISOString(),
       category: undefined, // UserNFT doesn't have category field
       price: nft.price,
@@ -496,6 +501,11 @@ const Profile = () => {
     
     return {
       ...nft,
+      owner_address: nft.owner_address || '',
+      owner_nickname: '',
+      owner_verified: false,
+      creator_nickname: '',
+      creator_verified: false,
       created_at: new Date().toISOString(),
       royalty_percentage
     };
@@ -508,6 +518,11 @@ const Profile = () => {
     description: nft.description,
     is_listed: nft.is_listed || false,
     creator_address: nft.creator_address || '',
+    owner_address: nft.owner_address || '',
+    owner_nickname: '',
+    owner_verified: false,
+    creator_nickname: '',
+    creator_verified: false,
     created_at: nft.created_at || new Date().toISOString(),
     category: undefined,
     price: nft.price,
@@ -526,11 +541,15 @@ const Profile = () => {
   // Convert collections to include created_at for filtering
   const collectionsForFiltering = userCollections.map(collection => ({
     ...collection,
+    creator_nickname: profile?.nickname || '',
+    creator_verified: profile?.verified || false,
     created_at: collection.created_at || new Date().toISOString()
   }));
 
   const likedCollectionsForFiltering = likedCollections.map(collection => ({
     ...collection,
+    creator_nickname: '',
+    creator_verified: false,
     created_at: new Date().toISOString()
   }));
 
@@ -1145,16 +1164,18 @@ const Profile = () => {
                         return (
                           <CollectionCard
                             key={collection.id}
-                            collection={{
-                              id: collection.id,
-                              name: collection.name,
-                              image_url: realCollection?.image_url || '/placeholder.svg',
-                              creator_address_masked: collection.creator_address || '',
-                              mint_price: collection.mint_price,
-                              items_redeemed: realCollection?.items_redeemed || 0,
-                              verified: realCollection?.verified || false,
-                              description: collection.description
-                            }}
+                             collection={{
+                               id: collection.id,
+                               name: collection.name,
+                               image_url: realCollection?.image_url || '/placeholder.svg',
+                               creator_address: collection.creator_address || '',
+                               creator_nickname: collection.creator_nickname || '',
+                               creator_verified: collection.creator_verified || false,
+                               mint_price: collection.mint_price,
+                               items_redeemed: realCollection?.items_redeemed || 0,
+                               verified: realCollection?.verified || false,
+                               description: collection.description
+                             }}
                             likeCount={getCollectionLikeCount(collection.id)}
                             onNavigate={() => setNavContext({ 
                               type: 'collection', 
