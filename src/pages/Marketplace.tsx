@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useNFTs } from "@/hooks/useNFTs";
 import { usePublicCollections } from "@/hooks/usePublicCollections";
@@ -13,8 +15,39 @@ import { useCollectionLikeCounts } from '@/hooks/useLikeCounts';
 import { useProfileFilters } from '@/contexts/ProfileFiltersContext';
 
 const Marketplace = () => {
-  const [activeTab, setActiveTab] = useState<'collections' | 'nfts' | 'creators'>('collections');
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'explore' | 'creators'>('explore');
+  
+  // Collapsible states with localStorage persistence
+  const [collectionsOpen, setCollectionsOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marketplace-collections-open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [nftsOpen, setNftsOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marketplace-nfts-open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  // Persist collapsible states
+  useEffect(() => {
+    try {
+      localStorage.setItem('marketplace-collections-open', JSON.stringify(collectionsOpen));
+    } catch {}
+  }, [collectionsOpen]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('marketplace-nfts-open', JSON.stringify(nftsOpen));
+    } catch {}
+  }, [nftsOpen]);
   
   // Use shared filters from context
   const { filters, setCurrentPriceRange, setCurrentRoyaltyRange } = useProfileFilters();
@@ -86,18 +119,6 @@ const Marketplace = () => {
     });
   }, [nfts, searchQuery, selectedCategory, includeExplicit, sortBy, minPrice, maxPrice, nftsLoading]);
 
-  // Feed price ranges to sidebar context
-  useEffect(() => {
-    if (filteredNFTs.length > 0) {
-      const prices = filteredNFTs.map(nft => nft.price).filter(price => price && price > 0);
-      if (prices.length > 0) {
-        const minPriceInData = Math.min(...prices);
-        const maxPriceInData = Math.max(...prices);
-        setCurrentPriceRange({ min: minPriceInData, max: maxPriceInData });
-      }
-    }
-  }, [filteredNFTs, setCurrentPriceRange]);
-
   // Filter Collections to only show live collections with required fields
   const filteredCollections = useMemo(() => {
     if (collectionsLoading || !collections) return [];
@@ -152,17 +173,19 @@ const Marketplace = () => {
     });
   }, [collections, searchQuery, selectedCategory, includeExplicit, sortBy, minPrice, maxPrice, collectionsLoading]);
 
-  // Feed price ranges to sidebar context for collections too
+  // Feed combined price range to sidebar context (collections + NFTs)
   useEffect(() => {
-    if (filteredCollections.length > 0) {
-      const prices = filteredCollections.map(col => col.mint_price).filter(price => price && price > 0);
-      if (prices.length > 0) {
-        const minPriceInData = Math.min(...prices);
-        const maxPriceInData = Math.max(...prices);
-        setCurrentPriceRange({ min: minPriceInData, max: maxPriceInData });
-      }
+    const allPrices = [
+      ...filteredCollections.map(col => col.mint_price).filter(price => price && price > 0),
+      ...filteredNFTs.map(nft => nft.price).filter(price => price && price > 0)
+    ];
+
+    if (allPrices.length > 0) {
+      const minPriceInData = Math.min(...allPrices);
+      const maxPriceInData = Math.max(...allPrices);
+      setCurrentPriceRange({ min: minPriceInData, max: maxPriceInData });
     }
-  }, [filteredCollections, setCurrentPriceRange]);
+  }, [filteredCollections, filteredNFTs, setCurrentPriceRange]);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -181,86 +204,120 @@ const Marketplace = () => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">
         <TabsList className="w-full max-w-md">
-          <TabsTrigger value="collections" className="flex-1">Collections</TabsTrigger>
-          <TabsTrigger value="nfts" className="flex-1">NFTs</TabsTrigger>
+          <TabsTrigger value="explore" className="flex-1">Explore</TabsTrigger>
           <TabsTrigger value="creators" className="flex-1">Creators</TabsTrigger>
         </TabsList>
 
-        {/* Collections Tab */}
-        <TabsContent value="collections" className="space-y-6">
-          {/* Collections Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {collectionsLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="aspect-square bg-muted rounded-t-lg"></div>
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : filteredCollections.length > 0 ? (
-              filteredCollections.map((collection) => (
-                <CollectionCard
-                  key={collection.id}
-                  collection={{
-                    ...collection,
-                    image_url: collection.image_url || '/placeholder.svg',
-                    creator_address_masked: collection.creator_address,
-                    items_redeemed: collection.items_redeemed || 0
-                  }}
-                  likeCount={getCollectionLikeCount(collection.id)}
-                  onNavigate={() => setNavContext({ type: 'collection', items: filteredCollections.map(c => c.id), source: 'marketplace' })}
+        {/* Explore Tab - Collections & NFTs */}
+        <TabsContent value="explore" className="space-y-6">
+          {/* Collections Section */}
+          <Collapsible open={collectionsOpen} onOpenChange={setCollectionsOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between py-2 hover:text-primary transition-colors">
+                <h2 className="text-xl font-semibold text-left">
+                  Collections ({filteredCollections.length})
+                </h2>
+                <ChevronDown 
+                  className={`h-5 w-5 transition-transform duration-200 ${collectionsOpen ? 'rotate-180' : ''}`} 
                 />
-              ))
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <p className="text-muted-foreground">No collections match your filters.</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {collectionsLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                      <div className="aspect-square bg-muted rounded-t-lg"></div>
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : filteredCollections.length > 0 ? (
+                  filteredCollections.map((collection) => (
+                    <CollectionCard
+                      key={collection.id}
+                      collection={{
+                        ...collection,
+                        image_url: collection.image_url || '/placeholder.svg',
+                        creator_address_masked: collection.creator_address,
+                        items_redeemed: collection.items_redeemed || 0
+                      }}
+                      likeCount={getCollectionLikeCount(collection.id)}
+                      onNavigate={() => setNavContext({ 
+                        type: 'collection', 
+                        items: filteredCollections.map(c => c.id), 
+                        source: 'marketplace',
+                        tab: 'collections-nfts'
+                      })}
+                    />
+                  ))
+                ) : (
+                  <Card className="col-span-full">
+                    <CardContent className="p-8 text-center">
+                      <p className="text-muted-foreground">No collections match your filters.</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
-        {/* NFTs Tab */}
-        <TabsContent value="nfts" className="space-y-6">
-          {/* NFT Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {nftsLoading ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="aspect-square bg-muted rounded-t-lg"></div>
-                  <CardContent className="p-4">
-                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : filteredNFTs.length > 0 ? (
-              filteredNFTs.map((nft) => {
-                const collection = collectionsById.get(nft.collection_id);
-                const royaltyPercent = collection?.royalty_percentage;
-                const metaLeft = royaltyPercent && royaltyPercent > 0 ? `${royaltyPercent}% royalty` : undefined;
-                
-                return (
-                  <NFTCard
-                    key={nft.id}
-                    nft={nft}
-                    metaLeft={metaLeft}
-                    onNavigate={() => setNavContext({ type: 'nft', items: filteredNFTs.map(n => n.id), source: 'marketplace' })}
-                  />
-                );
-              })
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <p className="text-muted-foreground">No NFTs match your filters.</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          {/* NFTs Section */}
+          <Collapsible open={nftsOpen} onOpenChange={setNftsOpen}>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between py-2 hover:text-primary transition-colors">
+                <h2 className="text-xl font-semibold text-left">
+                  NFTs ({filteredNFTs.length})
+                </h2>
+                <ChevronDown 
+                  className={`h-5 w-5 transition-transform duration-200 ${nftsOpen ? 'rotate-180' : ''}`} 
+                />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {nftsLoading ? (
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                      <div className="aspect-square bg-muted rounded-t-lg"></div>
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : filteredNFTs.length > 0 ? (
+                  filteredNFTs.map((nft) => {
+                    const collection = collectionsById.get(nft.collection_id);
+                    const royaltyPercent = collection?.royalty_percentage;
+                    const metaLeft = royaltyPercent && royaltyPercent > 0 ? `${royaltyPercent}% royalty` : undefined;
+                    
+                    return (
+                      <NFTCard
+                        key={nft.id}
+                        nft={nft}
+                        metaLeft={metaLeft}
+                        onNavigate={() => setNavContext({ 
+                          type: 'nft', 
+                          items: filteredNFTs.map(n => n.id), 
+                          source: 'marketplace',
+                          tab: 'collections-nfts'
+                        })}
+                      />
+                    );
+                  })
+                ) : (
+                  <Card className="col-span-full">
+                    <CardContent className="p-8 text-center">
+                      <p className="text-muted-foreground">No NFTs match your filters.</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </TabsContent>
 
         {/* Creators Tab */}
