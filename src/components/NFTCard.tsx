@@ -101,14 +101,59 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
         className="group hover:shadow-lg transition-all cursor-pointer relative"
       >
       <div className="aspect-square overflow-hidden rounded-t-lg bg-muted relative">
-        <img
-          src={nft.image_url || "/placeholder.svg"}
-          alt={nft.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-          onError={(e) => {
-            e.currentTarget.src = '/images/og-anime.jpg';
-          }}
-        />
+        {(() => {
+          const imageUrl = nft.image_url || nft.attributes?.image_url || nft.attributes?.image;
+          const animationUrl = nft.attributes?.animation_url || nft.attributes?.metadata?.animation_url;
+          const mediaType = nft.attributes?.media_type || nft.attributes?.metadata?.media_type;
+          
+          const detectedKind = detectMediaKind(imageUrl, animationUrl, mediaType);
+          
+          if (detectedKind === 'video' && animationUrl) {
+            return (
+              <video
+                src={animationUrl}
+                poster={imageUrl || "/placeholder.svg"}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                onError={(e) => {
+                  console.error('Video error, falling back to image');
+                  e.currentTarget.style.display = 'none';
+                  const img = document.createElement('img');
+                  img.src = imageUrl || '/images/og-anime.jpg';
+                  img.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform';
+                  e.currentTarget.parentNode?.appendChild(img);
+                }}
+              />
+            );
+          } else if (detectedKind === 'animated' && animationUrl) {
+            return (
+              <img
+                src={animationUrl}
+                alt={nft.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                onError={(e) => {
+                  console.error('Animated image error, falling back to static');
+                  e.currentTarget.src = imageUrl || '/images/og-anime.jpg';
+                }}
+              />
+            );
+          } else {
+            return (
+              <img
+                src={imageUrl || "/placeholder.svg"}
+                alt={nft.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/og-anime.jpg';
+                }}
+              />
+            );
+          }
+        })()}
         
         {/* Media type indicator - using file detection */}
         {(() => {

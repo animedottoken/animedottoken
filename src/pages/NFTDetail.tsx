@@ -347,21 +347,51 @@ export default function NFTDetail() {
                 onClick={handleFullscreenToggle}
               >
                 {/* Render different media types */}
-                {nft.metadata?.animation_url && nft.metadata?.media_type && !videoError ? (
-                  nft.metadata.media_type.startsWith('video/') ? (
-                    <video
-                      src={nft.metadata.animation_url}
-                      poster={nft.image_url || "/placeholder.svg"}
-                      className="w-full h-full object-cover"
-                      loop
-                      muted
-                      playsInline
-                      onError={() => {
-                        console.error('Video load error, falling back to image');
-                        setVideoError(true);
-                      }}
-                    />
-                  ) : nft.metadata.media_type.startsWith('audio/') ? (
+                {(() => {
+                  const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
+                  const animationUrl = nft.metadata?.animation_url;
+                  
+                  if (videoError || !animationUrl) {
+                    // Fallback to static image
+                    return (
+                      <img
+                        src={nft.image_url || "/placeholder.svg"}
+                        alt={nft.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement;
+                          if (img.src !== "/placeholder.svg") {
+                            img.src = "/placeholder.svg";
+                          }
+                        }}
+                      />
+                    );
+                  }
+                  
+                  if (mediaKind === 'video') {
+                    return (
+                      <div 
+                        className="w-full h-full relative"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <video
+                          src={animationUrl}
+                          poster={nft.image_url || "/placeholder.svg"}
+                          className="w-full h-full object-cover"
+                          controls
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="metadata"
+                          onError={() => {
+                            console.error('Video load error, falling back to image');
+                            setVideoError(true);
+                          }}
+                        />
+                      </div>
+                    );
+                  } else if (mediaKind === 'audio') {
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10">
                       {nft.image_url && (
                         <img
@@ -376,7 +406,7 @@ export default function NFTDetail() {
                         </audio>
                       </div>
                     </div>
-                  ) : nft.metadata.media_type.includes('gltf') || nft.metadata.media_type.includes('glb') ? (
+                  } else if (mediaKind === '3d') {
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
                       {nft.image_url && (
                         <img
@@ -391,20 +421,37 @@ export default function NFTDetail() {
                         <p className="text-xs text-muted-foreground">Click to view in fullscreen</p>
                       </div>
                     </div>
-                  ) : (
-                    <img
-                      src={nft.image_url || "/placeholder.svg"}
-                      alt={nft.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        if (img.src !== "/placeholder.svg") {
-                          img.src = "/placeholder.svg";
-                        }
-                      }}
-                    />
-                  )
-                ) : (
+                  } else if (mediaKind === 'animated') {
+                    // Show animated GIF or WebP directly
+                    return (
+                      <img
+                        src={animationUrl}
+                        alt={nft.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={() => {
+                          console.error('Animated image load error, falling back to static image');
+                          setVideoError(true);
+                        }}
+                      />
+                    );
+                  } else {
+                    // Static image fallback
+                    return (
+                      <img
+                        src={nft.image_url || "/placeholder.svg"}
+                        alt={nft.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement;
+                          if (img.src !== "/placeholder.svg") {
+                            img.src = "/placeholder.svg";
+                          }
+                        }}
+                      />
+                    );
+                  }
+                })()}
+                {false && ( // This replaces the old fallback
                   <img
                     src={nft.image_url || "/placeholder.svg"}
                     alt={nft.name}
@@ -417,7 +464,7 @@ export default function NFTDetail() {
                     }}
                   />
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center pointer-events-none">
                   <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

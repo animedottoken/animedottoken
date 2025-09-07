@@ -155,14 +155,45 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
 
         {/* Image Container */}
         <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg overflow-hidden">
-          <img 
-            src={listing.nft_image_url} 
-            alt={listing.nft_name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = '/images/og-anime.jpg';
-            }}
-          />
+          {(() => {
+            // For boosted cards, we only have basic image URL, but we can still try to detect animated content
+            const imageUrl = listing.nft_image_url;
+            const isAnimated = imageUrl && (imageUrl.includes('.gif') || imageUrl.includes('.webp'));
+            const isVideo = imageUrl && (imageUrl.includes('.mp4') || imageUrl.includes('.webm'));
+            
+            if (isVideo) {
+              return (
+                <video
+                  src={imageUrl}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  onError={(e) => {
+                    console.error('Video error, falling back to image');
+                    e.currentTarget.style.display = 'none';
+                    const img = document.createElement('img');
+                    img.src = '/images/og-anime.jpg';
+                    img.className = 'w-full h-full object-cover';
+                    e.currentTarget.parentNode?.appendChild(img);
+                  }}
+                />
+              );
+            } else {
+              return (
+                <img 
+                  src={imageUrl} 
+                  alt={listing.nft_name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/og-anime.jpg';
+                  }}
+                />
+              );
+            }
+          })()}
           
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">
