@@ -203,7 +203,7 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
                         <h4 className="font-medium text-sm">{wallet.name}</h4>
                         {isInstalled && (
                           <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                            Detected
+                            Ready
                           </Badge>
                         )}
                         {wallet.mobileSupported && (

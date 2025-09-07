@@ -253,9 +253,12 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [connected, walletDisconnect, select]);
 
   const listProviders = useCallback(() => {
-    const installedWallets = wallets.filter(w => 
-      w.readyState === WalletReadyState.Installed
-    ).map(w => w.adapter.name);
+    const installedWallets = wallets
+      .filter(w =>
+        w.readyState === WalletReadyState.Installed ||
+        w.readyState === WalletReadyState.Loadable
+      )
+      .map(w => w.adapter.name);
     
     return {
       installed: installedWallets,
