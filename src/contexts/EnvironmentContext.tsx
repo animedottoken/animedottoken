@@ -20,7 +20,7 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
   
   // Force beta mode via URL param or env var
   const forceBeta = searchParams.has('beta') || 
-                   (typeof process !== 'undefined' && process.env.VITE_FORCE_BETA === '1');
+                   ((import.meta as any).env?.VITE_FORCE_BETA === '1');
   
   // Consider staging domains (.staging.yourdomain.com) as beta
   const isStagingDomain = hostname.includes('.staging.') || hostname.includes('-staging.');
