@@ -43,12 +43,12 @@ interface NFTCardProps {
   overlayActions?: OverlayAction[];
   showOwnerInfo?: boolean;
   verified?: boolean;
-  mintedProgress?: string;
+  metaLeft?: string;
   onNavigate?: () => void;
   likeCount?: number; // Add like count prop
 }
 
-export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, mintedProgress, onNavigate, likeCount = 0 }: NFTCardProps) => {
+export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, metaLeft, onNavigate, likeCount = 0 }: NFTCardProps) => {
   const { isLiked, toggleLike, isPending } = useNFTLikes();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -246,23 +246,28 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
               )}
             </Link>
           ) : (
-            /* Minted progress info */
-            mintedProgress && (
-              <div className="text-sm text-muted-foreground mb-2">
-                {mintedProgress}
-              </div>
-            )
+            /* Meta info placeholder when no owner info */
+            <div className="text-sm text-muted-foreground mb-2">
+              {/* Placeholder for spacing when no meta info */}
+            </div>
           )}
         </div>
         
-        {/* Price positioned bottom right */}
-        <div className="flex justify-end">
-          {nft.is_listed && nft.price ? (
-            <PriceTag amount={nft.price} currency="SOL" size="sm" />
-          ) : (
-            <PriceTag tbd currency="SOL" size="sm" />
-          )}
-        </div>
+         {/* Bottom row with meta left and price right */}
+         <div className="flex justify-between items-center">
+           {metaLeft && (
+             <div className="text-sm text-muted-foreground">
+               {metaLeft}
+             </div>
+           )}
+           <div className={metaLeft ? '' : 'ml-auto'}>
+             {nft.is_listed && nft.price ? (
+               <PriceTag amount={nft.price} currency="SOL" size="sm" />
+             ) : (
+               <PriceTag tbd currency="SOL" size="sm" />
+             )}
+           </div>
+         </div>
       </CardContent>
     </Card>
     </Link>

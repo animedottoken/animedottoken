@@ -703,7 +703,7 @@ export default function CollectionDetail() {
                        nft={nft}
                        showOwnerInfo={false}
                        verified={displayCollection?.verified}
-                       mintedProgress={`${mints.length}/${displayCollection?.max_supply || '∞'} minted`}
+                       metaLeft={displayCollection?.royalty_percentage ? `${displayCollection.royalty_percentage}% royalty` : undefined}
                        navigationQuery="from=collection"
                        onNavigate={() => setNavContext({ 
                          type: 'nft', 
