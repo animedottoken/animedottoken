@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, CheckCircle, Eye } from 'lucide-react';
 import { useCollectionLikes } from '@/hooks/useCollectionLikes';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
 import SocialActionWrapper from '@/components/SocialActionWrapper';
@@ -48,34 +46,6 @@ export const CollectionCard = ({
 }: CollectionCardProps) => {
   const { isLiked, toggleLike, isPending } = useCollectionLikes();
   const navigate = useNavigate();
-  const [creatorNickname, setCreatorNickname] = useState<string>('');
-  const [creatorVerified, setCreatorVerified] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!showCreatorInfo) return;
-    
-    let cancelled = false;
-    // Only fetch creator info for non-masked addresses (authenticated users will see full addresses)
-    if (!collection.creator_address.includes('...')) {
-      supabase
-        .from('user_profiles')
-        .select('display_name,verified')
-        .eq('wallet_address', collection.creator_address)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (cancelled) return;
-          if (error) {
-            console.error('Error loading creator profile:', error);
-            setCreatorNickname('');
-            setCreatorVerified(false);
-            return;
-          }
-          setCreatorNickname(data?.display_name || '');
-          setCreatorVerified(!!data?.verified);
-        });
-    }
-    return () => { cancelled = true; };
-  }, [collection.creator_address, showCreatorInfo]);
 
   const handleViewDetails = () => {
     navigate(`/collection/${collection.id}?${navigationQuery || 'from=marketplace'}`);
@@ -92,7 +62,7 @@ export const CollectionCard = ({
     console.log('Like toggle result:', success);
   };
 
-  const displayCreatorInfo = collection.creator_nickname || truncateAddress(collection.creator_address);
+  
 
   return (
     <Link 
@@ -195,17 +165,19 @@ export const CollectionCard = ({
             </div>
             
             {showCreatorInfo && (
-              /* Creator info */
-              <Link 
-                to={`/creator/${collection.creator_address}`}
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
-              >
-                <span>{displayCreatorInfo}</span>
-                {collection.creator_verified && (
-                  <CheckCircle className="h-3 w-3 text-primary" />
-                )}
-              </Link>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                <span>by</span>
+                <Link 
+                  to={`/creator/${collection.creator_address}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  {collection.creator_nickname || truncateAddress(collection.creator_address)}
+                  {collection.creator_verified && (
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                  )}
+                </Link>
+              </div>
             )}
           </div>
           

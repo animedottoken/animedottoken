@@ -7,8 +7,10 @@ import { ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useNFTs } from "@/hooks/useNFTs";
 import { usePublicCollections } from "@/hooks/usePublicCollections";
+import { useCreatorsPublic } from "@/hooks/useCreatorsPublic";
 import { NFTCard } from "@/components/NFTCard";
 import { CollectionCard } from "@/components/CollectionCard";
+import { CreatorCardCompact } from "@/components/CreatorCardCompact";
 import { hasRequiredListingFields } from '@/lib/attributeHelpers';
 import { setNavContext } from "@/lib/navContext";
 import { useCollectionLikeCounts } from '@/hooks/useLikeCounts';
@@ -55,6 +57,7 @@ const Marketplace = () => {
 
   const { nfts, loading: nftsLoading } = useNFTs();
   const { collections, loading: collectionsLoading } = usePublicCollections();
+  const { creators, loading: creatorsLoading, error: creatorsError } = useCreatorsPublic();
 
   // Create collections map for royalty lookup
   const collectionsById = useMemo(() => {
@@ -321,11 +324,32 @@ const Marketplace = () => {
 
         {/* Creators Tab */}
         <TabsContent value="creators" className="space-y-6">
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              Creators browse is coming soon.
-            </CardContent>
-          </Card>
+          {creatorsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="h-24 w-full rounded-lg" />
+                </div>
+              ))}
+            </div>
+          ) : creatorsError ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Failed to load creators: {creatorsError}</p>
+            </div>
+          ) : creators.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No creators found matching your criteria.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {creators.map((creator) => (
+                <CreatorCardCompact
+                  key={creator.creator_user_id}
+                  creator={creator}
+                />
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

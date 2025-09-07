@@ -1166,6 +1166,22 @@ export type Database = {
           nft_likes_count: number
         }[]
       }
+      get_creators_public_explore: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          collection_likes_count: number
+          created_collection_count: number
+          created_nft_count: number
+          creator_user_id: string
+          follower_count: number
+          nft_likes_count: number
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          total_likes_count: number
+          verified: boolean
+        }[]
+      }
       get_creators_public_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
