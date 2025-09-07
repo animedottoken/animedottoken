@@ -334,14 +334,10 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
       )}
 
       {/* Media Container */}
-      <div className="absolute inset-0 flex items-center justify-center p-2 pt-24 pb-16">
+      <div className="absolute inset-0 flex items-center justify-center p-4 pt-24 pb-20">
         <div 
           key={`${nftId}-${mediaUrl || nftImage}`}
-          className="relative flex items-center justify-center" 
-          style={{ 
-            width: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6), 
-            height: Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6) 
-          }}
+          className="relative flex items-center justify-center w-full h-full max-w-[95vw] max-h-[75vh]" 
         >
           {!isImageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -355,27 +351,43 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
           {/* Render different media types */}
           {mediaUrl && mediaType && !forceFallback ? (
             mediaType.startsWith('video/') ? (
-              <video
-                ref={imageRef as React.RefObject<HTMLVideoElement>}
-                src={mediaUrl}
-                poster={coverImageUrl || nftImage}
-                crossOrigin="anonymous"
-                className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
-                  isImageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                controls
-                loop
-                muted
-                autoPlay
-                playsInline
-                onLoadedData={() => setIsImageLoaded(true)}
-                onError={(e) => {
-                  console.error('Video load error, falling back to image:', e);
-                  setForceFallback(true);
-                  setIsImageLoaded(false);
-                  setImageError(false);
-                }}
-              />
+              <div className="w-full h-full relative bg-black rounded-lg overflow-hidden">
+                <video
+                  ref={imageRef as React.RefObject<HTMLVideoElement>}
+                  src={mediaUrl}
+                  poster={coverImageUrl || nftImage}
+                  className={`w-full h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                    isImageLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  controls={false}
+                  loop
+                  muted
+                  playsInline
+                  onLoadedData={() => setIsImageLoaded(true)}
+                  onError={(e) => {
+                    console.error('Video load error, falling back to image:', e);
+                    setForceFallback(true);
+                    setIsImageLoaded(false);
+                    setImageError(false);
+                  }}
+                />
+                <div 
+                  className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity duration-300 hover:bg-black/40"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
+                    if (video.paused) {
+                      video.play();
+                      video.controls = true;
+                      e.currentTarget.style.display = 'none';
+                    }
+                  }}
+                >
+                  <div className="bg-white/90 rounded-full p-4 hover:bg-white transition-colors">
+                    <Play className="h-8 w-8 text-black" fill="currentColor" />
+                  </div>
+                </div>
+              </div>
             ) : mediaType.startsWith('audio/') ? (
               <div className="text-center">
                 {(coverImageUrl || nftImage) && (
@@ -383,7 +395,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                     ref={imageRef as React.RefObject<HTMLImageElement>}
                     src={coverImageUrl || nftImage}
                     alt={nftName}
-                    className={`w-full h-full max-w-[95vw] max-h-[60vh] object-contain rounded-lg shadow-2xl mb-6 transition-opacity duration-300 ${
+                    className={`w-full h-full object-contain rounded-lg shadow-2xl mb-6 transition-opacity duration-300 ${
                       isImageLoaded ? 'opacity-100' : 'opacity-0'
                     }`}
                     onLoad={() => setIsImageLoaded(true)}
@@ -402,7 +414,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                     ref={imageRef as React.RefObject<HTMLImageElement>}
                     src={coverImageUrl || nftImage}
                     alt={nftName}
-                    className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                    className={`w-full h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
                       isImageLoaded ? 'opacity-100' : 'opacity-0'
                     }`}
                     onLoad={() => setIsImageLoaded(true)}
@@ -420,7 +432,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
                 ref={imageRef as React.RefObject<HTMLImageElement>}
                 src={mediaUrl}
                 alt={nftName}
-                className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+                className={`w-full h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
                   isImageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
                 onLoad={() => setIsImageLoaded(true)}
@@ -433,7 +445,7 @@ export const FullscreenNFTViewer: React.FC<FullscreenNFTViewerProps> = ({
               ref={imageRef as React.RefObject<HTMLImageElement>}
               src={coverImageUrl || nftImage}
               alt={nftName}
-              className={`w-full h-full max-w-[95vw] max-h-[80vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
+              className={`w-full h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               onLoad={() => setIsImageLoaded(true)}

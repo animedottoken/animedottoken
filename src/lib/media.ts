@@ -20,6 +20,8 @@ export const detectMediaKind = (imageUrl?: string, animationUrl?: string, mediaT
     if (lowerMediaType.startsWith('video/')) return 'video';
     if (lowerMediaType.startsWith('audio/')) return 'audio';
     if (lowerMediaType.includes('gltf') || lowerMediaType.includes('glb')) return '3d';
+    if (lowerMediaType === 'image/gif') return 'animated';
+    if (lowerMediaType === 'image/webp') return 'animated';
   }
   
   // Fallback to file extension detection
@@ -33,15 +35,20 @@ export const detectMediaKind = (imageUrl?: string, animationUrl?: string, mediaT
     // 3D formats
     if (lowerUrl.match(/\.(gltf|glb|obj|fbx|dae|3ds|ply|stl)$/)) return '3d';
     
-    // Animated image formats
-    if (lowerUrl.match(/\.(gif|webp)$/)) return 'animated';
+    // Only treat as animated if it's actually a GIF or animated WebP
+    if (lowerUrl.match(/\.(gif)$/)) return 'animated';
+    if (lowerUrl.match(/\.(webp)$/) && lowerMediaType.includes('animated')) return 'animated';
     
-    // If it has animation_url but doesn't match above, treat as animated
-    return 'animated';
+    // For static images with animation_url (like PNG), treat as static
+    if (lowerUrl.match(/\.(png|jpg|jpeg|svg|bmp|tiff)$/)) return 'static';
+    
+    // Unknown format with animation_url, assume static
+    return 'static';
   }
   
   // Only image URL, check if it's animated
-  if (lowerUrl.match(/\.(gif|webp)$/)) return 'animated';
+  if (lowerUrl.match(/\.(gif)$/)) return 'animated';
+  if (lowerUrl.match(/\.(webp)$/) && lowerMediaType.includes('animated')) return 'animated';
   
   return 'static';
 };

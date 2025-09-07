@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
@@ -370,57 +370,77 @@ export default function NFTDetail() {
                   
                   if (mediaKind === 'video') {
                     return (
-                      <div 
-                        className="w-full h-full relative"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <div className="w-full h-full relative bg-black rounded-lg overflow-hidden">
                         <video
                           src={animationUrl}
                           poster={nft.image_url || "/placeholder.svg"}
                           className="w-full h-full object-cover"
-                          controls
-                          autoPlay
+                          controls={false}
                           loop
                           muted
                           playsInline
                           preload="metadata"
                           onError={() => {
-                            console.error('Video load error, falling back to image');
+                            console.error('Video load error:', animationUrl, 'falling back to image');
                             setVideoError(true);
                           }}
                         />
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
+                            if (video.paused) {
+                              video.play();
+                              e.currentTarget.style.display = 'none';
+                            }
+                          }}
+                        >
+                          <div className="bg-white/90 rounded-full p-3 hover:bg-white transition-colors">
+                            <Play className="h-6 w-6 text-black" fill="currentColor" />
+                          </div>
+                        </div>
                       </div>
                     );
                   } else if (mediaKind === 'audio') {
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10">
-                      {nft.image_url && (
-                        <img
-                          src={nft.image_url}
-                          alt={nft.name}
-                          className="w-full h-full object-cover absolute inset-0"
-                        />
-                      )}
-                      <div className="relative z-10 bg-black/50 rounded-lg p-4 m-4">
-                        <audio controls className="w-full">
-                          <source src={nft.metadata.animation_url} type={nft.metadata.media_type} />
-                        </audio>
+                    return (
+                      <div className="w-full h-full relative">
+                        {nft.image_url && (
+                          <img
+                            src={nft.image_url}
+                            alt={nft.name}
+                            className="w-full h-full object-cover absolute inset-0"
+                          />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                          <div className="bg-white/90 rounded-lg p-4 max-w-sm w-full mx-4">
+                            <audio controls className="w-full">
+                              <source src={animationUrl} type={nft.metadata?.media_type || 'audio/mpeg'} />
+                              Your browser does not support audio playback.
+                            </audio>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    );
                   } else if (mediaKind === '3d') {
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
-                      {nft.image_url && (
-                        <img
-                          src={nft.image_url}
-                          alt={nft.name}
-                          className="w-full h-full object-cover absolute inset-0"
-                        />
-                      )}
-                      <div className="relative z-10 text-center">
-                        <Maximize2 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-sm font-medium">3D Model</p>
-                        <p className="text-xs text-muted-foreground">Click to view in fullscreen</p>
+                    return (
+                      <div className="w-full h-full relative">
+                        {nft.image_url && (
+                          <img
+                            src={nft.image_url}
+                            alt={nft.name}
+                            className="w-full h-full object-cover absolute inset-0"
+                          />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <div className="text-center text-white">
+                            <Maximize2 className="h-16 w-16 mx-auto mb-4" />
+                            <p className="text-sm font-medium">3D Model</p>
+                            <p className="text-xs opacity-80">Click to view in fullscreen</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    );
                   } else if (mediaKind === 'animated') {
                     // Show animated GIF or WebP directly
                     return (
