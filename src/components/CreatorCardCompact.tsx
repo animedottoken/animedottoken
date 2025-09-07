@@ -26,11 +26,11 @@ export const CreatorCardCompact = ({ creator }: CreatorCardCompactProps) => {
   };
 
   return (
-    <Link to={`/creator/${creator.creator_user_id}`}>
+    <Link to={`/profile/${creator.wallet_address}`}>
       <Card className="hover:shadow-lg transition-shadow cursor-pointer">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16">
+            <Avatar className="h-20 w-20">
               <AvatarImage 
                 src={creator.profile_image_url} 
                 alt={creator.nickname}

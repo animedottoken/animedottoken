@@ -168,7 +168,7 @@ export const CollectionCard = ({
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <span>by</span>
                 <Link 
-                  to={`/creator/${collection.creator_address}`}
+                  to={`/profile/${collection.creator_address}`}
                   onClick={(e) => e.stopPropagation()}
                   className="hover:text-foreground transition-colors flex items-center gap-1"
                 >

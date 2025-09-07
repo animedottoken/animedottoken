@@ -264,7 +264,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Creator:</span>
                 <Link 
-                  to={`/creator/${nft.creator_address}`}
+                  to={`/profile/${nft.creator_address}`}
                   onClick={(e) => e.stopPropagation()}
                   className="text-foreground hover:text-primary transition-colors"
                 >
@@ -277,7 +277,7 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Owner:</span>
                 <Link 
-                  to={`/creator/${nft.owner_address}`}
+                  to={`/profile/${nft.owner_address}`}
                   onClick={(e) => e.stopPropagation()}
                   className="text-foreground hover:text-primary transition-colors"
                 >

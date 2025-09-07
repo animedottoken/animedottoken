@@ -1180,6 +1180,7 @@ export type Database = {
           profile_rank: string
           total_likes_count: number
           verified: boolean
+          wallet_address: string
         }[]
       }
       get_creators_public_stats: {

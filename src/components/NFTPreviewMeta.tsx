@@ -151,7 +151,7 @@ export const NFTPreviewMeta = ({ nftId, nftName, nftImage, className = "" }: NFT
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Owned by</span>
         <Link 
-          to={`/creator/${nftDetails.owner_address}`}
+          to={`/profile/${nftDetails.owner_address}`}
           className="inline-flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors"
           onClick={(e) => e.stopPropagation()}
         >

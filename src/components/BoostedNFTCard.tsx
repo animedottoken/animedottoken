@@ -249,7 +249,7 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             <button 
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/creator/${listing.owner_address_masked}`);
+                navigate(`/profile/${listing.owner_address_masked}`);
               }}
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
