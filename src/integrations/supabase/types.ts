@@ -154,6 +154,7 @@ export type Database = {
           mint_end_at: string | null
           mint_price: number
           name: string
+          network: string | null
           onchain_description: string | null
           royalty_percentage: number
           site_description: string | null
@@ -190,6 +191,7 @@ export type Database = {
           mint_end_at?: string | null
           mint_price?: number
           name: string
+          network?: string | null
           onchain_description?: string | null
           royalty_percentage?: number
           site_description?: string | null
@@ -226,6 +228,7 @@ export type Database = {
           mint_end_at?: string | null
           mint_price?: number
           name?: string
+          network?: string | null
           onchain_description?: string | null
           royalty_percentage?: number
           site_description?: string | null
@@ -546,6 +549,7 @@ export type Database = {
           metadata_uri: string | null
           mint_address: string
           name: string
+          network: string | null
           owner_address: string
           price: number | null
           symbol: string | null
@@ -570,6 +574,7 @@ export type Database = {
           metadata_uri?: string | null
           mint_address: string
           name: string
+          network?: string | null
           owner_address: string
           price?: number | null
           symbol?: string | null
@@ -594,6 +599,7 @@ export type Database = {
           metadata_uri?: string | null
           mint_address?: string
           name?: string
+          network?: string | null
           owner_address?: string
           price?: number | null
           symbol?: string | null
