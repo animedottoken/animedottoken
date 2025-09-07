@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3 } from "lucide-react";
+import { Heart, ArrowLeft, ChevronLeft, ChevronRight, Info, ExternalLink, Grid3x3, UserMinus, UserPlus } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreatorFollowsByUser } from '@/hooks/useCreatorFollowsByUser';
@@ -22,6 +22,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad";
 import profileBanner from '@/assets/profile-banner.jpg';
 import { getNavContext, clearNavContext, setNavContext } from "@/lib/navContext";
+import { NFTCard } from '@/components/NFTCard';
 
 interface Creator {
   wallet_address: string;
@@ -445,11 +446,11 @@ export default function CreatorProfile() {
           }}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to {from === 'marketplace' ? 'Marketplace' : 'Creators'}
+          Back
         </Button>
-
-        {/* Navigation Controls */}
-        {navCreators.length > 1 && (
+        
+        {/* Navigation arrows */}
+        {(hasPrevious || hasNext) && (
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -458,9 +459,8 @@ export default function CreatorProfile() {
               disabled={!hasPrevious}
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous
             </Button>
-            <span className="text-sm text-muted-foreground px-2">
+            <span className="text-sm text-muted-foreground">
               {currentIndex + 1} of {navCreators.length}
             </span>
             <Button
@@ -469,149 +469,122 @@ export default function CreatorProfile() {
               onClick={handleNext}
               disabled={!hasNext}
             >
-              Next
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}
       </div>
 
-      {/* Profile Section - Exact copy of Profile.tsx layout but read-only */}
+      {/* Profile banner */}
+      <div className="relative w-full h-48 md:h-64 mb-8 rounded-lg overflow-hidden">
+        <ImageLazyLoad
+          src={creator.banner_image_url || profileBanner}
+          alt="Profile banner"
+          className="w-full h-full object-cover"
+          fallbackSrc={profileBanner}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      </div>
+
+      {/* Profile info */}
       <div className="mb-8">
-        {/* Banner - No edit button */}
-        <AspectRatio ratio={4 / 1} className="relative w-full rounded-lg overflow-hidden">
-          <ImageLazyLoad
-            src={creator.banner_image_url || profileBanner}
-            alt="Profile Banner"
-            className="absolute inset-0 w-full h-full object-cover"
-            fallbackSrc="/placeholder.svg"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-        </AspectRatio>
-
-        {/* Profile Info - No edit buttons */}
-        <div className="flex items-start justify-between mt-4">
-          <div className="flex items-center gap-4">
-            <div className="relative -mt-16">
-              <Avatar className="w-40 h-40 rounded-full border-4 border-background bg-card">
-                <AvatarImage src={creator.profile_image_url || '/placeholder.svg'} alt="Avatar" />
-                <AvatarFallback className="text-3xl font-bold">
-                  {creator?.nickname?.charAt(0)?.toUpperCase() || creator.wallet_address.slice(0, 1).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            
-            <div className="mt-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{creator.nickname || `${creator.wallet_address.slice(0, 4)}...${creator.wallet_address.slice(-4)}`}</h2>
-                     <SocialActionWrapper 
-                       action="follow this creator"
-                       onAction={() => handleToggleFollow(creator.user_id!)}
-                     >
-                       <button
-                         className="transition-colors duration-200"
-                         disabled={followLoading || !creator.user_id}
-                         aria-label={isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
-                         title={isFollowingUserId(creator.user_id!) ? 'Unfollow' : 'Follow'}
-                       >
-                         <Heart className={`w-5 h-5 ${
-                           creator.user_id && isFollowingUserId(creator.user_id)
-                             ? 'fill-red-500 text-red-500' 
-                             : 'text-muted-foreground hover:text-red-500'
-                         }`} />
-                       </button>
-                     </SocialActionWrapper>
-                </div>
-              </div>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6">
+          <Avatar className="h-24 w-24 border-4 border-background">
+            <AvatarImage src={creator.profile_image_url} />
+            <AvatarFallback className="text-2xl">
+              {creator.nickname?.charAt(0) || creator.wallet_address.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2">
+              <h1 className="text-2xl font-bold">
+                {creator.nickname || `${creator.wallet_address.slice(0, 6)}...${creator.wallet_address.slice(-4)}`}
+              </h1>
               
-              <p className="text-sm text-muted-foreground mb-2">
-                {`${creator.wallet_address.slice(0,4)}...${creator.wallet_address.slice(-4)}`}
-              </p>
-
-              {/* Bio Section - Read-only */}
-              <div className="max-w-md">
-                <p className="text-muted-foreground text-sm italic">
-                  {creator.bio || 'No bio available'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Cards - Matching Profile.tsx exactly */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <Card className="bg-secondary/5 border-secondary/20">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
+              <div className="flex items-center gap-2">
+                {creator.verified && (
+                  <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                    Verified
+                  </Badge>
+                )}
+                
+                {/* Rank badge */}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="inline-flex items-center">
-                        <span className="text-2xl font-bold text-foreground mr-1">
-                          {getRankBadge(creator.profile_rank).icon}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {getRankBadge(creator.profile_rank).text}
-                        </span>
-                        <span className="text-2xl font-bold text-foreground mx-2">/</span>
-                        <span className="text-2xl font-bold text-foreground">
-                          {creator.trade_count}
-                        </span>
-                        <div className="w-5 h-5 ml-2 bg-blue-500 rounded-full flex items-center justify-center">
-                          <Info className="w-3 h-3 text-white" />
-                        </div>
-                      </span>
+                      <Badge variant="outline">
+                        {getRankBadge(creator.profile_rank).icon} {getRankBadge(creator.profile_rank).text}
+                      </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div className="text-sm space-y-1">
-                        <p className="font-semibold">🏆 Diamond: 1,000+ trades</p>
-                        <p className="font-semibold">🥇 Gold: 250+ trades</p>
-                        <p className="font-semibold">🥈 Silver: 50+ trades</p>
-                        <p className="font-semibold">🥉 Bronze: 10+ trades</p>
-                        <p className="font-semibold">🌟 Starter: 0-9 trades</p>
-                      </div>
+                      <p>{creator.trade_count} trades completed</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <p className="text-sm text-muted-foreground">Rank / Trades</p>
+            </div>
+            
+            {creator.bio && (
+              <p className="text-muted-foreground mt-2">{creator.bio}</p>
+            )}
+          </div>
+          
+          {/* Follow button - only show if not viewing own profile */}
+          {user && creator.user_id && creator.user_id !== user.id && (
+            <SocialActionWrapper
+              requireAuth={true}
+              action="follow"
+              onAction={() => handleToggleFollow(creator.user_id!)}
+            >
+              <Button
+                variant={isFollowingUserId(creator.user_id) ? "secondary" : "default"}
+                disabled={followLoading}
+                className="shrink-0"
+              >
+                {isFollowingUserId(creator.user_id) ? (
+                  <>
+                    <UserMinus className="w-4 h-4 mr-2" />
+                    Unfollow
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Follow
+                  </>
+                )}
+              </Button>
+            </SocialActionWrapper>
+          )}
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold">{getCurrentCreatorFollowerCount(creator.user_id || '') || creator.follower_count}</div>
+              <div className="text-sm text-muted-foreground">Followers</div>
             </CardContent>
           </Card>
-
-          <Card className="bg-primary/5 border-primary/20">
+          
+          <Card>
             <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Grid3x3 className="w-5 h-5 text-primary mr-1" />
-                <span className="text-2xl font-bold text-primary">
-                  {creatorNFTs?.length || 0} / {creatorCollections?.length || 0}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">NFTs / Collections</p>
+              <div className="text-2xl font-bold">{creator.created_nfts}</div>
+              <div className="text-sm text-muted-foreground">NFTs Created</div>
             </CardContent>
           </Card>
-
-          <Card className="bg-accent/5 border-accent/20">
+          
+          <Card>
             <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Heart className="w-5 h-5 text-destructive mr-1" />
-                <span className="text-2xl font-bold text-foreground">
-                  {getCurrentCreatorFollowerCount(creator.user_id || '')} / {getCreatorNFTLikeCount(creator.user_id || '')}
-                </span>
-              </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <p className="text-sm text-muted-foreground cursor-help flex items-center justify-center gap-1">
-                      Profile Likes / NFT Likes
-                      <Info className="w-3 h-3" />
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Profile follows / Total likes on this creator's NFTs</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="text-2xl font-bold">{getCreatorNFTLikeCount(creator.user_id || '') || creator.nft_likes_count}</div>
+              <div className="text-sm text-muted-foreground">NFT Likes</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold">{creator.trade_count}</div>
+              <div className="text-sm text-muted-foreground">Trades</div>
             </CardContent>
           </Card>
         </div>
@@ -705,50 +678,29 @@ export default function CreatorProfile() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {creatorNFTs.map((nft) => (
-                <Card key={nft.id} className="group hover:shadow-lg transition-all cursor-pointer relative overflow-hidden">
-                  <CardContent className="p-4">
-                     <div 
-                       className="aspect-square relative mb-3 overflow-hidden rounded-lg cursor-pointer"
-                       onClick={() => {
-                         handleNFTClick(nft.id, creatorNFTs);
-                         navigate(`/nft/${nft.id}`);
-                       }}
-                     >
-                       <ImageLazyLoad
-                         src={nft.image_url}
-                         alt={nft.name}
-                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                         fallbackSrc="/placeholder.svg"
-                       />
-                      
-                      {/* Heart button for liking NFTs */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleToggleLike(nft.id);
-                        }}
-                        className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
-                          isLiked(nft.id)
-                            ? 'bg-red-500 text-white'
-                            : 'bg-black/50 text-white hover:bg-black/70'
-                        }`}
-                      >
-                        <Heart className={`w-4 h-4 ${isLiked(nft.id) ? 'fill-current' : ''}`} />
-                      </button>
-                    </div>
-                    
-                    <h4 className="font-medium truncate mb-2">{nft.name}</h4>
-                    <div className="flex items-center justify-between">
-                      {nft.price && (
-                        <span className="text-sm font-medium">{nft.price} SOL</span>
-                      )}
-                       <div className="flex items-center space-x-1">
-                         <span className="text-xs text-muted-foreground">{getNFTLikeCount(nft.id)} likes</span>
-                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <NFTCard
+                  key={nft.id}
+                  nft={{
+                    id: nft.id,
+                    name: nft.name,
+                    image_url: nft.image_url,
+                    owner_address: wallet || '',
+                    mint_address: nft.id,
+                    creator_address: wallet || '',
+                    price: nft.price,
+                    is_listed: true,
+                    collection_id: nft.collection_address,
+                    description: '',
+                    attributes: undefined,
+                    collections: nft.collection_name ? { name: nft.collection_name } : undefined
+                  }}
+                  likeCount={getNFTLikeCount(nft.id)}
+                  showOwnerInfo={false}
+                  onNavigate={() => {
+                    handleNFTClick(nft.id, creatorNFTs);
+                    navigate(`/nft/${nft.id}`);
+                  }}
+                />
               ))}
             </div>
           )}
@@ -758,68 +710,55 @@ export default function CreatorProfile() {
         <TabsContent value="liked-nfts" className="mt-6">
           {likedNFTs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No liked NFTs yet</p>
+              <p className="text-muted-foreground mb-4">No liked NFTs yet</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {likedNFTs.map((nft) => (
-                <Card key={nft.id} className="group hover:shadow-lg transition-all cursor-pointer relative overflow-hidden">
-                  <CardContent className="p-4">
-                     <div 
-                       className="aspect-square relative mb-3 overflow-hidden rounded-lg cursor-pointer"
-                       onClick={() => {
-                         handleNFTClick(nft.id, likedNFTs);
-                         navigate(`/nft/${nft.id}`);
-                       }}
-                     >
-                       <ImageLazyLoad
-                         src={nft.image_url}
-                         alt={nft.name}
-                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                         fallbackSrc="/placeholder.svg"
-                       />
-                     </div>
-                    
-                    <h4 className="font-medium truncate mb-2">{nft.name}</h4>
-                    <div className="flex items-center justify-between">
-                      {nft.price && (
-                        <span className="text-sm font-medium">{nft.price} SOL</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <NFTCard
+                  key={nft.id}
+                  nft={{
+                    id: nft.id,
+                    name: nft.name,
+                    image_url: nft.image_url,
+                    owner_address: '',
+                    mint_address: nft.id,
+                    creator_address: '',
+                    price: nft.price,
+                    is_listed: true,
+                    collection_id: nft.collection_address,
+                    description: '',
+                    attributes: undefined,
+                    collections: nft.collection_name ? { name: nft.collection_name } : undefined
+                  }}
+                  likeCount={getNFTLikeCount(nft.id)}
+                  showOwnerInfo={true}
+                  onNavigate={() => navigate(`/nft/${nft.id}`)}
+                />
               ))}
             </div>
           )}
         </TabsContent>
 
-        {/* Authors I Follow Tab */}
+        {/* Following Tab */}
         <TabsContent value="following" className="mt-6">
-          {followedCreators.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {followedCreators.map((followedCreator) => {
-                const followerCount = getCreatorFollowerCount(followedCreator.user_id);
-                return (
-                  <FollowedAuthorCard
-                    key={followedCreator.wallet_address}
-                    wallet_address={followedCreator.wallet_address}
-                    nickname={followedCreator.nickname}
-                    bio={followedCreator.bio}
-                    profile_image_url={followedCreator.profile_image_url}
-                    followerCount={followerCount}
-                    onClick={(walletAddress) => navigate(`/profile/${walletAddress}`)}
-                  />
-                );
-              })}
+          {followedCreators.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">Not following any creators yet</p>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">You haven't liked any profiles yet</p>
-              <p className="text-sm text-muted-foreground/70 mb-4">
-                Like profiles to see them here - including your own!
-              </p>
-              <Button onClick={() => navigate('/marketplace?tab=creators')}>Explore Creators</Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {followedCreators.map((followedCreator) => (
+                <FollowedAuthorCard
+                  key={followedCreator.user_id}
+                  wallet_address={followedCreator.wallet_address}
+                  nickname={followedCreator.nickname}
+                  bio={followedCreator.bio}
+                  profile_image_url={followedCreator.profile_image_url}
+                  followerCount={getCreatorFollowerCount(followedCreator.user_id) || 0}
+                  onClick={(walletAddress) => navigate(`/profile/${walletAddress}`)}
+                />
+              ))}
             </div>
           )}
         </TabsContent>

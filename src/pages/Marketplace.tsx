@@ -29,6 +29,15 @@ const Marketplace = () => {
 
   const { nfts, loading: nftsLoading } = useNFTs();
   const { collections, loading: collectionsLoading } = usePublicCollections();
+
+  // Create collections map for royalty lookup
+  const collectionsById = useMemo(() => {
+    const map = new Map();
+    collections.forEach(collection => {
+      map.set(collection.id, collection);
+    });
+    return map;
+  }, [collections]);
   const { getLikeCount: getCollectionLikeCount } = useCollectionLikeCounts();
 
   // Filter NFTs to only show listed items with required fields
@@ -373,13 +382,20 @@ const Marketplace = () => {
                 </Card>
               ))
             ) : filteredNFTs.length > 0 ? (
-              filteredNFTs.map((nft) => (
-                <NFTCard
-                  key={nft.id}
-                  nft={nft}
-                  onNavigate={() => setNavContext({ type: 'nft', items: filteredNFTs.map(n => n.id), source: 'marketplace' })}
-                />
-              ))
+              filteredNFTs.map((nft) => {
+                const collection = collectionsById.get(nft.collection_id);
+                const royaltyPercent = collection?.royalty_percentage;
+                const metaLeft = royaltyPercent && royaltyPercent > 0 ? `${royaltyPercent}% royalty` : undefined;
+                
+                return (
+                  <NFTCard
+                    key={nft.id}
+                    nft={nft}
+                    metaLeft={metaLeft}
+                    onNavigate={() => setNavContext({ type: 'nft', items: filteredNFTs.map(n => n.id), source: 'marketplace' })}
+                  />
+                );
+              })
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">

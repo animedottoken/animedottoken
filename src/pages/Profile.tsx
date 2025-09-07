@@ -1193,31 +1193,32 @@ const Profile = () => {
                       {filteredCombinedNFTs.map((nft) => {
                         const realNFT = nftsById.get(nft.id);
                         return (
-                          <NFTCard
-                            key={nft.id}
-                            nft={{
-                              id: nft.id,
-                              name: nft.name,
-                              image_url: realNFT?.image_url || '/placeholder.svg',
-                              owner_address: realNFT?.owner_address || targetWallet || '',
-                              mint_address: realNFT?.mint_address || nft.id,
-                              creator_address: realNFT?.creator_address || targetWallet || '',
-                              price: nft.price,
-                              is_listed: nft.is_listed || false,
-                              collection_id: realNFT?.collection_id,
-                              description: nft.description,
-                              attributes: realNFT?.metadata,
-                              collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
-                            }}
-                            likeCount={getNFTLikeCount(nft.id)}
-                            showOwnerInfo={true}
-                            navigationQuery="from=nfts"
-                            onNavigate={() => setNavContext({ 
-                              type: 'nft', 
-                              items: filteredCombinedNFTs.map(n => n.id), 
-                              source: 'nfts',
-                              tab: 'collections-nfts'
-                            })}
+                           <NFTCard
+                             key={nft.id}
+                             nft={{
+                               id: nft.id,
+                               name: nft.name,
+                               image_url: realNFT?.image_url || '/placeholder.svg',
+                               owner_address: realNFT?.owner_address || targetWallet || '',
+                               mint_address: realNFT?.mint_address || nft.id,
+                               creator_address: realNFT?.creator_address || targetWallet || '',
+                               price: nft.price,
+                               is_listed: nft.is_listed || false,
+                               collection_id: realNFT?.collection_id,
+                               description: nft.description,
+                               attributes: realNFT?.metadata,
+                               collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
+                             }}
+                             metaLeft={nft.royalty_percentage && nft.royalty_percentage > 0 ? `${nft.royalty_percentage}% royalty` : undefined}
+                             likeCount={getNFTLikeCount(nft.id)}
+                             showOwnerInfo={true}
+                             navigationQuery="from=nfts"
+                             onNavigate={() => setNavContext({ 
+                               type: 'nft', 
+                               items: filteredCombinedNFTs.map(n => n.id), 
+                               source: 'nfts',
+                               tab: 'collections-nfts'
+                             })}
                           />
                         );
                       })}
