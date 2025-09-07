@@ -119,6 +119,39 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connectAfterSelection, wallet, connected, connecting, walletConnect, rememberWallet]);
 
+  // Auto-connect from URL parameter (for iframe new-tab flow)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const connectWallet = urlParams.get('connectWallet');
+    
+    if (connectWallet && !connected && !connecting && wallets.length > 0) {
+      console.log('🔗 Auto-connecting from URL parameter:', connectWallet);
+      
+      // Remove the parameter from URL to clean up
+      urlParams.delete('connectWallet');
+      const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Find and connect to the specified wallet
+      const targetWallet = wallets.find(w => 
+        w.adapter.name.toLowerCase().includes(connectWallet.toLowerCase())
+      );
+      
+      if (targetWallet) {
+        select(targetWallet.adapter.name);
+        setTimeout(async () => {
+          try {
+            await walletConnect();
+            toast.success(`Connected to ${targetWallet.adapter.name}`);
+          } catch (error) {
+            console.error('❌ URL auto-connect failed:', error);
+            toast.error(`Failed to connect to ${connectWallet}`);
+          }
+        }, 100);
+      }
+    }
+  }, [wallets, connected, connecting, select, walletConnect]);
+
   // Fetch balance when wallet connects
   useEffect(() => {
     const fetchBalance = async () => {

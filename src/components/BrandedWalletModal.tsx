@@ -8,6 +8,7 @@ import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { toast } from 'sonner';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 interface BrandedWalletModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -15,6 +16,7 @@ interface BrandedWalletModalProps {
 
 export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalProps) => {
   const { listProviders, connectWith, connecting } = useSolanaWallet();
+  const { cluster } = useEnvironment();
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [isInIframe, setIsInIframe] = useState(false);
 
@@ -60,6 +62,30 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
       name.toLowerCase().includes(walletName.toLowerCase())
     );
     
+    // Handle mobile deep-linking if wallet not installed
+    if (!isInstalled && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      const wallet = walletMeta.find(w => 
+        w.name.toLowerCase() === walletName.toLowerCase()
+      );
+      
+      if (wallet?.mobileSupported) {
+        const currentUrl = encodeURIComponent(window.location.href);
+        let deepLink = '';
+        
+        if (walletName.toLowerCase() === 'phantom') {
+          deepLink = `https://phantom.app/ul/v1/connect?app_url=${currentUrl}&cluster=${cluster}`;
+        } else if (walletName.toLowerCase() === 'solflare') {
+          deepLink = `https://solflare.com/ul/v1/connect?app_url=${currentUrl}`;
+        }
+        
+        if (deepLink) {
+          window.location.href = deepLink;
+          return;
+        }
+      }
+    }
+    
+    // Show install prompt for desktop if not installed
     if (!isInstalled) {
       const wallet = walletMeta.find(w => 
         w.name.toLowerCase() === walletName.toLowerCase()
@@ -77,21 +103,21 @@ export const BrandedWalletModal = ({ open, onOpenChange }: BrandedWalletModalPro
       return;
     }
 
+    // Handle iframe - immediately open new tab with wallet parameter
     if (isInIframe) {
-      toast.info('Opening in new tab for best wallet experience', {
-        action: {
-          label: 'Open New Tab',
-          onClick: () => window.open(window.location.href, '_blank')
-        }
-      });
+      const newTabUrl = `${window.location.origin}${window.location.pathname}?connectWallet=${walletName.toLowerCase()}${window.location.hash}`;
+      window.open(newTabUrl, '_blank', 'noopener,noreferrer');
+      onOpenChange(false);
       return;
     }
 
+    // Direct connection for top-level windows
     try {
       await connectWith(walletName);
       onOpenChange(false);
     } catch (error) {
       console.error(`Failed to connect to ${walletName}:`, error);
+      toast.error(`Failed to connect to ${walletName}`);
     } finally {
       setSelectedWallet(null);
     }

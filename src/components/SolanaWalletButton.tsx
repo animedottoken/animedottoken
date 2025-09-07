@@ -99,7 +99,7 @@ export const SolanaWalletButton = () => {
     );
   }
 
-  // Error state
+  // Error state - show warning but keep connect button working
   if (error) {
     return (
       <div className="space-y-3">
@@ -107,9 +107,53 @@ export const SolanaWalletButton = () => {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
+        
+        {/* Iframe warning for better UX */}
+        {isInIframe && (
+          <div className="p-3 border border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-orange-800 dark:text-orange-200">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium">Best wallet experience</p>
+                <p className="text-xs">Open in new tab for optimal connection</p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={openInNewTab}
+                className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300"
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                Open
+              </Button>
+            </div>
+          </div>
+        )}
+        
         <Button onClick={handleConnect} disabled={connecting} className="w-full">
-          Try Again
+          <Wallet className="mr-2 h-4 w-4" />
+          {connecting ? 'Connecting...' : 'Connect Wallet'}
         </Button>
+        
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="remember-wallet" 
+            checked={rememberWallet}
+            onCheckedChange={setRememberWallet}
+          />
+          <label 
+            htmlFor="remember-wallet" 
+            className="text-sm text-muted-foreground cursor-pointer"
+          >
+            Remember my wallet choice
+          </label>
+        </div>
+
+        {/* Custom branded wallet modal */}
+        <BrandedWalletModal 
+          open={showBrandedModal}
+          onOpenChange={setShowBrandedModal}
+        />
       </div>
     );
   }
