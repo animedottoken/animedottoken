@@ -18,6 +18,8 @@ import { CollectionSuccessStep } from './CollectionSuccessStep';
 import type { Property } from '@/components/PropertiesEditor';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserWallets } from '@/hooks/useUserWallets';
+import { LinkWalletDialog } from './LinkWalletDialog';
+import { ReclaimWalletDialog } from './ReclaimWalletDialog';
 
 interface FormData {
   name: string;
@@ -56,6 +58,8 @@ export const UnifiedMintInterface = () => {
   const [pendingMintAfterConnect, setPendingMintAfterConnect] = useState(false);
   const [hasShownWalletConnectedToast, setHasShownWalletConnectedToast] = useState(false);
   const [showLinkWalletDialog, setShowLinkWalletDialog] = useState(false);
+  const [showReclaimDialog, setShowReclaimDialog] = useState(false);
+  const [conflictedWallet, setConflictedWallet] = useState('');
   const [isLinkingWallet, setIsLinkingWallet] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
   const { publicKey, connect, connecting, signMessage, wallet, connectPaymentWallet } = useSolanaWallet();
@@ -445,9 +449,17 @@ export const UnifiedMintInterface = () => {
           handleSubmitAfterLink();
         }, 100);
       }
-    } catch (error) {
-      console.error('Error linking wallet:', error);
-      toast.error('Failed to link wallet');
+    } catch (error: any) {
+      // Check if error indicates wallet is already linked to another account
+      if (error?.message?.includes('already linked to another user') || 
+          error?.message?.includes('already exists')) {
+        setConflictedWallet(publicKey);
+        setShowLinkWalletDialog(false);
+        setShowReclaimDialog(true);
+      } else {
+        console.error('Error linking wallet:', error);
+        toast.error('Failed to link wallet');
+      }
     } finally {
       setIsLinkingWallet(false);
     }
@@ -650,6 +662,20 @@ export const UnifiedMintInterface = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ReclaimWalletDialog
+        open={showReclaimDialog}
+        onOpenChange={setShowReclaimDialog}
+        walletAddress={conflictedWallet}
+        onSuccess={() => {
+          setShowReclaimDialog(false);
+          setConflictedWallet('');
+          // Continue with the original mint action after reclaim success
+          setTimeout(() => {
+            handleSubmitAfterLink();
+          }, 100);
+        }}
+      />
       
       {activeStep === 1 && (
         <CollectionBasicsStep

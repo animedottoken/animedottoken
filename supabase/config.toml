@@ -102,3 +102,6 @@ verify_jwt = true  # Requires authenticated user
 
 [functions.link-identity-wallet]
 verify_jwt = true  # Requires authenticated user
+
+[functions.reclaim-wallet]
+verify_jwt = true  # Requires authenticated user

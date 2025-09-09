@@ -253,6 +253,52 @@ export function useUserWallets() {
     fetchWallets();
   }, [user]);
 
+  // Reclaim wallet functionality
+  const reclaimWallet = async (walletAddress: string, signature: string, message: string): Promise<boolean> => {
+    if (!user) {
+      console.error('User not authenticated');
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('reclaim-wallet', {
+        body: {
+          wallet_address: walletAddress,
+          signature: signature,
+          message: message
+        }
+      });
+
+      if (error) {
+        console.error('Reclaim wallet error:', error);
+        toast.error(error.message || 'Failed to reclaim wallet');
+        return false;
+      }
+
+      if (!data.success) {
+        console.error('Reclaim wallet failed:', data.error);
+        toast.error(data.error || 'Failed to reclaim wallet');
+        return false;
+      }
+
+      toast.success(`Wallet reclaimed as ${data.wallet_type} wallet`);
+      
+      // Refresh wallets data
+      await fetchWallets();
+      
+      return true;
+    } catch (error) {
+      console.error('Reclaim wallet error:', error);
+      toast.error('Failed to reclaim wallet');
+      return false;
+    }
+  };
+
+  const generateReclaimMessage = (walletAddress: string): string => {
+    const timestamp = Date.now();
+    return `I want to reclaim control of wallet ${walletAddress} and link it to my current account. Timestamp: ${timestamp}`;
+  };
+
   return {
     wallets,
     summary,
@@ -265,5 +311,7 @@ export function useUserWallets() {
     getPrimaryWallet,
     getSecondaryWallets,
     generateLinkingMessage,
+    reclaimWallet,
+    generateReclaimMessage,
   };
 }
