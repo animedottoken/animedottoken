@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
-import { BrandedWalletModal } from './BrandedWalletModal';
 
 interface UnifiedConnectButtonProps {
   children?: React.ReactNode;
@@ -21,36 +19,28 @@ export const UnifiedConnectButton = ({
   disabled,
   onConnect
 }: UnifiedConnectButtonProps) => {
-  const { connected, connecting } = useSolanaWallet();
-  const [showModal, setShowModal] = useState(false);
+  const { connected, connecting, connectPaymentWallet } = useSolanaWallet();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (connected) {
       onConnect?.();
     } else {
-      setShowModal(true);
+      await connectPaymentWallet();
     }
   };
 
   return (
-    <>
-      <Button
-        onClick={handleClick}
-        disabled={disabled || connecting}
-        variant={variant}
-        size={size}
-        className={className}
-      >
-        <Wallet className="h-4 w-4 mr-2" />
-        {connecting ? 'Connecting...' : 
-         connected ? (children || 'Wallet Connected') : 
-         (children || 'Connect Wallet')}
-      </Button>
-
-      <BrandedWalletModal 
-        open={showModal}
-        onOpenChange={setShowModal}
-      />
-    </>
+    <Button
+      onClick={handleClick}
+      disabled={disabled || connecting}
+      variant={variant}
+      size={size}
+      className={className}
+    >
+      <Wallet className="h-4 w-4 mr-2" />
+      {connecting ? 'Connecting...' : 
+       connected ? (children || 'Wallet Connected') : 
+       (children || 'Connect Wallet')}
+    </Button>
   );
 };

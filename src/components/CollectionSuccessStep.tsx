@@ -45,7 +45,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
   onCreateAnother
 }) => {
   const navigate = useNavigate();
-  const { publicKey, connect, connecting } = useSolanaWallet();
+  const { publicKey, connect, connecting, connectPaymentWallet } = useSolanaWallet();
   const { cluster } = useEnvironment();
   const [isMintingOnChain, setIsMintingOnChain] = useState(false);
   const [showMintConfirm, setShowMintConfirm] = useState(false);
@@ -86,7 +86,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
 
   const handleMintOnChain = async () => {
     if (!publicKey) {
-      await connect();
+      await connectPaymentWallet();
       return;
     }
     if (!collection) return;
@@ -221,7 +221,7 @@ export const CollectionSuccessStep: React.FC<CollectionSuccessStepProps> = ({
                   <div className="text-sm text-muted-foreground">
                     Want to make this official? 
                     <button 
-                      onClick={!publicKey ? () => connect() : () => {
+                      onClick={!publicKey ? () => connectPaymentWallet() : () => {
                         setFeeError(null);
                         fetchMintFee();
                         setShowMintConfirm(true);

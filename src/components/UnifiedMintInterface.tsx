@@ -58,7 +58,7 @@ export const UnifiedMintInterface = () => {
   const [showLinkWalletDialog, setShowLinkWalletDialog] = useState(false);
   const [isLinkingWallet, setIsLinkingWallet] = useState(false);
   const { createCollection } = useCollections({ suppressErrors: true });
-  const { publicKey, connect, connecting, signMessage, wallet } = useSolanaWallet();
+  const { publicKey, connect, connecting, signMessage, wallet, connectPaymentWallet } = useSolanaWallet();
   const { cluster } = useEnvironment();
   const { user } = useAuth();
   const { getPrimaryWallet, linkWallet, generateLinkingMessage } = useUserWallets();
@@ -222,7 +222,7 @@ export const UnifiedMintInterface = () => {
 
     if (!publicKey) {
       try {
-        await connect();
+        await connectPaymentWallet();
         toast.info('Please connect your wallet and try again');
         return;
       } catch (error) {
@@ -415,7 +415,7 @@ export const UnifiedMintInterface = () => {
     try {
       setPendingMintAfterConnect(true);
       setHasShownWalletConnectedToast(false); // Reset so we can show toast after connection
-      await connect();
+      await connectPaymentWallet();
     } catch (error) {
       setPendingMintAfterConnect(false);
       toast.error('Failed to connect wallet');

@@ -53,7 +53,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
   const [collectionLoading, setCollectionLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { createMintJob, creating, jobs, loading: queueLoading, getJobProgress } = useMintQueue();
-  const { connected, connect, connecting } = useSolanaWallet();
+  const { connected, connect, connecting, connectPaymentWallet } = useSolanaWallet();
 
   useEffect(() => {
     loadCollection();
@@ -159,7 +159,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
     if (!collection) return;
     
     if (!connected) {
-      await connect();
+      await connectPaymentWallet();
       return;
     }
     
@@ -361,7 +361,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
               {/* Mint Button */}
               <div className="flex flex-col items-center gap-2">
                 <Button 
-                  onClick={!connected ? () => connect() : handleMint}
+                  onClick={!connected ? () => connectPaymentWallet() : handleMint}
                   disabled={creating || connecting || (connected && (!isLive || isSoldOut || quantity > remainingSupply || (!nftDetails?.nftImageFile && !nftDetails?.nftImagePreview) || needsCollectionMint))}
                   className="w-full py-6 text-lg font-semibold"
                   size="lg"
@@ -392,7 +392,7 @@ export const MintingInterface = ({ collectionId = '123e4567-e89b-12d3-a456-42661
                 </Button>
                 {!connected && (
                   <button 
-                    onClick={() => connect()}
+                    onClick={() => connectPaymentWallet()}
                     disabled={connecting}
                     className="text-xs text-primary hover:text-primary/80 underline"
                   >

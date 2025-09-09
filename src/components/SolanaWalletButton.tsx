@@ -6,7 +6,6 @@ import { Wallet, Shuffle, LogOut, AlertTriangle, ExternalLink } from 'lucide-rea
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { metaplexService } from '@/services/metaplexService';
-import { BrandedWalletModal } from './BrandedWalletModal';
 
 export const SolanaWalletButton = () => {
   const { 
@@ -21,10 +20,10 @@ export const SolanaWalletButton = () => {
     error,
     wallet,
     rememberWallet,
-    setRememberWallet
+    setRememberWallet,
+    connectPaymentWallet
   } = useSolanaWallet();
   const { cluster } = useEnvironment();
-  const [showBrandedModal, setShowBrandedModal] = useState(false);
   const [isInIframe, setIsInIframe] = useState(false);
 
   // Set Metaplex cluster and wallet when environment or wallet changes
@@ -41,9 +40,9 @@ export const SolanaWalletButton = () => {
   }, []);
 
   const handleConnect = useCallback(async () => {
-    // Use our custom branded modal instead of default
-    setShowBrandedModal(true);
-  }, []);
+    // Use the same connection method as Profile page
+    await connectPaymentWallet();
+  }, [connectPaymentWallet]);
 
   const openInNewTab = useCallback(() => {
     window.open(window.location.href, '_blank');
@@ -134,26 +133,6 @@ export const SolanaWalletButton = () => {
           <Wallet className="mr-2 h-4 w-4" />
           {connecting ? 'Connecting...' : 'Connect Wallet'}
         </Button>
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="remember-wallet" 
-            checked={rememberWallet}
-            onCheckedChange={setRememberWallet}
-          />
-          <label 
-            htmlFor="remember-wallet" 
-            className="text-sm text-muted-foreground cursor-pointer"
-          >
-            Remember my wallet choice
-          </label>
-        </div>
-
-        {/* Custom branded wallet modal */}
-        <BrandedWalletModal 
-          open={showBrandedModal}
-          onOpenChange={setShowBrandedModal}
-        />
       </div>
     );
   }
@@ -191,26 +170,6 @@ export const SolanaWalletButton = () => {
         <Wallet className="mr-2 h-4 w-4" />
         {connecting ? 'Connecting...' : 'Connect Wallet'}
       </Button>
-      
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="remember-wallet" 
-          checked={rememberWallet}
-          onCheckedChange={setRememberWallet}
-        />
-        <label 
-          htmlFor="remember-wallet" 
-          className="text-sm text-muted-foreground cursor-pointer"
-        >
-          Remember my wallet choice
-        </label>
-      </div>
-
-      {/* Custom branded wallet modal */}
-      <BrandedWalletModal 
-        open={showBrandedModal}
-        onOpenChange={setShowBrandedModal}
-      />
     </div>
   );
 };
