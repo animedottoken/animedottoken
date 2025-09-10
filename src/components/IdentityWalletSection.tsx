@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,30 @@ export const IdentityWalletSection = () => {
   const { connected, publicKey } = useSolanaWallet();
   const { getPrimaryWallet } = useUserWallets();
   const [linkWalletOpen, setLinkWalletOpen] = useState(false);
+
+  // Check for wallet intent from URL parameters or sessionStorage  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlIntent = urlParams.get('intent');
+    const sessionIntent = sessionStorage.getItem('wallet-intent');
+    const intent = urlIntent || sessionIntent;
+    
+    if (intent && intent.includes('link-primary')) {
+      console.log('🎯 Auto-opening LinkWalletDialog for primary wallet from intent:', intent);
+      
+      setLinkWalletOpen(true);
+      
+      // Clear intent from sessionStorage to prevent repeated opens
+      sessionStorage.removeItem('wallet-intent');
+      
+      // Clean up URL parameter if it exists
+      if (urlIntent) {
+        urlParams.delete('intent');
+        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, []);
 
   const primaryWallet = getPrimaryWallet();
   const hasLinkedWallet = primaryWallet?.wallet_address;

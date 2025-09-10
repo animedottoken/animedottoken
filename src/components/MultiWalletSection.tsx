@@ -18,6 +18,7 @@ interface MultiWalletSectionProps {
 
 export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSectionProps) => {
   const [linkWalletOpen, setLinkWalletOpen] = useState(false);
+  const [walletType, setWalletType] = useState<'primary' | 'secondary'>('secondary');
   const [unlinkWalletId, setUnlinkWalletId] = useState<string | null>(null);
   const [showCleanupDialog, setShowCleanupDialog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(() => {
@@ -33,6 +34,34 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
   useEffect(() => {
     localStorage.setItem('multiWalletSectionExpanded', JSON.stringify(isExpanded));
   }, [isExpanded]);
+
+  // Check for wallet intent from URL parameters or sessionStorage
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlIntent = urlParams.get('intent');
+    const sessionIntent = sessionStorage.getItem('wallet-intent');
+    const intent = urlIntent || sessionIntent;
+    
+    if (intent && (intent.includes('link-primary') || intent.includes('link-secondary'))) {
+      console.log('🎯 Auto-opening LinkWalletDialog from intent:', intent);
+      
+      // Set wallet type based on intent
+      const type = intent.includes('primary') ? 'primary' : 'secondary';
+      setWalletType(type);
+      setLinkWalletOpen(true);
+      setIsExpanded(true); // Auto-expand section
+      
+      // Clear intent from sessionStorage to prevent repeated opens
+      sessionStorage.removeItem('wallet-intent');
+      
+      // Clean up URL parameter if it exists
+      if (urlIntent) {
+        urlParams.delete('intent');
+        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, []);
 
   const handleUnlinkWallet = async () => {
     if (!unlinkWalletId) return;
@@ -191,7 +220,10 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                 No primary wallet linked. You won't be able to verify ownership of NFTs or collections without a primary identity wallet.
                 <div className="mt-3 space-y-2">
                   <Button
-                    onClick={actuallyDisabled ? undefined : () => setLinkWalletOpen(true)}
+                    onClick={actuallyDisabled ? undefined : () => {
+                      setWalletType('primary');
+                      setLinkWalletOpen(true);
+                    }}
                     disabled={actuallyDisabled}
                     variant="default" 
                     size="sm"
@@ -254,7 +286,10 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
           {primaryWallet && (
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
-                onClick={actuallyDisabled ? undefined : () => setLinkWalletOpen(true)}
+                onClick={actuallyDisabled ? undefined : () => {
+                  setWalletType('secondary');
+                  setLinkWalletOpen(true);
+                }}
                 disabled={actuallyDisabled || summary.remaining_secondary_slots === 0}
                 variant="outline"
                 className="flex-1"
@@ -280,7 +315,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
       <LinkWalletDialog
         open={linkWalletOpen}
         onOpenChange={setLinkWalletOpen}
-        walletType={!primaryWallet ? 'primary' : 'secondary'}
+        walletType={walletType}
       />
 
       {/* Unlink Confirmation Dialog */}

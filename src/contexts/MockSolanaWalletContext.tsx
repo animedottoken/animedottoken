@@ -119,11 +119,36 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connectAfterSelection, wallet, connected, connecting, walletConnect, rememberWallet]);
 
-  // Auto-connect from URL parameter (for iframe new-tab flow)
+  // Auto-open wallet modal and handle intents from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const openWalletModal = urlParams.get('openWalletModal');
+    const intent = urlParams.get('intent');
     const connectWallet = urlParams.get('connectWallet');
     
+    // Store intent in sessionStorage for components to pick up
+    if (intent) {
+      console.log('📝 Storing wallet intent:', intent);
+      sessionStorage.setItem('wallet-intent', intent);
+    }
+    
+    // Auto-open wallet modal if requested
+    if (openWalletModal === '1' && !connected && !connecting) {
+      console.log('🎯 Auto-opening wallet modal from URL parameter');
+      
+      // Clean up URL parameters
+      urlParams.delete('openWalletModal');
+      urlParams.delete('intent');
+      const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Open wallet modal with auto-connect flag
+      setConnectAfterSelection(true);
+      setVisible(true);
+      return;
+    }
+    
+    // Legacy connectWallet parameter handling
     if (connectWallet && !connected && !connecting && wallets.length > 0) {
       console.log('🔗 Auto-connecting from URL parameter:', connectWallet);
       
@@ -150,7 +175,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }, 100);
       }
     }
-  }, [wallets, connected, connecting, select, walletConnect]);
+  }, [wallets, connected, connecting, select, walletConnect, setVisible]);
 
   // Fetch balance when wallet connects
   useEffect(() => {
