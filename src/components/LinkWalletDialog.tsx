@@ -20,20 +20,12 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
   const [signature, setSignature] = useState('');
   const [currentWalletOnSign, setCurrentWalletOnSign] = useState<string | null>(null);
   const [walletChanged, setWalletChanged] = useState(false);
-  const { connected, publicKey, connect, signMessage } = useSolanaWallet();
+  const { connected, publicKey, connectPaymentWallet, signMessage } = useSolanaWallet();
   const { linkWallet, generateLinkingMessage, summary } = useUserWallets();
 
   const handleConnect = async () => {
     if (!connected) {
-      await connect();
-    }
-    
-    if (publicKey) {
-      const linkingMessage = generateLinkingMessage(publicKey);
-      setMessage(linkingMessage);
-      setCurrentWalletOnSign(publicKey);
-      setWalletChanged(false);
-      setStep('sign');
+      await connectPaymentWallet();
     }
   };
 
@@ -93,6 +85,17 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
     setWalletChanged(false);
   };
 
+  // Auto-advance to sign step after successful connection
+  useEffect(() => {
+    if (step === 'connect' && connected && publicKey) {
+      const linkingMessage = generateLinkingMessage(publicKey);
+      setMessage(linkingMessage);
+      setCurrentWalletOnSign(publicKey);
+      setWalletChanged(false);
+      setStep('sign');
+    }
+  }, [step, connected, publicKey, generateLinkingMessage]);
+
   // Watch for wallet changes during the sign step
   useEffect(() => {
     if (step === 'sign' && publicKey && currentWalletOnSign && publicKey !== currentWalletOnSign) {
@@ -113,7 +116,7 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
   const atSecondaryLimit = walletType === 'secondary' && summary.remaining_secondary_slots === 0;
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleClose} modal={false}>
       <DialogContent className="sm:max-w-[500px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
