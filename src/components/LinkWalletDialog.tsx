@@ -167,7 +167,10 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
                           <CheckCircle2 className="h-4 w-4" />
                           <span className="text-sm">Connected: {truncateAddress(publicKey)}</span>
                         </div>
-                      <Button onClick={handleConnect} className="w-full">
+                        <div className="text-xs text-muted-foreground">
+                          Connected. Next: Sign to complete linking.
+                        </div>
+                      <Button onClick={handleSign} className="w-full">
                         Sign & Link with This Wallet
                       </Button>
                       </div>
