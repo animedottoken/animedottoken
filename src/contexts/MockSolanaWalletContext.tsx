@@ -29,7 +29,7 @@ interface SolanaWalletContextType {
   rememberWallet: boolean;
   wallet: any; // Expose wallet adapter for Metaplex
   connect: () => Promise<void>;
-  connectPaymentWallet: () => Promise<void>;
+  connectPaymentWallet: (intent?: string) => Promise<void>;
   openWalletSelector: () => void;
   linkIdentityWallet: (walletAddress: string) => Promise<boolean>;
   signMessage: (message: string) => Promise<string>;
@@ -52,7 +52,7 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   rememberWallet: false,
   wallet: null,
   connect: async () => {},
-  connectPaymentWallet: async () => {},
+  connectPaymentWallet: async (_intent?: string) => {},
   openWalletSelector: () => {},
   linkIdentityWallet: async () => false,
   signMessage: async () => '',
@@ -266,13 +266,31 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, [wallets]);
 
-  const connectPaymentWallet = useCallback(async () => {
+  const connectPaymentWallet = useCallback(async (intent?: string) => {
     try {
-      console.log('💳 Attempting payment wallet connection...');
+      console.log('💳 Attempting payment wallet connection...', { intent });
       
-      // Check if we're in an iframe and suggest opening in new tab
+      // Check if we're in an iframe
       const isInIframe = typeof window !== 'undefined' && window !== window.parent;
-      if (isInIframe) {
+      
+      // For linking intents in iframes, force new tab to ensure extension popups work
+      if (isInIframe && intent && intent.includes('link')) {
+        console.log('🔗 Forcing new tab for linking intent in iframe');
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('openWalletModal', '1');
+        currentUrl.searchParams.set('intent', intent);
+        
+        const newWindow = window.open(currentUrl.toString(), '_blank', 'noopener,noreferrer');
+        if (!newWindow) {
+          toast.error('Please allow popups for wallet linking');
+        } else {
+          toast.info('Opening in new tab for wallet linking...');
+        }
+        return;
+      }
+      
+      // For regular payment flows in iframe, just show suggestion
+      if (isInIframe && !intent) {
         toast.info('For best wallet experience, open in new tab', {
           action: {
             label: 'Open in New Tab',

@@ -828,13 +828,13 @@ const Profile = () => {
                            {walletName}
                          </Badge>
                        )}
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={hasWallet ? disconnect : connectPaymentWallet}
-                         disabled={connecting}
-                         className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
-                       >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={hasWallet ? disconnect : () => connectPaymentWallet()}
+                          disabled={connecting}
+                          className={`flex items-center gap-2 ${hasWallet ? 'hover:bg-primary hover:text-primary-foreground' : ''}`}
+                        >
                          {connecting ? (
                            'Connecting...'
                          ) : hasWallet ? (

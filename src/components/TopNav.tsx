@@ -211,14 +211,14 @@ export const TopNav = () => {
               <div className="px-2 py-1.5">
                 <div 
                   className="flex items-center gap-2 cursor-pointer py-3 px-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (connected) {
-                      disconnect();
-                    } else {
-                      connectPaymentWallet();
-                    }
-                  }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (connected) {
+                    disconnect();
+                  } else {
+                    connectPaymentWallet();
+                  }
+                }}
                 >
                   <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
                   <Wallet className="h-4 w-4" />

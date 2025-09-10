@@ -17,7 +17,7 @@ export const IdentityWalletSection = () => {
 
   const handleLinkWallet = async () => {
     if (!connected || !publicKey) {
-      await connectPaymentWallet();
+      await connectPaymentWallet('link-primary');
       return;
     }
 

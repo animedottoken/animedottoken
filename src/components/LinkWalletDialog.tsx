@@ -23,9 +23,20 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
   const { connected, publicKey, connectPaymentWallet, signMessage } = useSolanaWallet();
   const { linkWallet, generateLinkingMessage, summary } = useUserWallets();
 
+  // Check for linking intent on mount
+  useEffect(() => {
+    const intent = sessionStorage.getItem('wallet-intent');
+    if (intent && intent.includes('link') && open) {
+      console.log('📱 Found linking intent, will auto-advance after connection');
+      // Clear the intent so it doesn't interfere with other operations
+      sessionStorage.removeItem('wallet-intent');
+    }
+  }, [open]);
+
   const handleConnect = async () => {
     if (!connected) {
-      await connectPaymentWallet();
+      const intent = walletType === 'primary' ? 'link-primary' : 'link-secondary';
+      await connectPaymentWallet(intent);
     }
   };
 

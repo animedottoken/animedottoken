@@ -140,11 +140,37 @@ const AppLayout = () => {
     handleRootMagicLink();
   }, [location, navigate]);
 
-  // Auto-open wallet selector if wallet-connect parameter is present
+  // Auto-open wallet modal if openWalletModal parameter is present
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const intent = searchParams.get('intent');
+    
+    if (searchParams.get('openWalletModal') === '1') {
+      console.log('🎯 Auto-opening wallet modal from URL parameter', { intent });
+      
+      // Clean URL first
+      searchParams.delete('openWalletModal');
+      searchParams.delete('intent');
+      const newUrl = searchParams.toString() ? `${location.pathname}?${searchParams.toString()}` : location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      // Store intent in sessionStorage for components to use
+      if (intent) {
+        sessionStorage.setItem('wallet-intent', intent);
+      }
+      
+      // Open wallet selector after a brief delay
+      setTimeout(() => {
+        openWalletSelector();
+      }, 500);
+    }
+  }, [location.search, location.pathname, openWalletSelector]);
+
+  // Legacy support for wallet-connect parameter
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get('wallet-connect') === '1') {
-      console.log('🎯 Auto-opening wallet selector from URL parameter');
+      console.log('🎯 Auto-opening wallet selector from legacy parameter');
       // Clean URL first
       searchParams.delete('wallet-connect');
       const newUrl = searchParams.toString() ? `${location.pathname}?${searchParams.toString()}` : location.pathname;
