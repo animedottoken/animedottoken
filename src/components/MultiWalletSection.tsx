@@ -186,7 +186,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                     size="sm"
                     className="w-full sm:w-auto"
                   >
-                    Link Primary Wallet Now
+                    Connect & Link Primary Wallet
                   </Button>
                 </div>
               </AlertDescription>
@@ -249,7 +249,7 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
                 className="flex-1"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Secondary Wallet
+                Connect & Link Secondary Wallet
               </Button>
             </div>
           )}

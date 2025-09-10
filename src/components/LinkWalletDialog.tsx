@@ -167,13 +167,13 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
                           <CheckCircle2 className="h-4 w-4" />
                           <span className="text-sm">Connected: {truncateAddress(publicKey)}</span>
                         </div>
-                        <Button onClick={handleConnect} className="w-full">
-                          Continue with This Wallet
-                        </Button>
+                      <Button onClick={handleConnect} className="w-full">
+                        Sign & Link with This Wallet
+                      </Button>
                       </div>
                     ) : (
                       <Button onClick={handleConnect} className="w-full">
-                        Connect Wallet
+                        Connect & Link Wallet
                       </Button>
                     )}
                   </div>
@@ -220,7 +220,7 @@ export function LinkWalletDialog({ open, onOpenChange, walletType = 'secondary' 
                       Back
                     </Button>
                     <Button onClick={handleSign} className="flex-1">
-                      Sign Message
+                      Sign & Link Wallet
                     </Button>
                   </div>
                 </div>

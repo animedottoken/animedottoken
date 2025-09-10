@@ -3,41 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LinkWalletDialog } from '@/components/LinkWalletDialog';
 import { Wallet, LinkIcon, AlertTriangle } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
-import { useGamifiedProfile } from '@/hooks/useGamifiedProfile';
 import { useUserWallets } from '@/hooks/useUserWallets';
 import { truncateAddress } from '@/utils/addressUtils';
 
 export const IdentityWalletSection = () => {
-  const { connected, publicKey, connectPaymentWallet, signMessage } = useSolanaWallet();
-  const { profile, fetchProfile } = useGamifiedProfile();
-  const { linkWallet, generateLinkingMessage, getPrimaryWallet } = useUserWallets();
-  const [linking, setLinking] = useState(false);
-
-  const handleLinkWallet = async () => {
-    if (!connected || !publicKey) {
-      await connectPaymentWallet('link-primary');
-      return;
-    }
-
-    setLinking(true);
-    try {
-      // Generate message and sign it
-      const message = generateLinkingMessage(publicKey);
-      const signature = await signMessage(message);
-      
-      // Use unified linking path for primary wallet
-      const success = await linkWallet(publicKey, signature, message, 'primary');
-      if (success) {
-        await fetchProfile();
-      }
-    } catch (error) {
-      console.error('Failed to link wallet:', error);
-    } finally {
-      setLinking(false);
-    }
-  };
+  const { connected, publicKey } = useSolanaWallet();
+  const { getPrimaryWallet } = useUserWallets();
+  const [linkWalletOpen, setLinkWalletOpen] = useState(false);
 
   const primaryWallet = getPrimaryWallet();
   const hasLinkedWallet = primaryWallet?.wallet_address;
@@ -91,17 +66,10 @@ export const IdentityWalletSection = () => {
             </Alert>
             
             <Button 
-              onClick={handleLinkWallet}
-              disabled={linking}
+              onClick={() => setLinkWalletOpen(true)}
               className="w-full"
             >
-              {linking ? (
-                'Linking...'
-              ) : connected ? (
-                `Link Current Wallet (${truncateAddress(publicKey || '')})`
-              ) : (
-                'Connect & Link Wallet'
-              )}
+              Connect & Link Primary Wallet
             </Button>
           </div>
         )}
@@ -111,6 +79,13 @@ export const IdentityWalletSection = () => {
           <p>• Only one wallet can be linked per account for security</p>
           <p>• For payments, you can use any wallet without changing your identity</p>
         </div>
+
+        {/* Link Wallet Dialog */}
+        <LinkWalletDialog
+          open={linkWalletOpen}
+          onOpenChange={setLinkWalletOpen}
+          walletType="primary"
+        />
       </CardContent>
     </Card>
   );
