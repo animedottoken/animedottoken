@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { LinkWalletDialog } from '@/components/LinkWalletDialog';
 import { Wallet, Plus, Trash2, AlertTriangle, Crown, Link, Settings } from 'lucide-react';
@@ -127,10 +128,20 @@ export const MultiWalletSection = ({ disabledActions = false }: MultiWalletSecti
               <div className="text-2xl font-bold text-blue-600">{summary.secondary}</div>
               <div className="text-xs text-muted-foreground">Secondary</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{summary.remaining_secondary_slots}</div>
-              <div className="text-xs text-muted-foreground">Slots Left</div>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="text-center cursor-help">
+                    <div className="text-2xl font-bold text-green-600">{summary.remaining_secondary_slots}</div>
+                    <div className="text-xs text-muted-foreground">Secondary Slots Left</div>
+                    <div className="text-xs text-muted-foreground opacity-75">{summary.secondary}/10 used</div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>You can link up to 10 secondary wallets.<br />Primary wallet doesn't use a slot.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {/* Primary Wallet */}
