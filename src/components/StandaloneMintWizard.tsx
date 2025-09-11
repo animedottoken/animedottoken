@@ -70,7 +70,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
   const [priceInput, setPriceInput] = useState('');
 
   const { minting, mintStandaloneNFT } = useStandaloneMint();
-  const { publicKey, connect, connecting } = useSolanaWallet();
+  const { publicKey, connectPaymentWallet, connecting } = useSolanaWallet();
   const { collections, loading: collectionsLoading } = useCollections({ autoLoad: true });
   const { collection: selectedCollection } = useCollection(selectedCollectionId || '');
 
@@ -982,7 +982,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
               </Button>
               <div className="flex flex-col items-end gap-2">
                 <Button 
-                  onClick={!publicKey ? () => connect() : handleMint} 
+                  onClick={!publicKey ? () => connectPaymentWallet() : handleMint} 
                   disabled={minting || connecting}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[140px]"
                   size="lg"
@@ -1008,7 +1008,7 @@ export const StandaloneMintWizard = ({ onStepChange }: StandaloneMintWizardProps
                 </Button>
                 {!publicKey && (
                   <button 
-                    onClick={() => connect()}
+                    onClick={() => connectPaymentWallet()}
                     disabled={connecting}
                     className="text-xs text-primary hover:text-primary/80 underline"
                   >

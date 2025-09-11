@@ -12,12 +12,12 @@ interface MintAccessGateProps {
 
 export const MintAccessGate = ({ children }: MintAccessGateProps) => {
   const { user, loading } = useAuth();
-  const { connected, connecting } = useSolanaWallet();
+  const { publicKey } = useSolanaWallet();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isAuthenticated = !!user;
-  const isWalletConnected = connected && !connecting;
+  const isWalletConnected = !!publicKey;
   const canProceed = isAuthenticated && isWalletConnected;
 
   // Show loading skeleton while auth is loading

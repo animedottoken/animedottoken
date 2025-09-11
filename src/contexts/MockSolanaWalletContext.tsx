@@ -215,6 +215,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                   toast.success(`Connected to ${lastWallet}`);
                 } catch (error) {
                   console.error('❌ Auto-connect failed, opening modal:', error);
+                  setConnectAfterSelection(true);
                   setVisible(true);
                 }
               }, 100);
@@ -233,6 +234,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       
       // Open wallet selection modal
       console.log('🎯 Opening wallet selection modal...');
+      setConnectAfterSelection(true);
       setVisible(true);
       
     } catch (error) {
