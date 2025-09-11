@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail, ChevronDown } from 'lucide-react';
+import { Heart, Users, CheckCircle, Star, Info, Share, Copy, UserPlus, UserMinus, Layers, Image, Camera, Edit2, User, LogIn, LogOut, Shield, Settings, Mail, ChevronDown, Trash2, Flame } from 'lucide-react';
 import { NFTCard } from '@/components/NFTCard';
 import { CollectionCard } from '@/components/CollectionCard';
 import { SearchFilterBar, FilterState } from '@/components/SearchFilterBar';
@@ -46,6 +46,9 @@ import { SecuritySettingsDialog } from '@/components/SecuritySettingsDialog';
 import SocialActionWrapper from '@/components/SocialActionWrapper';
 import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { ComingSoonFeature } from '@/components/ComingSoonFeature';
+import { useDeleteCollection } from '@/hooks/useDeleteCollection';
+import { useBurnAllNFTs } from '@/hooks/useBurnAllNFTs';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -135,6 +138,14 @@ const Profile = () => {
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showPfpPicker, setShowPfpPicker] = useState(false);
   const [showBannerPicker, setShowBannerPicker] = useState(false);
+  
+  // Collection action states
+  const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<{id: string, name: string} | null>(null);
+  const [confirmBurnCollection, setConfirmBurnCollection] = useState<{id: string, name: string} | null>(null);
+  
+  // Collection action hooks
+  const { deleteCollection, deleting } = useDeleteCollection();
+  const { burnAllNFTs, burning } = useBurnAllNFTs();
   
   // Use gamified profile hook for editing functionality
   const { 
@@ -1162,28 +1173,56 @@ const Profile = () => {
                       {filteredCombinedCollections.map((collection) => {
                         const realCollection = collectionsById.get(collection.id);
                         return (
-                          <CollectionCard
-                            key={collection.id}
-                             collection={{
-                               id: collection.id,
-                               name: collection.name,
-                               image_url: realCollection?.image_url || '/placeholder.svg',
-                               creator_address: collection.creator_address || '',
-                               creator_nickname: collection.creator_nickname || '',
-                               creator_verified: collection.creator_verified || false,
-                               mint_price: collection.mint_price,
-                               items_redeemed: realCollection?.items_redeemed || 0,
-                               verified: realCollection?.verified || false,
-                               description: collection.description
-                             }}
-                            likeCount={getCollectionLikeCount(collection.id)}
-                            onNavigate={() => setNavContext({ 
-                              type: 'collection', 
-                              items: filteredCombinedCollections.map(c => c.id), 
-                              source: 'profile',
-                              tab: 'collections-nfts'
-                            })}
-                          />
+                           <CollectionCard
+                             key={collection.id}
+                              collection={{
+                                id: collection.id,
+                                name: collection.name,
+                                image_url: realCollection?.image_url || '/placeholder.svg',
+                                creator_address: collection.creator_address || '',
+                                creator_nickname: collection.creator_nickname || '',
+                                creator_verified: collection.creator_verified || false,
+                                mint_price: collection.mint_price,
+                                items_redeemed: realCollection?.items_redeemed || 0,
+                                verified: realCollection?.verified || false,
+                                description: collection.description
+                              }}
+                             likeCount={getCollectionLikeCount(collection.id)}
+                             overlayActions={isOwnProfile ? [
+                               {
+                                 label: 'Edit',
+                                 icon: <Edit2 className="h-4 w-4" />,
+                                 onClick: (e) => {
+                                   e.preventDefault();
+                                   navigate(`/collection/${collection.id}?edit=1`);
+                                 }
+                               },
+                               {
+                                 label: 'Burn All',
+                                 icon: <Flame className="h-4 w-4" />,
+                                 variant: 'destructive' as const,
+                                 onClick: (e) => {
+                                   e.preventDefault();
+                                   setConfirmBurnCollection({ id: collection.id, name: collection.name });
+                                 }
+                               },
+                               {
+                                 label: 'Delete',
+                                 icon: <Trash2 className="h-4 w-4" />,
+                                 variant: 'destructive' as const,
+                                 onClick: (e) => {
+                                   e.preventDefault();
+                                   setConfirmDeleteCollection({ id: collection.id, name: collection.name });
+                                 }
+                               }
+                             ] : undefined}
+                             onNavigate={() => setNavContext({ 
+                               type: 'collection', 
+                               items: filteredCombinedCollections.map(c => c.id), 
+                               source: 'profile',
+                               tab: 'collections-nfts'
+                             })}
+                           />
                         );
                       })}
                     </div>
@@ -1363,6 +1402,47 @@ const Profile = () => {
           />
         </>
       )}
+
+      {/* Collection Action Dialogs */}
+      <ConfirmDialog
+        open={!!confirmDeleteCollection}
+        onOpenChange={(open) => !open && setConfirmDeleteCollection(null)}
+        title="Delete Collection"
+        description={`Are you sure you want to delete "${confirmDeleteCollection?.name}"? This action cannot be undone and will remove the collection permanently.`}
+        confirmText="Delete Collection"
+        variant="destructive"
+        onConfirm={async () => {
+          if (confirmDeleteCollection) {
+            const result = await deleteCollection(confirmDeleteCollection.id, confirmDeleteCollection.name);
+            if (result.success) {
+              // Refresh collections data
+              window.location.reload();
+            }
+            setConfirmDeleteCollection(null);
+          }
+        }}
+        loading={deleting}
+      />
+
+      <ConfirmDialog
+        open={!!confirmBurnCollection}
+        onOpenChange={(open) => !open && setConfirmBurnCollection(null)}
+        title="Burn All NFTs"
+        description={`Are you sure you want to burn ALL NFTs in "${confirmBurnCollection?.name}"? This will permanently destroy all minted NFTs in this collection. This action cannot be undone.`}
+        confirmText="Burn All NFTs"
+        variant="destructive"
+        onConfirm={async () => {
+          if (confirmBurnCollection) {
+            const result = await burnAllNFTs(confirmBurnCollection.id);
+            if (result.success) {
+              // Refresh page to show updated data
+              window.location.reload();
+            }
+            setConfirmBurnCollection(null);
+          }
+        }}
+        loading={burning}
+      />
     </div>
   );
 };
