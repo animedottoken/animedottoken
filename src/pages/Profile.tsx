@@ -48,7 +48,9 @@ import { useEnvironment } from '@/contexts/EnvironmentContext';
 import { ComingSoonFeature } from '@/components/ComingSoonFeature';
 import { useDeleteCollection } from '@/hooks/useDeleteCollection';
 import { useBurnAllNFTs } from '@/hooks/useBurnAllNFTs';
+import { useBurnNFT } from '@/hooks/useBurnNFT';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { EditNFTDialog } from '@/components/EditNFTDialog';
 
 const Profile = () => {
   const { wallet } = useParams();
@@ -143,9 +145,14 @@ const Profile = () => {
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<{id: string, name: string} | null>(null);
   const [confirmBurnCollection, setConfirmBurnCollection] = useState<{id: string, name: string} | null>(null);
   
+  // NFT action states
+  const [confirmBurnNFT, setConfirmBurnNFT] = useState<{id: string, name: string, mintAddress: string} | null>(null);
+  const [editNFTDialog, setEditNFTDialog] = useState<{nft: any} | null>(null);
+  
   // Collection action hooks
   const { deleteCollection, deleting } = useDeleteCollection();
   const { burnAllNFTs, burning } = useBurnAllNFTs();
+  const { burnNFT, burning: burningNFT } = useBurnNFT();
   
   // Use gamified profile hook for editing functionality
   const { 
@@ -1269,6 +1276,29 @@ const Profile = () => {
                                attributes: realNFT?.metadata,
                                collections: realNFT?.collection_name ? { name: realNFT.collection_name } : undefined
                              }}
+                             overlayActions={isOwnProfile && realNFT?.owner_address === publicKey ? [
+                               {
+                                 label: 'Edit',
+                                 icon: <Edit2 className="h-4 w-4" />,
+                                 onClick: (e) => {
+                                   e.preventDefault();
+                                   setEditNFTDialog({ nft: realNFT });
+                                 }
+                               },
+                               {
+                                 label: 'Burn',
+                                 icon: <Flame className="h-4 w-4" />,
+                                 variant: 'destructive' as const,
+                                 onClick: (e) => {
+                                   e.preventDefault();
+                                   setConfirmBurnNFT({ 
+                                     id: nft.id, 
+                                     name: nft.name,
+                                     mintAddress: realNFT?.mint_address || nft.id
+                                   });
+                                 }
+                               }
+                             ] : undefined}
                              metaLeft={nft.royalty_percentage && nft.royalty_percentage > 0 ? `${nft.royalty_percentage}% royalty` : undefined}
                              likeCount={getNFTLikeCount(nft.id)}
                              showOwnerInfo={true}
@@ -1443,6 +1473,38 @@ const Profile = () => {
         }}
         loading={burning}
       />
+      {/* NFT Action Dialogs */}
+      <ConfirmDialog
+        open={!!confirmBurnNFT}
+        onOpenChange={(open) => !open && setConfirmBurnNFT(null)}
+        title="Burn NFT"
+        description={`Are you sure you want to burn "${confirmBurnNFT?.name}"? This action cannot be undone and will permanently destroy the NFT.`}
+        confirmText="Burn NFT"
+        variant="destructive"
+        onConfirm={async () => {
+          if (confirmBurnNFT) {
+            const result = await burnNFT(confirmBurnNFT.id, confirmBurnNFT.mintAddress);
+            if (result.success) {
+              window.location.reload();
+            }
+            setConfirmBurnNFT(null);
+          }
+        }}
+        loading={burningNFT}
+      />
+
+      {/* Edit NFT Dialog */}
+      {editNFTDialog && (
+        <EditNFTDialog
+          nft={editNFTDialog.nft}
+          open={!!editNFTDialog}
+          onOpenChange={(open) => !open && setEditNFTDialog(null)}
+          onUpdate={() => {
+            window.location.reload();
+            setEditNFTDialog(null);
+          }}
+        />
+      )}
     </div>
   );
 };
