@@ -296,6 +296,13 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const connectPaymentWallet = useCallback(async (intent?: string) => {
     try {
       console.log('💳 Attempting payment wallet connection...', { intent });
+
+      // If already connected, do nothing
+      if (connected) {
+        console.log('✅ Wallet already connected');
+        toast.success('Wallet already connected');
+        return;
+      }
       
       // Check if we're in an iframe
       const isInIframe = typeof window !== 'undefined' && window !== window.parent;
@@ -338,7 +345,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.error('💳 Payment wallet connection error:', error);
       toast.error('Failed to open wallet selector');
     }
-  }, [select, setVisible]);
+  }, [select, setVisible, connected]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
