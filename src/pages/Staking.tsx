@@ -18,7 +18,7 @@ import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
 
 const Staking = () => {
   const { user } = useAuth();
-  const { connected, connectPaymentWallet } = useSolanaWallet();
+  const { connected, publicKey, connectPaymentWallet } = useSolanaWallet();
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
@@ -232,7 +232,7 @@ const Staking = () => {
   const canAccessVault = (totalStaked || 0) >= 1000;
 
   // Show welcome screen when not authenticated or connected
-  if (!user || !connected) {
+  if (!user || !(connected || publicKey)) {
     return (
       <div className="min-h-screen flex items-start justify-center bg-gradient-to-br from-background to-muted p-4 pt-8">
         <Helmet>

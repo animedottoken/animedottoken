@@ -106,6 +106,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         .then(() => {
           console.log('✅ Auto-connect successful');
           toast.success(`Connected to ${wallet.adapter.name}`);
+          // Notify app immediately for UI that relies on first-connection
+          try { window.dispatchEvent(new CustomEvent('wallet-connected')); } catch {}
           
           // Save wallet preference if remember is enabled
           if (rememberWallet) {
@@ -449,6 +451,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           await walletConnect();
           console.log(`✅ Successfully connected to ${providerName}`);
           toast.success(`Connected to ${providerName}`);
+          try { window.dispatchEvent(new CustomEvent('wallet-connected')); } catch {}
         } catch (error: any) {
           console.error(`❌ Wallet connection error for ${providerName}:`, error);
           const errorMessage = error instanceof Error ? error.message : (error?.toString?.() ?? 'Unknown error');
