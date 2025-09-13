@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
@@ -21,10 +22,20 @@ export const UnifiedConnectButton = ({
 }: UnifiedConnectButtonProps) => {
   const { connected, connecting, connectPaymentWallet } = useSolanaWallet();
 
+  const pendingOnConnect = useRef(false);
+
+  useEffect(() => {
+    if (connected && !connecting && pendingOnConnect.current) {
+      pendingOnConnect.current = false;
+      onConnect?.();
+    }
+  }, [connected, connecting, onConnect]);
+
   const handleClick = async () => {
     if (connected) {
       onConnect?.();
     } else {
+      pendingOnConnect.current = true;
       await connectPaymentWallet();
     }
   };
