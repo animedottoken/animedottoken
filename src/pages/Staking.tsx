@@ -15,7 +15,7 @@ import { useAnimeStaking } from '@/hooks/useAnimeStaking';
 
 const Staking = () => {
   const { user } = useAuth();
-  const { publicKey, connected } = useSolanaWallet();
+  const { publicKey, connected, connectPaymentWallet } = useSolanaWallet();
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
@@ -147,31 +147,43 @@ const Staking = () => {
               ANIME Staking
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stake your ANIME tokens to earn rewards and unlock exclusive access to the Volatility Vault
-          </p>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Earn rewards and unlock exclusive perks by staking your ANIME tokens! 🚀
+            </p>
         </div>
 
-        {/* Connection Status */}
+        {/* Welcome Section */}
         {!user || !connected ? (
-          <Card className="mb-8 border-destructive/20 bg-destructive/5">
+          <Card className="mb-8 border-primary/20 bg-primary/5">
             <CardContent className="pt-6">
               <div className="text-center">
-                <Shield className="h-12 w-12 mx-auto mb-4 text-destructive" />
-                <h3 className="text-lg font-semibold mb-2">Connection Required</h3>
+                <Coins className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <h3 className="text-lg font-semibold mb-2">Welcome to ANIME Staking! 🎉</h3>
                 <p className="text-muted-foreground mb-4">
-                  Please connect your wallet and sign in to access ANIME staking
+                  {!user && !connected 
+                    ? "To get started with staking your ANIME tokens, please sign in and connect your wallet."
+                    : !user 
+                    ? "Great! Now just sign in to access your staking dashboard."
+                    : "Almost there! Just connect your wallet to start staking."
+                  }
                 </p>
-                {!user && (
-                  <Button onClick={() => window.location.href = '/auth'} className="mr-4">
-                    Sign In
-                  </Button>
-                )}
-                {!connected && (
-                  <Button variant="outline">
-                    Connect Wallet
-                  </Button>
-                )}
+                <div className="flex gap-2 justify-center">
+                  {!user && (
+                    <Button onClick={() => window.location.href = '/auth'} className="flex items-center gap-2">
+                      <span>✨</span>
+                      Sign In
+                    </Button>
+                  )}
+                  {!connected && (
+                    <Button variant="outline" onClick={() => connectPaymentWallet()} className="flex items-center gap-2">
+                      <span>🔗</span>
+                      Connect Wallet
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Don't worry - connecting is completely safe and secure! 🔒
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -251,8 +263,8 @@ const Staking = () => {
                     </h3>
                     <p className="text-muted-foreground">
                       {canAccessVault 
-                        ? "You have access to the Volatility Vault! Start earning from market volatility."
-                        : `Stake ${(1000 - (totalStaked || 0)).toLocaleString()} more ANIME tokens to unlock vault access.`
+                        ? "🎉 Awesome! You now have access to the Volatility Vault. Start earning from market volatility!"
+                        : `You're ${(1000 - (totalStaked || 0)).toLocaleString()} ANIME tokens away from unlocking the Volatility Vault! 💪`
                       }
                     </p>
                   </div>
@@ -275,7 +287,7 @@ const Staking = () => {
                     Stake ANIME
                   </CardTitle>
                   <CardDescription>
-                    Stake your ANIME tokens to earn rewards and unlock vault access
+                    Start earning rewards and unlock exclusive features! 💰
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -342,7 +354,7 @@ const Staking = () => {
                     Unstake ANIME
                   </CardTitle>
                   <CardDescription>
-                    Unstake your tokens and claim pending rewards
+                    Withdraw your tokens or collect your earned rewards! 🎁
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -417,7 +429,7 @@ const Staking = () => {
               <CardHeader>
                 <CardTitle>Staking Benefits</CardTitle>
                 <CardDescription>
-                  Why stake your ANIME tokens?
+                  Discover the amazing benefits of staking! ✨
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -426,27 +438,27 @@ const Staking = () => {
                     <div className="p-3 rounded-full bg-green-500/10 w-fit mx-auto mb-3">
                       <Award className="h-6 w-6 text-green-500" />
                     </div>
-                    <h4 className="font-semibold mb-2">Earn Rewards</h4>
+                    <h4 className="font-semibold mb-2">💰 Earn Rewards</h4>
                     <p className="text-sm text-muted-foreground">
-                      Earn daily rewards on your staked ANIME tokens with competitive APY
+                      Enjoy daily rewards on your staked ANIME tokens with competitive returns!
                     </p>
                   </div>
                   <div className="text-center">
                     <div className="p-3 rounded-full bg-purple-500/10 w-fit mx-auto mb-3">
                       <Shield className="h-6 w-6 text-purple-500" />
                     </div>
-                    <h4 className="font-semibold mb-2">Vault Access</h4>
+                    <h4 className="font-semibold mb-2">🔓 Vault Access</h4>
                     <p className="text-sm text-muted-foreground">
-                      Stake 1,000+ ANIME to unlock exclusive access to the Volatility Vault
+                      Stake 1,000+ ANIME to unlock exclusive access to our premium Volatility Vault!
                     </p>
                   </div>
                   <div className="text-center">
                     <div className="p-3 rounded-full bg-blue-500/10 w-fit mx-auto mb-3">
                       <TrendingUp className="h-6 w-6 text-blue-500" />
                     </div>
-                    <h4 className="font-semibold mb-2">Governance Rights</h4>
+                    <h4 className="font-semibold mb-2">🗳️ Governance Rights</h4>
                     <p className="text-sm text-muted-foreground">
-                      Participate in governance decisions for vault parameters and strategy
+                      Have your say in important decisions about vault parameters and strategy!
                     </p>
                   </div>
                 </div>
