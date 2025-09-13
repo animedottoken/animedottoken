@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      anime_stakes: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          last_reward_claim: string | null
+          staked_amount: number
+          staked_at: string
+          unlock_at: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_reward_claim?: string | null
+          staked_amount?: number
+          staked_at?: string
+          unlock_at?: string | null
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_reward_claim?: string | null
+          staked_amount?: number
+          staked_at?: string
+          unlock_at?: string | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      anime_staking_rewards: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          id: string
+          reward_amount: number
+          reward_period_end: string
+          reward_period_start: string
+          reward_type: Database["public"]["Enums"]["anime_reward_type"]
+          stake_id: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          reward_amount?: number
+          reward_period_end: string
+          reward_period_start: string
+          reward_type: Database["public"]["Enums"]["anime_reward_type"]
+          stake_id: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          reward_amount?: number
+          reward_period_end?: string
+          reward_period_start?: string
+          reward_type?: Database["public"]["Enums"]["anime_reward_type"]
+          stake_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anime_staking_rewards_stake_id_fkey"
+            columns: ["stake_id"]
+            isOneToOne: false
+            referencedRelation: "anime_stakes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       boosted_listings: {
         Row: {
           bid_amount: number
@@ -899,6 +982,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_pending_rewards: {
+        Args: { p_stake_id: string }
+        Returns: number
+      }
       calculate_profile_rank: {
         Args: { trade_count: number }
         Returns: string
@@ -919,6 +1006,10 @@ export type Database = {
           p_user_wallet: string
           p_window_minutes?: number
         }
+        Returns: boolean
+      }
+      check_vault_access: {
+        Args: { p_minimum_stake?: number; p_wallet_address: string }
         Returns: boolean
       }
       cleanup_user_primary_wallets: {
@@ -1435,6 +1526,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: string
       }
+      get_user_total_staked: {
+        Args: { p_wallet_address: string }
+        Returns: number
+      }
       get_user_wallets: {
         Args: { p_user_id: string }
         Returns: {
@@ -1461,13 +1556,17 @@ export type Database = {
         Args: { p_email: string; p_opt_in_token?: string }
         Returns: Json
       }
+      unstake_anime: {
+        Args: { p_amount: number; p_stake_id: string }
+        Returns: Json
+      }
       update_user_asset_counts: {
         Args: { p_wallet_address: string }
         Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      anime_reward_type: "vault_access" | "governance" | "yield_share"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1594,6 +1693,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      anime_reward_type: ["vault_access", "governance", "yield_share"],
+    },
   },
 } as const
