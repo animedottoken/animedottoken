@@ -62,12 +62,30 @@ export default function CollectionDetail() {
   // Get user's collections for reliable ownership checking
   const { collections } = useCollections({ autoLoad: !!publicKey });
   
-  // Find the owned collection (unmasked) for reliable ownership checking
-  const ownedCollection = collections.find(c => c.id === collectionId);
-  const isOwner = connected && ownedCollection !== undefined;
-  
   // Use refreshed collection data but preserve unmasked creator_address for editing
   const displayCollection = collection;
+  
+  // Find the owned collection (unmasked) for reliable ownership checking
+  const ownedCollection = collections.find(c => c.id === collectionId);
+  
+  // Enhanced ownership check - check both wallet connection and direct creator_address match
+  const isOwner = connected && (
+    ownedCollection !== undefined || 
+    (publicKey && displayCollection?.creator_address === publicKey)
+  );
+  
+  // Debug logging to help troubleshoot ownership detection
+  console.log('Ownership Debug:', {
+    connected,
+    publicKey,
+    collectionId,
+    ownedCollectionFound: ownedCollection !== undefined,
+    creatorMatches: publicKey && displayCollection?.creator_address === publicKey,
+    displayCollectionCreator: displayCollection?.creator_address,
+    collectionsCount: collections.length,
+    isOwner
+  });
+  
   // Create merged data for editor with unmasked creator_address
   const editorCollection = ownedCollection && collection ? { ...collection, creator_address: ownedCollection.creator_address, treasury_wallet: ownedCollection.treasury_wallet } : collection;
   const isMinted = Boolean(displayCollection?.collection_mint_address) || ((displayCollection?.items_redeemed || 0) > 0) || (mints.length > 0);
