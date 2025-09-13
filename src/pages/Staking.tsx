@@ -152,41 +152,27 @@ const Staking = () => {
             </p>
         </div>
 
-        {/* Welcome Section */}
+        {/* Connection Required */}
         {!user || !connected ? (
-          <Card className="mb-8 border-primary/20 bg-primary/5">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <Coins className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <h3 className="text-lg font-semibold mb-2">Welcome to ANIME Staking! 🎉</h3>
-                <p className="text-muted-foreground mb-4">
-                  {!user && !connected 
-                    ? "To get started with staking your ANIME tokens, please sign in and connect your wallet."
-                    : !user 
-                    ? "Great! Now just sign in to access your staking dashboard."
-                    : "Almost there! Just connect your wallet to start staking."
-                  }
-                </p>
-                <div className="flex gap-2 justify-center">
-                  {!user && (
-                    <Button onClick={() => window.location.href = '/auth'} className="flex items-center gap-2">
-                      <span>✨</span>
-                      Sign In
-                    </Button>
-                  )}
-                  {!connected && (
-                    <Button variant="outline" onClick={() => connectPaymentWallet()} className="flex items-center gap-2">
-                      <span>🔗</span>
-                      Connect Wallet
-                    </Button>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Don't worry - connecting is completely safe and secure! 🔒
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="text-center mb-8">
+            <div className="flex gap-2 justify-center mb-3">
+              {!user && (
+                <Button onClick={() => window.location.href = '/auth'} className="flex items-center gap-2">
+                  <span>✨</span>
+                  Sign In
+                </Button>
+              )}
+              {!connected && (
+                <Button variant="outline" onClick={() => connectPaymentWallet()} className="flex items-center gap-2">
+                  <span>🔗</span>
+                  Connect Wallet
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Safe & secure connection 🔒
+            </p>
+          </div>
         ) : (
           <>
             {/* Stats Overview */}
