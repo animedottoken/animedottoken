@@ -407,167 +407,185 @@ export default function CollectionDetail() {
                   </div>
                   
                     {/* Owner Action Buttons */}
-                   {isOwner && (
-                     <div className="flex gap-1">
-                       
-                       <Button
-                         variant={displayCollection?.is_live ? "outline" : "default"}
-                         size="sm"
-                         onClick={async () => {
-                           try {
-                             const { data, error } = await supabase.functions.invoke('update-collection', {
-                               body: {
-                                 collection_id: displayCollection?.id,
-                                 updates: { is_live: !displayCollection?.is_live }
-                               }
-                             });
-                             
-                              if (data?.success) {
-                                refreshCollection(true);
-                                toast.success(
-                                  displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
-                                  {
-                                    description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
-                                  }
-                                );
-                             } else {
-                               toast.error('Failed to update collection status');
-                             }
-                           } catch (error) {
-                             toast.error('Failed to update collection status');
-                           }
-                         }}
-                       >
-                         {displayCollection?.is_live ? (
-                           <><Pause className="w-3 h-3 mr-1" />Pause</>
-                         ) : (
-                           <><Play className="w-3 h-3 mr-1" />Start</>
-                         )}
-                       </Button>
-                      
-                       {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
-                         <Button 
-                           variant="outline" 
-                           size="sm"
-            onClick={() => {
-              setFeeError(null);
-              fetchMintFee();
-               setConfirmDialog({
-                                open: true,
-                                title: 'Confirm Minting Payment',
-                                description: loadingFee 
-                                  ? "Calculating minting fee..." 
-                                  : feeError
-                                  ? `There was an error calculating the fee. ${feeError}`
-                                  : mintFee !== null 
-                                    ? `Minting this collection on-chain will cost approximately ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
-                                    : "Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?",
-                                loading: false,
-                                onConfirm: async () => {
-                                 if (!publicKey) return;
-                                 setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                 try {
-                                   const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
-                                     body: {
-                                       collectionId: displayCollection?.id,
-                                       creatorAddress: publicKey
-                                     }
-                                   });
-                                   if (mintError || !mintResult?.success) {
-                                     toast.error('Failed to mint collection on-chain');
-                                   } else {
-                                     toast.success('Collection minted successfully on-chain! 🎉');
-                                     refreshCollection(true);
-                                   }
-                                 } catch (error) {
-                                   toast.error('Failed to mint collection on-chain');
-                                 } finally {
-                                   setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
-                                 }
-                               }
-                             });
-                           }}
-                         >
-                           <Zap className="w-3 h-3 mr-1" />
-                           Mint On-Chain
-                         </Button>
-                       )}
-                       
-                        <Button
-                          variant="destructive"
+                    {isOwner && (
+                      <div className="flex gap-1">
+                        
+                        <Button 
+                          variant="outline" 
                           size="sm"
                           onClick={() => {
-                          if (mints.length > 0) {
-                            // Burn all NFTs
-                             setConfirmDialog({
-                               open: true,
-                               title: 'Burn All NFTs',
-                               description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
-                               loading: false,
-                               onConfirm: async () => {
-                                setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                
-                                try {
-                                  const { data, error } = await supabase.functions.invoke('burn-nft', {
-                                    body: {
-                                      collection_id: displayCollection?.id,
-                                      wallet_address: publicKey,
-                                      burn_all: true
+                            navigate(`/collection/${displayCollection?.id}?edit=1`);
+                          }}
+                        >
+                          <Settings className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
+
+                        <Button
+                          variant={displayCollection?.is_live ? "outline" : "default"}
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              const { data, error } = await supabase.functions.invoke('update-collection', {
+                                body: {
+                                  collection_id: displayCollection?.id,
+                                  updates: { is_live: !displayCollection?.is_live }
+                                }
+                              });
+                              
+                               if (data?.success) {
+                                 refreshCollection(true);
+                                 toast.success(
+                                   displayCollection?.is_live ? 'Collection paused' : 'Collection is now LIVE!',
+                                   {
+                                     description: displayCollection?.is_live ? 'Minting has been paused' : 'Users can now mint NFTs'
+                                   }
+                                 );
+                              } else {
+                                toast.error('Failed to update collection status');
+                              }
+                            } catch (error) {
+                              toast.error('Failed to update collection status');
+                            }
+                          }}
+                        >
+                          {displayCollection?.is_live ? (
+                            <><Pause className="w-3 h-3 mr-1" />Pause</>
+                          ) : (
+                            <><Play className="w-3 h-3 mr-1" />Start</>
+                          )}
+                        </Button>
+                       
+                        {(!displayCollection?.collection_mint_address && !displayCollection?.verified) && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+             onClick={() => {
+               setFeeError(null);
+               fetchMintFee();
+                setConfirmDialog({
+                                 open: true,
+                                 title: 'Confirm Minting Payment',
+                                 description: loadingFee 
+                                   ? "Calculating minting fee..." 
+                                   : feeError
+                                   ? `There was an error calculating the fee. ${feeError}`
+                                   : mintFee !== null 
+                                     ? `Minting this collection on-chain will cost approximately ${mintFee.totalSol.toFixed(4)} SOL${mintFee.approxUsd ? ` (~$${mintFee.approxUsd.toFixed(2)})` : ''}${mintFee.degraded ? ' (estimate only - network unavailable)' : ''}. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?`
+                                     : "Minting this collection on-chain will require a fee to be paid. This action will permanently store your collection on the Solana blockchain. Do you want to proceed with the payment?",
+                                 loading: false,
+                                 onConfirm: async () => {
+                                  if (!publicKey) return;
+                                  setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                  try {
+                                    const { data: mintResult, error: mintError } = await supabase.functions.invoke('mint-collection', {
+                                      body: {
+                                        collectionId: displayCollection?.id,
+                                        creatorAddress: publicKey
+                                      }
+                                    });
+                                    if (mintError || !mintResult?.success) {
+                                      toast.error('Failed to mint collection on-chain');
+                                    } else {
+                                      toast.success('Collection minted successfully on-chain! 🎉');
+                                      refreshCollection(true);
                                     }
-                                  });
+                                  } catch (error) {
+                                    toast.error('Failed to mint collection on-chain');
+                                  } finally {
+                                    setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
+                                  }
+                                }
+                              });
+                            }}
+                          >
+                            <Zap className="w-3 h-3 mr-1" />
+                            Mint On-Chain
+                          </Button>
+                        )}
+                        
+                         {mints.length > 0 ? (
+                           <Button
+                             variant="destructive"
+                             size="sm"
+                             onClick={() => {
+                               setConfirmDialog({
+                                 open: true,
+                                 title: 'Burn All NFTs',
+                                 description: `Are you sure you want to burn all ${mints.length} NFTs in "${displayCollection?.name}"? This action cannot be undone and will permanently destroy all NFTs in this collection.`,
+                                 loading: false,
+                                 onConfirm: async () => {
+                                  setConfirmDialog(prev => ({ ...prev, loading: true }));
                                   
-                                  if (data?.success) {
-                                    toast.success('All NFTs burned successfully');
-                                    window.location.reload();
-                                  } else {
-                                    toast.error(data?.error || 'Failed to burn NFTs');
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke('burn-nft', {
+                                      body: {
+                                        collection_id: displayCollection?.id,
+                                        wallet_address: publicKey,
+                                        burn_all: true
+                                      }
+                                    });
+                                    
+                                    if (data?.success) {
+                                      toast.success('All NFTs burned successfully');
+                                      window.location.reload();
+                                    } else {
+                                      toast.error(data?.error || 'Failed to burn NFTs');
+                                    }
+                                  } catch (error) {
+                                    console.error('Error burning all NFTs:', error);
+                                    toast.error('Failed to burn NFTs');
+                                  } finally {
+                                    setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                   }
-                                } catch (error) {
-                                  console.error('Error burning all NFTs:', error);
-                                  toast.error('Failed to burn NFTs');
-                                } finally {
-                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                 }
-                              }
-                            });
-                          } else {
-                            // Delete collection
-                             setConfirmDialog({
-                               open: true,
-                               title: 'Delete Collection',
-                               description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
-                               loading: false,
-                               onConfirm: async () => {
-                                setConfirmDialog(prev => ({ ...prev, loading: true }));
-                                
-                                try {
-                                  const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
-                                  if (result.success) {
-                                    const backUrl = navigation.source === 'favorites' 
-                                      ? '/profile?tab=favorites' 
-                                      : navigation.source === 'collections' 
-                                      ? '/profile?tab=collections' 
-                                      : navigation.source === 'marketplace'
-                                      ? '/marketplace'
-                                      : '/profile';
-                                    navigate(backUrl);
+                               });
+                             }}
+                           >
+                             <Flame className="w-3 h-3 mr-1" />
+                             Burn All
+                           </Button>
+                         ) : (
+                           <Button
+                             variant="destructive"
+                             size="sm"
+                             onClick={() => {
+                               setConfirmDialog({
+                                 open: true,
+                                 title: 'Delete Collection',
+                                 description: `Are you sure you want to delete "${displayCollection?.name}"? This action cannot be undone and will permanently remove the collection from the blockchain.`,
+                                 loading: false,
+                                 onConfirm: async () => {
+                                  setConfirmDialog(prev => ({ ...prev, loading: true }));
+                                  
+                                  try {
+                                    const result = await deleteCollection(displayCollection?.id || '', displayCollection?.name || '');
+                                    if (result.success) {
+                                      const backUrl = navigation.source === 'favorites' 
+                                        ? '/profile?tab=favorites' 
+                                        : navigation.source === 'collections' 
+                                        ? '/profile?tab=collections' 
+                                        : navigation.source === 'marketplace'
+                                        ? '/marketplace'
+                                        : '/profile';
+                                      navigate(backUrl);
+                                    }
+                                  } catch (error) {
+                                    console.error('Error deleting collection:', error);
+                                    toast.error('Failed to delete collection');
+                                  } finally {
+                                    setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                   }
-                                } catch (error) {
-                                  console.error('Error deleting collection:', error);
-                                  toast.error('Failed to delete collection');
-                                } finally {
-                                  setConfirmDialog(prev => ({ ...prev, open: false, loading: false }));
                                 }
-                              }
-                            });
-                          }
-                         }}
-                       >
-                         <Flame className="w-3 h-3 mr-1" />
-                         Burn
-                       </Button>
-                    </div>
-                  )}
+                               });
+                             }}
+                           >
+                             <Trash2 className="w-3 h-3 mr-1" />
+                             Delete
+                           </Button>
+                          )}
+                     </div>
+                   )}
                 </div>
                 
                 {displayCollection?.description && (

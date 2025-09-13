@@ -587,39 +587,39 @@ export default function NFTDetail() {
               {/* Owner Action Buttons */}
               {publicKey && nft.owner_address === publicKey && (
                 <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditDialogOpen(true)}
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit NFT
-                  </Button>
-                  
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      // Add burn functionality
-                      if (!nft.mint_address) {
-                        toast.error('Mint address missing for this NFT');
-                        return;
-                      }
-                      
-                      // Create confirmation dialog
-                      const confirmed = window.confirm(
-                        `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
-                      );
-                      
-                      if (confirmed) {
-                        // Call burn function
-                        handleBurnNFT(nft.id, nft.mint_address);
-                      }
-                    }}
-                  >
-                    <Flame className="w-4 h-4 mr-1" />
-                    Burn NFT
-                  </Button>
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     onClick={() => setIsEditDialogOpen(true)}
+                   >
+                     <Edit className="w-4 h-4 mr-1" />
+                     Edit
+                   </Button>
+                   
+                   <Button
+                     variant="destructive"
+                     size="sm"
+                     onClick={() => {
+                       // Add burn functionality
+                       if (!nft.mint_address) {
+                         toast.error('Mint address missing for this NFT');
+                         return;
+                       }
+                       
+                       // Create confirmation dialog
+                       const confirmed = window.confirm(
+                         `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
+                       );
+                       
+                       if (confirmed) {
+                         // Call burn function
+                         handleBurnNFT(nft.id, nft.mint_address);
+                       }
+                     }}
+                   >
+                     <Flame className="w-4 h-4 mr-1" />
+                     Burn
+                   </Button>
                 </div>
               )}
             </div>

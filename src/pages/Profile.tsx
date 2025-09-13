@@ -1188,34 +1188,6 @@ const Profile = () => {
                                 description: collection.description
                               }}
                              likeCount={getCollectionLikeCount(collection.id)}
-                             overlayActions={isOwnProfile ? [
-                               {
-                                 label: 'Edit',
-                                 icon: <Edit2 className="h-4 w-4" />,
-                                 onClick: (e) => {
-                                   e.preventDefault();
-                                   navigate(`/collection/${collection.id}?edit=1`);
-                                 }
-                               },
-                               {
-                                 label: 'Burn All',
-                                 icon: <Flame className="h-4 w-4" />,
-                                 variant: 'destructive' as const,
-                                 onClick: (e) => {
-                                   e.preventDefault();
-                                   setConfirmBurnCollection({ id: collection.id, name: collection.name });
-                                 }
-                               },
-                               {
-                                 label: 'Delete',
-                                 icon: <Trash2 className="h-4 w-4" />,
-                                 variant: 'destructive' as const,
-                                 onClick: (e) => {
-                                   e.preventDefault();
-                                   setConfirmDeleteCollection({ id: collection.id, name: collection.name });
-                                 }
-                               }
-                             ] : undefined}
                              onNavigate={() => setNavContext({ 
                                type: 'collection', 
                                items: filteredCombinedCollections.map(c => c.id), 
