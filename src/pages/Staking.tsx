@@ -6,13 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Coins, TrendingUp, Shield, Clock, Award } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Coins, TrendingUp, Shield, Clock, Award, Mail, Chrome, Loader2, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { ANIME_MINT_ADDRESS } from '@/constants/token';
 import { useAnimeStaking } from '@/hooks/useAnimeStaking';
-import AuthModal from '@/components/AuthModal';
+import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
 
 const Staking = () => {
   const { user } = useAuth();
@@ -20,7 +22,10 @@ const Staking = () => {
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   
   const {
     userStakes,
@@ -33,6 +38,101 @@ const Staking = () => {
     unstakeTokens,
     claimRewards
   } = useAnimeStaking();
+
+  // Countdown timer for rate limit
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/staking`,
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast({
+        title: "Sign in failed", 
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/staking`,
+        }
+      });
+
+      if (error) {
+        // Check for rate limit error and parse wait time
+        if (error.message.includes('rate_limit') || error.message.includes('429')) {
+          const waitMatch = error.message.match(/(\d+)\s*seconds?/);
+          const waitSeconds = waitMatch ? parseInt(waitMatch[1]) : 60;
+          
+          setCooldownSeconds(waitSeconds);
+          toast({
+            title: "Too many requests",
+            description: `Please wait ${waitSeconds} seconds before trying again. You can use Google OAuth as an alternative.`,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign in failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Check your email",
+          description: "We've sent you a magic link to sign in. Click the link to continue.",
+        });
+        setEmail('');
+      }
+    } catch (error) {
+      toast({
+        title: "Sign in failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleStake = async () => {
     if (!stakeAmount || parseFloat(stakeAmount) <= 0) {
@@ -155,40 +255,98 @@ const Staking = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-center space-y-3">
-              {!user && (
-                <Button onClick={() => setShowAuthModal(true)} className="w-full" size="lg">
-                  <span className="mr-2">✨</span>
-                  Sign In to Start Staking
+            {!user && (
+              <>
+                {/* Google Sign In */}
+                <Button
+                  onClick={handleGoogleSignIn}
+                  disabled={googleLoading || loading}
+                  className="w-full"
+                  size="lg"
+                >
+                  {googleLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Chrome className="mr-2 h-4 w-4" />
+                  )}
+                  Continue with Google
                 </Button>
-              )}
-              {!connected && user && (
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
+
+                {/* Magic Link Form */}
+                <form onSubmit={handleMagicLink} className="space-y-4">
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading || googleLoading}
+                      className="w-full h-11"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={loading || googleLoading || cooldownSeconds > 0}
+                    className="w-full"
+                    variant="outline"
+                    size="lg"
+                  >
+                    {loading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Mail className="mr-2 h-4 w-4" />
+                    )}
+                    {cooldownSeconds > 0 ? `Try again in ${cooldownSeconds}s` : 'Send Magic Link'}
+                  </Button>
+                  {cooldownSeconds > 0 && (
+                    <p className="text-xs text-destructive text-center">
+                      Rate limited. Please wait {cooldownSeconds} seconds before trying again.
+                    </p>
+                  )}
+                  <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                    <span>No password—we'll email you a sign-in link</span>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button 
+                          type="button" 
+                          className="inline-flex items-center justify-center rounded-full w-4 h-4 bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+                          aria-label="Email delivery information"
+                        >
+                          <Info className="w-3 h-3" />
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <AuthEmailInfoContent />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </form>
+              </>
+            )}
+            {!connected && user && (
+              <div className="text-center space-y-3">
                 <Button variant="outline" onClick={() => connectPaymentWallet()} className="w-full" size="lg">
                   <span className="mr-2">🔗</span>
                   Connect Wallet
                 </Button>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Safe & secure connection 🔒
-              </p>
-            </div>
+                <p className="text-xs text-muted-foreground">
+                  Safe & secure connection 🔒
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        {/* Auth Modal */}
-        <AuthModal
-          open={showAuthModal}
-          onOpenChange={setShowAuthModal}
-          title="Welcome to $ANIME Staking"
-          description="Sign in to start staking your $ANIME tokens and earning rewards! 🚀"
-          onSuccess={() => {
-            setShowAuthModal(false);
-            toast({
-              title: "Welcome! 🎉",
-              description: "You're now signed in. Connect your wallet to start staking!",
-            });
-          }}
-        />
       </div>
     );
   }
@@ -493,21 +651,6 @@ const Staking = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Auth Modal */}
-      <AuthModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        title="Welcome to $ANIME Staking"
-        description="Sign in to start staking your $ANIME tokens and earning rewards! 🚀"
-        onSuccess={() => {
-          setShowAuthModal(false);
-          toast({
-            title: "Welcome! 🎉",
-            description: "You're now signed in. Connect your wallet to start staking!",
-          });
-        }}
-      />
     </div>
   );
 };
