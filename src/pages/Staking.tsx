@@ -7,18 +7,18 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Coins, TrendingUp, Shield, Clock, Award, Mail, Chrome, Loader2, Info } from 'lucide-react';
+import { Coins, TrendingUp, Shield, Award, Mail, Chrome, Loader2, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ANIME_MINT_ADDRESS } from '@/constants/token';
+
 import { useAnimeStaking } from '@/hooks/useAnimeStaking';
 import { AuthEmailInfoContent } from '@/components/AuthEmailInfoContent';
 
 const Staking = () => {
   const { user } = useAuth();
-  const { publicKey, connected, connectPaymentWallet } = useSolanaWallet();
+  const { connected, connectPaymentWallet } = useSolanaWallet();
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
