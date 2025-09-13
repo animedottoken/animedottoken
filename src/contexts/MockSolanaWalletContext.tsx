@@ -257,6 +257,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       localStorage.removeItem('walletName');
       localStorage.removeItem('walletAdapter');
     }
+    try { window.dispatchEvent(new CustomEvent('wallet-disconnected')); } catch {}
     toast.info('Wallet disconnected');
     console.log('✅ Wallet disconnected');
   }, [walletDisconnect, select, rememberWallet]);
@@ -306,6 +307,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toast.success('Wallet already connected');
         return;
       }
+
+      // Small delay to let post-login UI settle (prevents stale states)
+      await new Promise((r) => setTimeout(r, 120));
       
       // If adapter is in a stale "connecting" state right after login, wait briefly then reset
       if (connecting) {
@@ -320,10 +324,10 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           try { select(null); } catch (_) {}
         }
       }
-      
+
       // Check if we're in an iframe
       const isInIframe = typeof window !== 'undefined' && window !== window.parent;
-      
+
       // For linking intents in iframes, force new tab to ensure extension popups work
       if (isInIframe && intent && intent.includes('link')) {
         console.log('🔗 Forcing new tab for linking intent in iframe');
@@ -339,7 +343,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
         return;
       }
-      
+
       // For regular payment flows in iframe, just show suggestion
       if (isInIframe && !intent) {
         toast.info('For best wallet experience, open in new tab', {
@@ -349,12 +353,37 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         });
       }
-      
+
       // Proactively disconnect and clear selection to avoid stale adapters
       try { await walletDisconnect(); } catch (_) {}
       try { select(null); } catch (_) {}
+
+      // Attempt direct connect to installed Phantom/Solflare (bypass modal)
+      const tryDirect = async (providerName: string) => {
+        const selectedWallet = wallets.find(w => 
+          w.adapter.name.toLowerCase().includes(providerName.toLowerCase()) &&
+          w.readyState === WalletReadyState.Installed
+        );
+        if (!selectedWallet) return false;
+        console.log(`⚡ Detected ${providerName} installed. Direct-connecting...`);
+        try { await walletDisconnect(); } catch (_) {}
+        try { select(selectedWallet.adapter.name); } catch (_) {}
+        await new Promise((r) => setTimeout(r, 50));
+        try {
+          await walletConnect();
+          toast.success(`Connected to ${providerName}`);
+          try { window.dispatchEvent(new CustomEvent('wallet-connected')); } catch {}
+          return true;
+        } catch (err) {
+          console.error(`❌ Direct connect failed for ${providerName}:`, err);
+          return false;
+        }
+      };
+
+      if (await tryDirect('Phantom')) return;
+      if (await tryDirect('Solflare')) return;
       
-      // Open the wallet modal with auto-connect flag
+      // Open the wallet modal with auto-connect flag (fallback)
       console.log('🎯 Opening wallet modal for payment...');
       setConnectAfterSelection(true);
       setVisible(true);
@@ -370,7 +399,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.error('💳 Payment wallet connection error:', error);
       toast.error('Failed to open wallet selector');
     }
-  }, [select, setVisible, connected, connecting, walletDisconnect]);
+  }, [select, setVisible, connected, connecting, walletDisconnect, wallets, walletConnect]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
