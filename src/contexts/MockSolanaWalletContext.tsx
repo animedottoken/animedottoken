@@ -297,6 +297,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const connectPaymentWallet = useCallback(async (intent?: string) => {
     try {
+      setError(null);
       console.log('💳 Attempting payment wallet connection...', { intent });
 
       // If already connected, do nothing
@@ -304,6 +305,20 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         console.log('✅ Wallet already connected');
         toast.success('Wallet already connected');
         return;
+      }
+      
+      // If adapter is in a stale "connecting" state right after login, wait briefly then reset
+      if (connecting) {
+        console.log('⏳ Wallet is currently connecting; waiting to settle...');
+        for (let i = 0; i < 10; i++) {
+          await new Promise((r) => setTimeout(r, 100));
+          if (!connecting) break;
+        }
+        if (connecting) {
+          console.log('🧹 Still connecting after wait; resetting adapter');
+          try { await walletDisconnect(); } catch (_) {}
+          try { select(null); } catch (_) {}
+        }
       }
       
       // Check if we're in an iframe
@@ -335,19 +350,27 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         });
       }
       
-      // Clear selected wallet to force modal selection
-      select(null);
+      // Proactively disconnect and clear selection to avoid stale adapters
+      try { await walletDisconnect(); } catch (_) {}
+      try { select(null); } catch (_) {}
       
       // Open the wallet modal with auto-connect flag
       console.log('🎯 Opening wallet modal for payment...');
       setConnectAfterSelection(true);
       setVisible(true);
+
+      // Fallbacks to ensure modal reliably opens on the very first attempt after login
+      try {
+        requestAnimationFrame(() => setVisible(true));
+        setTimeout(() => setVisible(true), 150);
+        setTimeout(() => setVisible(true), 400);
+      } catch {}
       
     } catch (error) {
       console.error('💳 Payment wallet connection error:', error);
       toast.error('Failed to open wallet selector');
     }
-  }, [select, setVisible, connected]);
+  }, [select, setVisible, connected, connecting, walletDisconnect]);
 
   const handleSignMessage = useCallback(async (message: string): Promise<string> => {
     if (!publicKey || !signMessage) {
