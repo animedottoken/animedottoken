@@ -12,6 +12,7 @@ import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { ANIME_MINT_ADDRESS } from '@/constants/token';
 import { useAnimeStaking } from '@/hooks/useAnimeStaking';
+import AuthModal from '@/components/AuthModal';
 
 const Staking = () => {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ const Staking = () => {
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const {
     userStakes,
@@ -157,7 +159,7 @@ const Staking = () => {
           <div className="text-center mb-8">
             <div className="flex gap-2 justify-center mb-3">
               {!user && (
-                <Button onClick={() => window.location.href = '/auth'} className="flex items-center gap-2">
+                <Button onClick={() => setShowAuthModal(true)} className="flex items-center gap-2">
                   <span>✨</span>
                   Sign In
                 </Button>
@@ -453,6 +455,21 @@ const Staking = () => {
           </>
         )}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        title="Welcome to ANIME Staking"
+        description="Sign in to start staking your ANIME tokens and earning rewards! 🚀"
+        onSuccess={() => {
+          setShowAuthModal(false);
+          toast({
+            title: "Welcome! 🎉",
+            description: "You're now signed in. Connect your wallet to start staking!",
+          });
+        }}
+      />
     </div>
   );
 };
