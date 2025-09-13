@@ -33,6 +33,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
 import Trust from "./pages/Trust";
+import Staking from "./pages/Staking";
 import { ErrorBoundary } from "react-error-boundary";
 import { ProfileFiltersProvider } from "@/contexts/ProfileFiltersContext";
 import { EnvironmentProvider } from "@/contexts/EnvironmentContext";
@@ -197,6 +198,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/staking" element={<Staking />} />
             <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
@@ -236,6 +238,7 @@ const AppLayout = () => {
             <Route path="/mint/nft" element={<MintNFT />} />
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/staking" element={<Staking />} />
             <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn } from "lucide-react";
+import { Menu, User, ShoppingCart, Coins, FileText, Star, Target, Trophy, Users, Shield, Wallet, ChevronDown, LogOut, LogIn, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -31,6 +31,7 @@ type NavigationItem = RouteItem | SectionItem;
 const routes: RouteItem[] = [
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
   { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
+  { type: "route", title: "ANIME Staking", icon: TrendingUp, path: "/staking" },
 ];
 
 const navigationItems: NavigationItem[] = [
@@ -174,6 +175,10 @@ export const TopNav = () => {
                 <ShoppingCart className="h-4 w-4" />
                 <span>Marketplace</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/staking')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
+                <TrendingUp className="h-4 w-4" />
+                <span>ANIME Staking</span>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/trust')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <Shield className="h-4 w-4" />
                 <span>Trust & Security Center</span>
@@ -280,6 +285,14 @@ export const TopNav = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-3 h-12"
+                  onClick={() => navigate('/staking')}
+                >
+                  <TrendingUp className="h-5 w-5" />
+                  <span className="font-medium">ANIME Staking</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 h-12"
                   onClick={() => navigate('/trust')}
                 >
                   <Shield className="h-5 w-5" />
@@ -343,6 +356,10 @@ export const TopNav = () => {
             <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <ShoppingCart className="h-4 w-4" />
               <span>Marketplace</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/staking')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
+              <TrendingUp className="h-4 w-4" />
+              <span>ANIME Staking</span>
             </DropdownMenuItem>
             
             {/* Profile Row */}
