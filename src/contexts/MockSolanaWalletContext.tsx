@@ -358,30 +358,9 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       try { await walletDisconnect(); } catch (_) {}
       try { select(null); } catch (_) {}
 
-      // Attempt direct connect to installed Phantom/Solflare (bypass modal)
-      const tryDirect = async (providerName: string) => {
-        const selectedWallet = wallets.find(w => 
-          w.adapter.name.toLowerCase().includes(providerName.toLowerCase()) &&
-          w.readyState === WalletReadyState.Installed
-        );
-        if (!selectedWallet) return false;
-        console.log(`⚡ Detected ${providerName} installed. Direct-connecting...`);
-        try { await walletDisconnect(); } catch (_) {}
-        try { select(selectedWallet.adapter.name); } catch (_) {}
-        await new Promise((r) => setTimeout(r, 50));
-        try {
-          await walletConnect();
-          toast.success(`Connected to ${providerName}`);
-          try { window.dispatchEvent(new CustomEvent('wallet-connected')); } catch {}
-          return true;
-        } catch (err) {
-          console.error(`❌ Direct connect failed for ${providerName}:`, err);
-          return false;
-        }
-      };
+      // Direct auto-connect removed to always let the user choose a wallet
+      // We will always open the wallet selector below and connect only after explicit choice.
 
-      if (await tryDirect('Phantom')) return;
-      if (await tryDirect('Solflare')) return;
       
       // Open the wallet modal with auto-connect flag (fallback)
       console.log('🎯 Opening wallet modal for payment...');
