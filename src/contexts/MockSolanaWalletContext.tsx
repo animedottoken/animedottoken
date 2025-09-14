@@ -360,7 +360,6 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       // Direct auto-connect removed to always let the user choose a wallet
       // We will always open the wallet selector below and connect only after explicit choice.
-
       
       // Open the wallet modal with auto-connect flag (fallback)
       console.log('🎯 Opening wallet modal for payment...');
