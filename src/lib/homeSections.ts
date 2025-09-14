@@ -42,10 +42,10 @@ export const homeSections: HomeSection[] = [
     hash: "#trust-security-section",
   },
   {
-    id: "anime-army-section",
+    id: "anime-token-army",
     title: "ANIME.TOKEN ARMY",
     icon: Users,
-    hash: "#anime-army-section",
+    hash: "#anime-token-army",
   },
   {
     id: "featured-community-content",

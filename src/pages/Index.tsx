@@ -309,7 +309,7 @@ const Index = () => {
       </div>
 
       {/* 5. COMMUNITY SECTION - ANIME ARMY */}
-      <div id="anime-army-section" className="scroll-mt-20">
+      <div id="anime-token-army" className="scroll-mt-20">
         <NFTSupporterSection />
       </div>
 
