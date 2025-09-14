@@ -265,6 +265,128 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
               onUpdate={handleUpdate}
               isOwner={isOwner}
             />
+            
+            {/* Dangerous Actions Section */}
+            <div className="mt-8 pt-6 border-t border-destructive/20">
+              <h4 className="font-semibold text-destructive mb-4 flex items-center gap-2">
+                <Flame className="h-4 w-4" />
+                Dangerous Actions
+              </h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                These actions cannot be undone. Please be careful.
+              </p>
+              
+              <div className="space-y-4">
+                {/* Collection Status Controls */}
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                  <div>
+                    <h5 className="font-medium">Collection Status</h5>
+                    <p className="text-sm text-muted-foreground">
+                      {currentCollection.is_live ? 'Collection is live - users can mint' : 'Collection is paused - minting disabled'}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={handlePauseStart}
+                    className={currentCollection.is_live ? "border-orange-500 text-orange-700 hover:bg-orange-50" : "border-green-500 text-green-700 hover:bg-green-50"}
+                  >
+                    {currentCollection.is_live ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Pause Minting
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Go Live
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Burn All NFTs */}
+                {hasMintedNFTs && (
+                  <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                    <div>
+                      <h5 className="font-medium text-destructive">Burn All NFTs</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Permanently destroy all {itemsRedeemed} minted NFTs in this collection
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          disabled={burningAll}
+                        >
+                          <Flame className="w-4 h-4 mr-2" />
+                          {burningAll ? 'Burning...' : 'Burn All NFTs'}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Burn All NFTs?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently destroy all {itemsRedeemed} NFTs in "{currentCollection.name}". 
+                            This action cannot be undone and will remove the NFTs from the blockchain forever.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleBurnAllNFTs}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Yes, Burn All NFTs
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+
+                {/* Delete Collection */}
+                <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                  <div>
+                    <h5 className="font-medium text-destructive">Delete Collection</h5>
+                    <p className="text-sm text-muted-foreground">
+                      {hasMintedNFTs 
+                        ? 'Cannot delete collection with minted NFTs. Burn all NFTs first.'
+                        : 'Permanently delete this collection from the platform'}
+                    </p>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        disabled={deleting || hasMintedNFTs}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {deleting ? 'Deleting...' : 'Delete Collection'}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Collection?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the collection "{currentCollection.name}". 
+                          This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteCollection}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Yes, Delete Collection
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </div>
           </CardContent>
         )}
       </Card>
