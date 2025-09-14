@@ -664,11 +664,48 @@ export default function NFTDetail() {
                     </div>
                   ) : publicKey === nft.owner_address ? (
                     // Owner viewing their own NFT
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <p className="text-muted-foreground">
-                        You own this NFT
-                      </p>
-                    </div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Edit className="h-4 w-4" />
+                          NFT Settings
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
+                          <p className="text-muted-foreground text-sm">
+                            You own this NFT
+                          </p>
+                        </div>
+                        
+                        <div className="flex flex-col gap-3">
+                          <Button 
+                            variant="outline"
+                            onClick={() => setIsEditDialogOpen(true)}
+                            className="w-full"
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit NFT Details
+                          </Button>
+                          
+                          <Button 
+                            variant="destructive"
+                            onClick={() => {
+                              const confirmDelete = window.confirm(
+                                `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
+                              );
+                              if (confirmDelete) {
+                                handleBurnNFT(nft.id, nft.mint_address);
+                              }
+                            }}
+                            className="w-full"
+                          >
+                            <Flame className="h-4 w-4 mr-2" />
+                            Burn NFT
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ) : (
                     // Connected user can buy
                     <div className="flex gap-3">
