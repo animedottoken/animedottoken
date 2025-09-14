@@ -121,6 +121,31 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [connectAfterSelection, wallet, connected, connecting, walletConnect, rememberWallet]);
 
+  // Silent auto-reconnect on load when remember is enabled
+  useEffect(() => {
+    if (!rememberWallet || connected || connecting) return;
+    const lastWallet = localStorage.getItem('walletName');
+    if (!lastWallet) return;
+    const saved = wallets.find(w => w.adapter.name === lastWallet);
+    if (!saved) return;
+    if (saved.readyState === WalletReadyState.Installed || saved.readyState === WalletReadyState.Loadable) {
+      try {
+        select(saved.adapter.name);
+        setTimeout(async () => {
+          try {
+            await walletConnect();
+            toast.success(`Reconnected to ${lastWallet}`);
+            try { window.dispatchEvent(new CustomEvent('wallet-connected')); } catch {}
+          } catch (e) {
+            console.warn('Silent auto-reconnect failed:', e);
+          }
+        }, 100);
+      } catch (e) {
+        console.warn('Failed to select saved wallet adapter:', e);
+      }
+    }
+  }, [rememberWallet, connected, connecting, wallets, select, walletConnect]);
+
   // Auto-open wallet modal and handle intents from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
