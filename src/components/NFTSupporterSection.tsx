@@ -347,7 +347,7 @@ export function NFTSupporterSection() {
   }, [viewMode]);
 
   return (
-    <section id="nft-supporter-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
+    <section id="anime-army-section" className="mx-auto mt-16 max-w-5xl px-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-700">
       <div>
         {/* Header */}
         <div className={`text-left ${viewMode === 'overview' ? 'mb-4' : 'mb-12'}`}>
