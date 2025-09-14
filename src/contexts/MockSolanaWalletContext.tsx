@@ -81,7 +81,14 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [error, setError] = useState<string | null>(null);
   const [connectAfterSelection, setConnectAfterSelection] = useState(false);
   const [rememberWallet, setRememberWallet] = useState(() => {
-    const remember = localStorage.getItem('remember-wallet') === 'true';
+    // Default to ON for better user experience (auto-reconnect by default)
+    const stored = localStorage.getItem('remember-wallet');
+    const remember = stored !== null ? stored === 'true' : true;
+    
+    // Set default value if not already set
+    if (stored === null) {
+      localStorage.setItem('remember-wallet', 'true');
+    }
     
     // If remember is OFF, proactively clear any persisted wallet data
     if (!remember) {

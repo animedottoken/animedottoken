@@ -734,20 +734,47 @@ export default function NFTDetail() {
               </Card>
             )}
             
-            {isOwner && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    NFT Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
-                    <p className="text-muted-foreground text-sm">
-                      You own this NFT
-                    </p>
-                  </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Edit className="h-4 w-4" />
+                  NFT Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {!publicKey ? (
+                  <>
+                    <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
+                      <p className="text-muted-foreground text-sm">
+                        Connect your wallet to manage this NFT
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <Button 
+                        variant="outline"
+                        disabled
+                        className="w-full"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit NFT Details
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        disabled
+                        className="w-full"
+                      >
+                        <Flame className="h-4 w-4 mr-2" />
+                        Burn NFT
+                      </Button>
+                      <Button 
+                        onClick={connect}
+                        className="w-full"
+                      >
+                        Connect Wallet
+                      </Button>
+                    </div>
+                  </>
+                ) : isOwner ? (
                   <div className="flex flex-col gap-3">
                     <Button 
                       variant="outline"
@@ -773,9 +800,53 @@ export default function NFTDetail() {
                       Burn NFT
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                ) : (
+                  <>
+                    <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
+                      <p className="text-muted-foreground text-sm">
+                        You don't own this NFT
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="outline"
+                              disabled
+                              className="w-full"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit NFT Details
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Only the owner can edit this NFT</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="destructive"
+                              disabled
+                              className="w-full"
+                            >
+                              <Flame className="h-4 w-4 mr-2" />
+                              Burn NFT
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Only the owner can burn this NFT</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
             {nft.description && (
               <Card>
