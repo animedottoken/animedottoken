@@ -345,6 +345,47 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
                   </div>
                 )}
 
+                {/* Burn Collection */}
+                {!hasMintedNFTs && isCollectionMinted && (
+                  <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                    <div>
+                      <h5 className="font-medium text-destructive">Burn Collection</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Permanently destroy the collection on-chain (no NFTs must exist)
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          disabled={true} // TODO: Implement burn collection functionality
+                        >
+                          <Flame className="w-4 h-4 mr-2" />
+                          Burn Collection
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Burn Collection?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently destroy the collection "{currentCollection.name}" on the blockchain. 
+                            This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => toast.info('Burn collection functionality coming soon')}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Yes, Burn Collection
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+
                 {/* Delete Collection */}
                 <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
                   <div>
@@ -352,7 +393,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
                     <p className="text-sm text-muted-foreground">
                       {hasMintedNFTs 
                         ? 'Cannot delete collection with minted NFTs. Burn all NFTs first.'
-                        : 'Permanently delete this collection from the platform'}
+                        : 'Permanently remove this collection from the platform database'}
                     </p>
                   </div>
                   <AlertDialog>
