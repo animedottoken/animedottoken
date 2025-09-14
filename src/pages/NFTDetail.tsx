@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play, FileText, Settings, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
@@ -37,6 +37,7 @@ export default function NFTDetail() {
   const [loading, setLoading] = useState(true);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [nftSettingsExpanded, setNftSettingsExpanded] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -734,118 +735,125 @@ export default function NFTDetail() {
               </Card>
             )}
             
+            {/* NFT Details Card - Matches Collection Details style */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Edit className="h-4 w-4" />
-                  NFT Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {!publicKey ? (
-                  <>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
-                      <p className="text-muted-foreground text-sm">
-                        Connect your wallet to manage this NFT
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <Button 
-                        variant="outline"
-                        disabled
-                        className="w-full"
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit NFT Details
-                      </Button>
-                      <Button 
-                        variant="destructive"
-                        disabled
-                        className="w-full"
-                      >
-                        <Flame className="h-4 w-4 mr-2" />
-                        Burn NFT
-                      </Button>
-                      <Button 
-                        onClick={connect}
-                        className="w-full"
-                      >
-                        Connect Wallet
-                      </Button>
-                    </div>
-                  </>
-                ) : isOwner ? (
-                  <div className="flex flex-col gap-3">
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    NFT Details
+                  </div>
+                  <div className="flex items-center gap-2">
                     <Button 
                       variant="outline"
-                      onClick={() => setIsEditDialogOpen(true)}
-                      className="w-full"
+                      size="sm"
+                      onClick={() => setNftSettingsExpanded(!nftSettingsExpanded)}
                     >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit NFT Details
-                    </Button>
-                    <Button 
-                      variant="destructive"
-                      onClick={() => {
-                        const confirmDelete = window.confirm(
-                          `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
-                        );
-                        if (confirmDelete) {
-                          handleBurnNFT(nft.id, nft.mint_address);
-                        }
-                      }}
-                      className="w-full"
-                    >
-                      <Flame className="h-4 w-4 mr-2" />
-                      Burn NFT
+                      <Settings className="w-3 h-3 mr-1" />
+                      Settings
+                      {nftSettingsExpanded ? (
+                        <ChevronUp className="w-3 h-3 ml-1" />
+                      ) : (
+                        <ChevronDown className="w-3 h-3 ml-1" />
+                      )}
                     </Button>
                   </div>
-                ) : (
-                  <>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg mb-4">
-                      <p className="text-muted-foreground text-sm">
-                        You don't own this NFT
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  NFT information and settings. Click "Settings" to modify.
+                </p>
+              </CardHeader>
+              {nftSettingsExpanded && (
+                <CardContent className="space-y-4">
+                  {!publicKey ? (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Connect your wallet to manage this NFT
                       </p>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              variant="outline"
-                              disabled
-                              className="w-full"
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit NFT Details
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Only the owner can edit this NFT</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              variant="destructive"
-                              disabled
-                              className="w-full"
-                            >
-                              <Flame className="h-4 w-4 mr-2" />
-                              Burn NFT
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Only the owner can burn this NFT</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </>
-                )}
-              </CardContent>
+                      <div className="flex flex-col gap-3">
+                        <Button disabled variant="secondary" className="justify-start">
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit NFT Details
+                        </Button>
+                        <Button disabled variant="secondary" className="justify-start text-destructive">
+                          <Flame className="w-4 h-4 mr-2" />
+                          Burn NFT
+                        </Button>
+                        <div className="mt-2">
+                          <Button onClick={connect} className="w-full">
+                            Connect Wallet
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  ) : isOwner ? (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Manage your NFT settings and actions
+                      </p>
+                      <div className="flex flex-col gap-3">
+                        <Button 
+                          onClick={() => setIsEditDialogOpen(true)}
+                          variant="secondary"
+                          className="justify-start"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit NFT Details
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            const confirmDelete = window.confirm(
+                              `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
+                            );
+                            if (confirmDelete) {
+                              handleBurnNFT(nft.id, nft.mint_address);
+                            }
+                          }}
+                          variant="secondary"
+                          className="justify-start text-destructive hover:bg-destructive/10"
+                        >
+                          <Flame className="w-4 h-4 mr-2" />
+                          Burn NFT
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        You must own this NFT to manage its settings
+                      </p>
+                      <div className="flex flex-col gap-3">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button disabled variant="secondary" className="justify-start">
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit NFT Details
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Only the owner can edit this NFT</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button disabled variant="secondary" className="justify-start text-destructive">
+                                <Flame className="w-4 h-4 mr-2" />
+                                Burn NFT
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Only the owner can burn this NFT</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              )}
             </Card>
 
             {nft.description && (
