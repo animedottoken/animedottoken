@@ -266,6 +266,39 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
               isOwner={isOwner}
             />
             
+            {/* Collection Status Controls */}
+            <div className="mt-8 pt-6 border-t border-border/20">
+              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Collection Status
+              </h4>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div>
+                  <h5 className="font-medium">Minting Status</h5>
+                  <p className="text-sm text-muted-foreground">
+                    {currentCollection.is_live ? 'Collection is live - users can mint' : 'Collection is paused - minting disabled'}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handlePauseStart}
+                  className={currentCollection.is_live ? "border-orange-500 text-orange-700 hover:bg-orange-50" : "border-green-500 text-green-700 hover:bg-green-50"}
+                >
+                  {currentCollection.is_live ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      Pause Minting
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Go Live
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+            
             {/* Dangerous Actions Section */}
             <div className="mt-8 pt-6 border-t border-destructive/20">
               <h4 className="font-semibold text-destructive mb-4 flex items-center gap-2">
@@ -277,32 +310,6 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
               </p>
               
               <div className="space-y-4">
-                {/* Collection Status Controls */}
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div>
-                    <h5 className="font-medium">Collection Status</h5>
-                    <p className="text-sm text-muted-foreground">
-                      {currentCollection.is_live ? 'Collection is live - users can mint' : 'Collection is paused - minting disabled'}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={handlePauseStart}
-                    className={currentCollection.is_live ? "border-orange-500 text-orange-700 hover:bg-orange-50" : "border-green-500 text-green-700 hover:bg-green-50"}
-                  >
-                    {currentCollection.is_live ? (
-                      <>
-                        <Pause className="w-4 h-4 mr-2" />
-                        Pause Minting
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        Go Live
-                      </>
-                    )}
-                  </Button>
-                </div>
 
                 {/* Burn All NFTs */}
                 {hasMintedNFTs && (
