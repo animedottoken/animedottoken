@@ -27,6 +27,7 @@ interface ExtendedNFT extends UserNFT {
   royalty_percentage?: number;
   creator_display_name?: string;
   owner_display_name?: string;
+  views?: number;
 }
 
 export default function NFTDetail() {
@@ -187,7 +188,8 @@ export default function NFTDetail() {
         royalty_percentage: collection?.royalty_percentage,
         collection_name: collection?.name,
         owner_display_name: ownerProfile?.display_name,
-        creator_display_name: creatorProfile?.display_name
+        creator_display_name: creatorProfile?.display_name,
+        views: pub.views || 0
       } as any;
 
       setNft(transformedNFT);
@@ -745,6 +747,31 @@ export default function NFTDetail() {
                     NFT Details
                   </div>
                   <div className="flex items-center gap-2">
+                    {/* Data Storage & Editability Legend */}
+                    <div className="flex items-center gap-2">
+                      {/* On-chain vs Off-chain status */}
+                      {(nft.mint_address || nft.metadata?.collection) ? (
+                        <Badge variant="default" className="bg-green-500 text-white text-xs">
+                          On-chain
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Off-chain
+                        </Badge>
+                      )}
+                      
+                      {/* Listing Status */}
+                      {nft.is_listed ? (
+                        <Badge variant="secondary" className="bg-blue-500 text-white text-xs">
+                          ● Listed
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Unlisted
+                        </Badge>
+                      )}
+                    </div>
+                    
                     <Button 
                       variant="outline"
                       size="sm"
@@ -760,12 +787,147 @@ export default function NFTDetail() {
                     </Button>
                   </div>
                 </CardTitle>
-                 <p className="text-sm text-muted-foreground">
-                   NFT information and management settings. Click "Settings" to modify.
-                 </p>
               </CardHeader>
+              
+              {/* Always visible comprehensive details */}
+              <CardContent className="space-y-6">
+                {/* Basic Information */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* NFT Name */}
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">NFT Name</div>
+                      <div className="font-medium">{nft.name}</div>
+                    </div>
+                    
+                    {/* Symbol */}
+                    {nft.symbol && (
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-1">Symbol</div>
+                        <div className="font-medium">{nft.symbol}</div>
+                      </div>
+                    )}
+                    
+                    {/* Collection */}
+                    {nft.collection_name && (
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-1">Collection</div>
+                        <Link 
+                          to={`/collection/${nft.collection_id}`}
+                          className="text-primary hover:underline font-medium"
+                        >
+                          {nft.collection_name}
+                        </Link>
+                      </div>
+                    )}
+                    
+                    {/* Media Type */}
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Media Type</div>
+                      <div className="font-medium">{getMediaTypeDisplay(detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type))?.label || 'Image'}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  {nft.description && (
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Description</div>
+                      <p className="text-muted-foreground">{nft.description}</p>
+                    </div>
+                  )}
+                  
+                  {/* Creator & Owner Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Creator</div>
+                      <div className="flex items-center gap-2">
+                        {nft.creator_display_name && (
+                          <span className="font-medium text-sm">{nft.creator_display_name}</span>
+                        )}
+                        <span className="text-sm text-muted-foreground">
+                          {nft.creator_address}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Owner</div>
+                      <div className="flex items-center gap-2">
+                        {nft.owner_display_name && (
+                          <span className="font-medium text-sm">{nft.owner_display_name}</span>
+                        )}
+                        <span className="text-sm text-muted-foreground">
+                          {nft.owner_address}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {nft.price && (
+                    <div className="text-center p-3 bg-muted/50 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">{nft.price}</div>
+                      <div className="text-sm text-muted-foreground">{nft.currency || 'SOL'}</div>
+                    </div>
+                  )}
+                  {nft.royalty_percentage !== undefined && (
+                    <div className="text-center p-3 bg-muted/50 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">{nft.royalty_percentage}%</div>
+                      <div className="text-sm text-muted-foreground">Royalties</div>
+                    </div>
+                  )}
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{nft.views || 0}</div>
+                    <div className="text-sm text-muted-foreground">Views</div>
+                  </div>
+                  {getEditionInfo() && (
+                    <div className="text-center p-3 bg-muted/50 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">#{getEditionInfo()}</div>
+                      <div className="text-sm text-muted-foreground">Edition</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Technical Information */}
+                {nft.mint_address && (
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-2">Technical Details</div>
+                    <div className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Mint Address:</span>
+                        <span className="font-mono text-xs">{nft.mint_address}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Created:</span>
+                        <span>{new Date(nft.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}</span>
+                      </div>
+                      {nft.updated_at !== nft.created_at && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Last Updated:</span>
+                          <span>{new Date(nft.updated_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+              
+              {/* Management Settings - Expandable */}
               {nftSettingsExpanded && (
-                <CardContent className="space-y-4">
+                <CardContent className="border-t pt-6 space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Settings className="h-4 w-4" />
+                    <span className="font-semibold">Management Actions</span>
+                  </div>
                   {!publicKey ? (
                     <>
                        <p className="text-sm text-muted-foreground mb-4">
@@ -790,7 +952,7 @@ export default function NFTDetail() {
                        </p>
                       <div className="flex flex-col gap-3">
                          <Button 
-                           onClick={() => setNftSettingsExpanded(false)}
+                           onClick={() => setIsEditDialogOpen(true)}
                            variant="secondary"
                            className="justify-start"
                          >
