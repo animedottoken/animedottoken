@@ -776,6 +776,7 @@ export default function NFTDetail() {
                       variant="outline"
                       size="sm"
                       onClick={() => setNftSettingsExpanded(!nftSettingsExpanded)}
+                      disabled={!publicKey && !isOwner}
                     >
                       <Settings className="w-3 h-3 mr-1" />
                       Settings
@@ -929,33 +930,41 @@ export default function NFTDetail() {
                     <span className="font-semibold">Management Actions</span>
                   </div>
                   {!publicKey ? (
-                    <>
-                       <p className="text-sm text-muted-foreground mb-4">
-                         Connect your wallet to access NFT management features
-                       </p>
-                       <div className="flex flex-col gap-3">
-                         <SolanaWalletButton />
-                         <Button disabled variant="secondary" className="justify-start">
-                           <Edit className="w-4 h-4 mr-2" />
-                           Edit NFT Details
-                         </Button>
-                         <Button disabled variant="secondary" className="justify-start text-destructive">
-                           <Flame className="w-4 h-4 mr-2" />
-                           Burn NFT
-                         </Button>
-                       </div>
-                    </>
+                    // Wallet not connected state
+                    <div className="space-y-4">
+                      <div className="text-center py-6">
+                        <Settings className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                        <h3 className="font-medium mb-2">Connect Wallet to Edit NFT</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Connect your wallet to access NFT management features
+                        </p>
+                        <SolanaWalletButton />
+                      </div>
+                      
+                      {/* Preview of available actions (disabled) */}
+                      <div className="flex flex-col gap-3 opacity-50">
+                        <Button disabled variant="secondary" className="justify-start">
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit NFT Details
+                        </Button>
+                        <Button disabled variant="secondary" className="justify-start text-destructive">
+                          <Flame className="w-4 h-4 mr-2" />
+                          Burn NFT
+                        </Button>
+                      </div>
+                    </div>
                   ) : isOwner ? (
+                    // Owner with connected wallet - full access
                     <>
-                       <p className="text-sm text-muted-foreground mb-4">
-                         You own this NFT and can manage its settings
-                       </p>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        You own this NFT and can manage its settings
+                      </p>
                       <div className="flex flex-col gap-3">
-                         <Button 
-                           onClick={() => setIsEditDialogOpen(true)}
-                           variant="secondary"
-                           className="justify-start"
-                         >
+                        <Button 
+                          onClick={() => setIsEditDialogOpen(true)}
+                          variant="secondary"
+                          className="justify-start"
+                        >
                           <Edit className="w-4 h-4 mr-2" />
                           Edit NFT Details
                         </Button>
@@ -977,11 +986,21 @@ export default function NFTDetail() {
                       </div>
                     </>
                   ) : (
-                    <>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        You must own this NFT to manage its settings
-                      </p>
-                      <div className="flex flex-col gap-3">
+                    // Connected but not owner state
+                    <div className="space-y-4">
+                      <div className="text-center py-6">
+                        <Settings className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                        <h3 className="font-medium mb-2">Owner-Only Settings</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Only the NFT owner can edit NFT details and manage settings.
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          Owner: {nft.owner_address}
+                        </div>
+                      </div>
+                      
+                      {/* Preview of owner actions (disabled) */}
+                      <div className="flex flex-col gap-3 opacity-50">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -1009,7 +1028,7 @@ export default function NFTDetail() {
                           </Tooltip>
                         </TooltipProvider>
                       </div>
-                    </>
+                    </div>
                   )}
                 </CardContent>
               )}

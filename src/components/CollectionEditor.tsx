@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +13,7 @@ import { useBurnAllNFTs } from '@/hooks/useBurnAllNFTs';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { SolanaWalletButton } from '@/components/SolanaWalletButton';
 import { supabase } from '@/integrations/supabase/client';
 
 interface CollectionEditorProps {
@@ -140,9 +140,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
     }
   };
 
-  if (!isOwner) {
-    return null;
-  }
+  // Always show the editor, but with different states based on ownership and wallet connection
 
   return (
     <div className="space-y-6">
@@ -220,6 +218,7 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
                 variant="outline"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
+                disabled={!publicKey && !isOwner}
               >
                 <Settings className="w-3 h-3 mr-1" />
                 Settings
@@ -237,204 +236,244 @@ export const CollectionEditor = ({ collection: initialCollection, onClose, mints
         </CardHeader>
         {isExpanded && (
           <CardContent>
-            {/* Legend Section */}
-            <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
-              <div className="flex flex-wrap gap-6 overflow-x-auto">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-                  <Badge variant="onchain">On-Chain</Badge>
-                  <span>Stored permanently on blockchain</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-                  <Badge variant="offchain">Off-Chain</Badge>
-                  <span>Stored in app database, editable</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-                  <Badge variant="chainlocked">Chain Locked</Badge>
-                  <span>Collection is minted on-chain</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-                  <Badge variant="locked">Creator Locked</Badge>
-                  <span>Locked by you for safety</span>
-                </div>
-              </div>
-            </div>
-            
-            <FlexibleFieldEditor
-              collection={currentCollection}
-              onUpdate={handleUpdate}
-              isOwner={isOwner}
-            />
-            
-            {/* Collection Status Controls */}
-            <div className="mt-8 pt-6 border-t border-border/20">
-              <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Collection Status
-              </h4>
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div>
-                  <h5 className="font-medium">Minting Status</h5>
-                  <p className="text-sm text-muted-foreground">
-                    {currentCollection.is_live ? 'Collection is live - users can mint' : 'Collection is paused - minting disabled'}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handlePauseStart}
-                  className={currentCollection.is_live ? "border-orange-500 text-orange-700 hover:bg-orange-50" : "border-green-500 text-green-700 hover:bg-green-50"}
-                >
-                  {currentCollection.is_live ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Pause Minting
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Go Live
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-            
-            {/* Dangerous Actions Section */}
-            <div className="mt-8 pt-6 border-t border-destructive/20">
-              <h4 className="font-semibold text-destructive mb-4 flex items-center gap-2">
-                <Flame className="h-4 w-4" />
-                Dangerous Actions
-              </h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                These actions cannot be undone. Please be careful.
-              </p>
-              
+            {!publicKey ? (
+              // Wallet not connected state
               <div className="space-y-4">
-
-                {/* Burn All NFTs */}
-                {hasMintedNFTs && (
-                  <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                <div className="text-center py-8">
+                  <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Connect Wallet to Manage Collection</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Connect your wallet to edit collection details, manage settings, and perform collection operations.
+                  </p>
+                  <div className="flex justify-center">
+                    <SolanaWalletButton />
+                  </div>
+                </div>
+                
+                {/* Preview of available actions (disabled) */}
+                <div className="space-y-3 opacity-50">
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <FileText className="h-4 w-4" />
+                    <span className="text-sm">Edit Collection Details</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <Play className="h-4 w-4" />
+                    <span className="text-sm">Manage Minting Status</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="text-sm">Collection Management</span>
+                  </div>
+                </div>
+              </div>
+            ) : !isOwner ? (
+              // Connected but not owner state  
+              <div className="space-y-4">
+                <div className="text-center py-8">
+                  <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Owner-Only Settings</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Only the collection creator can edit collection details and manage settings.
+                  </p>
+                  <div className="text-xs text-muted-foreground">
+                    Creator: {initialCollection.creator_address}
+                  </div>
+                </div>
+                
+                {/* Preview of owner actions (disabled) */}
+                <div className="space-y-3 opacity-50">
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <FileText className="h-4 w-4" />
+                    <span className="text-sm">Edit Collection Details</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <Play className="h-4 w-4" />
+                    <span className="text-sm">Manage Minting Status</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="text-sm">Collection Management</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Owner with connected wallet - full access
+              <>
+                {/* Legend Section */}
+                <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-normal mb-3">Data Storage & Editability Legend</h4>
+                  <div className="flex flex-wrap gap-6 overflow-x-auto">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+                      <Badge variant="onchain">On-Chain</Badge>
+                      <span>Stored permanently on blockchain</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+                      <Badge variant="offchain">Off-Chain</Badge>
+                      <span>Stored in app database, editable</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+                      <Badge variant="chainlocked">Chain Locked</Badge>
+                      <span>Collection is minted on-chain</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+                      <Badge variant="locked">Creator Locked</Badge>
+                      <span>Locked by you for safety</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <FlexibleFieldEditor
+                  collection={currentCollection}
+                  onUpdate={handleUpdate}
+                  isOwner={isOwner}
+                />
+                
+                {/* Collection Status Controls */}
+                <div className="mt-8 pt-6 border-t border-border/20">
+                  <h4 className="font-semibold mb-4 flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Collection Status
+                  </h4>
+                  <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div>
-                      <h5 className="font-medium text-destructive">Burn All NFTs</h5>
+                      <h5 className="font-medium">Minting Status</h5>
                       <p className="text-sm text-muted-foreground">
-                        Permanently destroy all {itemsRedeemed} minted NFTs in this collection
+                        {currentCollection.is_live ? 'Collection is live - users can mint' : 'Collection is paused - minting disabled'}
                       </p>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          disabled={burningAll}
-                        >
-                          <Flame className="w-4 h-4 mr-2" />
-                          {burningAll ? 'Burning...' : 'Burn All NFTs'}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Burn All NFTs?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently destroy all {itemsRedeemed} NFTs in "{currentCollection.name}". 
-                            This action cannot be undone and will remove the NFTs from the blockchain forever.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={handleBurnAllNFTs}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Yes, Burn All NFTs
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="outline"
+                      onClick={handlePauseStart}
+                      className={currentCollection.is_live ? "border-orange-500 text-orange-700 hover:bg-orange-50" : "border-green-500 text-green-700 hover:bg-green-50"}
+                    >
+                      {currentCollection.is_live ? (
+                        <>
+                          <Pause className="w-4 h-4 mr-2" />
+                          Pause Minting
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Go Live
+                        </>
+                      )}
+                    </Button>
                   </div>
-                )}
+                </div>
+                
+                {/* Dangerous Actions Section */}
+                <div className="mt-8 pt-6 border-t border-destructive/20">
+                  <h4 className="font-semibold text-destructive mb-4 flex items-center gap-2">
+                    <Flame className="h-4 w-4" />
+                    Dangerous Actions
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    These actions cannot be undone. Please be careful.
+                  </p>
+                  
+                  <div className="space-y-4">
 
-                {/* Burn Collection */}
-                {!hasMintedNFTs && isCollectionMinted && (
-                  <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
-                    <div>
-                      <h5 className="font-medium text-destructive">Burn Collection</h5>
-                      <p className="text-sm text-muted-foreground">
-                        Permanently destroy the collection on-chain (no NFTs must exist)
-                      </p>
-                    </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          disabled={true} // TODO: Implement burn collection functionality
-                        >
-                          <Flame className="w-4 h-4 mr-2" />
-                          Burn Collection
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Burn Collection?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently destroy the collection "{currentCollection.name}" on the blockchain. 
-                            This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => toast.info('Burn collection functionality coming soon')}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Yes, Burn Collection
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                )}
+                    {/* Burn All NFTs */}
+                    {hasMintedNFTs && (
+                      <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                        <div>
+                          <h5 className="font-medium text-destructive">Burn All NFTs</h5>
+                          <p className="text-sm text-muted-foreground">
+                            Permanently destroy all {itemsRedeemed} minted NFTs in this collection
+                          </p>
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              disabled={burningAll}
+                            >
+                              <Flame className="w-4 h-4 mr-2" />
+                              {burningAll ? 'Burning...' : 'Burn All NFTs'}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Burn All NFTs?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently destroy all {itemsRedeemed} NFTs in "{currentCollection.name}". 
+                                This action cannot be undone and will remove the NFTs from the blockchain forever.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={handleBurnAllNFTs}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Yes, Burn All NFTs
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    )}
 
-                {/* Delete Collection */}
-                <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
-                  <div>
-                    <h5 className="font-medium text-destructive">Delete Collection</h5>
-                    <p className="text-sm text-muted-foreground">
-                      {hasMintedNFTs 
-                        ? 'Cannot delete collection with minted NFTs. Burn all NFTs first.'
-                        : 'Permanently remove this collection from the platform database'}
-                    </p>
-                  </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
+                    {/* Burn Collection - Placeholder */}
+                    <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg opacity-50">
+                      <div>
+                        <h5 className="font-medium text-destructive">Burn Collection</h5>
+                        <p className="text-sm text-muted-foreground">
+                          Burn the collection itself (Coming Soon)
+                        </p>
+                      </div>
                       <Button
                         variant="destructive"
-                        disabled={deleting || hasMintedNFTs}
+                        size="sm"
+                        disabled
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        {deleting ? 'Deleting...' : 'Delete Collection'}
+                        <Flame className="w-4 h-4 mr-2" />
+                        Coming Soon
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Collection?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete the collection "{currentCollection.name}". 
-                          This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={handleDeleteCollection}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Yes, Delete Collection
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    </div>
+
+                    {/* Delete Collection */}
+                    <div className="flex items-center justify-between p-4 border border-destructive/20 rounded-lg">
+                      <div>
+                        <h5 className="font-medium text-destructive">Delete Collection</h5>
+                        <p className="text-sm text-muted-foreground">
+                          Remove collection from database {hasMintedNFTs ? '(Burn NFTs first)' : ''}
+                        </p>
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            disabled={hasMintedNFTs || deleting}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            {deleting ? 'Deleting...' : 'Delete'}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{currentCollection.name}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDeleteCollection}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Yes, Delete Collection
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </CardContent>
         )}
       </Card>
