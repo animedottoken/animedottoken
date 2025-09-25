@@ -1506,7 +1506,7 @@ export type Database = {
           trade_count: number
           twitter_handle: string
           verified: boolean
-          wallet_address: string
+          wallet_address_masked: string
           website_url: string
         }[]
       }
