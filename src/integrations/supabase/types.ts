@@ -1564,6 +1564,16 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: undefined
       }
+      verify_wallet_securely: {
+        Args: {
+          p_message: string
+          p_signature: string
+          p_user_id: string
+          p_wallet_address: string
+          p_wallet_type: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       anime_reward_type: "vault_access" | "governance" | "yield_share"

@@ -155,20 +155,17 @@ serve(async (req) => {
         throw deleteError;
       }
 
-      // Add wallet to current user (preserve the original wallet type)
-      const { error: insertError } = await supabaseAdmin
-        .from('user_wallets')
-        .insert({
-          user_id: user.id,
-          wallet_address: wallet_address,
-          wallet_type: existingWallet.wallet_type,
-          is_verified: true,
-          verification_signature: signature,
-          verification_message: message
-        });
+      // Use secure wallet verification - signatures are not stored long-term for security
+      const verificationResult = await supabaseAdmin.rpc('verify_wallet_securely', {
+        p_user_id: user.id,
+        p_wallet_address: wallet_address,
+        p_wallet_type: existingWallet.wallet_type,
+        p_signature: signature,
+        p_message: message
+      });
 
-      if (insertError) {
-        throw insertError;
+      if (verificationResult.error || !verificationResult.data?.success) {
+        throw new Error(`Wallet verification failed: ${verificationResult.data?.error || 'Unknown error'}`);
       }
 
       // Log the reclaim action

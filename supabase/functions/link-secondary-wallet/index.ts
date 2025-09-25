@@ -208,73 +208,48 @@ serve(async (req) => {
       }
     }
 
-    // Add the wallet to user_wallets (handle schemas that may not have verification columns)
+    // Use secure wallet verification - signatures are not stored long-term for security
+    const verificationResult = await supabaseClient.rpc('verify_wallet_securely', {
+      p_user_id: user.id,
+      p_wallet_address: wallet_address,
+      p_wallet_type: wallet_type,
+      p_signature: signature,
+      p_message: message
+    });
+
+    if (verificationResult.error || !verificationResult.data?.success) {
+      console.error('Secure verification failed:', verificationResult.error);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Wallet verification failed',
+          details: verificationResult.data?.error || 'Unknown verification error'
+        }),
+        { headers: corsHeaders, status: 400 }
+      );
+    }
+
+    // Get the newly created wallet
     let insertResult = await supabaseClient
       .from('user_wallets')
-      .insert({
-        user_id: user.id,
-        wallet_address,
-        wallet_type,
-        is_verified: true,
-        verification_signature: signature,
-        verification_message: message,
-        linked_at: new Date().toISOString()
-      })
       .select()
+      .eq('id', verificationResult.data.wallet_id)
       .single();
 
     let newWallet = insertResult.data;
     let insertError = insertResult.error as any;
 
     if (insertError) {
-      console.error('Database insert error (attempt 1):', insertError);
-
-      // Fallback for schemas without verification_* columns
-      const isUndefinedColumn = insertError?.code === '42703' ||
-        (typeof insertError?.message === 'string' &&
-         (insertError.message.includes('verification_signature') || insertError.message.includes('verification_message') || insertError.message.includes('column')));
-
-      if (isUndefinedColumn) {
-        const fallback = await supabaseClient
-          .from('user_wallets')
-          .insert({
-            user_id: user.id,
-            wallet_address,
-            wallet_type,
-            is_verified: true,
-            linked_at: new Date().toISOString()
-          })
-          .select()
-          .single();
-
-        newWallet = fallback.data;
-        insertError = fallback.error;
-      }
-    }
-
-    if (insertError) {
-      console.error('Database insert error (final):', insertError, {
-        user_id: user.id,
-        wallet_address,
-        wallet_type,
-        error_code: insertError.code,
-        error_details: insertError.details
-      });
-      
-      // Handle specific error cases
-      if (typeof insertError.message === 'string' && insertError.message.includes('more than 10 secondary wallets')) {
-        return new Response(
-          JSON.stringify({ success: false, error: 'You cannot link more than 10 secondary wallets' }),
-          { status: 200, headers: corsHeaders }
-        );
-      }
-      
+      console.error('Database select error after verification:', insertError);
       return new Response(
-        JSON.stringify({ success: false, error: 'Failed to link wallet', details: insertError.message }),
-        { status: 200, headers: corsHeaders }
+        JSON.stringify({ 
+          error: 'Failed to retrieve wallet after verification',
+          details: insertError.message
+        }),
+        { headers: corsHeaders, status: 500 }
       );
     }
 
+    // Log successful wallet linking
     console.log('link-secondary-wallet success:', { 
       user_id: user.id,
       wallet_id: newWallet.id,
