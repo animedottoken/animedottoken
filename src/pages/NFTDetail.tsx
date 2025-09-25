@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play, FileText, Settings, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import type { UserNFT } from "@/hooks/useUserNFTs";
 import { useNavigationContext } from "@/hooks/useNavigationContext";
 import { BidModal } from "@/components/BidModal";
@@ -759,44 +760,40 @@ export default function NFTDetail() {
                     </Button>
                   </div>
                 </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  NFT information and settings. Click "Settings" to modify.
-                </p>
+                 <p className="text-sm text-muted-foreground">
+                   NFT information and management settings. Click "Settings" to modify.
+                 </p>
               </CardHeader>
               {nftSettingsExpanded && (
                 <CardContent className="space-y-4">
                   {!publicKey ? (
                     <>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Connect your wallet to manage this NFT
-                      </p>
-                      <div className="flex flex-col gap-3">
-                        <Button disabled variant="secondary" className="justify-start">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit NFT Details
-                        </Button>
-                        <Button disabled variant="secondary" className="justify-start text-destructive">
-                          <Flame className="w-4 h-4 mr-2" />
-                          Burn NFT
-                        </Button>
-                        <div className="mt-2">
-                          <Button onClick={connect} className="w-full">
-                            Connect Wallet
-                          </Button>
-                        </div>
-                      </div>
+                       <p className="text-sm text-muted-foreground mb-4">
+                         Connect your wallet to access NFT management features
+                       </p>
+                       <div className="flex flex-col gap-3">
+                         <SolanaWalletButton />
+                         <Button disabled variant="secondary" className="justify-start">
+                           <Edit className="w-4 h-4 mr-2" />
+                           Edit NFT Details
+                         </Button>
+                         <Button disabled variant="secondary" className="justify-start text-destructive">
+                           <Flame className="w-4 h-4 mr-2" />
+                           Burn NFT
+                         </Button>
+                       </div>
                     </>
                   ) : isOwner ? (
                     <>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Manage your NFT settings and actions
-                      </p>
+                       <p className="text-sm text-muted-foreground mb-4">
+                         You own this NFT and can manage its settings
+                       </p>
                       <div className="flex flex-col gap-3">
-                        <Button 
-                          onClick={() => setIsEditDialogOpen(true)}
-                          variant="secondary"
-                          className="justify-start"
-                        >
+                         <Button 
+                           onClick={() => setNftSettingsExpanded(false)}
+                           variant="secondary"
+                           className="justify-start"
+                         >
                           <Edit className="w-4 h-4 mr-2" />
                           Edit NFT Details
                         </Button>
@@ -1042,15 +1039,6 @@ export default function NFTDetail() {
         />
       )}
 
-      {/* Edit NFT Dialog */}
-      {nft && (
-        <EditNFTDialog
-          nft={nft}
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
-          onUpdate={fetchNFT}
-        />
-      )}
     </div>
   );
 }
