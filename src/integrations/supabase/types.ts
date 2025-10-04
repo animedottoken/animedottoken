@@ -994,8 +994,6 @@ export type Database = {
           linked_at: string
           updated_at: string
           user_id: string
-          verification_message: string | null
-          verification_signature: string | null
           wallet_address: string
           wallet_type: string
         }
@@ -1006,8 +1004,6 @@ export type Database = {
           linked_at?: string
           updated_at?: string
           user_id: string
-          verification_message?: string | null
-          verification_signature?: string | null
           wallet_address: string
           wallet_type: string
         }
@@ -1018,8 +1014,6 @@ export type Database = {
           linked_at?: string
           updated_at?: string
           user_id?: string
-          verification_message?: string | null
-          verification_signature?: string | null
           wallet_address?: string
           wallet_type?: string
         }
