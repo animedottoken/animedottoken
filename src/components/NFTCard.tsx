@@ -27,10 +27,10 @@ interface NFTCardProps {
     name: string;
     image_url: string;
     price?: number;
-    owner_address: string;
+    owner_address?: string;
     owner_nickname?: string;
     owner_verified?: boolean;
-    creator_address: string;
+    creator_address?: string;
     creator_nickname?: string;
     creator_verified?: boolean;
     mint_address: string;
@@ -69,8 +69,8 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
     
     if (isPending(nft.id)) return;
     
-    console.log('Toggling like for NFT:', nft.id, 'Creator:', nft.creator_address);
-    await toggleLike(nft.id, nft.creator_address);
+    console.log('Toggling like for NFT:', nft.id);
+    await toggleLike(nft.id);
   };
 
   return (
@@ -263,26 +263,38 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
             <div className="space-y-1 text-sm mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Creator:</span>
-                <Link 
-                  to={`/profile/${nft.creator_address}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-foreground hover:text-primary transition-colors"
-                >
-                  {nft.creator_nickname || truncateAddress(nft.creator_address)}
-                </Link>
+                {nft.creator_address ? (
+                  <Link 
+                    to={`/profile/${nft.creator_address}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    {nft.creator_nickname || truncateAddress(nft.creator_address)}
+                  </Link>
+                ) : (
+                  <span className="text-foreground">
+                    {nft.creator_nickname || 'Anonymous'}
+                  </span>
+                )}
                 {nft.creator_verified && (
                   <CheckCircle className="h-4 w-4 text-primary" />
                 )}
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Owner:</span>
-                <Link 
-                  to={`/profile/${nft.owner_address}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-foreground hover:text-primary transition-colors"
-                >
-                  {nft.owner_nickname || truncateAddress(nft.owner_address)}
-                </Link>
+                {nft.owner_address ? (
+                  <Link 
+                    to={`/profile/${nft.owner_address}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    {nft.owner_nickname || truncateAddress(nft.owner_address)}
+                  </Link>
+                ) : (
+                  <span className="text-foreground">
+                    {nft.owner_nickname || 'Anonymous'}
+                  </span>
+                )}
                 {nft.owner_verified && (
                   <CheckCircle className="h-4 w-4 text-primary" />
                 )}

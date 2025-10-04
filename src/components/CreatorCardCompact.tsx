@@ -26,7 +26,7 @@ export const CreatorCardCompact = ({ creator }: CreatorCardCompactProps) => {
   };
 
   return (
-    <Link to={`/profile/${creator.wallet_address}`}>
+    <Link to={`/profile/${creator.creator_user_id}`}>
       <Card className="hover:shadow-lg transition-shadow cursor-pointer">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">

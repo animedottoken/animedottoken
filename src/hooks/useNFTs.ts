@@ -9,8 +9,6 @@ interface NFT {
   price?: number;
   is_listed: boolean;
   category?: string;
-  creator_address: string;
-  owner_address: string;
   owner_nickname: string;
   owner_verified: boolean;
   creator_nickname: string;

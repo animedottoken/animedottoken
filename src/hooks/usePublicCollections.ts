@@ -8,7 +8,6 @@ export interface PublicCollection {
   site_description?: string | null;
   image_url?: string | null;
   banner_image_url?: string | null;
-  creator_address: string;
   creator_nickname: string;
   creator_verified: boolean;
   category?: string | null;

@@ -4,7 +4,6 @@ import { useProfileFilters } from '@/contexts/ProfileFiltersContext';
 
 export interface Creator {
   creator_user_id: string;
-  wallet_address: string;
   nickname: string;
   profile_image_url?: string;
   verified: boolean;

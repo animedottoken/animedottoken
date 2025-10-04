@@ -21,7 +21,7 @@ interface CollectionCardProps {
     name: string;
     image_url: string;
     mint_price?: number;
-    creator_address: string;
+    creator_address?: string;
     creator_nickname?: string;
     creator_verified?: boolean;
     max_supply?: number;
@@ -167,16 +167,25 @@ export const CollectionCard = ({
             {showCreatorInfo && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <span>by</span>
-                <Link 
-                  to={`/profile/${collection.creator_address}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="hover:text-foreground transition-colors flex items-center gap-1"
-                >
-                  {collection.creator_nickname || truncateAddress(collection.creator_address)}
-                  {collection.creator_verified && (
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                  )}
-                </Link>
+                {collection.creator_address ? (
+                  <Link 
+                    to={`/profile/${collection.creator_address}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    {collection.creator_nickname || truncateAddress(collection.creator_address)}
+                    {collection.creator_verified && (
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    )}
+                  </Link>
+                ) : (
+                  <span className="hover:text-foreground transition-colors flex items-center gap-1">
+                    {collection.creator_nickname || 'Anonymous'}
+                    {collection.creator_verified && (
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    )}
+                  </span>
+                )}
               </div>
             )}
           </div>
