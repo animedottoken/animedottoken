@@ -28,6 +28,8 @@ interface SolanaWalletContextType {
   walletIcon: string | null;
   rememberWallet: boolean;
   wallet: any; // Expose wallet adapter for Metaplex
+  connection: any; // Expose connection for transactions
+  signTransaction: ((transaction: any) => Promise<any>) | null; // Expose signTransaction for payments
   connect: () => Promise<void>;
   connectPaymentWallet: (intent?: string) => Promise<void>;
   openWalletSelector: () => void;
@@ -51,6 +53,8 @@ const SolanaWalletContext = createContext<SolanaWalletContextType>({
   walletIcon: null,
   rememberWallet: false,
   wallet: null,
+  connection: null,
+  signTransaction: null,
   connect: async () => {},
   connectPaymentWallet: async (_intent?: string) => {},
   openWalletSelector: () => {},
@@ -72,7 +76,7 @@ export const useSolanaWallet = () => {
 };
 
 const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets, select, wallet, signMessage } = useWallet();
+  const { publicKey, connected, connecting, connect: walletConnect, disconnect: walletDisconnect, wallets, select, wallet, signMessage, signTransaction } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
   const { user } = useAuth();
@@ -542,6 +546,8 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     walletIcon: wallet?.adapter.icon || null,
     rememberWallet,
     wallet, // Expose wallet adapter for Metaplex
+    connection, // Expose connection for transactions
+    signTransaction: signTransaction || null, // Expose signTransaction for payments
     connect,
     connectPaymentWallet,
     openWalletSelector,

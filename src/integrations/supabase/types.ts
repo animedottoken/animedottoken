@@ -962,6 +962,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_wallets: {
         Row: {
           created_at: string
@@ -1588,6 +1612,13 @@ export type Database = {
           wallet_type: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       increment_user_trade_count: {
         Args: { user_wallet_address: string }
         Returns: undefined
@@ -1625,6 +1656,7 @@ export type Database = {
     }
     Enums: {
       anime_reward_type: "vault_access" | "governance" | "yield_share"
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1753,6 +1785,7 @@ export const Constants = {
   public: {
     Enums: {
       anime_reward_type: ["vault_access", "governance", "yield_share"],
+      app_role: ["admin", "moderator", "user"],
     },
   },
 } as const

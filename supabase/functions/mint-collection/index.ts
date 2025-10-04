@@ -17,18 +17,63 @@ serve(async (req) => {
   }
 
   try {
+    // CRITICAL SECURITY: Verify JWT authentication
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const serviceClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Get authenticated user
+    const { data: { user }, error: authError } = await serviceClient.auth.getUser(
+      authHeader.replace("Bearer ", "")
+    );
+
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const body: MintCollectionRequest = await req.json();
-    console.log('Mint-collection request body:', body);
+    console.log('Mint-collection request from user:', user.id);
 
     if (!body || !body.collectionId || !body.creatorAddress) {
       return new Response(
         JSON.stringify({ error: "Missing required fields: collectionId, creatorAddress" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // CRITICAL SECURITY: Rate limiting (3 requests per 60 minutes)
+    const { data: rateLimitOk } = await serviceClient.rpc('check_rate_limit', {
+      p_user_wallet: body.creatorAddress,
+      p_endpoint: 'mint-collection',
+      p_max_requests: 3,
+      p_window_minutes: 60
+    });
+
+    if (!rateLimitOk) {
+      await serviceClient.from('security_events').insert({
+        event_type: 'rate_limit_exceeded',
+        severity: 'high',
+        user_id: user.id,
+        wallet_address: body.creatorAddress,
+        metadata: { endpoint: 'mint-collection' }
+      });
+
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -46,6 +91,67 @@ serve(async (req) => {
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // CRITICAL SECURITY: Verify ownership - creator_address must match authenticated user's wallet
+    if (collection.creator_address !== body.creatorAddress) {
+      await serviceClient.from('security_events').insert({
+        event_type: 'unauthorized_access_attempt',
+        severity: 'critical',
+        user_id: user.id,
+        wallet_address: body.creatorAddress,
+        metadata: {
+          action: 'mint-collection',
+          collection_id: body.collectionId,
+          actual_creator: collection.creator_address
+        }
+      });
+
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: You are not the creator of this collection" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // CRITICAL SECURITY: Verify user's primary wallet matches creator address
+    const { data: userWallets } = await serviceClient
+      .from('user_wallets')
+      .select('wallet_address, wallet_type')
+      .eq('user_id', user.id)
+      .eq('is_verified', true);
+
+    const hasMatchingWallet = userWallets?.some(
+      w => w.wallet_address === body.creatorAddress && w.wallet_type === 'primary'
+    );
+
+    if (!hasMatchingWallet) {
+      await serviceClient.from('security_events').insert({
+        event_type: 'unauthorized_access_attempt',
+        severity: 'critical',
+        user_id: user.id,
+        wallet_address: body.creatorAddress,
+        metadata: {
+          action: 'mint-collection',
+          reason: 'wallet_not_linked_to_user'
+        }
+      });
+
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Wallet not linked to your account" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Log successful mint attempt
+    await serviceClient.from('security_events').insert({
+      event_type: 'collection_mint_initiated',
+      severity: 'info',
+      user_id: user.id,
+      wallet_address: body.creatorAddress,
+      metadata: {
+        collection_id: body.collectionId,
+        collection_name: collection.name
+      }
+    });
 
     // Simulate Collection NFT minting on Solana (using Metaplex)
     // In a real implementation, this would use @metaplex-foundation/js to create a Collection NFT

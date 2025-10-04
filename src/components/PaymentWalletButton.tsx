@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Wallet, CreditCard } from 'lucide-react';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
+import { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { toast } from 'sonner';
 
 interface PaymentWalletButtonProps {
   onPaymentComplete?: (txSignature: string) => void;
@@ -19,28 +21,59 @@ export const PaymentWalletButton = ({
   currency = 'ANIME',
   children 
 }: PaymentWalletButtonProps) => {
-  const { connected, publicKey, connectPaymentWallet } = useSolanaWallet();
+  const { connected, publicKey, connectPaymentWallet, connection, signTransaction } = useSolanaWallet();
   const [processing, setProcessing] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
 
   const handlePayment = async () => {
-    if (!connected) {
+    if (!connected || !publicKey) {
       await connectPaymentWallet();
       return;
     }
 
     setProcessing(true);
     try {
-      // Simulate payment transaction
-      const demoTxSignature = `demo_tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // CRITICAL SECURITY: Create real Solana transaction
+      const recipientPubkey = new PublicKey('7zi8Vhb7BNSVWHJSQBJHLs4DtDk7fE4XzULuUyyfuwL8');
+      const senderPubkey = new PublicKey(publicKey);
+      const amountInLamports = Math.floor((amount || 0.1) * LAMPORTS_PER_SOL);
+
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: senderPubkey,
+          toPubkey: recipientPubkey,
+          lamports: amountInLamports,
+        })
+      );
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = senderPubkey;
+
+      if (!signTransaction) {
+        throw new Error('Wallet does not support signing transactions');
+      }
+
+      toast.info('Please approve the transaction in your wallet...');
+      const signedTx = await signTransaction(transaction);
       
-      // Simulate transaction time
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast.info('Transaction sent, waiting for confirmation...');
+      const txSignature = await connection.sendRawTransaction(signedTx.serialize());
+      await connection.confirmTransaction(txSignature, 'confirmed');
       
       setPaymentCompleted(true);
-      onPaymentComplete?.(demoTxSignature);
-    } catch (error) {
+      toast.success('Payment completed successfully!');
+      onPaymentComplete?.(txSignature);
+    } catch (error: any) {
       console.error('Payment error:', error);
+      
+      if (error.message?.includes('User rejected') || error.message?.includes('cancelled')) {
+        toast.error('Transaction cancelled by user');
+      } else if (error.message?.includes('Insufficient')) {
+        toast.error('Insufficient funds for transaction');
+      } else {
+        toast.error('Payment failed. Please try again.');
+      }
       setProcessing(false);
     }
   };

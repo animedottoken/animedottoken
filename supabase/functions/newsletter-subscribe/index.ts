@@ -2,6 +2,14 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { Resend } from "npm:resend@2.0.0"
 
+// SECURITY: Mask email addresses in logs to prevent PII exposure
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***@***';
+  const maskedLocal = local.length > 2 ? `${local.slice(0, 2)}***` : '***';
+  return `${maskedLocal}@${domain}`;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -71,7 +79,7 @@ serve(async (req) => {
     }
 
     const email = user.email
-    console.log(`📬 Processing newsletter subscription for: ${email}`)
+    console.log(`📬 Processing newsletter subscription for: ${maskEmail(email)}`)
 
     // Create admin Supabase client for database operations
     const supabaseAdmin = createClient(
@@ -227,7 +235,7 @@ serve(async (req) => {
           
           console.log('📤 Sending email with payload:', {
             from: fromEmail,
-            to: email,
+            to: maskEmail(email),
             subject: emailPayload.subject,
             htmlLength: html.length,
             replyTo: emailPayload.reply_to
@@ -244,7 +252,7 @@ serve(async (req) => {
             console.log('   - Rate limits exceeded');
             console.log('⚠️ Email failed but subscription record was created/updated');
           } else {
-            console.log(`✅ Confirmation email sent successfully to: ${email}`);
+            console.log(`✅ Confirmation email sent successfully to: ${maskEmail(email)}`);
             console.log('📧 Email response:', emailData);
             emailSent = true;
           }

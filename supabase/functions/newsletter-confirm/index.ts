@@ -2,6 +2,14 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { Resend } from "npm:resend@2.0.0"
 
+// SECURITY: Mask email addresses in logs to prevent PII exposure
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***@***';
+  const maskedLocal = local.length > 2 ? `${local.slice(0, 2)}***` : '***';
+  return `${maskedLocal}@${domain}`;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -102,7 +110,7 @@ serve(async (req) => {
       throw updateError
     }
 
-    console.log(`✅ Newsletter subscription confirmed for: ${subscription.email}`)
+    console.log(`✅ Newsletter subscription confirmed for: ${maskEmail(subscription.email)}`)
 
     // Add confirmed subscriber to Resend audience and send confirmation email (optional)
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
@@ -116,7 +124,7 @@ serve(async (req) => {
         // Add to audience if configured
         if (audienceId && subscription?.email) {
           try {
-            console.log('Adding subscriber to Resend audience:', subscription.email)
+            console.log('Adding subscriber to Resend audience:', maskEmail(subscription.email))
             if (resend.contacts) {
               await resend.contacts.create({
                 email: subscription.email,

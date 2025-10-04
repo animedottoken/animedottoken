@@ -1,6 +1,14 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// SECURITY: Mask email addresses in logs to prevent PII exposure
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***@***';
+  const maskedLocal = local.length > 2 ? `${local.slice(0, 2)}***` : '***';
+  return `${maskedLocal}@${domain}`;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -71,7 +79,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('✅ Authenticated user:', userEmail);
+    console.log('✅ Authenticated user:', maskEmail(userEmail));
 
     // Use service role key for database operations
     const supabase = createClient(
@@ -79,7 +87,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    console.log('📊 Checking newsletter status in database for:', userEmail);
+    console.log('📊 Checking newsletter status in database for:', maskEmail(userEmail));
 
     // Find the subscription record by email
     const { data: subscription, error: findError } = await supabase
@@ -119,7 +127,7 @@ serve(async (req) => {
     const isSubscribed = finalStatus === 'confirmed';
 
     console.log('✅ Final newsletter status:', { 
-      email: userEmail, 
+      email: maskEmail(userEmail), 
       status: finalStatus, 
       isSubscribed,
       subscribedAt,
