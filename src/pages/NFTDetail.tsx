@@ -19,7 +19,7 @@ import { EditNFTDialog } from "@/components/EditNFTDialog";
 import { UserProfileDisplay } from "@/components/UserProfileDisplay";
 import { detectMediaKind, getMediaTypeDisplay } from '@/lib/media';
 import { truncateAddress } from "@/utils/addressUtils";
-import { formatAttributes } from '@/lib/attributeHelpers';
+import { normalizeAttributes } from '@/lib/attributes';
 
 interface ExtendedNFT extends UserNFT {
   price?: number;
@@ -406,6 +406,33 @@ export default function NFTDetail() {
                       {nft.royalty_percentage}% creator royalty
                     </div>
                   )}
+                  
+                  {/* BUY / BID BUTTONS HERE */}
+                  {nft.is_listed && nft.price && !isOwner && (
+                    <div className="mt-4">
+                      {!publicKey ? (
+                        <div className="text-center p-4 bg-muted/50 rounded-lg">
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Connect your wallet to purchase this NFT
+                          </p>
+                          <SolanaWalletButton />
+                        </div>
+                      ) : (
+                        <div className="flex gap-3">
+                          <Button className="flex-1" size="lg">
+                            Buy Now
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="lg"
+                            onClick={() => setIsBidModalOpen(true)}
+                          >
+                            Place Bid
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -480,6 +507,210 @@ export default function NFTDetail() {
                 </div>
               </div>
 
+              {/* Basic Information */}
+              <div>
+                <h4 className="font-semibold mb-3">Basic Information</h4>
+                <div className="space-y-3">
+                  {/* Name */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Name</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {nft.name}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                      {isOwner && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setIsEditDialogOpen(true)}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Symbol */}
+                  {nft.symbol && (
+                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Symbol</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {nft.symbol}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                        {isOwner && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setIsEditDialogOpen(true)}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  {nft.description && (
+                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Description</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {nft.description}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                        {isOwner && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setIsEditDialogOpen(true)}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Media Type */}
+                  {(() => {
+                    const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
+                    const mediaDisplay = getMediaTypeDisplay(mediaKind);
+                    return (
+                      <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">Media Type</div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {mediaDisplay?.label || 'Static Image'}
+                          </div>
+                        </div>
+                        <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Category */}
+                  {nft.metadata?.category && (
+                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Category</div>
+                        <div className="text-sm text-muted-foreground mt-1 capitalize">
+                          {nft.metadata.category}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                        {isOwner && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setIsEditDialogOpen(true)}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Listing & Market Information */}
+              <div>
+                <h4 className="font-semibold mb-3">Listing & Market Information</h4>
+                <div className="space-y-3">
+                  {/* Listing Status */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Listing Status</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {nft.is_listed ? '✓ Listed for sale' : '✗ Not listed'}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                      {isOwner && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setIsEditDialogOpen(true)}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  {nft.price && (
+                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Price</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {nft.price} {nft.currency || 'SOL'}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                        {isOwner && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setIsEditDialogOpen(true)}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Currency */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Currency</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {nft.currency || 'SOL'}
+                      </div>
+                    </div>
+                    <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                  </div>
+
+                  {/* Royalties */}
+                  {nft.royalty_percentage !== undefined && (
+                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Creator Royalties</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {nft.royalty_percentage}% on secondary sales
+                        </div>
+                      </div>
+                      <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                    </div>
+                  )}
+
+                  {/* Views */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Views</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {nft.views || 0} views
+                      </div>
+                    </div>
+                    <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                  </div>
+                </div>
+              </div>
+
               {/* On-Chain Data */}
               <div>
                 <h4 className="font-semibold mb-3">On-Chain Data</h4>
@@ -527,33 +758,31 @@ export default function NFTDetail() {
                 </div>
               </div>
 
-              {/* Off-Chain / Technical Details */}
+              {/* Timestamps */}
               <div>
-                <h4 className="font-semibold mb-3">Off-Chain / Technical Details</h4>
+                <h4 className="font-semibold mb-3">Timestamps</h4>
                 <div className="space-y-3">
-                  {nft.symbol && (
-                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">Symbol</div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {nft.symbol}
-                        </div>
+                  {/* Created At */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Created At</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {new Date(nft.created_at).toLocaleString()}
                       </div>
-                      <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
                     </div>
-                  )}
+                    <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                  </div>
 
-                  {nft.description && (
-                    <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">Description</div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {nft.description}
-                        </div>
+                  {/* Updated At */}
+                  <div className="flex items-start justify-between p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">Last Updated</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {new Date(nft.updated_at).toLocaleString()}
                       </div>
-                      <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
                     </div>
-                  )}
+                    <Badge variant="offchain" className="ml-2">Off-Chain</Badge>
+                  </div>
                 </div>
               </div>
 
@@ -579,60 +808,35 @@ export default function NFTDetail() {
                 </div>
               )}
 
-              {/* Properties */}
-              {nft.metadata && typeof nft.metadata === 'object' && Object.keys(nft.metadata).length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-3">Properties</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {formatAttributes(nft.metadata).map((attr, index) => (
-                      <div key={index} className="p-3 bg-muted/30 rounded-lg">
-                        <div className="text-xs text-muted-foreground uppercase">{attr.key}</div>
-                        <div className="text-sm font-medium mt-1">{attr.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Actions Card */}
-          {nft.is_listed && nft.price && !isOwner && (
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              {/* Properties (Custom Attributes Only) */}
+              {(() => {
+                const customProperties = normalizeAttributes(nft.metadata);
+                return customProperties.length > 0 ? (
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">Current Price</div>
-                    <div className="text-3xl font-bold">
-                      {nft.price} {nft.currency || 'SOL'}
+                    <h4 className="font-semibold mb-3">Properties</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {customProperties.map((attr, index) => (
+                        <div key={index} className="p-3 bg-muted/30 rounded-lg">
+                          <div className="text-xs text-muted-foreground uppercase">{attr.trait_type}</div>
+                          <div className="text-sm font-medium mt-1">{attr.value}</div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  
-                  {!publicKey ? (
-                    <div className="text-center p-6 bg-muted/50 rounded-lg">
-                      <p className="text-muted-foreground mb-4">
-                        Connect your wallet to purchase this NFT
-                      </p>
-                      <SolanaWalletButton />
-                    </div>
-                  ) : (
-                    <div className="flex gap-4">
-                      <Button className="flex-1" size="lg">
-                        Buy Now
-                      </Button>
+                    {isOwner && (
                       <Button 
                         variant="outline" 
-                        size="lg"
-                        onClick={() => setIsBidModalOpen(true)}
+                        size="sm"
+                        className="mt-3"
+                        onClick={() => setIsEditDialogOpen(true)}
                       >
-                        Place Bid
+                        Edit Properties
                       </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    )}
+                  </div>
+                ) : null;
+              })()}
+            </CardContent>
+          </Card>
         </div>
       </main>
 
