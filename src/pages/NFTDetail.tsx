@@ -395,25 +395,25 @@ export default function NFTDetail() {
 
                 <Separator />
 
-                {/* PRICE - Prominent */}
+                {/* PRICE - Prominent with BUY BUTTONS */}
                 <div>
                   <div className="text-sm text-primary mb-1">Price</div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold mb-2">
                     {nft.price ? `${nft.price} ${nft.currency || 'SOL'}` : 'Not for sale'}
                   </div>
                   {nft.royalty_percentage !== undefined && (
-                    <div className="text-sm text-muted-foreground mt-1">
+                    <div className="text-sm text-muted-foreground mb-3">
                       {nft.royalty_percentage}% creator royalty
                     </div>
                   )}
                   
-                  {/* BUY / BID BUTTONS HERE */}
-                  {nft.is_listed && nft.price && !isOwner && (
-                    <div className="mt-4">
-                      {!publicKey ? (
-                        <div className="text-center p-4 bg-muted/50 rounded-lg">
-                          <p className="text-sm text-muted-foreground mb-3">
-                            Connect your wallet to purchase this NFT
+                  {/* BUY / BID BUTTONS - Always visible for listed NFTs */}
+                  {nft.is_listed && nft.price ? (
+                    !isOwner ? (
+                      !publicKey ? (
+                        <div className="p-4 bg-muted/50 rounded-lg">
+                          <p className="text-sm text-muted-foreground mb-3 text-center">
+                            Connect your wallet to purchase
                           </p>
                           <SolanaWalletButton />
                         </div>
@@ -430,67 +430,73 @@ export default function NFTDetail() {
                             Place Bid
                           </Button>
                         </div>
-                      )}
-                    </div>
-                  )}
+                      )
+                    ) : (
+                      <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground text-center">
+                        You own this NFT
+                      </div>
+                    )
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* NFT Details Card (Collections Style) */}
+          {/* NFT Details Card (Collections Style) - Collapsible */}
           <Card className="mb-8">
-            <CardHeader>
+            <CardHeader 
+              className="cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+            >
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
                   NFT Details
                 </div>
-                {isOwner && (
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
-                  >
-                    <Settings className="w-3 h-3 mr-1" />
-                    Settings
-                    {isSettingsExpanded ? (
-                      <ChevronUp className="w-3 h-3 ml-1" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3 ml-1" />
-                    )}
-                  </Button>
-                )}
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                  {isSettingsExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Complete information about this NFT. {isOwner && "Click \"Settings\" to manage."}
               </p>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Owner Settings (Collapsible) */}
-              {isOwner && isSettingsExpanded && (
-                <div className="mb-6 pb-6 border-b space-y-3">
-                  <h4 className="font-semibold mb-3">Owner Actions</h4>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditDialogOpen(true)}
-                    className="w-full"
-                  >
-                    Edit NFT
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleBurnNFT}
-                    disabled={burning}
-                    className="w-full"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    {burning ? 'Burning...' : 'Burn NFT'}
-                  </Button>
-                </div>
-              )}
+            {isSettingsExpanded && (
+              <CardContent className="space-y-6">
+                {/* Owner Settings (Always show for owner) */}
+                {isOwner && (
+                  <div className="mb-6 pb-6 border-b space-y-3">
+                    <h4 className="font-semibold mb-3">Owner Actions</h4>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setIsEditDialogOpen(true)}
+                      className="w-full"
+                    >
+                      Edit NFT
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleBurnNFT}
+                      disabled={burning}
+                      className="w-full"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      {burning ? 'Burning...' : 'Burn NFT'}
+                    </Button>
+                  </div>
+                )}
 
               {/* Legend */}
               <div className="p-4 bg-muted/50 rounded-lg">
@@ -835,7 +841,8 @@ export default function NFTDetail() {
                   </div>
                 ) : null;
               })()}
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
         </div>
       </main>
