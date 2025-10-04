@@ -830,6 +830,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_event_rate_limits: {
+        Row: {
+          created_at: string
+          event_count: number
+          id: string
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          event_count?: number
+          id?: string
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          event_count?: number
+          id?: string
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           created_at: string
@@ -1004,6 +1028,14 @@ export type Database = {
           p_endpoint: string
           p_max_requests?: number
           p_user_wallet: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      check_security_event_rate_limit: {
+        Args: {
+          p_max_events?: number
+          p_user_id: string
           p_window_minutes?: number
         }
         Returns: boolean
@@ -1341,6 +1373,22 @@ export type Database = {
         }[]
       }
       get_marketplace_activities_public: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          activity_type: string
+          block_time: string
+          collection_id: string
+          created_at: string
+          currency: string
+          from_address_masked: string
+          id: string
+          nft_id: string
+          price: number
+          to_address_masked: string
+          transaction_signature_masked: string
+        }[]
+      }
+      get_marketplace_activities_public_masked: {
         Args: Record<PropertyKey, never>
         Returns: {
           activity_type: string
