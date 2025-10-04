@@ -1024,7 +1024,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles_limited: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          nickname: string | null
+          profile_image_url: string | null
+          profile_rank: string | null
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_pending_rewards: {
