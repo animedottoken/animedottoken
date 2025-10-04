@@ -28,7 +28,15 @@ interface ExtendedNFT extends UserNFT {
   creator_display_name?: string;
   owner_display_name?: string;
   views?: number;
+  // Collection details
+  collection_name?: string;
+  collection_symbol?: string;
+  collection_mint_price?: number | null;
+  collection_max_supply?: number | null;
+  collection_items_available?: number | null;
+  collection_items_redeemed?: number | null;
 }
+
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
@@ -187,6 +195,11 @@ export default function NFTDetail() {
         currency: pub.currency || 'SOL',
         royalty_percentage: collection?.royalty_percentage,
         collection_name: collection?.name,
+        collection_symbol: collection?.symbol ?? null,
+        collection_mint_price: collection?.mint_price ?? null,
+        collection_max_supply: collection?.max_supply ?? null,
+        collection_items_available: collection?.items_available ?? null,
+        collection_items_redeemed: collection?.items_redeemed ?? null,
         owner_display_name: ownerProfile?.display_name,
         creator_display_name: creatorProfile?.display_name,
         views: pub.views || 0
@@ -917,6 +930,47 @@ export default function NFTDetail() {
                             month: 'long',
                             day: 'numeric'
                           })}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Collection Details */}
+                {(nft.collection_name || nft.collection_symbol || nft.collection_mint_price != null || nft.collection_max_supply != null || nft.collection_items_available != null) && (
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-2">Collection Details</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                      {nft.collection_name && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Collection:</span>
+                          <Link to={`/collection/${nft.collection_id}`} className="font-medium text-primary hover:underline">
+                            {nft.collection_name}
+                          </Link>
+                        </div>
+                      )}
+                      {nft.collection_symbol && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Symbol:</span>
+                          <span className="font-medium">{nft.collection_symbol}</span>
+                        </div>
+                      )}
+                      {nft.collection_mint_price != null && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Mint Price:</span>
+                          <span className="font-medium">{Number(nft.collection_mint_price).toLocaleString(undefined,{ maximumFractionDigits: 4 })} {nft.currency || 'SOL'}</span>
+                        </div>
+                      )}
+                      {(nft.collection_items_available != null || nft.collection_max_supply != null) && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Supply:</span>
+                          <span className="font-medium">{nft.collection_items_available ?? '-'} / {nft.collection_max_supply ?? '∞'}</span>
+                        </div>
+                      )}
+                      {nft.royalty_percentage !== undefined && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Royalties:</span>
+                          <span className="font-medium">{nft.royalty_percentage}%</span>
                         </div>
                       )}
                     </div>
