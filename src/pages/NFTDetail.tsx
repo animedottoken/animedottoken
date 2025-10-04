@@ -1,792 +1,525 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Trash2, FileText, Maximize2, Play, Edit3, Tag, TrendingUp, Info, Clock, Image as ImageIcon, Layers } from "lucide-react";
-import { toast } from "sonner";
-import { SolanaWalletButton } from "@/components/SolanaWalletButton";
-import type { UserNFT } from "@/hooks/useUserNFTs";
-import { useNavigationContext } from "@/hooks/useNavigationContext";
-import { BidModal } from "@/components/BidModal";
-import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
-import { FullscreenNFTViewer } from "@/components/FullscreenNFTViewer";
-import { EditNFTDialog } from "@/components/EditNFTDialog";
-import { UserProfileDisplay } from "@/components/UserProfileDisplay";
-import { detectMediaKind, getMediaTypeDisplay } from '@/lib/media';
-import { truncateAddress } from "@/utils/addressUtils";
-import { normalizeAttributes } from '@/lib/attributes';
-
-interface ExtendedNFT extends UserNFT {
-  price?: number;
-  is_listed?: boolean;
-  currency?: string;
-  royalty_percentage?: number;
-  creator_display_name?: string;
-  owner_display_name?: string;
-  views?: number;
-  network?: string;
-  metadata_uri?: string;
-  // Collection details
-  collection_name?: string;
-  collection_symbol?: string;
-  collection_mint_price?: number | null;
-  collection_max_supply?: number | null;
-  collection_items_available?: number | null;
-  collection_items_redeemed?: number | null;
-  collection_verified?: boolean;
-}
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
+import { 
+  ArrowLeft, 
+  ExternalLink, 
+  Heart,
+  ChevronDown,
+  MoreVertical,
+  Edit,
+  Send,
+  Flame,
+  List as ListIcon,
+  CheckCircle2
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { EditNFTDialog } from '@/components/EditNFTDialog';
+import { formatAttributes } from '@/lib/attributeHelpers';
+import { FullscreenNFTViewer } from '@/components/FullscreenNFTViewer';
 
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [nft, setNft] = useState<ExtendedNFT | null>(null);
+  const { user } = useAuth();
+  
+  const [nft, setNft] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isBidModalOpen, setIsBidModalOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
-  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
-  const [burning, setBurning] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { publicKey, connect } = useSolanaWallet();
-  
-  // Navigation context for moving between NFTs
-  const navigation = useNavigationContext(id!, 'nft');
-  
-  // Handle NFT burning
-  const handleBurnNFT = async () => {
-    if (!nft) return;
-    
-    const confirmBurn = window.confirm(
-      `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
-    );
-    
-    if (!confirmBurn) return;
-    
-    setBurning(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [creatorProfile, setCreatorProfile] = useState<any>(null);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+
+  const fetchNFT = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('burn-nft', {
-        body: {
-          nft_id: nft.id,
-          wallet_address: publicKey
-        }
-      });
-      
-      if (data?.success) {
-        toast.success('NFT burned successfully! 🔥');
-        const fromParam = searchParams.get('from');
-        if (fromParam === 'nfts') {
-          navigate('/profile?tab=nfts');
-        } else if (fromParam === 'collection' && nft?.collection_id) {
-          navigate(`/collection/${nft.collection_id}`);
-        } else {
-          navigate('/profile');
-        }
-      } else {
-        toast.error(data?.error || 'Failed to burn NFT');
+      const { data, error } = await supabase
+        .from('nfts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      setNft(data);
+
+      // Check ownership
+      if (user) {
+        const { data: wallets } = await supabase
+          .from('user_wallets')
+          .select('wallet_address')
+          .eq('user_id', user.id)
+          .eq('is_verified', true);
+
+        const userWallets = wallets?.map(w => w.wallet_address) || [];
+        setIsOwner(userWallets.includes(data.owner_address));
       }
-    } catch (error) {
-      console.error('Error burning NFT:', error);
-      toast.error('Failed to burn NFT');
-    } finally {
-      setBurning(false);
-    }
-  };
 
-  const fetchNFT = useCallback(async () => {
-    if (!id) return;
+      // Fetch creator profile
+      if (data.creator_user_id) {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('nickname, display_name, profile_image_url, verified')
+          .eq('user_id', data.creator_user_id)
+          .single();
+        
+        setCreatorProfile(profile);
+      }
 
-    try {
-      const { data: allNfts, error: nftError } = await supabase.rpc('get_nfts_public');
-      if (nftError) throw nftError;
-      const pub = (allNfts || []).find((n: any) => n.id === id);
-      if (!pub) throw new Error('NFT not found');
+      // Fetch activities
+      const { data: activitiesData } = await supabase
+        .from('marketplace_activities')
+        .select('*')
+        .eq('nft_id', id)
+        .order('created_at', { ascending: false })
+        .limit(10);
 
-      const { data: allCollections } = await supabase.rpc('get_collections_public_masked');
-      const collection = (allCollections || []).find((c: any) => c.id === pub.collection_id);
+      setActivities(activitiesData || []);
 
-      const { data: profiles } = await supabase.rpc('get_profiles_public');
-      const mask = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
-      const ownerProfile = (profiles || []).find((p: any) => mask(p.wallet_address) === pub.owner_address_masked);
-      const creatorProfile = (profiles || []).find((p: any) => mask(p.wallet_address) === pub.creator_address_masked);
-
-      const transformedNFT: ExtendedNFT = {
-        id: pub.id,
-        name: pub.name,
-        symbol: pub.symbol,
-        description: pub.description,
-        image_url: pub.image_url,
-        mint_address: pub.mint_address,
-        collection_id: pub.collection_id,
-        owner_address: pub.owner_address_masked,
-        creator_address: pub.creator_address_masked,
-        metadata: pub.attributes,
-        created_at: pub.created_at,
-        updated_at: pub.updated_at,
-        price: pub.price,
-        is_listed: pub.is_listed,
-        currency: pub.currency || 'SOL',
-        network: 'mainnet',
-        metadata_uri: pub.metadata_uri || undefined,
-        royalty_percentage: collection?.royalty_percentage,
-        collection_name: collection?.name,
-        collection_symbol: collection?.symbol ?? null,
-        collection_mint_price: collection?.mint_price ?? null,
-        collection_max_supply: collection?.max_supply ?? null,
-        collection_items_available: collection?.items_available ?? null,
-        collection_items_redeemed: collection?.items_redeemed ?? null,
-        collection_verified: collection?.verified,
-        owner_display_name: ownerProfile?.display_name,
-        creator_display_name: creatorProfile?.display_name,
-        views: pub.views || 0
-      } as any;
-
-      setNft(transformedNFT);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching NFT:', error);
       toast.error('Failed to load NFT details');
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  };
 
   useEffect(() => {
     fetchNFT();
-    setVideoError(false);
-  }, [fetchNFT]);
+  }, [id, user]);
 
-  const handleFullscreenToggle = () => {
-    setIsFullscreenOpen(!isFullscreenOpen);
+  const handleBurnNFT = async () => {
+    if (!confirm(`Are you sure you want to burn "${nft.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('nfts')
+        .delete()
+        .eq('id', nft.id);
+
+      if (error) throw error;
+
+      toast.success('NFT burned successfully! 🔥');
+      navigate('/profile');
+    } catch (error) {
+      console.error('Error burning NFT:', error);
+      toast.error('Failed to burn NFT');
+    }
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/3 mb-8" />
-            <div className="h-64 bg-muted rounded mb-8" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="h-48 bg-muted rounded" />
-              <div className="h-48 bg-muted rounded" />
-            </div>
-          </div>
-        </div>
-      </main>
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <Skeleton className="h-96 w-full" />
+      </div>
     );
   }
 
   if (!nft) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold mb-4">NFT Not Found</h2>
-            <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              The NFT you're looking for doesn't exist or you don't have access to it.
-            </p>
-            <Button onClick={() => navigate('/profile')}>
-              Back to Profile
-            </Button>
-          </div>
-        </div>
-      </main>
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <Card className="p-8 text-center">
+          <p className="text-muted-foreground">NFT not found</p>
+          <Button onClick={() => navigate(-1)} className="mt-4">Go Back</Button>
+        </Card>
+      </div>
     );
   }
 
-  const maskAddr = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
-  const isOwner = publicKey ? maskAddr(publicKey) === nft.owner_address : false;
+  const explorerUrl = `https://solscan.io/token/${nft.mint_address}`;
+  const creatorName = creatorProfile?.nickname || creatorProfile?.display_name || 'Unknown Creator';
+  const description = nft.description || 'No description provided.';
+  
+  // Format attributes - convert from various formats to simple array
+  const rawAttributes = nft.attributes || nft.metadata;
+  const attributes = Array.isArray(rawAttributes) 
+    ? rawAttributes.filter((attr: any) => attr.trait_type && attr.value)
+    : formatAttributes(rawAttributes);
+  
+  const truncatedDesc = description.length > 200 ? description.slice(0, 200) + '...' : description;
+  const shouldTruncate = description.length > 200;
+
+  // Mock data for floor/items/owners (replace with real data when available)
+  const floorPrice = null; // Replace with real data
+  const totalItems = null; // Replace with real data
+  const totalOwners = null; // Replace with real data
 
   return (
     <>
-      <Helmet>
-        <title>{nft.name} - NFT Details</title>
-        <meta name="description" content={nft.description || `View details for ${nft.name} NFT`} />
-      </Helmet>
+      <div className="container mx-auto px-4 py-6 max-w-6xl pb-24 lg:pb-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-4 gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
 
-      <main className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-8">
-            <Button variant="ghost" size="sm" onClick={() => {
-              const backUrl = navigation.source === 'collection' && nft.collection_id
-                ? `/collection/${nft.collection_id}`
-                : navigation.source === 'marketplace'
-                ? `/marketplace?tab=${searchParams.get('tab') || 'nfts'}`
-                : navigation.source === 'favorites'
-                ? '/profile?tab=favorites'
-                : '/profile';
-              navigate(backUrl);
-            }}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to {navigation.source === 'collection' ? 'Collection' : navigation.source === 'marketplace' ? 'Marketplace' : navigation.source === 'favorites' ? 'Favorites' : 'Profile'}
-            </Button>
-
-            {/* Navigation arrows */}
-            {navigation.canNavigate && (
-              <div className="flex items-center gap-2 ml-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={navigation.navigatePrev}
-                  disabled={!navigation.hasPrev}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <span className="text-sm text-muted-foreground px-2">
-                  {navigation.currentIndex} of {navigation.totalItems}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={navigation.navigateNext}
-                  disabled={!navigation.hasNext}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
+        {/* Hero: Image + Details (2-column grid) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+          {/* Left: Image */}
+          <div className="lg:col-span-6">
+            <div 
+              className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity border shadow-sm"
+              onClick={() => setIsFullscreen(true)}
+            >
+              <img
+                src={nft.image_url}
+                alt={nft.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Small badges under image */}
+            <div className="flex items-center gap-2 mt-3">
+              {nft.is_listed && (
+                <Badge variant="default" className="text-xs">Listed</Badge>
+              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs cursor-pointer hover:bg-accent"
+                      onClick={() => window.open(explorerUrl, '_blank')}
+                    >
+                      Verified <ExternalLink className="h-3 w-3 ml-1" />
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View on Solscan</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
 
-          {/* Main Content - Small Image + Main Info */}
-          <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8 mb-6">
-            {/* Left - Small 1:1 NFT Image */}
+          {/* Right: Details */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Title */}
             <div>
-              <Card className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div
-                    className="aspect-square overflow-hidden bg-muted cursor-pointer group relative"
-                    onClick={handleFullscreenToggle}
-                  >
-                    {(() => {
-                      const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
-                      const animationUrl = nft.metadata?.animation_url;
-                      
-                      if (videoError || !animationUrl) {
-                        return (
-                          <img
-                            src={nft.image_url || "/placeholder.svg"}
-                            alt={nft.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            onError={(e) => {
-                              const img = e.currentTarget as HTMLImageElement;
-                              if (img.src !== "/placeholder.svg") {
-                                img.src = "/placeholder.svg";
-                              }
-                            }}
-                          />
-                        );
-                      }
-                      
-                      if (mediaKind === 'video') {
-                        return (
-                          <div className="w-full h-full relative bg-black">
-                            <video
-                              ref={videoRef}
-                              src={animationUrl}
-                              poster={nft.image_url || "/placeholder.svg"}
-                              className="w-full h-full object-cover"
-                              controls={false}
-                              loop
-                              muted
-                              playsInline
-                              preload="metadata"
-                              onError={() => setVideoError(true)}
-                            />
-                            <div 
-                              className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer hover:bg-black/30 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (videoRef.current) {
-                                  videoRef.current.play().then(() => {
-                                    videoRef.current!.controls = true;
-                                    e.currentTarget.style.display = 'none';
-                                  }).catch(console.error);
-                                }
-                              }}
-                            >
-                              <div className="bg-white/90 rounded-full p-3 hover:bg-white transition-colors">
-                                <Play className="h-6 w-6 text-black" fill="currentColor" />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }
-                      
-                      return (
-                        <img
-                          src={nft.image_url || "/placeholder.svg"}
-                          alt={nft.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      );
-                    })()}
-                    
-                    {/* Fullscreen overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center pointer-events-none">
-                      <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <h1 className="text-4xl font-bold mb-2">{nft.name}</h1>
             </div>
 
-            {/* Right - Main NFT Info */}
-            <Card>
-              <CardContent className="pt-6 space-y-4">
-                {/* Name and Badges */}
-                <div>
-                  <h1 className="text-3xl font-bold mb-3">{nft.name}</h1>
-                  <div className="flex flex-wrap gap-2">
-                    {nft.is_listed && (
-                      <Badge variant="default" className="bg-success">Listed</Badge>
-                    )}
-                    {nft.collection_name && (
-                      <Badge variant="outline">{nft.collection_name}</Badge>
-                    )}
-                    {nft.collection_verified && (
-                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
-                        Verified Collection
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Creator */}
-                <div>
-                  <div className="text-sm text-muted-foreground mb-2">Creator</div>
-                  <UserProfileDisplay 
-                    walletAddress={nft.creator_address} 
-                    size="sm"
-                    showRankBadge={false}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* Owner */}
-                <div>
-                  <div className="text-sm text-muted-foreground mb-2">Owner</div>
-                  <UserProfileDisplay 
-                    walletAddress={nft.owner_address} 
-                    size="sm"
-                    showRankBadge={false}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* Minted */}
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Minted</div>
-                  <div className="text-sm">
-                    {new Date(nft.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* PRICE - Prominent with BUY BUTTONS */}
-                <div className="bg-muted/30 rounded-lg p-4">
-                  <div className="text-sm text-muted-foreground mb-1">Current Price</div>
-                  <div className="text-3xl font-bold mb-2">
-                    {nft.price ? (
-                      <>
-                        {nft.price} <span className="text-xl text-muted-foreground">{nft.currency || 'SOL'}</span>
-                      </>
-                    ) : (
-                      <span className="text-xl text-muted-foreground">Not for sale</span>
-                    )}
-                  </div>
-                  {nft.royalty_percentage !== undefined && (
-                    <div className="text-xs text-muted-foreground mb-3">
-                      {nft.royalty_percentage}% creator royalty
-                    </div>
-                  )}
-                  
-                  {/* BUY / BID BUTTONS */}
-                  {nft.is_listed && nft.price ? (
-                    !isOwner ? (
-                      !publicKey ? (
-                        <div className="p-3 bg-background/50 rounded-lg">
-                          <p className="text-sm text-muted-foreground mb-3 text-center">
-                            Connect your wallet to purchase
-                          </p>
-                          <SolanaWalletButton />
-                        </div>
-                      ) : (
-                        <div className="flex gap-3">
-                          <Button className="flex-1" size="lg">
-                            Buy Now
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="lg"
-                            onClick={() => setIsBidModalOpen(true)}
-                          >
-                            Place Bid
-                          </Button>
-                        </div>
-                      )
-                    ) : (
-                      <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground text-center">
-                        You own this NFT
-                      </div>
-                    )
-                  ) : null}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Owner Actions Toolbar - Only show if owner */}
-          {isOwner && (
-            <Card className="mb-6 bg-primary/5 border-primary/20">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-1 bg-primary rounded-full" />
-                    <div>
-                      <h3 className="font-semibold">Owner Controls</h3>
-                      <p className="text-xs text-muted-foreground">Manage your NFT</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setIsEditDialogOpen(true)}
-                    >
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Edit NFT
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={handleBurnNFT}
-                      disabled={burning}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      {burning ? 'Burning...' : 'Burn NFT'}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Essential Information */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Info className="h-5 w-5 text-primary" />
-                Essential Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3">
-                <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Name</div>
-                    <div className="font-medium">{nft.name}</div>
-                  </div>
-                </div>
-                
-                {nft.symbol && (
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Symbol</div>
-                      <div className="font-medium">{nft.symbol}</div>
-                    </div>
-                  </div>
-                )}
-
-                {nft.description && (
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Description</div>
-                      <div className="text-sm leading-relaxed">{nft.description}</div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Media Type</div>
-                    <div className="font-medium">
-                      {(() => {
-                        const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
-                        const mediaDisplay = getMediaTypeDisplay(mediaKind);
-                        return mediaDisplay?.label || 'Static Image';
-                      })()}
-                    </div>
-                  </div>
-                </div>
-
-                {nft.metadata?.category && (
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Category</div>
-                      <div className="font-medium capitalize">{nft.metadata.category}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Market & Listing Information */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Market & Listing
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3">
-                <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Listing Status</div>
-                    <div className="font-medium">
-                      {nft.is_listed ? (
-                        <span className="text-success">✓ Listed for sale</span>
-                      ) : (
-                        <span>Not listed</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {nft.price && (
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Price</div>
-                      <div className="font-medium">{nft.price} {nft.currency || 'SOL'}</div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Currency</div>
-                    <div className="font-medium">{nft.currency || 'SOL'}</div>
-                  </div>
-                </div>
-
-                {nft.royalty_percentage !== undefined && (
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Creator Royalties</div>
-                      <div className="font-medium">{nft.royalty_percentage}% on secondary sales</div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Views</div>
-                    <div className="font-medium">{nft.views || 0} views</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Properties */}
-          {(() => {
-            const customProperties = normalizeAttributes(nft.metadata);
-            return customProperties.length > 0 ? (
-              <Card className="mb-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Tag className="h-5 w-5 text-primary" />
-                    Properties
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {customProperties.map((attr, index) => (
-                      <div key={index} className="p-3 bg-muted/20 rounded-lg border border-border hover:border-primary/30 transition-colors">
-                        <div className="text-xs text-primary uppercase font-medium mb-1">{attr.trait_type}</div>
-                        <div className="text-sm font-semibold">{attr.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ) : null;
-          })()}
-
-          {/* Technical Details - Collapsible */}
-          <Card className="mb-6">
-            <CardHeader 
-              className="cursor-pointer hover:bg-muted/30 transition-colors"
-              onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
-            >
-              <CardTitle className="flex items-center justify-between text-lg">
+            {/* Creator Row */}
+            {creatorProfile && (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={creatorProfile.profile_image_url} />
+                  <AvatarFallback>{creatorName[0]}</AvatarFallback>
+                </Avatar>
                 <div className="flex items-center gap-2">
-                  <Layers className="h-5 w-5 text-primary" />
-                  Technical Details
+                  <Link 
+                    to={`/creator/${nft.creator_user_id}`}
+                    className="font-medium hover:underline"
+                  >
+                    {creatorName}
+                  </Link>
+                  {creatorProfile.verified && (
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                  )}
                 </div>
-                <Badge variant="outline" className="text-xs">
-                  {showTechnicalDetails ? 'Hide' : 'Show'}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            {showTechnicalDetails && (
-              <CardContent className="space-y-4">
-                <div className="grid gap-3">
-                  <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                    <div className="flex-1">
-                      <div className="text-xs text-muted-foreground mb-1">Mint Address</div>
-                      <div className="text-sm font-mono break-all">{nft.mint_address}</div>
+              </div>
+            )}
+
+            {/* Price Card */}
+            {nft.is_listed && nft.price ? (
+              <Card className="p-6 bg-accent/50">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Current Price</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-bold">{nft.price}</span>
+                      <span className="text-2xl text-muted-foreground">{nft.currency || 'SOL'}</span>
                     </div>
-                    <Badge variant="default" className="ml-2 bg-primary/20 text-primary border-primary/30">On-Chain</Badge>
                   </div>
 
-                  {nft.metadata_uri && (
-                    <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                      <div className="flex-1">
-                        <div className="text-xs text-muted-foreground mb-1">Metadata URI</div>
-                        <a
-                          href={nft.metadata_uri}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-mono break-all text-primary hover:underline flex items-center gap-1"
-                        >
-                          View Metadata <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                        </a>
-                      </div>
-                      <Badge variant="default" className="ml-2 bg-primary/20 text-primary border-primary/30">On-Chain</Badge>
+                  {!isOwner ? (
+                    <div className="flex gap-3">
+                      <Button size="lg" className="flex-1">
+                        Buy now
+                      </Button>
+                      <Button size="lg" variant="secondary" className="flex-1">
+                        Make offer
+                      </Button>
                     </div>
+                  ) : (
+                    <Button size="lg" variant="outline" className="w-full">
+                      <ListIcon className="h-4 w-4 mr-2" />
+                      List for sale
+                    </Button>
                   )}
 
-                  {nft.network && (
-                    <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Network</div>
-                        <div className="font-medium capitalize">{nft.network}</div>
-                      </div>
-                      <Badge variant="default" className="ml-2 bg-primary/20 text-primary border-primary/30">On-Chain</Badge>
-                    </div>
-                  )}
+                  {/* Royalties line */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-xs text-muted-foreground cursor-help">
+                          Royalties 14.04% (enforced)
+                        </p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>This percentage goes to the creator on resales.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-              </CardContent>
+              </Card>
+            ) : (
+              !isOwner ? (
+                <Card className="p-6 bg-muted/50">
+                  <p className="text-sm text-muted-foreground">Not currently listed for sale</p>
+                </Card>
+              ) : (
+                <Button size="lg" className="w-full">
+                  <ListIcon className="h-4 w-4 mr-2" />
+                  List for sale
+                </Button>
+              )
             )}
-          </Card>
 
-          {/* Collection Details */}
-          {nft.collection_id && nft.collection_name && (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <ImageIcon className="h-5 w-5 text-primary" />
-                  Collection
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-base font-medium hover:underline"
-                    onClick={() => navigate(`/collection/${nft.collection_id}`)}
-                  >
-                    {nft.collection_name}
-                  </Button>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Timestamps */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Clock className="h-5 w-5 text-primary" />
-                Timestamps
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">Created At</div>
-                  <div className="text-sm">{new Date(nft.created_at).toLocaleString()}</div>
-                </div>
+            {/* Optional: Quick Stats Row */}
+            {(floorPrice || totalItems || totalOwners) && (
+              <div className="flex items-center gap-6 text-sm">
+                {floorPrice && (
+                  <div>
+                    <span className="text-muted-foreground">Floor: </span>
+                    <span className="font-medium">{floorPrice} SOL</span>
+                  </div>
+                )}
+                {totalItems && (
+                  <div>
+                    <span className="text-muted-foreground">Items: </span>
+                    <span className="font-medium">{totalItems}</span>
+                  </div>
+                )}
+                {totalOwners && (
+                  <div>
+                    <span className="text-muted-foreground">Owners: </span>
+                    <span className="font-medium">{totalOwners}</span>
+                  </div>
+                )}
               </div>
-              <div className="flex justify-between items-start p-3 bg-muted/20 rounded-lg">
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">Last Updated</div>
-                  <div className="text-sm">{new Date(nft.updated_at).toLocaleString()}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </div>
-      </main>
 
-      {/* Fullscreen Viewer */}
-      {isFullscreenOpen && nft && (
-        <FullscreenNFTViewer
-          isOpen={isFullscreenOpen}
-          onClose={() => setIsFullscreenOpen(false)}
-          nftImage={nft.image_url || '/placeholder.svg'}
-          nftName={nft.name}
-          nftId={nft.id}
-          collectionName={nft.collection_name}
-          price={nft.price}
-          currency={nft.currency || 'SOL'}
-          isListed={nft.is_listed}
-          isOwner={isOwner}
-          canNavigate={navigation.canNavigate}
-          hasNext={navigation.hasNext}
-          hasPrev={navigation.hasPrev}
-          currentIndex={navigation.currentIndex}
-          totalItems={navigation.totalItems}
-          onNext={navigation.navigateNext}
-          onPrev={navigation.navigatePrev}
-          mediaUrl={nft.metadata?.animation_url}
-          mediaType={nft.metadata?.media_type}
-          coverImageUrl={nft.image_url}
-        />
+        {/* Owner Controls Dropdown */}
+        {isOwner && (
+          <Card className="p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Owner Controls</h3>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Manage <MoreVertical className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit metadata
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info('Transfer coming soon')}>
+                    <Send className="h-4 w-4 mr-2" />
+                    Transfer
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleBurnNFT} className="text-destructive">
+                    <Flame className="h-4 w-4 mr-2" />
+                    Burn
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info('List coming soon')}>
+                    <ListIcon className="h-4 w-4 mr-2" />
+                    List
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </Card>
+        )}
+
+        {/* Tabs: Overview / Activity */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="w-full lg:w-auto mb-6">
+            <TabsTrigger value="overview" className="flex-1 lg:flex-initial">Overview</TabsTrigger>
+            <TabsTrigger value="activity" className="flex-1 lg:flex-initial">Activity</TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 mt-0">
+            {/* Description */}
+            {description && description !== 'No description provided.' ? (
+              <Card className="p-6">
+                <h3 className="font-semibold mb-3">Description</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {descriptionExpanded || !shouldTruncate ? description : truncatedDesc}
+                </p>
+                {shouldTruncate && (
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                    className="mt-2 p-0 h-auto"
+                  >
+                    {descriptionExpanded ? 'Show less' : 'Read more'}
+                  </Button>
+                )}
+              </Card>
+            ) : (
+              <Card className="p-6">
+                <p className="text-sm text-muted-foreground">No description.</p>
+              </Card>
+            )}
+
+            {/* Attributes Table */}
+            {attributes.length > 0 ? (
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Attributes</h3>
+                <div className="space-y-2">
+                  {attributes.map((attr: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <span className="text-sm text-muted-foreground">{attr.trait_type || attr.key}</span>
+                      <span className="font-medium text-sm">{attr.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ) : (
+              <Card className="p-6">
+                <p className="text-sm text-muted-foreground">No attributes provided.</p>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity" className="mt-0">
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Recent Activity</h3>
+              {activities.length > 0 ? (
+                <div className="space-y-3">
+                  {activities.map((activity) => (
+                    <div key={activity.id} className="flex items-center justify-between py-3 border-b last:border-0">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm capitalize">{activity.activity_type}</p>
+                        {activity.price && (
+                          <p className="text-xs text-muted-foreground">
+                            {activity.price} {activity.currency || 'SOL'}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(activity.created_at).toLocaleDateString()}
+                        </p>
+                        {activity.transaction_signature && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => window.open(
+                              `https://solscan.io/tx/${activity.transaction_signature}`,
+                              '_blank'
+                            )}
+                          >
+                            View <ExternalLink className="h-3 w-3 ml-1" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No recent activity.</p>
+              )}
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Details Accordion (collapsed by default) */}
+        <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen} className="mt-6">
+          <Card className="p-6">
+            <CollapsibleTrigger className="w-full flex items-center justify-between hover:opacity-80 transition-opacity">
+              <h3 className="font-semibold">Details</h3>
+              <ChevronDown className={`h-5 w-5 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4 space-y-3">
+              <div className="flex items-center justify-between py-2 border-b">
+                <span className="text-sm text-muted-foreground">Contract Address</span>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs">{nft.mint_address.slice(0, 4)}...{nft.mint_address.slice(-4)}</code>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={() => window.open(explorerUrl, '_blank')}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b">
+                <span className="text-sm text-muted-foreground">Token ID</span>
+                <span className="text-sm font-mono">{nft.id.slice(0, 8)}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-muted-foreground">Mint Date</span>
+                <span className="text-sm">{new Date(nft.created_at).toLocaleDateString()}</span>
+              </div>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+      </div>
+
+      {/* Mobile Sticky Buy Bar */}
+      {nft.is_listed && nft.price && !isOwner && (
+        <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-background border-t p-4 z-50">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs text-muted-foreground">Price</p>
+              <p className="text-xl font-bold">{nft.price} {nft.currency || 'SOL'}</p>
+            </div>
+            <Button size="lg" className="flex-1">
+              Buy now
+            </Button>
+          </div>
+        </div>
       )}
 
-      {/* Bid Modal */}
-      <BidModal
-        isOpen={isBidModalOpen}
-        onClose={() => setIsBidModalOpen(false)}
-        nftId={nft.id}
-        nftName={nft.name}
-        nftImage={nft.image_url || '/placeholder.svg'}
-        currentPrice={nft.price}
-        currency={nft.currency || 'SOL'}
-        onBidPlaced={(amount) => {
-          toast.success(`Bid of ${amount} ${nft.currency || 'SOL'} placed for ${nft.name}`);
-        }}
-      />
-
-      {/* Edit Dialog */}
-      {isOwner && nft && (
+      {/* Dialogs */}
+      {isOwner && (
         <EditNFTDialog
+          nft={nft}
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
-          nft={nft}
-          onUpdate={() => {
-            fetchNFT();
-            toast.success('NFT updated successfully');
-          }}
+          onUpdate={fetchNFT}
         />
       )}
+
+      {/* Fullscreen Viewer */}
+      <FullscreenNFTViewer
+        isOpen={isFullscreen}
+        onClose={() => setIsFullscreen(false)}
+        nftImage={nft.image_url}
+        nftName={nft.name}
+        nftId={nft.id}
+        isOwner={isOwner}
+      />
     </>
   );
 }
