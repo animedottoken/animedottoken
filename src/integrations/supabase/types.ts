@@ -1024,7 +1024,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles_limited: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          nickname: string | null
+          profile_image_url: string | null
+          profile_rank: string | null
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          nickname?: string | null
+          profile_image_url?: string | null
+          profile_rank?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_pending_rewards: {
@@ -1262,7 +1291,6 @@ export type Database = {
           category: string
           collection_mint_address: string
           created_at: string
-          creator_address: string
           creator_nickname: string
           creator_verified: boolean
           description: string
@@ -1283,7 +1311,6 @@ export type Database = {
           site_description: string
           slug: string
           symbol: string
-          treasury_wallet: string
           updated_at: string
           verified: boolean
           whitelist_enabled: boolean
@@ -1364,7 +1391,6 @@ export type Database = {
           profile_rank: string
           total_likes_count: number
           verified: boolean
-          wallet_address: string
         }[]
       }
       get_creators_public_stats: {
@@ -1519,7 +1545,6 @@ export type Database = {
           attributes: Json
           collection_id: string
           created_at: string
-          creator_address: string
           creator_nickname: string
           creator_verified: boolean
           currency: string
@@ -1532,13 +1557,32 @@ export type Database = {
           metadata_uri: string
           mint_address: string
           name: string
-          owner_address: string
           owner_nickname: string
           owner_verified: boolean
           price: number
           symbol: string
           updated_at: string
           views: number
+        }[]
+      }
+      get_profile_authenticated: {
+        Args: { p_user_id: string }
+        Returns: {
+          banner_image_url: string
+          bio: string
+          collection_count: number
+          created_at: string
+          discord_handle: string
+          display_name: string
+          nft_count: number
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          twitter_handle: string
+          user_id: string
+          verified: boolean
+          wallet_address: string
+          website_url: string
         }[]
       }
       get_profiles_authenticated: {
@@ -1579,19 +1623,15 @@ export type Database = {
           website_url: string
         }[]
       }
-      get_public_profile_safe: {
+      get_public_profile_limited: {
         Args: { p_wallet_address: string }
         Returns: {
-          banner_image_url: string
           bio: string
-          created_at: string
           display_name: string
-          is_public_profile: boolean
           nickname: string
           profile_image_url: string
           profile_rank: string
           verified: boolean
-          wallet_address: string
         }[]
       }
       get_public_profiles: {
