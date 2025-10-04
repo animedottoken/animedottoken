@@ -4,6 +4,9 @@ project_id = "eztzddykjnmnpoeyfqcg"
 # Edge functions with JWT verification enabled for security
 # Only public read functions and properly secured functions disable JWT verification
 
+[functions.verify-payment]
+verify_jwt = true  # Requires authenticated user - PAYMENT SECURITY CRITICAL
+
 [functions.get-mint-fee]
 verify_jwt = false  # Public read function
 
