@@ -776,7 +776,6 @@ export default function NFTDetail() {
                       variant="outline"
                       size="sm"
                       onClick={() => setNftSettingsExpanded(!nftSettingsExpanded)}
-                      disabled={!publicKey && !isOwner}
                     >
                       <Settings className="w-3 h-3 mr-1" />
                       Settings
@@ -788,6 +787,9 @@ export default function NFTDetail() {
                     </Button>
                   </div>
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  NFT information and settings. Click "Settings" to modify.
+                </p>
               </CardHeader>
               
               {/* Always visible comprehensive details */}
@@ -925,39 +927,63 @@ export default function NFTDetail() {
               {/* Management Settings - Expandable */}
               {nftSettingsExpanded && (
                 <CardContent className="border-t pt-6 space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Settings className="h-4 w-4" />
-                    <span className="font-semibold">Management Actions</span>
-                  </div>
                   {!publicKey ? (
                     // Wallet not connected state
                     <div className="space-y-4">
-                      <div className="text-center py-6">
-                        <Settings className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                        <h3 className="font-medium mb-2">Connect Wallet to Edit NFT</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Connect your wallet to access NFT management features
+                      <div className="text-center py-8">
+                        <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium mb-2">Connect Wallet to Manage NFT</h3>
+                        <p className="text-sm text-muted-foreground mb-6">
+                          Connect your wallet to edit NFT details and manage settings.
                         </p>
-                        <SolanaWalletButton />
+                        <div className="flex justify-center">
+                          <SolanaWalletButton />
+                        </div>
                       </div>
                       
                       {/* Preview of available actions (disabled) */}
-                      <div className="flex flex-col gap-3 opacity-50">
-                        <Button disabled variant="secondary" className="justify-start">
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit NFT Details
-                        </Button>
-                        <Button disabled variant="secondary" className="justify-start text-destructive">
-                          <Flame className="w-4 h-4 mr-2" />
-                          Burn NFT
-                        </Button>
+                      <div className="space-y-3 opacity-50">
+                        <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                          <Edit className="h-4 w-4" />
+                          <span className="text-sm">Edit NFT Details</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                          <Flame className="h-4 w-4" />
+                          <span className="text-sm">Burn NFT</span>
+                        </div>
                       </div>
                     </div>
-                  ) : isOwner ? (
+                  ) : !isOwner ? (
+                    // Connected but not owner state
+                    <div className="space-y-4">
+                      <div className="text-center py-8">
+                        <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium mb-2">Owner-Only Settings</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Only the NFT owner can edit NFT details and manage settings.
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          Owner: {nft.owner_address}
+                        </div>
+                      </div>
+                      
+                      {/* Preview of owner actions (disabled) */}
+                      <div className="space-y-3 opacity-50">
+                        <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                          <Edit className="h-4 w-4" />
+                          <span className="text-sm">Edit NFT Details</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/20">
+                          <Flame className="h-4 w-4" />
+                          <span className="text-sm">Burn NFT</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
                     // Owner with connected wallet - full access
-                    <>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        You own this NFT and can manage its settings
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        You own this NFT and can manage its settings.
                       </p>
                       <div className="flex flex-col gap-3">
                         <Button 
@@ -983,50 +1009,6 @@ export default function NFTDetail() {
                           <Flame className="w-4 h-4 mr-2" />
                           Burn NFT
                         </Button>
-                      </div>
-                    </>
-                  ) : (
-                    // Connected but not owner state
-                    <div className="space-y-4">
-                      <div className="text-center py-6">
-                        <Settings className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                        <h3 className="font-medium mb-2">Owner-Only Settings</h3>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Only the NFT owner can edit NFT details and manage settings.
-                        </p>
-                        <div className="text-xs text-muted-foreground">
-                          Owner: {nft.owner_address}
-                        </div>
-                      </div>
-                      
-                      {/* Preview of owner actions (disabled) */}
-                      <div className="flex flex-col gap-3 opacity-50">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button disabled variant="secondary" className="justify-start">
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit NFT Details
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Only the owner can edit this NFT</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button disabled variant="secondary" className="justify-start text-destructive">
-                                <Flame className="w-4 h-4 mr-2" />
-                                Burn NFT
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Only the owner can burn this NFT</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </div>
                     </div>
                   )}
