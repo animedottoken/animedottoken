@@ -25,7 +25,7 @@ import { getNavContext, clearNavContext, setNavContext } from "@/lib/navContext"
 import { NFTCard } from '@/components/NFTCard';
 
 interface Creator {
-  wallet_address: string;
+  wallet_address?: string; // Optional - only available for own profile
   user_id?: string;
   nickname?: string;
   bio?: string;
@@ -299,7 +299,7 @@ export default function CreatorProfile() {
         if (profile) {
           console.log('CreatorProfile: Profile found:', profile);
           setCreator({
-            wallet_address: profile.wallet_address,
+            wallet_address: profile.wallet_address, // May be undefined for other users
             user_id: profile.user_id,
             nickname: profile.nickname,
             bio: profile.bio,
@@ -492,14 +492,14 @@ export default function CreatorProfile() {
           <Avatar className="h-24 w-24 border-4 border-background">
             <AvatarImage src={creator.profile_image_url} />
             <AvatarFallback className="text-2xl">
-              {creator.nickname?.charAt(0) || creator.wallet_address.slice(0, 2)}
+              {creator.nickname?.charAt(0) || (wallet ? wallet.slice(0, 2).toUpperCase() : '??')}
             </AvatarFallback>
           </Avatar>
           
           <div className="flex-1">
             <div className="flex flex-col md:flex-row md:items-center gap-2">
               <h1 className="text-2xl font-bold">
-                {creator.nickname || `${creator.wallet_address.slice(0, 6)}...${creator.wallet_address.slice(-4)}`}
+                {creator.nickname || (wallet ? `${wallet.slice(0, 6)}...${wallet.slice(-4)}` : 'Unknown')}
               </h1>
               
               <div className="flex items-center gap-2">
@@ -751,7 +751,7 @@ export default function CreatorProfile() {
               {followedCreators.map((followedCreator) => (
                 <FollowedAuthorCard
                   key={followedCreator.user_id}
-                  wallet_address={followedCreator.wallet_address}
+                  wallet_address={followedCreator.wallet_address || 'Unknown'}
                   nickname={followedCreator.nickname}
                   bio={followedCreator.bio}
                   profile_image_url={followedCreator.profile_image_url}
