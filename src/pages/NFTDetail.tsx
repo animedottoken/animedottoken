@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play, FileText, Settings, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
@@ -29,6 +29,8 @@ interface ExtendedNFT extends UserNFT {
   creator_display_name?: string;
   owner_display_name?: string;
   views?: number;
+  network?: string;
+  metadata_uri?: string;
   // Collection details
   collection_name?: string;
   collection_symbol?: string;
@@ -503,84 +505,30 @@ export default function NFTDetail() {
         {/* Right: Main NFT Details Card */}
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <CardTitle className="text-2xl mb-2">{nft.name || 'Unnamed NFT'}</CardTitle>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">NFT</Badge>
-                  {nft.collection_name && (
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-accent"
-                      onClick={() => navigate(`/collection/${nft.collection_id}`)}
-                    >
-                      From collection: {nft.collection_name}
-                    </Badge>
-                  )}
-                  {nft.is_listed && (
-                    <Badge className="bg-green-500 hover:bg-green-600">
-                      Listed
-                    </Badge>
-                  )}
-                </div>
+            <div>
+              <CardTitle className="text-2xl mb-2">{nft.name || 'Unnamed NFT'}</CardTitle>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary">NFT</Badge>
+                {nft.collection_name && (
+                  <Badge 
+                    variant="outline" 
+                    className="cursor-pointer hover:bg-accent"
+                    onClick={() => navigate(`/collection/${nft.collection_id}`)}
+                  >
+                    From collection: {nft.collection_name}
+                  </Badge>
+                )}
+                {nft.is_listed && (
+                  <Badge className="bg-green-500 hover:bg-green-600">
+                    Listed
+                  </Badge>
+                )}
               </div>
-              {isOwner && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Settings
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                      <Settings className="h-4 w-4 mr-2" />
-                      Edit NFT
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => {
-                        const confirmDelete = window.confirm(
-                          `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
-                        );
-                        if (confirmDelete) {
-                          handleBurnNFT(nft.id, nft.mint_address);
-                        }
-                      }}
-                      className="text-destructive"
-                    >
-                      <Flame className="h-4 w-4 mr-2" />
-                      Burn NFT
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* NFT Basic Info */}
+          <CardContent className="space-y-4">
+            {/* Key Info Grid */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">NFT Name</p>
-                <p className="font-medium break-words">{nft.name || 'Unnamed'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Symbol</p>
-                <p className="font-medium">{nft.symbol || 'NFT'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Collection</p>
-                <Button
-                  variant="link"
-                  className="h-auto p-0 font-medium text-primary hover:text-primary/80"
-                  onClick={() => navigate(`/collection/${nft.collection_id}`)}
-                >
-                  {nft.collection_name || 'View Collection'}
-                </Button>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Media Type</p>
-                <p className="font-medium capitalize">{getMediaTypeDisplay(detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type))?.label || 'Image'}</p>
-              </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Creator</p>
                 <p className="font-medium text-sm">{nft.creator_display_name || nft.creator_address}</p>
@@ -589,49 +537,20 @@ export default function NFTDetail() {
                 <p className="text-sm text-muted-foreground mb-1">Owner</p>
                 <p className="font-medium text-sm">{nft.owner_display_name || nft.owner_address}</p>
               </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-lg bg-accent/50">
-                <div className="text-2xl font-bold text-primary">{nft.royalty_percentage || 8.08}%</div>
-                <div className="text-xs text-muted-foreground mt-1">Royalties</div>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-accent/50">
-                <div className="text-2xl font-bold">{nft.views || 0}</div>
-                <div className="text-xs text-muted-foreground mt-1">Views</div>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-accent/50">
-                <div className="text-2xl font-bold text-primary">#{getEditionInfo() || '1/1'}</div>
-                <div className="text-xs text-muted-foreground mt-1">Edition</div>
-              </div>
-            </div>
-
-            {/* Description if exists */}
-            {nft.description && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Description</p>
-                <p className="text-sm whitespace-pre-wrap break-words">{nft.description}</p>
+                <p className="text-sm text-muted-foreground mb-1">Minted</p>
+                <p className="font-medium text-sm">
+                  {new Date(nft.created_at).toLocaleDateString()}
+                </p>
               </div>
-            )}
-
-            {/* Technical Details */}
-            <div className="space-y-2 pt-4 border-t">
-              <p className="text-sm font-semibold mb-3">Technical Details</p>
-              <div className="grid gap-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Mint Address:</span>
-                  <span className="font-mono text-xs">{truncateAddress(nft.mint_address)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span>{new Date(nft.created_at).toLocaleDateString()}</span>
-                </div>
-                {nft.updated_at && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Last Updated:</span>
-                    <span>{new Date(nft.updated_at).toLocaleDateString()}</span>
-                  </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Price</p>
+                {nft.price ? (
+                  <p className="text-xl font-bold text-primary">
+                    {nft.price} {nft.currency || "SOL"}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Not Listed</p>
                 )}
               </div>
             </div>
@@ -641,88 +560,238 @@ export default function NFTDetail() {
 
       {/* All other sections stacked below */}
       <div className="space-y-6">
-          <TooltipProvider>
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge variant="secondary" className="text-xs cursor-help" title="Non-Fungible Token - unique digital asset">NFT</Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Non-Fungible Token - This is a unique digital asset stored on the blockchain</p>
-                  </TooltipContent>
-                </Tooltip>
-                {nft.symbol && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="text-xs cursor-help" title={`Collection symbol: ${nft.symbol}`}>
-                        {nft.symbol}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Collection Symbol - A short identifier for the NFT collection this item belongs to</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-                {nft.is_listed && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="default" className="text-xs bg-green-600 cursor-help" title="Available for Purchase">
-                        Listed
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Available for Purchase - This NFT is currently listed on the marketplace and can be bought</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-              <h1 className="text-3xl font-bold mb-2">{nft.name}</h1>
-              {nft.collection_name && (
-                <p className="text-lg text-muted-foreground">
-                  From collection: <span className="font-medium">{nft.collection_name}</span>
-                </p>
-              )}
-              
-              {/* Owner Action Buttons */}
-              {publicKey && nft.owner_address === publicKey && (
-                <div className="flex gap-2 mt-4">
-                   <Button
-                     variant="outline"
-                     size="sm"
-                     onClick={() => setIsEditDialogOpen(true)}
-                   >
-                     <Edit className="w-4 h-4 mr-1" />
-                     Edit
-                   </Button>
-                   
-                   <Button
-                     variant="destructive"
-                     size="sm"
-                     onClick={() => {
-                       // Add burn functionality
-                       if (!nft.mint_address) {
-                         toast.error('Mint address missing for this NFT');
-                         return;
-                       }
-                       
-                       // Create confirmation dialog
-                       const confirmed = window.confirm(
-                         `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
-                       );
-                       
-                       if (confirmed) {
-                         // Call burn function
-                         handleBurnNFT(nft.id, nft.mint_address);
-                       }
-                     }}
-                   >
-                     <Flame className="w-4 h-4 mr-1" />
-                     Burn
-                   </Button>
-                </div>
+        {/* NFT Details with Collapsible Settings */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                NFT Details
+              </CardTitle>
+              {isOwner && (
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                      <ChevronDown className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="absolute right-6 mt-2 w-48 bg-popover border rounded-lg shadow-lg z-50">
+                      <div className="p-2 space-y-1">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start"
+                          onClick={() => setIsEditDialogOpen(true)}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit NFT
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            const confirmDelete = window.confirm(
+                              `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
+                            );
+                            if (confirmDelete) {
+                              handleBurnNFT(nft.id, nft.mint_address);
+                            }
+                          }}
+                        >
+                          <Flame className="h-4 w-4 mr-2" />
+                          Burn NFT
+                        </Button>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               )}
             </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              NFT information and settings. {isOwner && "Click 'Settings' to modify."}
+            </p>
+            
+            {/* On-Chain Data */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3 text-primary">On-Chain</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">NFT Name</span>
+                  <span className="text-sm font-medium text-right">{nft.name || 'Unnamed'}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Symbol</span>
+                  <span className="text-sm font-medium">{nft.symbol || 'NFT'}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Collection</span>
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-sm font-medium text-primary hover:text-primary/80"
+                    onClick={() => navigate(`/collection/${nft.collection_id}`)}
+                  >
+                    {nft.collection_name || 'View Collection'}
+                  </Button>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Media Type</span>
+                  <span className="text-sm font-medium capitalize">
+                    {getMediaTypeDisplay(detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type))?.label || 'Image'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Creator</span>
+                  <span className="text-sm font-medium">
+                    {nft.creator_display_name || nft.creator_address}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Owner</span>
+                  <span className="text-sm font-medium">
+                    {nft.owner_display_name || nft.owner_address}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Royalties</span>
+                  <span className="text-sm font-medium text-primary">
+                    {nft.royalty_percentage || 8.08}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Views</span>
+                  <span className="text-sm font-medium">{nft.views || 0}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Edition</span>
+                  <span className="text-sm font-medium text-primary">#{getEditionInfo() || '1/1'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Off-Chain / Technical Details */}
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-semibold mb-3 text-primary">Off-Chain</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Mint Address</span>
+                  <a
+                    href={`https://solscan.io/token/${nft.mint_address}?cluster=${nft.network || 'mainnet'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono text-primary hover:underline flex items-center gap-1"
+                  >
+                    {truncateAddress(nft.mint_address)}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-muted-foreground">Created</span>
+                  <span className="text-sm font-medium">
+                    {new Date(nft.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                {nft.updated_at && (
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm text-muted-foreground">Last Updated</span>
+                    <span className="text-sm font-medium">
+                      {new Date(nft.updated_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+                {nft.metadata_uri && (
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm text-muted-foreground">Metadata URI</span>
+                    <a
+                      href={nft.metadata_uri}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                    >
+                      View <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Collection Details (if applicable) */}
+            {nft.collection_name && (
+              <div className="pt-4 border-t">
+                <h3 className="text-sm font-semibold mb-3 text-primary">Collection Details</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm text-muted-foreground">Collection</span>
+                    <Button
+                      variant="link"
+                      className="h-auto p-0 text-sm font-medium text-primary hover:text-primary/80"
+                      onClick={() => navigate(`/collection/${nft.collection_id}`)}
+                    >
+                      {nft.collection_name}
+                    </Button>
+                  </div>
+                  {nft.collection_mint_price && (
+                    <div className="flex justify-between items-start">
+                      <span className="text-sm text-muted-foreground">Mint Price</span>
+                      <span className="text-sm font-medium">
+                        {nft.collection_mint_price} {nft.collection_symbol || 'SOL'}
+                      </span>
+                    </div>
+                  )}
+                  {nft.collection_max_supply && (
+                    <div className="flex justify-between items-start">
+                      <span className="text-sm text-muted-foreground">Supply</span>
+                      <span className="text-sm font-medium">
+                        {nft.collection_items_redeemed || 0} / {nft.collection_max_supply}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {nft.description && (
+              <div className="pt-4 border-t">
+                <h3 className="text-sm font-semibold mb-3">Description</h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
+                  {nft.description}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Properties */}
+        {nft.metadata && typeof nft.metadata === 'object' && Object.keys(nft.metadata).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Properties</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(nft.metadata as Record<string, any>).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="border rounded-lg p-3 bg-muted/50"
+                    >
+                      <p className="text-xs text-muted-foreground uppercase mb-1">
+                        {key}
+                      </p>
+                      <p className="text-sm font-medium truncate">
+                        {String(value)}
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
             {/* Price and Actions */}
             {nft.is_listed && nft.price && (
@@ -1326,7 +1395,6 @@ export default function NFTDetail() {
           })()
         )}
         
-        </TooltipProvider>
       </div>
       
       {/* Fullscreen NFT Viewer */}
@@ -1369,6 +1437,19 @@ export default function NFTDetail() {
           currentPrice={nft.price}
           onBidPlaced={(amount) => {
             toast.success(`Successfully placed bid of ${amount} ${nft.currency} for ${nft.name}!`);
+          }}
+        />
+      )}
+
+      {/* Edit NFT Dialog */}
+      {nft && (
+        <EditNFTDialog
+          nft={nft as UserNFT}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onUpdate={() => {
+            toast.success('NFT updated successfully');
+            fetchNFT();
           }}
         />
       )}
