@@ -22,7 +22,11 @@ import {
   Send,
   Flame,
   List as ListIcon,
-  CheckCircle2
+  CheckCircle2,
+  Share2,
+  Bookmark,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { EditNFTDialog } from '@/components/EditNFTDialog';
@@ -43,6 +47,8 @@ export default function NFTDetail() {
   const [activities, setActivities] = useState<any[]>([]);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [copiedContract, setCopiedContract] = useState(false);
+  const [copiedTokenId, setCopiedTokenId] = useState(false);
 
   const fetchNFT = async () => {
     try {
@@ -79,13 +85,13 @@ export default function NFTDetail() {
         setCreatorProfile(profile);
       }
 
-      // Fetch activities
+      // Fetch activities (last 5)
       const { data: activitiesData } = await supabase
         .from('marketplace_activities')
         .select('*')
         .eq('nft_id', id)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(5);
 
       setActivities(activitiesData || []);
 
@@ -147,9 +153,20 @@ export default function NFTDetail() {
   
   // Format attributes - convert from various formats to simple array
   const rawAttributes = nft.attributes || nft.metadata;
-  const attributes = Array.isArray(rawAttributes) 
+  let attributes = Array.isArray(rawAttributes) 
     ? rawAttributes.filter((attr: any) => attr.trait_type && attr.value)
     : formatAttributes(rawAttributes);
+  
+  // Filter out empty/zero values and royalty percentage
+  attributes = attributes.filter((attr: any) => {
+    const value = attr.value;
+    const key = (attr.trait_type || attr.key || '').toLowerCase();
+    // Skip royalty fields
+    if (key.includes('royalty')) return false;
+    // Skip empty or zero values
+    if (value === '' || value === null || value === undefined || value === 0 || value === '0') return false;
+    return true;
+  });
   
   const truncatedDesc = description.length > 200 ? description.slice(0, 200) + '...' : description;
   const shouldTruncate = description.length > 200;
@@ -173,11 +190,11 @@ export default function NFTDetail() {
         </Button>
 
         {/* Hero: Image + Details (2-column grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           {/* Left: Image */}
           <div className="lg:col-span-6">
             <div 
-              className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity border shadow-sm"
+              className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity border shadow-sm group"
               onClick={() => setIsFullscreen(true)}
             >
               <img
@@ -185,57 +202,60 @@ export default function NFTDetail() {
                 alt={nft.name}
                 className="w-full h-full object-cover"
               />
-            </div>
-            {/* Small badges under image */}
-            <div className="flex items-center gap-2 mt-3">
-              {nft.is_listed && (
-                <Badge variant="default" className="text-xs">Listed</Badge>
-              )}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs cursor-pointer hover:bg-accent"
-                      onClick={() => window.open(explorerUrl, '_blank')}
-                    >
-                      Verified <ExternalLink className="h-3 w-3 ml-1" />
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View on Solscan</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              {/* Badges overlay on image bottom-left */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                <div className="flex items-center gap-2">
+                  {nft.is_listed && (
+                    <Badge variant="default" className="text-xs bg-primary/90 backdrop-blur-sm">Listed</Badge>
+                  )}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs cursor-pointer hover:bg-accent bg-background/80 backdrop-blur-sm border-white/20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(explorerUrl, '_blank');
+                          }}
+                        >
+                          Verified <ExternalLink className="h-3 w-3 ml-1" />
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View on Solscan</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Right: Details */}
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-4">
             {/* Title */}
             <div>
-              <h1 className="text-4xl font-bold mb-2">{nft.name}</h1>
+              <h1 className="text-5xl font-bold leading-tight">{nft.name}</h1>
             </div>
 
-            {/* Creator Row */}
+            {/* Creator Row - entire row clickable */}
             {creatorProfile && (
-              <div className="flex items-center gap-3">
+              <Link 
+                to={`/creator/${nft.creator_user_id}`}
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity w-fit"
+              >
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={creatorProfile.profile_image_url} />
                   <AvatarFallback>{creatorName[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex items-center gap-2">
-                  <Link 
-                    to={`/creator/${nft.creator_user_id}`}
-                    className="font-medium hover:underline"
-                  >
-                    {creatorName}
-                  </Link>
+                  <span className="font-medium">{creatorName}</span>
                   {creatorProfile.verified && (
                     <CheckCircle2 className="h-4 w-4 text-primary" />
                   )}
                 </div>
-              </div>
+              </Link>
             )}
 
             {/* Price Card */}
@@ -251,14 +271,38 @@ export default function NFTDetail() {
                   </div>
 
                   {!isOwner ? (
-                    <div className="flex gap-3">
-                      <Button size="lg" className="flex-1">
-                        Buy now
-                      </Button>
-                      <Button size="lg" variant="secondary" className="flex-1">
-                        Make offer
-                      </Button>
-                    </div>
+                    <>
+                      <div className="flex gap-3">
+                        <Button size="lg" className="flex-1">
+                          Buy now
+                        </Button>
+                        <Button size="lg" variant="secondary" className="flex-1">
+                          Make offer
+                        </Button>
+                      </div>
+                      {/* Share & Watchlist buttons */}
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            toast.success('Link copied!');
+                          }}
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => toast.info('Watchlist coming soon')}
+                        >
+                          <Bookmark className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </>
                   ) : (
                     <Button size="lg" variant="outline" className="w-full">
                       <ListIcon className="h-4 w-4 mr-2" />
@@ -354,12 +398,14 @@ export default function NFTDetail() {
           </Card>
         )}
 
-        {/* Tabs: Overview / Activity */}
+        {/* Tabs: Overview / Activity (sticky) */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="w-full lg:w-auto mb-6">
-            <TabsTrigger value="overview" className="flex-1 lg:flex-initial">Overview</TabsTrigger>
-            <TabsTrigger value="activity" className="flex-1 lg:flex-initial">Activity</TabsTrigger>
-          </TabsList>
+          <div className="sticky top-0 z-10 bg-background pb-4 mb-2">
+            <TabsList className="w-full lg:w-auto">
+              <TabsTrigger value="overview" className="flex-1 lg:flex-initial">Overview</TabsTrigger>
+              <TabsTrigger value="activity" className="flex-1 lg:flex-initial">Activity</TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 mt-0">
@@ -387,8 +433,8 @@ export default function NFTDetail() {
               </Card>
             )}
 
-            {/* Attributes Table */}
-            {attributes.length > 0 ? (
+            {/* Attributes Table (filtered) */}
+            {attributes.length > 0 && (
               <Card className="p-6">
                 <h3 className="font-semibold mb-4">Attributes</h3>
                 <div className="space-y-2">
@@ -399,10 +445,6 @@ export default function NFTDetail() {
                     </div>
                   ))}
                 </div>
-              </Card>
-            ) : (
-              <Card className="p-6">
-                <p className="text-sm text-muted-foreground">No attributes provided.</p>
               </Card>
             )}
           </TabsContent>
@@ -467,6 +509,19 @@ export default function NFTDetail() {
                     size="sm"
                     variant="ghost"
                     className="h-6 w-6 p-0"
+                    onClick={() => {
+                      navigator.clipboard.writeText(nft.mint_address);
+                      setCopiedContract(true);
+                      toast.success('Contract address copied!');
+                      setTimeout(() => setCopiedContract(false), 2000);
+                    }}
+                  >
+                    {copiedContract ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
                     onClick={() => window.open(explorerUrl, '_blank')}
                   >
                     <ExternalLink className="h-3 w-3" />
@@ -475,7 +530,22 @@ export default function NFTDetail() {
               </div>
               <div className="flex items-center justify-between py-2 border-b">
                 <span className="text-sm text-muted-foreground">Token ID</span>
-                <span className="text-sm font-mono">{nft.id.slice(0, 8)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-mono">{nft.id.slice(0, 8)}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={() => {
+                      navigator.clipboard.writeText(nft.id);
+                      setCopiedTokenId(true);
+                      toast.success('Token ID copied!');
+                      setTimeout(() => setCopiedTokenId(false), 2000);
+                    }}
+                  >
+                    {copiedTokenId ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                </div>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-muted-foreground">Mint Date</span>
