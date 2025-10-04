@@ -901,6 +901,7 @@ export type Database = {
           discord_handle: string | null
           display_name: string | null
           id: string
+          is_public_profile: boolean
           nft_count: number | null
           nickname: string | null
           pfp_unlock_status: boolean | null
@@ -924,6 +925,7 @@ export type Database = {
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          is_public_profile?: boolean
           nft_count?: number | null
           nickname?: string | null
           pfp_unlock_status?: boolean | null
@@ -947,6 +949,7 @@ export type Database = {
           discord_handle?: string | null
           display_name?: string | null
           id?: string
+          is_public_profile?: boolean
           nft_count?: number | null
           nickname?: string | null
           pfp_unlock_status?: boolean | null
@@ -1574,6 +1577,21 @@ export type Database = {
           verified: boolean
           wallet_address_masked: string
           website_url: string
+        }[]
+      }
+      get_public_profile_safe: {
+        Args: { p_wallet_address: string }
+        Returns: {
+          banner_image_url: string
+          bio: string
+          created_at: string
+          display_name: string
+          is_public_profile: boolean
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          verified: boolean
+          wallet_address: string
         }[]
       }
       get_public_profiles: {
