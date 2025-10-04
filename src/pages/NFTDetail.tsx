@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Calendar, Hash, Image, Maximize2, ShoppingCart, Gavel, DollarSign, Award, Edit, Flame, Play, FileText, Settings, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
@@ -357,154 +358,288 @@ export default function NFTDetail() {
         )}
       </div>
 
-      {/* Full-width NFT Image */}
-      <div key={nft.id} className="mb-6">
-        <Card>
-          <div 
-            className="aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
-            onClick={handleFullscreenToggle}
-          >
-            {/* Render different media types */}
-            {(() => {
-              const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
-              const animationUrl = nft.metadata?.animation_url;
-              
-              if (videoError || !animationUrl) {
-                // Fallback to static image
-                return (
-                  <img
-                    src={nft.image_url || "/placeholder.svg"}
-                    alt={nft.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => {
-                      const img = e.currentTarget as HTMLImageElement;
-                      if (img.src !== "/placeholder.svg") {
-                        img.src = "/placeholder.svg";
-                      }
-                    }}
-                  />
-                );
-              }
-              
-              if (mediaKind === 'video') {
-                return (
-                  <div className="w-full h-full relative bg-black rounded-lg overflow-hidden">
-                    <video
-                      ref={videoRef}
+      {/* Top section: Smaller 1:1 image + Main details side by side */}
+      <div className="grid md:grid-cols-[400px_1fr] gap-6 items-start mb-6">
+        {/* Left: NFT Image (1:1 ratio, max 400px) */}
+        <div key={nft.id} className="w-full max-w-[400px]">
+          <Card>
+            <div 
+              className="aspect-square overflow-hidden rounded-lg bg-muted cursor-pointer group relative"
+              onClick={handleFullscreenToggle}
+            >
+              {/* Render different media types */}
+              {(() => {
+                const mediaKind = detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type);
+                const animationUrl = nft.metadata?.animation_url;
+                
+                if (videoError || !animationUrl) {
+                  return (
+                    <img
+                      src={nft.image_url || "/placeholder.svg"}
+                      alt={nft.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (img.src !== "/placeholder.svg") {
+                          img.src = "/placeholder.svg";
+                        }
+                      }}
+                    />
+                  );
+                }
+                
+                if (mediaKind === 'video') {
+                  return (
+                    <div className="w-full h-full relative bg-black rounded-lg overflow-hidden">
+                      <video
+                        ref={videoRef}
+                        src={animationUrl}
+                        poster={nft.image_url || "/placeholder.svg"}
+                        className="w-full h-full object-cover"
+                        controls={false}
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        onError={() => {
+                          console.error('Video load error:', animationUrl, 'falling back to image');
+                          setVideoError(true);
+                        }}
+                      />
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer hover:bg-black/30 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (videoRef.current) {
+                            videoRef.current.play().then(() => {
+                              videoRef.current!.controls = true;
+                              e.currentTarget.style.display = 'none';
+                            }).catch(console.error);
+                          }
+                        }}
+                      >
+                        <div className="bg-white/90 rounded-full p-3 hover:bg-white transition-colors">
+                          <Play className="h-6 w-6 text-black" fill="currentColor" />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else if (mediaKind === 'audio') {
+                  return (
+                    <div className="w-full h-full relative">
+                      {nft.image_url && (
+                        <img
+                          src={nft.image_url}
+                          alt={nft.name}
+                          className="w-full h-full object-cover absolute inset-0"
+                        />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                        <div className="bg-white/90 rounded-lg p-4 max-w-sm w-full mx-4">
+                          <audio controls className="w-full">
+                            <source src={animationUrl} type={nft.metadata?.media_type || 'audio/mpeg'} />
+                            Your browser does not support audio playback.
+                          </audio>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else if (mediaKind === '3d') {
+                  return (
+                    <div className="w-full h-full relative">
+                      {nft.image_url && (
+                        <img
+                          src={nft.image_url}
+                          alt={nft.name}
+                          className="w-full h-full object-cover absolute inset-0"
+                        />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="text-center text-white">
+                          <Maximize2 className="h-16 w-16 mx-auto mb-4" />
+                          <p className="text-sm font-medium">3D Model</p>
+                          <p className="text-xs opacity-80">Click to view</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else if (mediaKind === 'animated') {
+                  return (
+                    <img
                       src={animationUrl}
-                      poster={nft.image_url || "/placeholder.svg"}
-                      className="w-full h-full object-cover"
-                      controls={false}
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
+                      alt={nft.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={() => {
-                        console.error('Video load error:', animationUrl, 'falling back to image');
+                        console.error('Animated image load error, falling back to static image');
                         setVideoError(true);
                       }}
                     />
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer hover:bg-black/30 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (videoRef.current) {
-                          videoRef.current.play().then(() => {
-                            videoRef.current!.controls = true;
-                            e.currentTarget.style.display = 'none';
-                          }).catch(console.error);
+                  );
+                } else {
+                  return (
+                    <img
+                      src={nft.image_url || "/placeholder.svg"}
+                      alt={nft.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (img.src !== "/placeholder.svg") {
+                          img.src = "/placeholder.svg";
                         }
                       }}
+                    />
+                  );
+                }
+              })()}
+              
+              {/* Fullscreen overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center pointer-events-none">
+                <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Right: Main NFT Details Card */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <CardTitle className="text-2xl mb-2">{nft.name || 'Unnamed NFT'}</CardTitle>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">NFT</Badge>
+                  {nft.collection_name && (
+                    <Badge 
+                      variant="outline" 
+                      className="cursor-pointer hover:bg-accent"
+                      onClick={() => navigate(`/collection/${nft.collection_id}`)}
                     >
-                      <div className="bg-white/90 rounded-full p-3 hover:bg-white transition-colors">
-                        <Play className="h-6 w-6 text-black" fill="currentColor" />
-                      </div>
-                    </div>
-                  </div>
-                );
-              } else if (mediaKind === 'audio') {
-                return (
-                  <div className="w-full h-full relative">
-                    {nft.image_url && (
-                      <img
-                        src={nft.image_url}
-                        alt={nft.name}
-                        className="w-full h-full object-cover absolute inset-0"
-                      />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                      <div className="bg-white/90 rounded-lg p-4 max-w-sm w-full mx-4">
-                        <audio controls className="w-full">
-                          <source src={animationUrl} type={nft.metadata?.media_type || 'audio/mpeg'} />
-                          Your browser does not support audio playback.
-                        </audio>
-                      </div>
-                    </div>
-                  </div>
-                );
-              } else if (mediaKind === '3d') {
-                return (
-                  <div className="w-full h-full relative">
-                    {nft.image_url && (
-                      <img
-                        src={nft.image_url}
-                        alt={nft.name}
-                        className="w-full h-full object-cover absolute inset-0"
-                      />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                      <div className="text-center text-white">
-                        <Maximize2 className="h-16 w-16 mx-auto mb-4" />
-                        <p className="text-sm font-medium">3D Model</p>
-                        <p className="text-xs opacity-80">Click to view in fullscreen</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              } else if (mediaKind === 'animated') {
-                // Show animated GIF or WebP directly
-                return (
-                  <img
-                    src={animationUrl}
-                    alt={nft.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={() => {
-                      console.error('Animated image load error, falling back to static image');
-                      setVideoError(true);
-                    }}
-                  />
-                );
-              } else {
-                // Static image fallback
-                return (
-                  <img
-                    src={nft.image_url || "/placeholder.svg"}
-                    alt={nft.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => {
-                      const img = e.currentTarget as HTMLImageElement;
-                      if (img.src !== "/placeholder.svg") {
-                        img.src = "/placeholder.svg";
-                      }
-                    }}
-                  />
-                );
-              }
-            })()}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center pointer-events-none">
-              <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      From collection: {nft.collection_name}
+                    </Badge>
+                  )}
+                  {nft.is_listed && (
+                    <Badge className="bg-green-500 hover:bg-green-600">
+                      Listed
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              {isOwner && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+                      <Settings className="h-4 w-4 mr-2" />
+                      Edit NFT
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        const confirmDelete = window.confirm(
+                          `Are you sure you want to burn "${nft.name}"? This action cannot be undone and will permanently destroy the NFT.`
+                        );
+                        if (confirmDelete) {
+                          handleBurnNFT(nft.id, nft.mint_address);
+                        }
+                      }}
+                      className="text-destructive"
+                    >
+                      <Flame className="h-4 w-4 mr-2" />
+                      Burn NFT
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Badge variant="secondary" className="bg-black/50 text-white border-white/20">
-                <Maximize2 className="h-3 w-3 mr-1" />
-                View Fullscreen
-              </Badge>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* NFT Basic Info */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">NFT Name</p>
+                <p className="font-medium break-words">{nft.name || 'Unnamed'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Symbol</p>
+                <p className="font-medium">{nft.symbol || 'NFT'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Collection</p>
+                <Button
+                  variant="link"
+                  className="h-auto p-0 font-medium text-primary hover:text-primary/80"
+                  onClick={() => navigate(`/collection/${nft.collection_id}`)}
+                >
+                  {nft.collection_name || 'View Collection'}
+                </Button>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Media Type</p>
+                <p className="font-medium capitalize">{getMediaTypeDisplay(detectMediaKind(nft.image_url, nft.metadata?.animation_url, nft.metadata?.media_type))?.label || 'Image'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Creator</p>
+                <p className="font-medium text-sm">{nft.creator_display_name || nft.creator_address}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Owner</p>
+                <p className="font-medium text-sm">{nft.owner_display_name || nft.owner_address}</p>
+              </div>
             </div>
-          </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 rounded-lg bg-accent/50">
+                <div className="text-2xl font-bold text-primary">{nft.royalty_percentage || 8.08}%</div>
+                <div className="text-xs text-muted-foreground mt-1">Royalties</div>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-accent/50">
+                <div className="text-2xl font-bold">{nft.views || 0}</div>
+                <div className="text-xs text-muted-foreground mt-1">Views</div>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-accent/50">
+                <div className="text-2xl font-bold text-primary">#{getEditionInfo() || '1/1'}</div>
+                <div className="text-xs text-muted-foreground mt-1">Edition</div>
+              </div>
+            </div>
+
+            {/* Description if exists */}
+            {nft.description && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Description</p>
+                <p className="text-sm whitespace-pre-wrap break-words">{nft.description}</p>
+              </div>
+            )}
+
+            {/* Technical Details */}
+            <div className="space-y-2 pt-4 border-t">
+              <p className="text-sm font-semibold mb-3">Technical Details</p>
+              <div className="grid gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Mint Address:</span>
+                  <span className="font-mono text-xs">{truncateAddress(nft.mint_address)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Created:</span>
+                  <span>{new Date(nft.created_at).toLocaleDateString()}</span>
+                </div>
+                {nft.updated_at && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Last Updated:</span>
+                    <span>{new Date(nft.updated_at).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
-      {/* Single Column Layout for all details */}
+      {/* All other sections stacked below */}
       <div className="space-y-6">
           <TooltipProvider>
             <div>
