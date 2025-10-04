@@ -773,6 +773,33 @@ export type Database = {
           },
         ]
       }
+      profile_access_logs: {
+        Row: {
+          access_type: string
+          accessed_profile_id: string | null
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           created_at: string | null
@@ -1451,6 +1478,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_masked_wallet_by_user_id: {
+        Args: { p_user_id: string }
+        Returns: string
+      }
       get_newsletter_subscriber_status: {
         Args: { p_email: string }
         Returns: Json
@@ -1556,6 +1587,18 @@ export type Database = {
           website_url: string
         }[]
       }
+      get_profile_display_by_user_id: {
+        Args: { p_user_id: string }
+        Returns: {
+          bio: string
+          display_name: string
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          user_id: string
+          verified: boolean
+        }[]
+      }
       get_profiles_authenticated: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1574,35 +1617,6 @@ export type Database = {
           verified: boolean
           wallet_address: string
           website_url: string
-        }[]
-      }
-      get_profiles_public: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          banner_image_url: string
-          bio: string
-          created_at: string
-          discord_handle: string
-          display_name: string
-          id: string
-          profile_image_url: string
-          profile_rank: string
-          trade_count: number
-          twitter_handle: string
-          verified: boolean
-          wallet_address_masked: string
-          website_url: string
-        }[]
-      }
-      get_public_profile_limited: {
-        Args: { p_wallet_address: string }
-        Returns: {
-          bio: string
-          display_name: string
-          nickname: string
-          profile_image_url: string
-          profile_rank: string
-          verified: boolean
         }[]
       }
       get_public_profiles: {
@@ -1645,6 +1659,17 @@ export type Database = {
       increment_user_trade_count: {
         Args: { user_wallet_address: string }
         Returns: undefined
+      }
+      search_profiles_by_nickname: {
+        Args: { search_term: string }
+        Returns: {
+          display_name: string
+          nickname: string
+          profile_image_url: string
+          profile_rank: string
+          user_id: string
+          verified: boolean
+        }[]
       }
       secure_newsletter_confirm: {
         Args: { p_email: string; p_opt_in_token: string }

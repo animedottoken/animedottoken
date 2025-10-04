@@ -59,23 +59,55 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
 
   useEffect(() => {
     let cancelled = false;
-    const mask = (addr: string) => `${addr.slice(0,4)}...${addr.slice(-4)}`;
-    supabase
-      .rpc('get_profiles_public')
-      .then(({ data, error }) => {
+    
+    const fetchOwnerProfile = async () => {
+      try {
+        // First get the NFT to find the owner's user_id
+        const { data: nftData, error: nftError } = await supabase
+          .from('nfts')
+          .select('creator_user_id, owner_address')
+          .eq('id', listing.nft_id)
+          .single();
+        
         if (cancelled) return;
-        if (error) {
-          console.error('Error loading owner profile:', error);
+        
+        if (nftError || !nftData?.creator_user_id) {
+          console.error('Error loading NFT data:', nftError);
           setOwnerNickname('');
           setOwnerVerified(false);
           return;
         }
-        const profile = (data || []).find((p: any) => mask(p.wallet_address) === listing.owner_address_masked);
-        setOwnerNickname(profile?.display_name || '');
-        setOwnerVerified(!!profile?.verified);
-      });
+        
+        // Now get the secure profile data using user_id
+        const { data: profileData, error: profileError } = await supabase
+          .rpc('get_profile_display_by_user_id', { 
+            p_user_id: nftData.creator_user_id 
+          })
+          .single();
+        
+        if (cancelled) return;
+        
+        if (profileError) {
+          console.error('Error loading owner profile:', profileError);
+          setOwnerNickname('');
+          setOwnerVerified(false);
+          return;
+        }
+        
+        setOwnerNickname(profileData?.display_name || profileData?.nickname || '');
+        setOwnerVerified(!!profileData?.verified);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('Error in profile fetch:', err);
+        setOwnerNickname('');
+        setOwnerVerified(false);
+      }
+    };
+    
+    fetchOwnerProfile();
+    
     return () => { cancelled = true; };
-  }, [listing.owner_address_masked]);
+  }, [listing.nft_id]);
 
   const getTierIcon = () => {
     switch (listing.tier) {
