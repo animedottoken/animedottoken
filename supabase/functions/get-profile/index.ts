@@ -144,8 +144,7 @@ serve(async (req) => {
       const publicProfile = {
         id: profile.id,
         user_id: profile.user_id,
-        wallet_address: profile.wallet_address ? 
-          `${profile.wallet_address.slice(0, 4)}...${profile.wallet_address.slice(-4)}` : null,
+        // SECURITY: wallet_address completely excluded for non-owners
         nickname: profile.nickname,
         profile_image_url: profile.profile_image_url,
         profile_rank: profile.profile_rank,
