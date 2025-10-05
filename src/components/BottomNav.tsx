@@ -13,11 +13,6 @@ const navItems = [
     icon: Coins,
     path: "/mint",
   },
-  { 
-    title: "Gallery", 
-    icon: ShoppingCart,
-    path: "/marketplace",
-  },
 ];
 
 export const BottomNav = () => {

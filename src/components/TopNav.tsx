@@ -28,7 +28,6 @@ type NavigationItem = RouteItem | SectionItem;
 
 const routes: RouteItem[] = [
   { type: "route", title: "Mint NFTs", icon: Coins, path: "/mint" },
-  { type: "route", title: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
 ];
 
 const navigationItems: NavigationItem[] = [
