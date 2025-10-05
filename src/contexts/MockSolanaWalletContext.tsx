@@ -448,7 +448,7 @@ const SolanaWalletInnerProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     try {
       const timestamp = Date.now();
-      const signatureMessage = `Link identity wallet to ANIME.TOKEN account: ${user.email}\n\nWallet: ${walletAddress}\nTimestamp: ${timestamp}`;
+      const signatureMessage = `Link identity wallet to ANIME.TOKEN account\n\nWallet: ${walletAddress}\nTimestamp: ${timestamp}`;
       
       // Request real signature from wallet
       const signature = await handleSignMessage(signatureMessage);

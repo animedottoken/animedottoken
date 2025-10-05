@@ -4,13 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, CheckCircle, Eye, Play, Volume2, Maximize2, Image } from 'lucide-react';
 import { detectMediaKind, getMediaTypeDisplay } from '@/lib/media';
-import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
-import { useAuth } from '@/contexts/AuthContext';
-import SocialActionWrapper from '@/components/SocialActionWrapper';
 import { toast } from 'sonner';
 
 interface OverlayAction {
@@ -53,24 +50,10 @@ interface NFTCardProps {
 }
 
 export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = true, verified, metaLeft, onNavigate, likeCount = 0 }: NFTCardProps) => {
-  const { isLiked, toggleLike, isPending } = useNFTLikes();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
     navigate(`/nft/${nft.id}?${navigationQuery || 'from=marketplace'}`);
-  };
-
-  const handleLike = async (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (isPending(nft.id)) return;
-    
-    console.log('Toggling like for NFT:', nft.id);
-    await toggleLike(nft.id);
   };
 
   return (
@@ -175,36 +158,13 @@ export const NFTCard = ({ nft, navigationQuery, overlayActions, showOwnerInfo = 
           );
         })()}
         
-        {/* Heart button with auth wrapper */}
-        <SocialActionWrapper 
-          action="like this NFT"
-          onAction={(e?: React.MouseEvent) => {
-            if (e) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-            handleLike(e);
-          }}
-        >
-           <Button 
-             variant="ghost" 
-             size="sm" 
-             aria-disabled={isPending(nft.id)}
-             onClickCapture={(e) => { console.info('[NFTCard] heart click capture', { id: nft.id, pending: isPending(nft.id) }); if (e.defaultPrevented) return; handleLike(e); }}
-             className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 hover:scale-105 hover:shadow-lg active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 flex items-center gap-1 min-w-[50px] pointer-events-auto ${
-               isLiked(nft.id)
-                 ? 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-400'
-                 : 'bg-black/50 text-white hover:bg-black/70 focus-visible:ring-primary'
-             } ${isPending(nft.id) ? 'opacity-50' : ''}`}
-             title={isLiked(nft.id) ? "Unlike NFT" : "Like NFT"}
-             aria-label={isLiked(nft.id) ? "Unlike this NFT" : "Like this NFT"}
-           >
-             <Heart className={`h-4 w-4 ${isLiked(nft.id) ? "fill-current" : ""}`} />
-             {likeCount > 0 && (
-               <span className="text-xs font-medium ml-1">{likeCount}</span>
-             )}
-           </Button>
-        </SocialActionWrapper>
+        {/* Heart icon - display only */}
+        <div className="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white flex items-center gap-1 min-w-[50px] z-20">
+          <Heart className="h-4 w-4" />
+          {likeCount > 0 && (
+            <span className="text-xs font-medium ml-1">{likeCount}</span>
+          )}
+        </div>
         
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center pointer-events-none">

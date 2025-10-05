@@ -3,13 +3,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Crown, Rocket, TrendingUp, Eye, Heart, CheckCircle } from 'lucide-react';
-import { useNFTLikes } from '@/hooks/useNFTLikes';
 import { useNavigate } from 'react-router-dom';
 import { setNavContext } from '@/lib/navContext';
 import { supabase } from '@/integrations/supabase/client';
 import { truncateAddress } from '@/utils/addressUtils';
 import { PriceTag } from '@/components/ui/price-tag';
-import SocialActionWrapper from '@/components/SocialActionWrapper';
 interface BoostedListing {
   id: string;
   nft_id: string;
@@ -28,7 +26,6 @@ interface BoostedNFTCardProps {
 }
 
 export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps) => {
-  const { isLiked, toggleLike, loading: likeLoading } = useNFTLikes();
   const navigate = useNavigate();
   const [nftPrice, setNftPrice] = useState<number | null>(null);
   const [listed, setListed] = useState<boolean>(false);
@@ -148,16 +145,6 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
     }
   };
 
-  const handleLike = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (likeLoading) return;
-    
-    // We need the unmasked creator address for optimistic updates
-    // For now, we'll pass null as a fallback - ideally we'd fetch the real address
-    toggleLike(listing.nft_id, null);
-  };
-
   const handleViewDetails = () => {
     // Set navigation context for boosted NFTs
     setNavContext({
@@ -244,25 +231,10 @@ export const BoostedNFTCard = ({ listing, navigationQuery }: BoostedNFTCardProps
             </div>
           </div>
 
-          {/* Heart button - top right */}
-          <SocialActionWrapper 
-            action="like this NFT"
-            onAction={handleLike}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={likeLoading}
-              className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 z-20 ${
-                isLiked(listing.nft_id)
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-black/50 text-white hover:bg-black/70'
-              }`}
-              title={isLiked(listing.nft_id) ? "Unlike" : "Like"}
-            >
-              <Heart className={`h-4 w-4 ${isLiked(listing.nft_id) ? 'fill-current' : ''}`} />
-            </Button>
-          </SocialActionWrapper>
+          {/* Heart icon - display only */}
+          <div className="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white z-20">
+            <Heart className="h-4 w-4" />
+          </div>
         </div>
 
         {/* Content */}

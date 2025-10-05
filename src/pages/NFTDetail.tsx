@@ -29,7 +29,7 @@ import {
   Check,
   Image as ImageIcon
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { EditNFTDialog } from '@/components/EditNFTDialog';
 import { formatAttributes } from '@/lib/attributeHelpers';
 import { FullscreenNFTViewer } from '@/components/FullscreenNFTViewer';
@@ -37,7 +37,7 @@ import { FullscreenNFTViewer } from '@/components/FullscreenNFTViewer';
 export default function NFTDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { publicKey } = useSolanaWallet();
   
   const [nft, setNft] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -64,17 +64,8 @@ export default function NFTDetail() {
 
       setNft(data);
 
-      // Check ownership
-      if (user) {
-        const { data: wallets } = await supabase
-          .from('user_wallets')
-          .select('wallet_address')
-          .eq('user_id', user.id)
-          .eq('is_verified', true);
-
-        const userWallets = wallets?.map(w => w.wallet_address) || [];
-        setIsOwner(userWallets.includes(data.owner_address));
-      }
+      // Check ownership (wallet-only, no user account needed)
+      setIsOwner(data.owner_address === publicKey);
 
       // Fetch creator profile
       if (data.creator_user_id) {
@@ -118,7 +109,7 @@ export default function NFTDetail() {
 
   useEffect(() => {
     fetchNFT();
-  }, [id, user]);
+  }, [id]);
 
   const handleBurnNFT = async () => {
     if (!confirm(`Are you sure you want to burn "${nft.name}"? This action cannot be undone.`)) {

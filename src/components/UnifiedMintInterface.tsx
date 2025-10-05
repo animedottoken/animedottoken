@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useCollections } from '@/hooks/useCollections';
 import { useSolanaWallet } from '@/contexts/MockSolanaWalletContext';
 import { useCircuitBreaker } from '@/hooks/useCircuitBreaker';
-import { useSecurityLogger } from '@/hooks/useSecurityLogger';
+
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { metaplexService, type CollectionMetadata } from '@/services/metaplexService';
@@ -67,7 +67,6 @@ export const UnifiedMintInterface = () => {
   const { user } = useAuth();
   const { getPrimaryWallet, linkWallet, generateLinkingMessage } = useUserWallets();
   const { checkAccess, guardedAction } = useCircuitBreaker();
-  const { logSuspiciousActivity } = useSecurityLogger();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill treasury wallet when wallet is connected and show success toast
@@ -244,14 +243,6 @@ export const UnifiedMintInterface = () => {
     if (!formData.image_file) {
       toast.error('Collection avatar is required');
       return;
-    }
-
-    // Security: Log large supply attempts
-    if (formData.max_supply > 10000) {
-      logSuspiciousActivity('large_supply_attempt', {
-        max_supply: formData.max_supply,
-        collection_name: formData.name
-      });
     }
 
     // Enforce 1-hour buffer if end time is set
@@ -483,14 +474,6 @@ export const UnifiedMintInterface = () => {
     if (!formData.image_file) {
       toast.error('Collection avatar is required');
       return;
-    }
-
-    // Security: Log large supply attempts
-    if (formData.max_supply > 10000) {
-      logSuspiciousActivity('large_supply_attempt', {
-        max_supply: formData.max_supply,
-        collection_name: formData.name
-      });
     }
 
     // Enforce 1-hour buffer if end time is set
