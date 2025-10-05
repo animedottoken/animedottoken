@@ -8,8 +8,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { StatusDots } from "@/components/StatusDots";
 import { homeSections } from "@/lib/homeSections";
 
 type RouteItem = {
@@ -63,7 +61,6 @@ export const TopNav = () => {
   }, []);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const { connected, connecting, connectPaymentWallet, disconnect } = useSolanaWallet();
 
   const handleHomeNavigation = () => {
@@ -90,31 +87,6 @@ export const TopNav = () => {
     } else {
       window.location.hash = `#${item.hash}`;
     }
-  };
-
-  const handleProfileAction = () => {
-    setOpen(false);
-    if (user) {
-      if (location.pathname === '/profile') {
-        // Already on profile page - refresh it
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        window.dispatchEvent(new CustomEvent('refresh-profile'));
-      } else {
-        navigate('/profile');
-      }
-    } else {
-      navigate('/auth?redirect=/profile');
-    }
-  };
-
-  const handleSignOut = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    await signOut();
-  };
-
-  const handleSignIn = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate('/auth?redirect=/profile');
   };
   const isActive = (item: NavigationItem) => {
     if (item.type === "route") {
@@ -145,19 +117,11 @@ export const TopNav = () => {
           <span className="font-bold text-lg">ANIME.TOKEN</span>
         </Link>
         <nav className="flex items-center gap-3">
-          {/* Show email on desktop when signed in */}
-          {user?.email && (
-            <span className="text-sm text-muted-foreground max-w-32 truncate">
-              {user.email}
-            </span>
-          )}
-          
-          {/* Menu dropdown with navigation + wallet */}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <StatusDots isLoggedIn={!!user} isWalletConnected={connected} className="mr-1" />
-                <span className="text-sm font-medium">Menu</span>
+                <Wallet className="h-4 w-4" />
+                <span className="text-sm font-medium">{connected ? 'Connected' : 'Connect Wallet'}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
@@ -166,14 +130,13 @@ export const TopNav = () => {
               className="w-56 bg-popover text-popover-foreground border border-border shadow-lg z-[9999]"
               sideOffset={5}
             >
-              {/* Navigation Items */}
               <DropdownMenuItem onClick={() => navigate('/mint')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <Coins className="h-4 w-4" />
                 <span>Mint NFTs</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <ShoppingCart className="h-4 w-4" />
-                <span>Marketplace</span>
+                <span>Gallery</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/staking')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <TrendingUp className="h-4 w-4" />
@@ -181,49 +144,22 @@ export const TopNav = () => {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/trust')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <Shield className="h-4 w-4" />
-                <span>Trust & Security Center</span>
-              </DropdownMenuItem>
-              
-              {/* Profile Row */}
-              <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3 justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <User className="h-4 w-4" />
-                  <span>My Profile</span>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 hover:bg-destructive/10"
-                        onClick={user ? handleSignOut : handleSignIn}
-                      >
-                        {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-green-500" />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{user ? "Logout" : "Login to my profile"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <span>Trust & Security</span>
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
               
-              {/* Wallet Section */}
               <div className="px-2 py-1.5">
                 <div 
                   className="flex items-center gap-2 cursor-pointer py-3 px-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (connected) {
-                    disconnect();
-                  } else {
-                    connectPaymentWallet();
-                  }
-                }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (connected) {
+                      disconnect();
+                    } else {
+                      connectPaymentWallet();
+                    }
+                  }}
                 >
                   <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
                   <Wallet className="h-4 w-4" />
@@ -247,10 +183,7 @@ export const TopNav = () => {
         {/* Hamburger menu in far left corner */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="sm" className="p-2 h-8 w-8 relative">
-              <div className="absolute -top-1 -right-1 flex gap-0.5">
-                <StatusDots isLoggedIn={!!user} isWalletConnected={connected} size="sm" />
-              </div>
+            <Button variant="ghost" size="sm" className="p-2 h-8 w-8">
               <Menu className="h-4 w-4" />
               <span className="sr-only">Navigation menu</span>
             </Button>
@@ -280,7 +213,7 @@ export const TopNav = () => {
                   onClick={() => navigate('/marketplace')}
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="font-medium">Marketplace</span>
+                  <span className="font-medium">Gallery</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -339,8 +272,8 @@ export const TopNav = () => {
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <StatusDots isLoggedIn={!!user} isWalletConnected={connected} className="mr-1" />
-              <span className="text-sm font-medium">Menu</span>
+              <Wallet className="h-4 w-4" />
+              <span className="text-sm font-medium">{connected ? 'Connected' : 'Connect Wallet'}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -355,39 +288,13 @@ export const TopNav = () => {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <ShoppingCart className="h-4 w-4" />
-              <span>Marketplace</span>
+              <span>Gallery</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/staking')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
               <TrendingUp className="h-4 w-4" />
               <span>ANIME Staking</span>
             </DropdownMenuItem>
             
-            {/* Profile Row */}
-            <DropdownMenuItem onClick={handleProfileAction} className="flex items-center gap-2 cursor-pointer py-3 px-3 justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${user ? 'bg-green-500' : 'bg-red-500'}`} />
-                <User className="h-4 w-4" />
-                <span>My Profile</span>
-              </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-destructive/10"
-                      onClick={user ? handleSignOut : handleSignIn}
-                    >
-                      {user ? <LogOut className="h-4 w-4 text-destructive" /> : <LogIn className="h-4 w-4 text-green-500" />}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{user ? "Logout" : "Login to my profile"}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DropdownMenuItem>
-
             <DropdownMenuSeparator />
 
             <div className="px-2 py-1.5">

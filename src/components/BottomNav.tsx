@@ -1,4 +1,4 @@
-import { Home, User, ShoppingCart, Coins } from "lucide-react";
+import { Home, ShoppingCart, Coins } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -14,14 +14,9 @@ const navItems = [
     path: "/mint",
   },
   { 
-    title: "Market", 
+    title: "Gallery", 
     icon: ShoppingCart,
     path: "/marketplace",
-  },
-  { 
-    title: "Profile", 
-    icon: User,
-    path: "/profile",
   },
 ];
 

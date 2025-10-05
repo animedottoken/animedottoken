@@ -11,11 +11,8 @@ import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
 import { ScrollToTopOnRoute } from "@/components/ScrollToTopOnRoute";
 import { SolanaWalletProvider } from "@/contexts/MockSolanaWalletContext";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { ViewModeProvider } from "@/contexts/ViewModeContext";
-import { RequireAuth } from "@/components/RequireAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
 import { useSolanaWallet } from "@/contexts/MockSolanaWalletContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -25,10 +22,8 @@ import MintCollection from "./pages/MintCollection";
 import MintNFT from "./pages/MintNFT";
 import CollectionDetail from "./pages/CollectionDetail";
 import Marketplace from "./pages/Marketplace";
-import Profile from "./pages/Profile";
 import CreatorProfile from "./pages/CreatorProfile";
 import NFTDetail from "./pages/NFTDetail";
-import Auth from "./pages/Auth";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
@@ -64,82 +59,10 @@ const AppLayout = () => {
   const location = useLocation();
   const { openWalletSelector } = useSolanaWallet();
 
-  // Route diagnostics - log path changes to help debug navigation issues
+  // Route diagnostics
   useEffect(() => {
-    console.log(`🗺️ Route changed to: ${location.pathname}${location.search}${location.hash}`);
-  }, [location.pathname, location.search, location.hash]);
-
-  // Global magic link handler for root path redirects
-  useEffect(() => {
-    const handleRootMagicLink = async () => {
-      // Only process if we're on root path and have auth tokens/codes
-      if (location.pathname === '/' && (location.hash.includes('access_token') || location.search.includes('code='))) {
-        console.log('Processing auth tokens from root path...');
-        
-        try {
-          // Parse redirect target from query params with fallback to stored value
-          const searchParams = new URLSearchParams(location.search);
-          const rawRedirect = searchParams.get('redirect');
-          
-          // Get final redirect URL using helper function
-          const { getFinalRedirectUrl } = await import('@/lib/authRedirect');
-          const safeRedirect = getFinalRedirectUrl(rawRedirect);
-          
-          // Handle Magic Link tokens in hash fragment
-          if (location.hash.includes('access_token')) {
-            console.log('Processing magic link tokens from hash...');
-            const hashParams = new URLSearchParams(location.hash.substring(1));
-            const accessToken = hashParams.get('access_token');
-            const refreshToken = hashParams.get('refresh_token');
-            
-            if (accessToken && refreshToken) {
-              const { data, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken
-              });
-              
-              if (error) {
-                console.error('Root magic link error:', error);
-                navigate('/auth');
-                return;
-              }
-              
-              if (data.session) {
-                console.log('Root magic link successful, session created');
-                // Clean URL and navigate to redirect target
-                window.history.replaceState({}, document.title, '/');
-                navigate(safeRedirect, { replace: true });
-              }
-            }
-          }
-          
-          // Handle OAuth code exchange for query params
-          if (location.search.includes('code=')) {
-            console.log('Processing OAuth code from root...');
-            const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
-            
-            if (error) {
-              console.error('Root OAuth error:', error);
-              navigate('/auth');
-              return;
-            }
-            
-            if (data.session) {
-              console.log('Root OAuth successful, session created');
-              // Clean URL and navigate to redirect target
-              window.history.replaceState({}, document.title, '/');
-              navigate(safeRedirect, { replace: true });
-            }
-          }
-        } catch (error) {
-          console.error('Root auth processing failed:', error);
-          navigate('/auth');
-        }
-      }
-    };
-
-    handleRootMagicLink();
-  }, [location, navigate]);
+    console.log(`🗺️ Route changed to: ${location.pathname}`);
+  }, [location.pathname]);
 
   // Auto-open wallet modal if openWalletModal parameter is present
   useEffect(() => {
@@ -199,10 +122,8 @@ const AppLayout = () => {
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/staking" element={<Staking />} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
-            <Route path="/auth" element={<Auth />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/support" element={<Support />} />
@@ -239,10 +160,8 @@ const AppLayout = () => {
             <Route path="/collection/:collectionId" element={<CollectionDetail />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/staking" element={<Staking />} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
             <Route path="/profile/:wallet" element={<CreatorProfile />} />
             <Route path="/nft/:id" element={<NFTDetail />} />
-            <Route path="/auth" element={<Auth />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/support" element={<Support />} />
@@ -302,21 +221,19 @@ const App = () => {
         <HelmetProvider>
           <BrowserRouter>
             <EnvironmentProvider>
-              <AuthProvider>
-                <ViewModeProvider>
-                  <SolanaWalletProvider>
-                  <ProfileFiltersProvider>
-                  <TooltipProvider>
-                  <BetaBanner />
-                  <Toaster />
-                  <Sonner />
-                  <ScrollToTopOnRoute />
-                  <AppLayout />
-                  </TooltipProvider>
-                  </ProfileFiltersProvider>
-                  </SolanaWalletProvider>
-                </ViewModeProvider>
-              </AuthProvider>
+              <ViewModeProvider>
+                <SolanaWalletProvider>
+                <ProfileFiltersProvider>
+                <TooltipProvider>
+                <BetaBanner />
+                <Toaster />
+                <Sonner />
+                <ScrollToTopOnRoute />
+                <AppLayout />
+                </TooltipProvider>
+                </ProfileFiltersProvider>
+                </SolanaWalletProvider>
+              </ViewModeProvider>
             </EnvironmentProvider>
           </BrowserRouter>
         </HelmetProvider>

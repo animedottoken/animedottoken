@@ -35,7 +35,6 @@ export const DesktopSidebar = ({ className, style, onCollapseChange }: DesktopSi
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   // Get filters and ranges from context
   const { filters: combinedFilters, setFilters: setCombinedFilters, currentPriceRange, currentRoyaltyRange } = useProfileFilters();
   const isMobile = useIsMobile();
