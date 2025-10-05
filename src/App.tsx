@@ -29,6 +29,7 @@ import Privacy from "./pages/Privacy";
 import Support from "./pages/Support";
 import Trust from "./pages/Trust";
 import { ErrorBoundary } from "react-error-boundary";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ProfileFiltersProvider } from "@/contexts/ProfileFiltersContext";
 import { EnvironmentProvider } from "@/contexts/EnvironmentContext";
 import { SecurityBanner } from "@/components/SecurityBanner";
@@ -218,19 +219,21 @@ const App = () => {
         <HelmetProvider>
           <BrowserRouter>
             <EnvironmentProvider>
-              <ViewModeProvider>
-                <SolanaWalletProvider>
-                <ProfileFiltersProvider>
-                <TooltipProvider>
-                <BetaBanner />
-                <Toaster />
-                <Sonner />
-                <ScrollToTopOnRoute />
-                <AppLayout />
-                </TooltipProvider>
-                </ProfileFiltersProvider>
-                </SolanaWalletProvider>
-              </ViewModeProvider>
+              <AuthProvider>
+                <ViewModeProvider>
+                  <SolanaWalletProvider>
+                  <ProfileFiltersProvider>
+                  <TooltipProvider>
+                  <BetaBanner />
+                  <Toaster />
+                  <Sonner />
+                  <ScrollToTopOnRoute />
+                  <AppLayout />
+                  </TooltipProvider>
+                  </ProfileFiltersProvider>
+                  </SolanaWalletProvider>
+                </ViewModeProvider>
+              </AuthProvider>
             </EnvironmentProvider>
           </BrowserRouter>
         </HelmetProvider>
