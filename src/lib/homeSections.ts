@@ -25,7 +25,7 @@ export const homeSections: HomeSection[] = [
   },
   {
     id: "create-nfts",
-    title: "Mint NFTs & Marketplace",
+    title: "Mint NFTs",
     icon: Coins,
     hash: "#create-nfts",
   },
