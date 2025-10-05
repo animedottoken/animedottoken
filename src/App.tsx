@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TopNav } from "@/components/TopNav";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { BottomNav } from "@/components/BottomNav";
 import { BackToTop } from "@/components/BackToTop";
@@ -108,8 +107,7 @@ const AppLayout = () => {
 
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col w-full" style={{ paddingTop: 'var(--header-total-height, 120px)' }}>
-        <TopNav />
+      <div className="min-h-screen flex flex-col w-full" style={{ paddingTop: 'var(--beta-banner-height, 64px)' }}>
         <SecurityBanner />
         <main className="flex-1 overflow-x-hidden pb-20 md:pb-0">
           <Routes>
@@ -135,14 +133,13 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen w-full" style={{ paddingTop: 'var(--header-total-height, 120px)' }}>
-      <TopNav />
+    <div className="min-h-screen w-full" style={{ paddingTop: 'var(--beta-banner-height, 64px)' }}>
       <SecurityBanner />
       <DesktopSidebar
         className="fixed left-0 z-30" 
         style={{ 
-          top: 'var(--header-total-height, 120px)', 
-          height: 'calc(100vh - var(--header-total-height, 120px))' 
+          top: 'var(--beta-banner-height, 64px)', 
+          height: 'calc(100vh - var(--beta-banner-height, 64px))' 
         }}
         onCollapseChange={setSidebarCollapsed}
       />
@@ -178,11 +175,8 @@ const App = () => {
     const updateHeaderHeights = () => {
       const betaBanner = document.querySelector('[role="banner"]') as HTMLElement;
       const betaHeight = betaBanner?.offsetHeight || 64;
-      const topNavHeight = 56; // Fixed height from h-14
       
       document.documentElement.style.setProperty('--beta-banner-height', `${betaHeight}px`);
-      document.documentElement.style.setProperty('--top-nav-height', `${topNavHeight}px`);
-      document.documentElement.style.setProperty('--header-total-height', `${betaHeight + topNavHeight}px`);
     };
 
     // Wait for fonts to load before measuring
