@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SolanaWalletButton } from "@/components/SolanaWalletButton";
 import { toast } from "sonner";
 import {
@@ -26,7 +27,8 @@ import {
   Flame,
   Play,
   Pause,
-  Zap
+  Zap,
+  Copy
 } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { useCollectionMints } from "@/hooks/useCollectionMints";
@@ -142,6 +144,7 @@ export default function CollectionDetail() {
   // Dialog states for editing avatar and banner
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [showBannerDialog, setShowBannerDialog] = useState(false);
+  const [showOnchainDescription, setShowOnchainDescription] = useState(false);
 
   // Real creator wallet address (unmasked)
   const [creatorWallet, setCreatorWallet] = useState<string>('');
@@ -353,16 +356,41 @@ export default function CollectionDetail() {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <h1 className="text-3xl font-bold">{displayCollection?.name}</h1>
                       {displayCollection?.symbol && (
                         <Badge variant="outline" className="text-sm">
                           {displayCollection.symbol}
                         </Badge>
                       )}
+                      {displayCollection?.category && (
+                        <Link to={`/marketplace?category=${encodeURIComponent(displayCollection.category)}`}>
+                          <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                            {displayCollection.category}
+                          </Badge>
+                        </Link>
+                      )}
                       
                       {/* Status Badges */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {/* Supply Mode */}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant="outline" className="text-xs cursor-help">
+                                {displayCollection?.supply_mode === 'fixed' ? '📊 Fixed Supply' : '∞ Unlimited'}
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {displayCollection?.supply_mode === 'fixed' 
+                                  ? 'This collection has a fixed maximum supply' 
+                                  : 'This collection can mint unlimited items'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
                         {/* On-chain vs Off-chain status */}
                         {(displayCollection?.collection_mint_address || displayCollection?.verified) ? (
                           <Badge variant="default" className="bg-green-500 text-white text-xs">
@@ -398,6 +426,44 @@ export default function CollectionDetail() {
                             {mints.length}/{displayCollection.max_supply}
                           </Badge>
                         )}
+
+                        {/* Whitelist Status */}
+                        {displayCollection?.whitelist_enabled && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="secondary" className="bg-purple-500 text-white text-xs cursor-help">
+                                  🔒 Whitelisted
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>This collection requires whitelist approval to mint</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+
+                        {/* Go Live Date */}
+                        {displayCollection?.go_live_date && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="outline" className="text-xs cursor-help">
+                                  <Calendar className="h-3 w-3 mr-1" />
+                                  {new Date(displayCollection.go_live_date) > new Date() 
+                                    ? `Launches ${formatDistanceToNow(new Date(displayCollection.go_live_date), { addSuffix: true })}`
+                                    : `Launched ${formatDistanceToNow(new Date(displayCollection.go_live_date), { addSuffix: true })}`
+                                  }
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>
+                                  {new Date(displayCollection.go_live_date).toLocaleString()}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
                       </div>
                     </div>
 
@@ -427,11 +493,59 @@ export default function CollectionDetail() {
                 
                 </div>
                 
-                {displayCollection?.description && (
-                  <p className="text-muted-foreground mb-4 max-w-2xl">
-                    {displayCollection.description}
-                  </p>
-                )}
+                {/* Description with Toggle */}
+                <div className="mt-4 space-y-3">
+                  {(displayCollection?.site_description || displayCollection?.description) && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {showOnchainDescription ? 'On-chain Description' : 'Public Description'}
+                        </p>
+                        {displayCollection?.onchain_description && (displayCollection?.site_description || displayCollection?.description) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowOnchainDescription(!showOnchainDescription)}
+                            className="h-6 text-xs"
+                          >
+                            {showOnchainDescription ? 'Show Public' : 'Show On-chain'}
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {showOnchainDescription 
+                          ? displayCollection?.onchain_description 
+                          : (displayCollection?.site_description || displayCollection?.description)}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Treasury Wallet (Owner Only) */}
+                  {isOwner && displayCollection?.treasury_wallet && (
+                    <div className="border-t pt-3">
+                      <p className="text-xs text-muted-foreground font-medium mb-2">Treasury Wallet (Owner Only)</p>
+                      <div className="flex items-center gap-2">
+                        <code className="text-xs bg-muted px-2 py-1 rounded flex-1 truncate">
+                          {displayCollection.treasury_wallet}
+                        </code>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(displayCollection.treasury_wallet);
+                            toast.success('Treasury wallet copied!');
+                          }}
+                          className="h-7"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Mint proceeds and royalties will be sent to this address
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -478,6 +592,40 @@ export default function CollectionDetail() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Collection Attributes Template (Owner Only) */}
+          {isOwner && displayCollection?.attributes && Array.isArray(displayCollection.attributes) && displayCollection.attributes.length > 0 && (
+            <Card className="mb-6 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="font-semibold">Collection Attributes Template</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="text-xs cursor-help">
+                        Owner Only
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>These are the default attributes that NFTs in this collection will inherit</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {displayCollection.attributes.map((attr: any, idx: number) => (
+                  <div key={idx} className="border rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">{attr.trait_type}</p>
+                    <p className="font-medium text-sm">{attr.value || 'N/A'}</p>
+                    {attr.display_type && (
+                      <Badge variant="secondary" className="text-xs mt-1">
+                        {attr.display_type}
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
 
           {/* Collection Editor - Always show for collection owner */}
           {isOwner && editorCollection && (

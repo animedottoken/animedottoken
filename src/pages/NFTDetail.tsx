@@ -26,7 +26,8 @@ import {
   Share2,
   Bookmark,
   Copy,
-  Check
+  Check,
+  Image as ImageIcon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { EditNFTDialog } from '@/components/EditNFTDialog';
@@ -49,6 +50,7 @@ export default function NFTDetail() {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [copiedContract, setCopiedContract] = useState(false);
   const [copiedTokenId, setCopiedTokenId] = useState(false);
+  const [collectionInfo, setCollectionInfo] = useState<any>(null);
 
   const fetchNFT = async () => {
     try {
@@ -83,6 +85,17 @@ export default function NFTDetail() {
           .single();
         
         setCreatorProfile(profile);
+      }
+
+      // Fetch collection info if NFT belongs to a collection
+      if (data.collection_id) {
+        const { data: collection } = await supabase
+          .from('collections')
+          .select('id, name, symbol, image_url, category')
+          .eq('id', data.collection_id)
+          .single();
+        
+        setCollectionInfo(collection);
       }
 
       // Fetch activities (last 5)
@@ -234,9 +247,40 @@ export default function NFTDetail() {
 
           {/* Right: Details */}
           <div className="lg:col-span-6 space-y-4">
-            {/* Title */}
-            <div>
+            {/* Title with Symbol Badge */}
+            <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-5xl font-bold leading-tight">{nft.name}</h1>
+              {nft.symbol && (
+                <Badge variant="outline" className="text-base">
+                  ${nft.symbol}
+                </Badge>
+              )}
+            </div>
+
+            {/* Category & Network Badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {nft.category && (
+                <Link to={`/marketplace?category=${encodeURIComponent(nft.category)}`}>
+                  <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                    {nft.category}
+                  </Badge>
+                </Link>
+              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge 
+                      variant={nft.network === 'mainnet' ? 'default' : 'outline'}
+                      className="cursor-help"
+                    >
+                      {nft.network === 'mainnet' ? '🟢 Mainnet' : '🟡 Devnet'}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This NFT is on Solana {nft.network === 'mainnet' ? 'Mainnet' : 'Devnet'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             {/* Creator Row - entire row clickable */}
@@ -409,6 +453,39 @@ export default function NFTDetail() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 mt-0">
+            {/* Collection Card */}
+            {collectionInfo && (
+              <Link to={`/collection/${collectionInfo.id}`}>
+                <Card className="p-4 hover:bg-accent/50 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    {collectionInfo.image_url ? (
+                      <img
+                        src={collectionInfo.image_url}
+                        alt={collectionInfo.name}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground mb-1">Part of Collection</p>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{collectionInfo.name}</h4>
+                        {collectionInfo.symbol && (
+                          <Badge variant="outline" className="text-xs">
+                            {collectionInfo.symbol}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                </Card>
+              </Link>
+            )}
+
             {/* Description */}
             {description && description !== 'No description provided.' ? (
               <Card className="p-6">
@@ -430,6 +507,31 @@ export default function NFTDetail() {
             ) : (
               <Card className="p-6">
                 <p className="text-sm text-muted-foreground">No description.</p>
+              </Card>
+            )}
+
+            {/* External Links */}
+            {nft.external_links && Array.isArray(nft.external_links) && nft.external_links.length > 0 && (
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Links</h3>
+                <div className="flex flex-wrap gap-3">
+                  {nft.external_links.map((link: any, idx: number) => (
+                    <Button
+                      key={idx}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(link.url, '_blank')}
+                      className="gap-2"
+                    >
+                      {link.type === 'website' && '🌐'}
+                      {link.type === 'twitter' && '🐦'}
+                      {link.type === 'discord' && '💬'}
+                      {link.type === 'instagram' && '📷'}
+                      {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  ))}
+                </div>
               </Card>
             )}
 
