@@ -132,14 +132,6 @@ export const TopNav = () => {
                 <Coins className="h-4 w-4" />
                 <span>Mint NFTs</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/marketplace')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
-                <ShoppingCart className="h-4 w-4" />
-                <span>Gallery</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/staking')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
-                <TrendingUp className="h-4 w-4" />
-                <span>ANIME Staking</span>
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/trust')} className="flex items-center gap-2 cursor-pointer py-3 px-3">
                 <Shield className="h-4 w-4" />
                 <span>Trust & Security</span>
